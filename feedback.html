@@ -171,6 +171,42 @@
 
     .sentiment-emoji { font-size: 1rem; }
 
+    .rating-scale {
+      display: flex;
+      gap: 5px;
+    }
+    .rating-btn {
+      flex: 1;
+      height: 36px;
+      border-radius: 6px;
+      border: 1px solid #a5d6a7;
+      background: #fff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #777;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      padding: 0;
+    }
+    .rating-btn:hover {
+      border-color: #2e7d32;
+      color: #2e7d32;
+      background: #f0f9f0;
+    }
+    .rating-btn.selected {
+      background: #2e7d32;
+      color: #fff;
+      border-color: #2e7d32;
+    }
+    .rating-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: #aaa;
+      margin-top: 5px;
+    }
+
     button {
       width: 100%;
       padding: 11px;
@@ -300,6 +336,24 @@
       </div>
 
       <div class="field">
+        <label>Overall rating <span class="optional-hint">(optional)</span></label>
+        <div class="rating-scale" id="ratingScale">
+          <button type="button" class="rating-btn" onclick="selectRating(0)">0</button>
+          <button type="button" class="rating-btn" onclick="selectRating(1)">1</button>
+          <button type="button" class="rating-btn" onclick="selectRating(2)">2</button>
+          <button type="button" class="rating-btn" onclick="selectRating(3)">3</button>
+          <button type="button" class="rating-btn" onclick="selectRating(4)">4</button>
+          <button type="button" class="rating-btn" onclick="selectRating(5)">5</button>
+          <button type="button" class="rating-btn" onclick="selectRating(6)">6</button>
+          <button type="button" class="rating-btn" onclick="selectRating(7)">7</button>
+          <button type="button" class="rating-btn" onclick="selectRating(8)">8</button>
+          <button type="button" class="rating-btn" onclick="selectRating(9)">9</button>
+          <button type="button" class="rating-btn" onclick="selectRating(10)">10</button>
+        </div>
+        <div class="rating-labels"><span>Not great</span><span>Excellent</span></div>
+      </div>
+
+      <div class="field">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
           <label for="message" style="margin-bottom: 0;">Message</label>
           <div class="sentiment" id="sentiment" style="margin-bottom: 0;">
@@ -320,6 +374,7 @@
     <div class="success" id="success">
       <h1>Thanks for your feedback!</h1>
       <p class="subtitle">We'll get back to you at the email you provided.</p>
+      <p style="font-size: 0.78rem; color: #bbb; margin-top: 6px;">(Demo purposes only)</p>
     </div>
   </div>
 
@@ -365,6 +420,16 @@
       return scored.sort((a, b) => b.score - a.score)[0].s;
     }
 
+    let selectedRating = null;
+
+    function selectRating(r) {
+      selectedRating = r;
+      document.querySelectorAll('.rating-btn').forEach((btn, i) => {
+        btn.classList.toggle('selected', i === r);
+      });
+      buildFormSummary();
+    }
+
     function buildFormSummary() {
       const name     = document.getElementById('name').value.trim();
       const email    = document.getElementById('email').value.trim();
@@ -374,20 +439,33 @@
       const postal   = document.getElementById('postal').value.trim();
       const message  = document.getElementById('message').value.trim();
 
-      if (!name && !city && !message) {
+      if (!name && !city && !message && selectedRating === null) {
         document.getElementById('messageSummary').style.display = 'none';
         return;
       }
 
       const parts = [];
-      if (name) parts.push(name);
+      parts.push(name || 'Someone');
       if (city && province) parts.push(`from ${city}, ${province}`);
       else if (city) parts.push(`from ${city}`);
       if (postal) parts.push(`(${postal})`);
 
       let line = parts.join(' ');
-      if (message) line += ` shared the following feedback: "${summarise(message)}"`;
-      else line += ' started filling out the form but left no message.';
+      if (message) {
+        const tone = { happy: 'positive', angry: 'negative', neutral: 'neutral' }[analyseSentiment(message)];
+        line += ` left the following ${tone} feedback: "${summarise(message)}"`;
+      } else line += ' started filling out the form but left no message.';
+
+      if (selectedRating !== null) {
+        line += ` They rated their experience ${selectedRating} out of 10.`;
+        if (message) {
+          const sentiment = analyseSentiment(message);
+          const highRatingNegative = selectedRating >= 7 && sentiment === 'angry';
+          const lowRatingPositive  = selectedRating <= 3 && sentiment === 'happy';
+          if (highRatingNegative) line += ' ⚠️ Their rating is high but their message sounds negative — worth a closer look.';
+          else if (lowRatingPositive) line += ' ⚠️ Their rating is low but their message sounds positive — may be worth following up.';
+        }
+      }
 
       if (email && phone) line += ` They can be reached at ${email} or ${phone}.`;
       else if (email) line += ` They can be reached at ${email}.`;

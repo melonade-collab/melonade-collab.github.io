@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RICE score calculator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f0f2ff;
+      min-height: 100vh;
+      color: #111;
+    }
+
+    a { text-decoration: none; }
+
+    /* ── Page header ── */
+    .page-header {
+      background: #fff;
+      border-bottom: 1px solid #e4e6f0;
+      padding: 0 40px;
+    }
+
+    .header-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 32px 0 28px;
+    }
+
+    .back-link {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 18px;
+      transition: color 0.15s;
+    }
+
+    .back-link:hover { color: #4361ee; }
+
+    .header-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 900;
+      letter-spacing: -0.7px;
+      color: #111;
+      line-height: 1.1;
+    }
+
+    h1 span { color: #4361ee; }
+
+    .formula-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #eef0ff;
+      border: 1px solid #c7cdff;
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-size: 0.82rem;
+      color: #4361ee;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .formula-pill span { opacity: 0.5; }
+
+    /* ── Add project form ── */
+    .add-section {
+      max-width: 860px;
+      margin: 32px auto 0;
+      padding: 0 40px;
+    }
+
+    .add-card {
+      background: #fff;
+      border: 1.5px solid #c7cdff;
+      border-radius: 16px;
+      padding: 20px 24px;
+    }
+
+    .add-card-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 14px;
+    }
+
+    .add-fields {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.2fr 1fr 1fr;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .field-group { display: flex; flex-direction: column; gap: 5px; }
+
+    .field-group label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      color: #94a3b8;
+    }
+
+    .field-group input,
+    .field-group select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid #e4e6f0;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-family: inherit;
+      color: #111;
+      background: #fff;
+      outline: none;
+      appearance: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .field-group input:focus,
+    .field-group select:focus {
+      border-color: #4361ee;
+      box-shadow: 0 0 0 3px rgba(67,97,238,0.1);
+    }
+
+    .field-group input::placeholder { color: #cbd5e1; }
+
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 10px; top: 50%;
+      transform: translateY(-50%);
+      width: 10px; height: 6px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234361ee' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      pointer-events: none;
+    }
+
+    .select-wrap select { padding-right: 28px; cursor: pointer; }
+
+    .add-btn {
+      padding: 10px 20px;
+      background: #4361ee;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, transform 0.1s;
+      height: 38px;
+      align-self: end;
+    }
+
+    .add-btn:hover  { background: #3451d1; }
+    .add-btn:active { transform: scale(0.97); }
+
+    /* ── Results ── */
+    .results-section {
+      max-width: 860px;
+      margin: 24px auto 60px;
+      padding: 0 40px;
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .results-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+
+    .clear-btn {
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      transition: color 0.15s;
+    }
+
+    .clear-btn:hover { color: #ef4444; }
+
+    /* Table */
+    .table-wrap {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #e4e6f0;
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(67,97,238,0.06);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: #f8f9ff;
+      border-bottom: 1px solid #e4e6f0;
+    }
+
+    thead th {
+      padding: 11px 16px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #94a3b8;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    thead th.num { text-align: right; }
+
+    tbody tr {
+      border-bottom: 1px solid #f0f2f8;
+      transition: background 0.12s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fafbff; }
+
+    tbody td {
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      color: #374151;
+      vertical-align: middle;
+    }
+
+    .rank-cell {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #94a3b8;
+      width: 36px;
+      text-align: center;
+    }
+
+    .rank-cell.top { color: #4361ee; }
+
+    .name-cell {
+      font-weight: 700;
+      color: #111;
+      max-width: 200px;
+    }
+
+    .num-cell {
+      text-align: right;
+      color: #64748b;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .impact-cell { text-align: right; }
+
+    .impact-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .impact-3    { background: #dcfce7; color: #166534; }
+    .impact-2    { background: #dbeafe; color: #1e40af; }
+    .impact-1    { background: #f3f4f6; color: #374151; }
+    .impact-05   { background: #fef9c3; color: #854d0e; }
+    .impact-025  { background: #fee2e2; color: #991b1b; }
+
+    .score-cell {
+      text-align: right;
+      padding-right: 20px;
+    }
+
+    .score-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      min-width: 52px;
+      text-align: center;
+    }
+
+    .score-high   { background: #dcfce7; color: #166534; }
+    .score-mid    { background: #dbeafe; color: #1e40af; }
+    .score-low    { background: #fef9c3; color: #854d0e; }
+    .score-vlow   { background: #f3f4f6; color: #6b7280; }
+
+    .delete-cell { width: 36px; text-align: center; }
+
+    .del-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #e2e8f0;
+      font-size: 16px;
+      line-height: 1;
+      padding: 4px;
+      border-radius: 6px;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .del-btn:hover { color: #ef4444; background: #fee2e2; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 56px 24px;
+      color: #94a3b8;
+    }
+
+    .empty-icon { font-size: 2.5rem; display: block; margin-bottom: 12px; }
+    .empty-title { font-size: 1rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; }
+    .empty-sub   { font-size: 0.82rem; }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      .page-header { padding: 0 20px; }
+      .add-section, .results-section { padding: 0 16px; }
+      .add-fields {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+      }
+      .add-fields .field-group:first-child { grid-column: 1 / -1; }
+      .add-btn { grid-column: 1 / -1; width: 100%; height: 42px; }
+      thead th.hide-mobile, tbody td.hide-mobile { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div class="header-inner">
+      <a href="index.html" class="back-link">← My portfolio</a>
+      <div class="header-row">
+        <div>
+          <h1>RICE <span>score</span> calculator</h1>
+        </div>
+        <div class="formula-pill">
+          RICE <span>=</span> (Reach × Impact × Confidence) <span>/</span> Effort
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="add-section">
+    <div class="add-card">
+      <p class="add-card-title">Add a project</p>
+      <div class="add-fields">
+        <div class="field-group">
+          <label>Project name</label>
+          <input type="text" id="newName" placeholder="e.g. Redesign checkout flow" maxlength="80">
+        </div>
+        <div class="field-group">
+          <label>Reach <span style="font-weight:400;text-transform:none;letter-spacing:0">(users/mo)</span></label>
+          <input type="number" id="newReach" placeholder="1000" min="0">
+        </div>
+        <div class="field-group">
+          <label>Impact</label>
+          <div class="select-wrap">
+            <select id="newImpact">
+              <option value="3">Massive (3×)</option>
+              <option value="2" selected>High (2×)</option>
+              <option value="1">Medium (1×)</option>
+              <option value="0.5">Low (0.5×)</option>
+              <option value="0.25">Minimal (0.25×)</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Confidence</label>
+          <input type="number" id="newConf" placeholder="80" min="1" max="100" style="padding-right:28px">
+        </div>
+        <div class="field-group">
+          <label>Effort <span style="font-weight:400;text-transform:none;letter-spacing:0">(person-mo)</span></label>
+          <input type="number" id="newEffort" placeholder="2" min="0.1" step="0.5">
+        </div>
+        <button class="add-btn" onclick="addProject()">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-section">
+    <div class="results-header">
+      <span class="results-label" id="resultsLabel">Projects</span>
+      <button class="clear-btn" onclick="clearAll()">Clear all</button>
+    </div>
+    <div class="table-wrap" id="tableWrap">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+<script>
+  const STORE = 'rice-projects';
+
+  const IMPACT_LABELS = {
+    '3': 'Massive', '2': 'High', '1': 'Medium', '0.5': 'Low', '0.25': 'Minimal'
+  };
+
+  const IMPACT_CLASS = {
+    '3': 'impact-3', '2': 'impact-2', '1': 'impact-1', '0.5': 'impact-05', '0.25': 'impact-025'
+  };
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(STORE)) || []; }
+    catch { return []; }
+  }
+
+  function save(arr) { localStorage.setItem(STORE, JSON.stringify(arr)); }
+
+  function score(p) {
+    if (!p.effort || p.effort <= 0) return 0;
+    return Math.round((p.reach * p.impact * (p.confidence / 100)) / p.effort);
+  }
+
+  function scoreClass(s, max) {
+    if (max === 0) return 'score-vlow';
+    const pct = s / max;
+    if (pct >= 0.7) return 'score-high';
+    if (pct >= 0.4) return 'score-mid';
+    if (pct >= 0.15) return 'score-low';
+    return 'score-vlow';
+  }
+
+  function addProject() {
+    const name     = document.getElementById('newName').value.trim();
+    const reach    = parseFloat(document.getElementById('newReach').value);
+    const impact   = parseFloat(document.getElementById('newImpact').value);
+    const conf     = parseFloat(document.getElementById('newConf').value);
+    const effort   = parseFloat(document.getElementById('newEffort').value);
+
+    if (!name)           { document.getElementById('newName').focus();   return; }
+    if (!reach || reach <= 0)  { document.getElementById('newReach').focus();  return; }
+    if (!conf  || conf  <= 0)  { document.getElementById('newConf').focus();   return; }
+    if (!effort|| effort<= 0)  { document.getElementById('newEffort').focus(); return; }
+
+    const projects = load();
+    projects.push({ id: Date.now(), name, reach, impact, confidence: conf, effort });
+    save(projects);
+
+    document.getElementById('newName').value   = '';
+    document.getElementById('newReach').value  = '';
+    document.getElementById('newConf').value   = '';
+    document.getElementById('newEffort').value = '';
+    document.getElementById('newName').focus();
+
+    render();
+  }
+
+  function deleteProject(id) {
+    save(load().filter(p => p.id !== id));
+    render();
+  }
+
+  function clearAll() {
+    if (load().length === 0) return;
+    if (!confirm('Remove all projects?')) return;
+    save([]);
+    render();
+  }
+
+  function render() {
+    const projects = load().sort((a, b) => score(b) - score(a));
+    const wrap = document.getElementById('tableWrap');
+    const label = document.getElementById('resultsLabel');
+    const max = projects.length ? score(projects[0]) : 0;
+
+    label.textContent = projects.length === 0
+      ? 'Projects'
+      : `${projects.length} project${projects.length !== 1 ? 's' : ''} · sorted by score`;
+
+    if (projects.length === 0) {
+      wrap.innerHTML = `
+        <div class="empty-state">
+          <span class="empty-icon">📋</span>
+          <p class="empty-title">No projects yet</p>
+          <p class="empty-sub">Add your first project above to calculate its RICE score.</p>
+        </div>
+      `;
+      return;
+    }
+
+    wrap.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th style="width:36px"></th>
+            <th>Project</th>
+            <th class="num hide-mobile">Reach</th>
+            <th class="num">Impact</th>
+            <th class="num hide-mobile">Confidence</th>
+            <th class="num hide-mobile">Effort</th>
+            <th class="num">RICE score</th>
+            <th style="width:36px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${projects.map((p, i) => {
+            const s = score(p);
+            const impKey = String(p.impact);
+            return `
+              <tr>
+                <td class="rank-cell ${i === 0 ? 'top' : ''}">${i + 1}</td>
+                <td class="name-cell">${escHtml(p.name)}</td>
+                <td class="num-cell hide-mobile">${p.reach.toLocaleString()}</td>
+                <td class="impact-cell">
+                  <span class="impact-badge ${IMPACT_CLASS[impKey] || 'impact-1'}">
+                    ${IMPACT_LABELS[impKey] || p.impact}
+                  </span>
+                </td>
+                <td class="num-cell hide-mobile">${p.confidence}%</td>
+                <td class="num-cell hide-mobile">${p.effort}</td>
+                <td class="score-cell">
+                  <span class="score-badge ${scoreClass(s, max)}">${s}</span>
+                </td>
+                <td class="delete-cell">
+                  <button class="del-btn" onclick="deleteProject(${p.id})" title="Remove">×</button>
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  document.getElementById('newName').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addProject();
+  });
+
+  render();
+</script>
+</body>
+</html>
