@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="MeLaNiE">
+  <meta name="keywords" content="dru hill, sisqo, nokio, jazz, woody, r&b, baltimore, fan page, 1998">
+  <title>~*~ DRU HILL FaN PaGe ~*~ By MeLaNiE</title>
+  <style>
+    :root {
+      --bg:      #04061a;
+      --navy:    #0b1640;
+      --red:     #b91c1c;
+      --red-dim: #7f1d1d;
+      --gold:    #d97706;
+      --gold-lt: #fbbf24;
+      --blue:    #1d4ed8;
+      --blue-dk: #1e3a8a;
+      --text:    #f0ece0;
+      --muted:   #9ca3af;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: "Comic Sans MS", "Comic Sans", cursive;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Canvases ─────────────────────────────────────── */
+    #starsCanvas, #snowCanvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+    #starsCanvas { z-index: 0; }
+    #snowCanvas  { z-index: 999; }
+
+    /* ── Layout ───────────────────────────────────────── */
+    #wrapper {
+      position: relative; z-index: 1;
+      max-width: 820px; margin: 0 auto;
+      padding: 10px 14px 36px;
+    }
+
+    /* ── Marquee ──────────────────────────────────────── */
+    .top-marquee {
+      position: relative; z-index: 2;
+      background: var(--red);
+      color: var(--gold-lt);
+      font-weight: bold; font-size: 0.92rem;
+      padding: 6px 0; letter-spacing: 0.5px;
+    }
+
+    /* ── Navigation ───────────────────────────────────── */
+    .nav-bar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--navy);
+      border-bottom: 3px solid var(--gold);
+      text-align: center; padding: 8px 4px;
+    }
+    .nav-bar a {
+      color: var(--gold-lt); text-decoration: none;
+      font-weight: bold; font-size: 0.82rem;
+      padding: 3px 8px; display: inline-block;
+      letter-spacing: 0.3px;
+    }
+    .nav-bar a:hover  { color: #fff; text-decoration: underline; }
+    .nav-bar a.active { color: #fff; border-bottom: 2px solid var(--gold); }
+
+    /* ── Back link ────────────────────────────────────── */
+    .back-link {
+      position: fixed; bottom: 12px; right: 14px; z-index: 200;
+      font-size: 0.7rem; color: #555; text-decoration: none;
+      background: rgba(0,0,0,0.7); border: 1px solid #333; padding: 4px 9px;
+    }
+    .back-link:hover { color: var(--gold-lt); }
+
+    /* ── Sections ─────────────────────────────────────── */
+    .section        { display: none; }
+    .section.active { display: block; }
+
+    /* ── Animations ───────────────────────────────────── */
+    @keyframes blink   { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+    @keyframes glow-r  { 0%,100%{text-shadow:0 0 6px var(--red)} 50%{text-shadow:0 0 20px var(--red),0 0 40px var(--red)} }
+    @keyframes glow-g  { 0%,100%{text-shadow:0 0 6px var(--gold)} 50%{text-shadow:0 0 20px var(--gold),0 0 40px var(--gold-lt)} }
+    @keyframes pulse   { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+    @keyframes shimmer { 0%{opacity:.7} 50%{opacity:1} 100%{opacity:.7} }
+
+    .blink    { animation: blink 1s step-end infinite; }
+    .glow-red { animation: glow-r 2s ease-in-out infinite; }
+    .glow-gld { animation: glow-g 2s ease-in-out infinite; }
+    .pulse    { animation: pulse 2s ease-in-out infinite; }
+    .shimmer  { animation: shimmer 2.5s ease-in-out infinite; }
+
+    /* ── Typography ───────────────────────────────────── */
+    h1 { font-size: 2rem; text-align: center; margin: 16px 0 10px; }
+    h2 { font-size: 1.3rem; margin: 10px 0 8px; }
+    p  { line-height: 1.75; }
+    ul { padding-left: 18px; line-height: 2.1; }
+
+    /* ── Dividers ─────────────────────────────────────── */
+    .divider {
+      text-align: center; font-size: 1rem;
+      margin: 14px 0; color: var(--gold); letter-spacing: 4px;
+    }
+    hr.red  { border: none; border-top: 2px solid var(--red);  margin: 14px 0; box-shadow: 0 0 6px var(--red-dim); }
+    hr.gold { border: none; border-top: 2px solid var(--gold); margin: 14px 0; box-shadow: 0 0 6px var(--gold); }
+    hr.blue { border: none; border-top: 2px solid var(--blue); margin: 14px 0; box-shadow: 0 0 6px var(--blue-dk); }
+
+    /* ── Boxes ────────────────────────────────────────── */
+    .box-gold   { border: 2px solid var(--gold); padding: 14px; margin: 12px 0; background: var(--navy); }
+    .box-red    { border: 2px solid var(--red);  padding: 14px; margin: 12px 0; background: var(--red-dim); }
+    .box-blue   { border: 2px solid var(--blue); padding: 14px; margin: 12px 0; background: var(--blue-dk); }
+    .box-dashed { border: 2px dashed var(--gold); padding: 14px; margin: 12px 0; background: var(--navy); }
+
+    /* ── Links ────────────────────────────────────────── */
+    a         { color: var(--gold-lt); }
+    a:hover   { color: #fff; text-decoration: underline; }
+    a:visited { color: var(--gold); }
+
+    /* ── NEW badge ────────────────────────────────────── */
+    .new-badge {
+      background: var(--red); color: #fff;
+      font-size: 0.62rem; font-weight: bold; padding: 2px 5px;
+      border: 1px solid var(--gold-lt); vertical-align: middle;
+      animation: blink 0.9s step-end infinite;
+    }
+
+    /* ── ODOMETER ─────────────────────────────────────── */
+    .odometer-wrap  { text-align: center; margin: 14px 0; }
+    .odometer-label { font-size: 0.82rem; color: var(--muted); margin-bottom: 8px; }
+    .odometer {
+      display: inline-flex; align-items: stretch;
+      background: #000; border: 2px solid var(--gold);
+      border-radius: 6px; overflow: hidden;
+      box-shadow: 0 0 12px var(--gold);
+    }
+    .odo-digit {
+      width: 32px; height: 44px; overflow: hidden;
+      position: relative; border-right: 1px solid #333;
+    }
+    .odo-digit:last-of-type { border-right: none; }
+    .odo-strip {
+      position: absolute; top: 0; left: 0; width: 100%;
+      transition: transform 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .odo-num {
+      height: 44px; width: 32px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: "Courier New", monospace;
+      font-size: 1.5rem; font-weight: bold;
+      color: var(--gold-lt);
+      background: #000;
+    }
+    .odo-sep {
+      width: 16px; display: flex; align-items: center; justify-content: center;
+      font-family: monospace; font-size: 1.4rem; font-weight: bold;
+      color: var(--gold); background: #000;
+    }
+    .odo-label { font-size: 0.65rem; color: var(--muted); text-align: center; margin-top: 6px; letter-spacing: 1px; }
+
+    /* ── Member cards ─────────────────────────────────── */
+    .member-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 12px 0; }
+    .member-card { background: var(--navy); border: 2px solid var(--blue); border-radius: 8px; padding: 14px; }
+    .member-card:nth-child(odd)  { border-color: var(--red); }
+    .member-card:nth-child(even) { border-color: var(--gold); }
+    .member-icon  { font-size: 2.5rem; margin-bottom: 6px; }
+    .member-name  { color: var(--gold-lt); font-size: 1.1rem; font-weight: bold; }
+    .member-alias { color: var(--muted); font-size: 0.78rem; font-style: italic; }
+    .member-bio   { font-size: 0.82rem; margin-top: 6px; line-height: 1.6; color: #d1c7b0; }
+
+    /* ── Song list ────────────────────────────────────── */
+    .album-block  { margin: 14px 0; }
+    .album-title  {
+      background: var(--red-dim);
+      color: var(--gold-lt); font-size: 1rem; font-weight: bold;
+      padding: 8px 14px; border-left: 4px solid var(--gold);
+      margin-bottom: 8px;
+    }
+    .track-list { list-style: none; padding: 0; }
+    .track-list li {
+      padding: 6px 10px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.88rem; display: flex; align-items: center; gap: 10px;
+    }
+    .track-list li:hover { background: rgba(217,119,6,0.12); }
+    .track-num { color: var(--muted); width: 22px; flex-shrink: 0; font-size: 0.78rem; }
+    .track-hit { color: var(--gold-lt); font-size: 0.68rem; font-weight: bold;
+                 background: var(--red-dim); padding: 1px 5px; border-radius: 3px; margin-left: auto; }
+
+    /* ── Photo grid ───────────────────────────────────── */
+    .photo-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+    .photo-item { border: 2px solid var(--gold); padding: 5px; background: var(--navy); text-align: center; }
+    .photo-box  { width:100%; aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:2.4rem; margin-bottom:4px; }
+    .photo-cap  { font-size: 0.68rem; color: var(--gold); }
+
+    /* ── Guestbook ────────────────────────────────────── */
+    .guest-entry { border: 1px solid var(--gold); padding: 10px 12px; margin: 10px 0; background: var(--navy); border-radius: 4px; }
+    .guest-name  { color: var(--gold-lt); font-weight: bold; }
+    .guest-date  { color: var(--muted); font-size: 0.77rem; }
+    .guest-body  { font-size: 0.88rem; margin-top: 5px; color: #d1c7b0; }
+
+    /* ── Forms ────────────────────────────────────────── */
+    label { color: var(--gold-lt); font-weight: bold; display: block; margin-top: 10px; font-size: 0.88rem; }
+    input, textarea {
+      background: var(--blue-dk); color: var(--text);
+      border: 1px solid var(--gold); padding: 8px;
+      font-family: "Comic Sans MS", cursive; font-size: 0.88rem;
+      width: 100%; margin: 4px 0 10px; display: block;
+      border-radius: 3px;
+    }
+    input:focus, textarea:focus { outline: none; border-color: var(--gold-lt); }
+    button {
+      background: var(--red);
+      color: #fff; border: 2px solid var(--gold);
+      padding: 9px 24px; font-family: "Comic Sans MS", cursive;
+      font-weight: bold; font-size: 0.95rem; cursor: pointer;
+      border-radius: 4px; width: auto; letter-spacing: 0.5px;
+    }
+    button:hover { background: var(--blue); }
+
+    /* ── Awards ───────────────────────────────────────── */
+    .awards-wrap { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 14px 0; }
+    .award-badge {
+      border: 2px solid var(--gold); padding: 12px 8px; text-align: center;
+      background: var(--navy); width: 145px; border-radius: 4px;
+    }
+    .award-icon  { font-size: 1.8rem; }
+    .award-title { font-size: 0.58rem; color: var(--gold-lt); font-weight: bold; margin-top: 5px; line-height: 1.4; text-transform: uppercase; }
+    .award-from  { font-size: 0.54rem; color: var(--muted); margin-top: 2px; }
+
+    /* ── WebRing ──────────────────────────────────────── */
+    .webring { border: 2px solid var(--blue); padding: 12px; text-align: center; margin: 12px 0; background: var(--blue-dk); border-radius: 4px; }
+
+    /* ── About me facts ───────────────────────────────── */
+    .me-facts { list-style: none; padding: 0; }
+    .me-facts li { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.88rem; }
+    .me-facts li:last-child { border-bottom: none; }
+    .me-key { color: var(--gold); font-weight: bold; display: inline-block; width: 130px; }
+
+    /* ── Footer ───────────────────────────────────────── */
+    .footer-bar {
+      background: var(--navy); border-top: 2px solid var(--gold);
+      padding: 10px; text-align: center; font-size: 0.8rem;
+      margin-top: 24px; color: var(--muted);
+    }
+
+    @media (max-width: 600px) {
+      .photo-grid  { grid-template-columns: repeat(2,1fr); }
+      .member-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 1.45rem; }
+      .nav-bar a { font-size: 0.73rem; padding: 2px 5px; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="starsCanvas"></canvas>
+<canvas id="snowCanvas"></canvas>
+<a href="index.html" class="back-link">← Back to Portfolio</a>
+
+<!-- Marquee -->
+<div style="position:relative;z-index:2;">
+  <marquee class="top-marquee">
+    ♪ ♫ Welcome 2 the ULTIMATE Dru Hill Fan Page!! ♫ ♪ &nbsp;·&nbsp; Sisqó · Nokio · Jazz · Woody &nbsp;·&nbsp; Baltimore's Finest!! &nbsp;·&nbsp; Sign My Guestbook!! &nbsp;·&nbsp; "How Deep Is Your Love" is EVERYTHING &nbsp;·&nbsp; ♪ ♫ DRU HILL 4EVA!! ♫ ♪
+  </marquee>
+</div>
+
+<!-- Nav -->
+<div class="nav-bar">
+  <a href="#" onclick="return nav('home')"      id="nav-home"      class="active">🏠 Home</a> |
+  <a href="#" onclick="return nav('about')"     id="nav-about">🎵 About Dru Hill</a> |
+  <a href="#" onclick="return nav('members')"   id="nav-members">🎤 The Members</a> |
+  <a href="#" onclick="return nav('songs')"     id="nav-songs">💿 Discography</a> |
+  <a href="#" onclick="return nav('gallery')"   id="nav-gallery">📸 Gallery</a> |
+  <a href="#" onclick="return nav('guestbook')" id="nav-guestbook">📖 Guestbook</a>
+</div>
+
+<div id="wrapper">
+
+<!-- ====================================================== HOME -->
+<div class="section active" id="home">
+
+  <h1 style="color:var(--gold-lt);" class="glow-gld">
+    ♪ DRU HILL FaN PaGe ♪
+  </h1>
+  <p style="text-align:center;color:var(--muted);font-size:0.82rem;margin-bottom:4px;">
+    ~*~ The #1 Dru Hill Fan Site on the World Wide Web (probably) ~*~
+  </p>
+  <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
+
+  <div class="box-gold" style="text-align:center;">
+    <p style="font-size:1.2rem;" class="pulse">
+      Welcome to my <strong style="color:var(--gold-lt);">Dru Hill</strong> fan page!!! 😭💛
+    </p>
+    <p style="margin-top:10px;">
+      I have been a Dru Hill fan since I first heard <em>"Tell Me"</em> on the radio in 1996 and I have NEVER been the same!!
+      This is my tribute to the greatest R&amp;B group to ever come out of Baltimore!! 🙌
+    </p>
+    <p style="margin-top:10px;font-size:0.85rem;color:var(--muted);">
+      ⚠️ Best viewed in Netscape Navigator 4.0 at 800×600 · 16-bit colour ⚠️
+    </p>
+  </div>
+
+  <hr class="gold">
+
+  <!-- ODOMETER -->
+  <div class="odometer-wrap">
+    <p class="odometer-label">You are visitor number:</p>
+    <div class="odometer" id="odometer" aria-label="visitor counter"></div>
+    <div class="odo-label">VISITORS SINCE JUNE 6, 1997</div>
+    <p style="font-size:0.72rem;color:var(--muted);margin-top:5px;">Free counter by WebCounter™</p>
+  </div>
+
+  <hr class="gold">
+
+  <div class="box-red">
+    <h2 style="color:var(--gold-lt);">🔥 WhAt'S NeW!! <span class="new-badge">NEW!</span></h2>
+    <ul style="list-style:none;padding:0;">
+      <li>♪ <span class="new-badge">NEW!</span> "Enter the Dru" album review added to Discography!! (Dec 30)</li>
+      <li>♪ <span class="new-badge">NEW!</span> Added more fan photos to the Gallery!! (Dec 24)</li>
+      <li>♪ Won the "Best R&amp;B Fan Site" award!! See Guestbook for my awards!! (Dec 15)</li>
+      <li>♪ Guestbook hit 200 entries!!! THANK U ALL SO MUCH!! 💛 (Nov 30)</li>
+      <li>♪ New background!! Dru Hill red, blue and gold!! Do u like it?? (Nov 10)</li>
+    </ul>
+  </div>
+
+  <hr class="red">
+
+  <div class="box-blue" style="text-align:center;">
+    <p style="font-size:1.1rem;color:var(--gold-lt);font-style:italic;" class="shimmer">
+      "I wanna make it right, I wanna make it work, I know that I can make it if I try..."
+    </p>
+    <p style="font-size:0.78rem;color:var(--muted);margin-top:6px;">— Dru Hill, "These Are the Times" (1998)</p>
+  </div>
+
+  <hr class="blue">
+
+  <!-- About the Webmaster -->
+  <div class="box-gold">
+    <h2 style="color:var(--gold-lt);">👋 About the Webmaster</h2>
+    <p style="margin-bottom:12px;">
+      Hi!! I'm <strong style="color:var(--gold-lt);">MeLaNiE</strong> — a Dru Hill superfan from Toronto, Canada 🍁!!
+      I built this site because I couldn't find a good enough Dru Hill fan page and I decided I had to make one myself!! 😤
+    </p>
+    <ul class="me-facts">
+      <li><span class="me-key">♋ Star Sign:</span> Cancer</li>
+      <li><span class="me-key">🎨 Fav Colour:</span> Red</li>
+      <li><span class="me-key">🍝 Fav Food:</span> Spaghetti</li>
+      <li><span class="me-key">📧 E-Mail:</span> <a href="mailto:melonade_7@hotmail.com">melonade_7@hotmail.com</a></li>
+      <li><span class="me-key">💬 MSN:</span> melonade_7@hotmail.com</li>
+      <li><span class="me-key">📍 Based:</span> Toronto, Canada 🍁</li>
+      <li><span class="me-key">🟢 Status:</span> <span class="blink">Online!!</span></li>
+    </ul>
+  </div>
+
+  <hr class="gold">
+
+  <div class="box-dashed" style="text-align:center;">
+    <p style="font-size:1.8rem;">🚧</p>
+    <p style="color:var(--gold);font-weight:bold;font-size:1.1rem;">⚠️ UnDeR CoNsTrUcTiOn ⚠️</p>
+    <p style="font-size:0.88rem;margin-top:6px;">
+      <strong>Fan Art Gallery</strong> &amp; <strong>Sisqó Solo Corner</strong> coming SOON!!<br>
+      Check back every weekend — I update a lot!!
+    </p>
+    <p style="font-size:1.8rem;margin-top:8px;">🚧</p>
+  </div>
+
+  <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
+  <p style="text-align:center;color:#444;font-size:0.7rem;">
+    Made with 💛 in Toronto · Microsoft Notepad · Tables only · No frames!!
+  </p>
+</div>
+
+<!-- ====================================================== ABOUT -->
+<div class="section" id="about">
+
+  <h1 style="color:var(--gold-lt);" class="glow-gld">🎵 About Dru Hill 🎵</h1>
+  <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
+
+  <div class="box-gold">
+    <h2 style="color:var(--gold-lt);">📍 The Basics</h2>
+    <table style="width:100%;border-collapse:collapse;line-height:2.4;">
+      <tr><td style="color:var(--gold);font-weight:bold;width:38%;">Full Name:</td><td>Dru Hill</td></tr>
+      <tr><td style="color:var(--gold);font-weight:bold;">Origin:</td><td>Baltimore, Maryland 🇺🇸</td></tr>
+      <tr><td style="color:var(--gold);font-weight:bold;">Genre:</td><td>R&amp;B, Soul</td></tr>
+      <tr><td style="color:var(--gold);font-weight:bold;">Record Label:</td><td>Island Records / Def Jam</td></tr>
+      <tr><td style="color:var(--gold);font-weight:bold;">Active Since:</td><td>1992</td></tr>
+      <tr><td style="color:var(--gold);font-weight:bold;">Members:</td><td>Sisqó · Nokio · Jazz · Woody</td></tr>
+      <tr><td style="color:var(--gold);font-weight:bold;">Named After:</td><td>Druid Hill Park, Baltimore</td></tr>
+    </table>
+  </div>
+
+  <hr class="gold">
+
+  <div class="box-red">
+    <h2 style="color:var(--gold-lt);">📖 Their Story</h2>
+    <p>
+      Dru Hill formed in Baltimore, Maryland in 1992 when four friends — Sisqó, Nokio, Jazz, and Woody — came together
+      with a shared love of gospel, soul, and R&amp;B harmony. They named themselves after <strong>Druid Hill Park</strong>
+      in their hometown, and that local pride has always been part of who they are.
+    </p>
+    <p style="margin-top:10px;">
+      They broke onto the national scene in 1996 with their self-titled debut album, and <em>"Tell Me"</em> put them
+      on the map instantly. Their silky four-part harmonies and heartfelt lyrics set them apart from everyone else
+      in the R&amp;B game at the time. I remember hearing them for the first time and literally stopping everything I was doing!! 😭
+    </p>
+    <p style="margin-top:10px;">
+      In 1998 they dropped <em>Enter the Dru</em> — which in my humble opinion is a PERFECT album from start to finish!!
+      "How Deep Is Your Love," "These Are the Times," "We're Not Making Love No More"... every single song is a masterpiece!!
+    </p>
+  </div>
+
+  <hr class="red">
+
+  <div class="box-blue">
+    <h2 style="color:var(--gold-lt);">💿 Discography At A Glance</h2>
+    <ul style="list-style:none;padding:0;">
+      <li>🎵 <strong style="color:var(--gold-lt);">Dru Hill</strong> (1996) — debut album · "Tell Me" · "In My Bed" · "Never Make a Promise"</li>
+      <li>🎵 <strong style="color:var(--gold-lt);">Enter the Dru</strong> (1998) — <span style="color:var(--gold-lt);">MY FAVOURITE ALBUM OF ALL TIME!!</span> · "How Deep Is Your Love" · "These Are the Times"</li>
+      <li>🎵 <strong style="color:var(--gold-lt);">This Is Christmas</strong> (1998) — holiday album!! so good for December!!</li>
+    </ul>
+    <p style="margin-top:8px;font-size:0.82rem;">
+      👉 <a href="#" onclick="return nav('songs')">See full discography →</a>
+    </p>
+  </div>
+
+  <hr class="blue">
+
+  <div class="box-gold" style="text-align:center;">
+    <p style="font-size:1.05rem;color:var(--gold-lt);font-style:italic;" class="shimmer">
+      "Never make a promise you can't keep..."
+    </p>
+    <p style="font-size:0.78rem;color:var(--muted);margin-top:5px;">— Dru Hill, "Never Make a Promise" (1996)</p>
+  </div>
+
+  <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
+</div>
+
+<!-- ====================================================== MEMBERS -->
+<div class="section" id="members">
+
+  <h1 style="color:var(--gold-lt);" class="glow-gld">🎤 The Members 🎤</h1>
+  <p style="text-align:center;color:var(--muted);margin-bottom:4px;">
+    Four incredible voices · One legendary group
+  </p>
+  <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
+
+  <div class="member-grid">
+
+    <div class="member-card">
+      <div class="member-icon">👑</div>
+      <div class="member-name">Sisqó</div>
+      <div class="member-alias">Mark Andrews · Lead vocals</div>
+      <div class="member-bio">
+        The flashy frontman with the silver hair!! Sisqó's voice is unreal — that range!!
+        He writes most of their songs and brings SO much energy to everything.
+        He has solo projects too and honestly everything he touches is gold!! 💛
+      </div>
+    </div>
+
+    <div class="member-card">
+      <div class="member-icon">🎹</div>
+      <div class="member-name">Nokio</div>
+      <div class="member-alias">Tamir Ruffin · Producer / vocals</div>
+      <div class="member-bio">
+        The creative genius behind the scenes!! Nokio produces a lot of their tracks
+        and his ear for melody is incredible. He's also got a beautiful voice —
+        every Dru Hill harmony hits different because of him!! 🙌
+      </div>
+    </div>
+
+    <div class="member-card">
+      <div class="member-icon">🎶</div>
+      <div class="member-name">Jazz</div>
+      <div class="member-alias">Larry Anthony Jr. · Tenor</div>
+      <div class="member-bio">
+        Jazz brings the warmth to their sound!! His tenor voice is the thread that
+        holds all four harmonies together. When he sings those high notes in
+        "These Are the Times" I literally cannot cope!! 😭😭
+      </div>
+    </div>
+
+    <div class="member-card">
+      <div class="member-icon">🎸</div>
+      <div class="member-name">Woody</div>
+      <div class="member-alias">James Green · Bass vocals</div>
+      <div class="member-bio">
+        The foundation of the whole group!! Woody's bass voice gives Dru Hill
+        that deep, rich sound that makes their harmonies so distinctive.
+        You literally FEEL it in your chest!! He is so underrated tbh!! 🔥
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="gold">
+
+  <div class="box-red" style="text-align:center;">
+    <p style="font-size:1rem;">
+      Together these four voices create something that NO ONE else can replicate!!
+      Baltimore raised them right!! 🙏
+    </p>
+  </div>
+
+  <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
+</div>
+
+<!-- ====================================================== SONGS -->
+<div class="section" id="songs">
+
+  <h1 style="color:var(--gold-lt);" class="glow-gld">💿 Discography 💿</h1>
+  <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
+
+  <div class="album-block">
+    <div class="album-title">Dru Hill (1996) · Island Records</div>
+    <p style="font-size:0.82rem;color:var(--muted);margin:0 0 8px 10px;">
+      Their debut!! This album changed EVERYTHING for me personally!! 💛
+    </p>
+    <ul class="track-list">
+      <li><span class="track-num">01</span> Tell Me <span class="track-hit">HIT</span></li>
+      <li><span class="track-num">02</span> In My Bed <span class="track-hit">HIT</span></li>
+      <li><span class="track-num">03</span> Never Make a Promise <span class="track-hit">HIT</span></li>
+      <li><span class="track-num">04</span> 5 Steps <span class="track-hit">HIT</span></li>
+      <li><span class="track-num">05</span> Nowhere Without You</li>
+      <li><span class="track-num">06</span> We're Not Making Love No More (ft. Angie Stone) <span class="track-hit">HIT</span></li>
+      <li><span class="track-num">07</span> You Are Everything</li>
+      <li><span class="track-num">08</span> April Showers</li>
+      <li><span class="track-num">09</span> The Love We Had (Stays on My Mind)</li>
+      <li><span class="track-num">10</span> I Love You</li>
+      <li><span class="track-num">11</span> In My Bed (So So Def Remix ft. Jermaine Dupri) <span class="track-hit">HIT</span></li>
+    </ul>
+  </div>
+
+  <hr class="red">
+
+  <div class="album-block">
+    <div class="album-title">Enter the Dru (1998) · Island Records</div>
+    <p style="font-size:0.82rem;color:var(--gold-lt);margin:0 0 8px 10px;">
+      ⭐ MY ALL-TIME FAVOURITE ALBUM. I have listened to this 1000 times. Not exaggerating. ⭐
+    </p>
+    <ul class="track-list">
+      <li><span class="track-num">01</span> You Are My Everything (Intro)</li>
+      <li><span class="track-num">02</span> How Deep Is Your Love <span class="track-hit">HIT</span></li>
+      <li><span class="track-num">03</span> These Are the Times <span class="track-hit">HIT</span></li>
+      <li><span class="track-num">04</span> Beauty <span class="track-hit">HIT</span></li>
+      <li><span class="track-num">05</span> She Said</li>
+      <li><span class="track-num">06</span> I Should Be...</li>
+      <li><span class="track-num">07</span> I Love You (Reprise)</li>
+      <li><span class="track-num">08</span> What Are We Gonna Do</li>
+      <li><span class="track-num">09</span> She Wasn't Enough</li>
+      <li><span class="track-num">10</span> I'll Be There for You</li>
+      <li><span class="track-num">11</span> Enter the Dru</li>
+      <li><span class="track-num">12</span> How Deep Is Your Love (Remix ft. Redman) <span class="track-hit">HIT</span></li>
+    </ul>
+  </div>
+
+  <hr class="blue">
+
+  <div class="album-block">
+    <div class="album-title">This Is Christmas (1998) · Island Records</div>
+    <p style="font-size:0.82rem;color:var(--muted);margin:0 0 8px 10px;">
+      Perfect December listening!! Their voices on holiday songs are GORGEOUS!! 🎄
+    </p>
+    <ul class="track-list">
+      <li><span class="track-num">01</span> This Is Christmas</li>
+      <li><span class="track-num">02</span> Deck the Halls</li>
+      <li><span class="track-num">03</span> Silent Night</li>
+      <li><span class="track-num">04</span> O Holy Night <span class="track-hit">STUNNING</span></li>
+      <li><span class="track-num">05</span> All I Want for Christmas Is You (cover)</li>
+    </ul>
+  </div>
+
+  <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
+  <p style="text-align:center;font-size:0.8rem;color:var(--muted);">
+    ⭐ = Webmaster's personal fave &nbsp;·&nbsp; HIT = charted on Billboard R&amp;B charts
+  </p>
+</div>
+
+<!-- ====================================================== GALLERY -->
+<div class="section" id="gallery">
+
+  <h1 style="color:var(--gold-lt);" class="glow-gld">📸 Fan Gallery 📸</h1>
+  <p style="text-align:center;color:var(--muted);margin-bottom:6px;">
+    ⚠️ Photos may take a while on 56k — worth the wait tho!! ⚠️
+  </p>
+  <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
+
+  <div class="box-red">
+    <h2 style="color:var(--gold-lt);text-align:center;">🎤 Live &amp; In Concert!!</h2>
+    <div class="photo-grid">
+      <div class="photo-item">
+        <div class="photo-box" style="background:var(--red-dim);">🎤</div>
+        <div class="photo-cap">THEY PERFORMED IN TORONTO OMG</div>
+      </div>
+      <div class="photo-item">
+        <div class="photo-box" style="background:var(--blue-dk);">🎵</div>
+        <div class="photo-cap">Sisqó hitting those high notes!!</div>
+      </div>
+      <div class="photo-item">
+        <div class="photo-box" style="background:var(--red);">🙌</div>
+        <div class="photo-cap">THE CROWD WAS INSANE omg</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="red">
+
+  <div class="box-blue">
+    <h2 style="color:var(--gold-lt);text-align:center;">💿 Album Art &amp; Promos</h2>
+    <div class="photo-grid">
+      <div class="photo-item">
+        <div class="photo-box" style="background:var(--blue-dk);">🎵</div>
+        <div class="photo-cap">Dru Hill (1996) — debut!!</div>
+      </div>
+      <div class="photo-item">
+        <div class="photo-box" style="background:var(--red-dim);">💿</div>
+        <div class="photo-cap">Enter the Dru (1998) — perfection!!</div>
+      </div>
+      <div class="photo-item">
+        <div class="photo-box" style="background:var(--navy);">🎄</div>
+        <div class="photo-cap">This Is Christmas (1998)</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="gold">
+
+  <div class="box-gold">
+    <h2 style="color:var(--gold-lt);text-align:center;">🗞️ Magazine Clippings!!</h2>
+    <div class="photo-grid">
+      <div class="photo-item">
+        <div class="photo-box" style="background:var(--red);">📰</div>
+        <div class="photo-cap">VIBE Magazine cover Dec '98!!</div>
+      </div>
+      <div class="photo-item">
+        <div class="photo-box" style="background:var(--blue-dk);">📸</div>
+        <div class="photo-cap">Right On! spread — SO CUTE omg</div>
+      </div>
+      <div class="photo-item">
+        <div class="photo-box" style="background:var(--red-dim);">✂️</div>
+        <div class="photo-cap">my scrapbook page!! 💛 hand-decorated!!</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
+  <p style="text-align:center;font-size:0.78rem;color:var(--muted);">
+    More coming soon!! I have SO many magazine clippings still to scan!! 📷<br>
+    <span class="new-badge">COMING SOON!</span> Sisqó solo photoshoot scans!!
+  </p>
+</div>
+
+<!-- ====================================================== GUESTBOOK -->
+<div class="section" id="guestbook">
+
+  <h1 style="color:var(--gold-lt);" class="glow-gld">📖 GuestBook 📖</h1>
+  <p style="text-align:center;color:var(--muted);font-size:1rem;" class="pulse">
+    💛 Dru Hill fans unite!! Sign the book and let me know ur fave song!! 💛
+  </p>
+  <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
+
+  <div class="box-red">
+    <h2 style="color:var(--gold-lt);">✍️ Sign It!!</h2>
+    <form onsubmit="signGuestbook(event)">
+      <label>Ur Name: <span style="color:var(--gold-lt);">*</span></label>
+      <input type="text" id="gbName" placeholder="ur name or handle!!">
+      <label>Ur E-Mail (optional):</label>
+      <input type="email" id="gbEmail" placeholder="ur@email.com">
+      <label>Ur Fave Dru Hill Song:</label>
+      <input type="text" id="gbSong" placeholder="mine is 'How Deep Is Your Love' obviously!!">
+      <label>Ur Location:</label>
+      <input type="text" id="gbLoc" placeholder="Where r u from??">
+      <label>Ur Message: <span style="color:var(--gold-lt);">*</span></label>
+      <textarea id="gbMsg" rows="4" placeholder="Tell me ur fave Dru Hill moment!! 😭💛"></textarea>
+      <div style="text-align:center;margin-top:12px;">
+        <button type="submit">📝 Sign It!!</button>
+      </div>
+    </form>
+  </div>
+
+  <hr class="gold">
+
+  <h2 style="color:var(--gold-lt);">💌 Recent Entries!!</h2>
+  <div id="gbEntries">
+
+    <div class="guest-entry">
+      <span class="guest-name">DrUhIlLfAn_BaLtImOrE</span>
+      <span class="guest-date"> · Dec 30, 1998 · Baltimore, MD</span>
+      <p class="guest-body">OMG A FELLOW DRU HILL FAN PAGE!! From their hometown here and I can confirm they are LITERALLY the pride of Baltimore!! How Deep Is Your Love makes me cry every time!! Amazing site!! 💛🔵❤️</p>
+    </div>
+
+    <div class="guest-entry">
+      <span class="guest-name">NeverMakeAPromise_99</span>
+      <span class="guest-date"> · Dec 28, 1998 · New York, NY</span>
+      <p class="guest-body">Found u thru the R&B WebRing!! This is the best Dru Hill fan page I've seen on Geocities!! "5 Steps" is my fave I could listen to it on repeat forever!! Keep up the great work!! 🎵</p>
+    </div>
+
+    <div class="guest-entry">
+      <span class="guest-name">SaRaH_UrBff</span>
+      <span class="guest-date"> · Dec 25, 1998 · Toronto, Canada</span>
+      <p class="guest-body">MELANIE ITS UR BFF!! Ok u KNOW I love Dru Hill too!! Remember when we saw them on TRL?? I literally screamed!! Merry Christmas!! call me l8er!! 📞💛</p>
+    </div>
+
+    <div class="guest-entry">
+      <span class="guest-name">RnB_4eva_Keisha</span>
+      <span class="guest-date"> · Dec 22, 1998 · Atlanta, GA</span>
+      <p class="guest-body">These Are the Times is THE SONG OF 1998 period. I played it at my school dance and everyone lost their minds!! Great site!! Adding u to my links page!!</p>
+    </div>
+
+    <div class="guest-entry">
+      <span class="guest-name">BaltimoreKid97</span>
+      <span class="guest-date"> · Dec 18, 1998 · Baltimore, MD</span>
+      <p class="guest-body">I actually went to school near Druid Hill Park!! Seeing these guys blow up nationally has been surreal. Woody's bass voice is criminally underrated. Great page!!</p>
+    </div>
+
+  </div>
+
+  <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
+  <p style="text-align:center;color:var(--muted);font-size:0.78rem;margin-bottom:14px;">
+    Total entries: <strong style="color:var(--gold-lt);">214</strong> &nbsp;·&nbsp; Powered by GBook.com™ (demo only lol)
+  </p>
+
+  <hr class="gold">
+
+  <!-- Awards -->
+  <h2 style="color:var(--gold-lt);text-align:center;">🏆 Site Awards 🏆</h2>
+  <p style="text-align:center;color:var(--muted);font-size:0.82rem;margin-bottom:10px;">
+    Other sites have given me these awards!! I am SO honoured!! 💛
+  </p>
+  <div class="awards-wrap">
+    <div class="award-badge">
+      <div class="award-icon">🌟</div>
+      <div class="award-title">Best R&amp;B Fan Site 1998</div>
+      <div class="award-from">RnBAwards.net · Dec '98</div>
+    </div>
+    <div class="award-badge">
+      <div class="award-icon">💎</div>
+      <div class="award-title">Diamond Site of the Week</div>
+      <div class="award-from">WebAwards99.com · Nov '98</div>
+    </div>
+    <div class="award-badge">
+      <div class="award-icon">🎵</div>
+      <div class="award-title">Top Music Fan Page</div>
+      <div class="award-from">MusicSites.org · Oct '98</div>
+    </div>
+    <div class="award-badge">
+      <div class="award-icon">⭐</div>
+      <div class="award-title">5 Star Fan Page</div>
+      <div class="award-from">FiveStarSites.org · Sep '98</div>
+    </div>
+  </div>
+
+  <hr class="blue">
+
+  <!-- WebRing -->
+  <div class="webring">
+    <h2 style="color:var(--gold-lt);">🌐 The R&amp;B Fan Sites WebRing 🌐</h2>
+    <p style="font-size:0.85rem;margin:8px 0;">Proud member since August 1997 · Ring ID: #8821 · 412 members</p>
+    <div style="margin:10px 0;">
+      <a href="#" style="margin:0 12px;">⬅️ Prev</a>
+      <a href="#" style="margin:0 12px;">🏠 Hub</a>
+      <a href="#" style="margin:0 12px;">🎲 Random</a>
+      <a href="#" style="margin:0 12px;">➡️ Next</a>
+    </div>
+  </div>
+
+  <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
+</div>
+
+<!-- Footer -->
+<div class="footer-bar">
+  <p style="color:var(--gold);">Dru Hill Fan Page © 1997–1999 · By MeLaNiE · Toronto, Canada 🍁</p>
+  <p style="font-size:0.7rem;margin-top:4px;">
+    <span class="blink">♪</span> Made with 💛 for Sisqó · Nokio · Jazz · Woody <span class="blink">♫</span>
+  </p>
+  <p style="font-size:0.67rem;color:#333;margin-top:4px;">
+    No frames · Tables only · IE 4.0 &amp; Netscape 4.0 · 800×600
+  </p>
+</div>
+
+</div><!-- /wrapper -->
+
+<script>
+  // ── Navigation ───────────────────────────────────────
+  function nav(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-bar a').forEach(a => a.classList.remove('active'));
+    document.getElementById(name).classList.add('active');
+    const el = document.getElementById('nav-' + name);
+    if (el) el.classList.add('active');
+    window.scrollTo(0, 0);
+    return false;
+  }
+
+  // ── Odometer ─────────────────────────────────────────
+  const ODO_TARGET = 14873;
+  const DIGIT_H = 44;
+  const DIGITS = 6;
+
+  function buildOdometer() {
+    const wrap = document.getElementById('odometer');
+    wrap.innerHTML = '';
+    for (let i = 0; i < DIGITS; i++) {
+      if (i === 2) {
+        const sep = document.createElement('div');
+        sep.className = 'odo-sep';
+        sep.textContent = ',';
+        wrap.appendChild(sep);
+      }
+      const col = document.createElement('div');
+      col.className = 'odo-digit';
+      const strip = document.createElement('div');
+      strip.className = 'odo-strip';
+      strip.id = 'od' + i;
+      for (let d = 0; d <= 9; d++) {
+        const num = document.createElement('div');
+        num.className = 'odo-num';
+        num.textContent = d;
+        strip.appendChild(num);
+      }
+      col.appendChild(strip);
+      wrap.appendChild(col);
+    }
+  }
+
+  function spinOdometer(target) {
+    const str = String(target).padStart(DIGITS, '0').split('');
+    str.forEach((d, i) => {
+      const strip = document.getElementById('od' + i);
+      if (!strip) return;
+      const digit = parseInt(d);
+      strip.style.transition = 'none';
+      strip.style.transform  = `translateY(-${9 * DIGIT_H}px)`;
+      setTimeout(() => {
+        strip.style.transition = `transform ${1.2 + i * 0.18}s cubic-bezier(0.25,0.46,0.45,0.94)`;
+        strip.style.transform  = `translateY(-${digit * DIGIT_H}px)`;
+      }, 80 + i * 120);
+    });
+  }
+
+  buildOdometer();
+  setTimeout(() => spinOdometer(ODO_TARGET), 600);
+
+  // ── Stars ─────────────────────────────────────────────
+  const starCanvas = document.getElementById('starsCanvas');
+  const starCtx = starCanvas.getContext('2d');
+
+  function drawStars() {
+    starCanvas.width  = window.innerWidth;
+    starCanvas.height = window.innerHeight;
+    for (let i = 0; i < 200; i++) {
+      const x = Math.random() * starCanvas.width;
+      const y = Math.random() * starCanvas.height;
+      const r = Math.random() * 1.4 + 0.2;
+      const gold = Math.random() < 0.12;
+      const a = Math.random() * 0.5 + 0.4;
+      starCtx.beginPath();
+      starCtx.arc(x, y, r, 0, Math.PI * 2);
+      starCtx.fillStyle = gold ? `rgba(251,191,36,${a})` : `rgba(255,255,255,${a})`;
+      starCtx.fill();
+    }
+  }
+  drawStars();
+  setInterval(drawStars, 4000);
+  window.addEventListener('resize', drawStars);
+
+  // ── Snow ──────────────────────────────────────────────
+  const snowCanvas = document.getElementById('snowCanvas');
+  const snowCtx = snowCanvas.getContext('2d');
+  const flakes = [];
+
+  function resizeSnow() {
+    snowCanvas.width  = window.innerWidth;
+    snowCanvas.height = window.innerHeight;
+  }
+  resizeSnow();
+  window.addEventListener('resize', resizeSnow);
+
+  for (let i = 0; i < 120; i++) {
+    flakes.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 2.5 + 0.8,
+      speed: Math.random() * 1.1 + 0.4,
+      drift: Math.random() * 0.5 - 0.25,
+      opacity: Math.random() * 0.45 + 0.35
+    });
+  }
+
+  function animateSnow() {
+    snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+    flakes.forEach(f => {
+      snowCtx.beginPath();
+      snowCtx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      snowCtx.fillStyle = `rgba(255,255,255,${f.opacity})`;
+      snowCtx.fill();
+      f.y += f.speed;
+      f.x += f.drift;
+      if (f.y > snowCanvas.height + 4) { f.y = -4; f.x = Math.random() * snowCanvas.width; }
+      if (f.x > snowCanvas.width)  f.x = 0;
+      if (f.x < 0) f.x = snowCanvas.width;
+    });
+    requestAnimationFrame(animateSnow);
+  }
+  animateSnow();
+
+  // ── Guestbook ─────────────────────────────────────────
+  function signGuestbook(e) {
+    e.preventDefault();
+    const name = document.getElementById('gbName').value.trim();
+    const msg  = document.getElementById('gbMsg').value.trim();
+    if (!name || !msg) { alert('Plz fill in ur name and message!!'); return; }
+    const entry = document.createElement('div');
+    entry.className = 'guest-entry';
+    const date = new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    const loc  = document.getElementById('gbLoc').value.trim() || 'Unknown';
+    const song = document.getElementById('gbSong').value.trim();
+    entry.innerHTML = `
+      <span class="guest-name">${name.replace(/</g,'&lt;')}</span>
+      <span class="guest-date"> · ${date} · ${loc}</span>
+      ${song ? `<p style="font-size:0.78rem;color:var(--gold);margin-top:3px;">Fave song: ${song.replace(/</g,'&lt;')}</p>` : ''}
+      <p class="guest-body">${msg.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
+    document.getElementById('gbEntries').prepend(entry);
+    ['gbName','gbEmail','gbSong','gbLoc','gbMsg'].forEach(id => document.getElementById(id).value = '');
+    alert('OMG THANK U!! Dru Hill fans are literally the best people on the internet!! 💛💛💛');
+  }
+</script>
+</body>
+</html>
