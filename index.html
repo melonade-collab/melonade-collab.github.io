@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Portfolio</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f7f7f5;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      padding: 56px 40px 48px;
+      max-width: 800px;
+      margin: 0 auto;
+      border-bottom: 1px solid #e8e8e4;
+    }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 14px;
+    }
+
+    .site-name {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      color: #111;
+      line-height: 1.05;
+      margin-bottom: 14px;
+    }
+
+    .site-desc {
+      font-size: 1rem;
+      color: #777;
+      line-height: 1.7;
+      max-width: 480px;
+    }
+
+    /* ── Main ── */
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 56px 40px 80px;
+    }
+
+    .section-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 28px;
+    }
+
+    /* ── Project cards ── */
+    .projects {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .project-card {
+      background: #fff;
+      border: 1px solid #e8e8e4;
+      border-radius: 16px;
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .project-card:hover {
+      box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+      border-color: #d0d0cc;
+    }
+
+    .project-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: #e8f5e9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .project-icon svg { height: 52px; width: auto; }
+
+    .project-info { flex: 1; min-width: 0; }
+
+    .project-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #81c784;
+      margin-bottom: 5px;
+    }
+
+    .project-name {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #111;
+      letter-spacing: -0.3px;
+      margin-bottom: 5px;
+    }
+
+    .project-desc {
+      font-size: 0.85rem;
+      color: #888;
+      line-height: 1.5;
+    }
+
+    .project-arrow {
+      font-size: 1.1rem;
+      color: #ccc;
+      flex-shrink: 0;
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .project-card:hover .project-arrow {
+      color: #2e7d32;
+      transform: translateX(3px);
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      border-top: 1px solid #e8e8e4;
+      padding: 28px 40px;
+      max-width: 800px;
+      margin: 0 auto;
+      font-size: 0.78rem;
+      color: #bbb;
+    }
+
+    @media (max-width: 600px) {
+      .site-header, main, .site-footer { padding-left: 20px; padding-right: 20px; }
+      .site-header { padding-top: 40px; padding-bottom: 36px; }
+      .project-card { padding: 20px; gap: 16px; }
+      .project-icon { width: 52px; height: 52px; border-radius: 12px; }
+      .project-icon svg { height: 42px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <p class="eyebrow">Portfolio</p>
+    <h1 class="site-name">My Portfolio</h1>
+    <p class="site-desc">A collection of prototypes and experiments — ideas brought to life in the browser.</p>
+  </header>
+
+  <main>
+    <p class="section-title">Prototypes</p>
+
+    <div class="projects">
+
+      <a href="onboarding.html" class="project-card">
+        <div class="project-icon">
+          <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="lg" x1="20%" y1="8%" x2="80%" y2="92%">
+                <stop offset="0%" stop-color="#76c47a"/>
+                <stop offset="100%" stop-color="#2a7d32"/>
+              </linearGradient>
+            </defs>
+            <path d="M100 168 C100 190 100 215 100 232" stroke="#5d4037" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <path fill="url(#lg)" d="M100,168 C80,168 56,160 40,146 C24,132 18,109 22,87 C26,65 40,47 58,37 C72,29 86,25 100,25 C114,25 128,29 142,37 C160,47 174,65 178,87 C182,109 176,132 160,146 C144,160 120,168 100,168 Z"/>
+            <path d="M 38,146 Q 72,142 90,149 Q 72,160 40,164 Z" fill="#e8f5e9"/>
+            <path d="M 22,90  Q 62,85  89,93  Q 62,103 20,108 Z" fill="#e8f5e9"/>
+            <path d="M 30,50  Q 64,46  88,53  Q 64,63  28,68  Z" fill="#e8f5e9"/>
+            <path d="M 162,146 Q 128,142 110,149 Q 128,160 160,164 Z" fill="#e8f5e9"/>
+            <path d="M 178,90  Q 138,85  111,93  Q 138,103 180,108 Z" fill="#e8f5e9"/>
+            <path d="M 170,50  Q 136,46  112,53  Q 136,63  172,68  Z" fill="#e8f5e9"/>
+            <ellipse cx="80"  cy="125" rx="13" ry="9" fill="#e8f5e9"/>
+            <ellipse cx="120" cy="125" rx="13" ry="9" fill="#e8f5e9"/>
+          </svg>
+        </div>
+        <div class="project-info">
+          <p class="project-tag">Plant care app</p>
+          <p class="project-name">Monstera Plant Tracker</p>
+          <p class="project-desc">Onboarding, care card, watering tracker, plant journal, and live weather — all in one.</p>
+        </div>
+        <span class="project-arrow">→</span>
+      </a>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    Built in the browser · 2026
+  </footer>
+
+</body>
+</html>
