@@ -133,6 +133,14 @@
       box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
     }
 
+    select:required:invalid {
+      color: #999;
+    }
+
+    select option {
+      color: #111;
+    }
+
     select.invalid {
       border-color: #e74c3c;
       box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15);
@@ -144,6 +152,24 @@
       color: #aaa;
       margin-left: 4px;
     }
+
+    .sentiment {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+
+    .sentiment.visible { display: flex; }
+
+    .sentiment.happy  { background: #e8f5e9; color: #2e7d32; }
+    .sentiment.angry  { background: #fdecea; color: #c0392b; }
+    .sentiment.neutral { background: #f5f5f5; color: #777; }
+
+    .sentiment-emoji { font-size: 1rem; }
 
     button {
       width: 100%;
@@ -196,10 +222,10 @@
   </style>
 </head>
 <body>
-  <div class="back-link"><a href="monstera.html">← Monstera</a></div>
+  <div class="back-link" style="display: flex; justify-content: space-between;"><a href="monstera.html">← Monstera</a><a href="index.html">← Back to Portfolio</a></div>
   <div class="card">
     <h1>Send feedback</h1>
-    <p class="subtitle">We'd love to hear from you.</p>
+    <p class="subtitle">For demo purposes only. Feedback is not actually being collected or stored.</p>
 
     <form id="feedbackForm" novalidate>
       <div class="field">
@@ -208,8 +234,8 @@
       </div>
 
       <div class="field">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        <label for="email">Email <span class="optional-hint">(optional)</span></label>
+        <input type="email" id="email" name="email" placeholder="you@example.com">
         <span class="field-error" id="emailError">Please enter a valid email address.</span>
       </div>
 
@@ -222,7 +248,7 @@
       <div class="field">
         <label for="city">City</label>
         <select id="city" name="city" required>
-          <option value="" disabled selected>Select your city</option>
+          <option value="" disabled selected>Select your closest major city</option>
           <option>Brampton</option>
           <option>Calgary</option>
           <option>Edmonton</option>
@@ -268,14 +294,24 @@
       </div>
 
       <div class="field">
-        <label for="postal">Postal code</label>
-        <input type="text" id="postal" name="postal" placeholder="A1A 1A1" maxlength="7" autocomplete="postal-code">
+        <label for="postal">Postal code <span class="optional-hint">(optional)</span></label>
+        <input type="text" id="postal" name="postal" placeholder="A1A 1A1" maxlength="7" autocomplete="postal-code" inputmode="text">
         <span class="field-error" id="postalError">Please enter a valid postal code (e.g. A1A 1A1).</span>
       </div>
 
       <div class="field">
-        <label for="message">Message <span class="optional-hint">(optional)</span></label>
-        <textarea id="message" name="message" placeholder="Tell us what you think..."></textarea>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+          <label for="message" style="margin-bottom: 0;">Message</label>
+          <div class="sentiment" id="sentiment" style="margin-bottom: 0;">
+            <span class="sentiment-emoji" id="sentimentEmoji"></span>
+            <span id="sentimentText"></span>
+          </div>
+        </div>
+        <textarea id="message" name="message" placeholder="Tell us what you think..." required></textarea>
+        <div id="messageSummary" style="display: none; margin-top: 8px; padding: 10px 14px; background: #f5f5f5; border-radius: 6px; font-size: 0.8rem; color: #666; line-height: 1.5;">
+          <span style="font-weight: 600; color: #444; display: block; margin-bottom: 2px;">Summary</span>
+          <span id="messageSummaryText"></span>
+        </div>
       </div>
 
       <button type="submit">Submit feedback</button>
@@ -288,6 +324,122 @@
   </div>
 
   <script>
+    // Sentiment analysis
+    const positiveRoots = ['love','like','great','excellent','amaz','wonder','fantast','good','happy','happi','pleas','satisf','help','awesom','brilliant','perfect','thank','appreciat','enjoy','impress','recommend','easy','easi','useful','nice','best','friend','clear','smooth','delight','glad','excit','top','outstand','superb','incredibl','stellar','thrill','valued','brilliant','seamless','intuitive'];
+    const negativeRoots = ['hate','hating','garbage','crap','trash','junk','rubbish','suck','terrible','awful','bad','horribl','worst','angr','frustrat','disappoint','useless','broken','wrong','problem','complaint','waste','poor','pathetic','disgust','annoy','confus','difficult','hard','fail','slow','crash','unhappy','upset','ridicul','unacceptable','worse','dreadful','nightmare','disaster','mess','worthless','pointless','stupid','ugly','buggy','glitch','awful','painful','terrible','horrif','dreadful'];
+
+    function analyseSentiment(text) {
+      const words = text.toLowerCase().match(/\b\w+\b/g) || [];
+      let score = 0;
+      words.forEach(w => {
+        if (positiveRoots.some(r => w.startsWith(r))) score++;
+        if (negativeRoots.some(r => w.startsWith(r))) score--;
+      });
+      if (score > 0) return 'happy';
+      if (score < 0) return 'angry';
+      return 'neutral';
+    }
+
+    const sentimentEl = document.getElementById('sentiment');
+    const sentimentEmoji = document.getElementById('sentimentEmoji');
+    const sentimentText = document.getElementById('sentimentText');
+    const sentimentLabels = {
+      happy:   { emoji: '😊', text: 'This message sounds positive' },
+      angry:   { emoji: '😠', text: 'This message sounds negative' },
+      neutral: { emoji: '😐', text: 'This message sounds neutral' }
+    };
+
+    const stopWords = new Set(['i','a','an','the','and','or','but','in','on','at','to','for','of','with','is','it','this','that','was','be','are','have','has','my','me','we','you','your','they','so','as','do','did','not','no','its','about','just','had','from','by','up','what','all','out','if','he','she','his','her','their','our','there','been','get','got','can','will','would','could','should','very','more','also','than','then','when','which','who','how','were','re','ve','ll','don','t','s']);
+
+    function summarise(text) {
+      const sentences = text.match(/[^.!?]+[.!?]*/g) || [text];
+      if (sentences.length <= 1) return sentences[0].trim();
+      const words = text.toLowerCase().match(/\b\w+\b/g) || [];
+      const freq = {};
+      words.forEach(w => { if (!stopWords.has(w)) freq[w] = (freq[w] || 0) + 1; });
+      const scored = sentences.map(s => {
+        const sw = s.toLowerCase().match(/\b\w+\b/g) || [];
+        const score = sw.reduce((acc, w) => acc + (freq[w] || 0), 0);
+        return { s: s.trim(), score };
+      });
+      return scored.sort((a, b) => b.score - a.score)[0].s;
+    }
+
+    function buildFormSummary() {
+      const name     = document.getElementById('name').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const phone    = document.getElementById('phone').value.trim();
+      const city     = document.getElementById('city').value;
+      const province = document.getElementById('province').value;
+      const postal   = document.getElementById('postal').value.trim();
+      const message  = document.getElementById('message').value.trim();
+
+      if (!name && !city && !message) {
+        document.getElementById('messageSummary').style.display = 'none';
+        return;
+      }
+
+      const parts = [];
+      if (name) parts.push(name);
+      if (city && province) parts.push(`from ${city}, ${province}`);
+      else if (city) parts.push(`from ${city}`);
+      if (postal) parts.push(`(${postal})`);
+
+      let line = parts.join(' ');
+      if (message) line += ` shared the following feedback: "${summarise(message)}"`;
+      else line += ' started filling out the form but left no message.';
+
+      if (email && phone) line += ` They can be reached at ${email} or ${phone}.`;
+      else if (email) line += ` They can be reached at ${email}.`;
+      else if (phone) line += ` They can be reached at ${phone}.`;
+
+      document.getElementById('messageSummaryText').textContent = line;
+      document.getElementById('messageSummary').style.display = 'block';
+    }
+
+    document.getElementById('message').addEventListener('input', function () {
+      const val = this.value.trim();
+      if (!val) {
+        sentimentEl.className = 'sentiment';
+      } else {
+        const result = analyseSentiment(val);
+        const label = sentimentLabels[result];
+        sentimentEmoji.textContent = label.emoji;
+        sentimentText.textContent = label.text;
+        sentimentEl.className = 'sentiment visible ' + result;
+      }
+      buildFormSummary();
+    });
+
+    ['name', 'email', 'phone', 'city', 'province', 'postal'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', buildFormSummary);
+    });
+
+    // City → Province auto-select
+    const cityToProvince = {
+      'Brampton': 'ON', 'Hamilton': 'ON', 'London': 'ON', 'Mississauga': 'ON',
+      'Ottawa': 'ON', 'Sudbury': 'ON', 'Thunder Bay': 'ON', 'Toronto': 'ON', 'Windsor': 'ON',
+      'Calgary': 'AB', 'Edmonton': 'AB',
+      'Vancouver': 'BC', 'Victoria': 'BC', 'Kelowna': 'BC',
+      'Winnipeg': 'MB',
+      'Moncton': 'NB',
+      'St. John\'s': 'NL',
+      'Halifax': 'NS',
+      'Laval': 'QC', 'Montreal': 'QC', 'Quebec City': 'QC',
+      'Regina': 'SK', 'Saskatoon': 'SK'
+    };
+
+    document.getElementById('city').addEventListener('change', function () {
+      const province = cityToProvince[this.value];
+      if (province) {
+        const provinceSelect = document.getElementById('province');
+        provinceSelect.value = province;
+        provinceSelect.classList.remove('invalid');
+        document.getElementById('provinceError').classList.remove('visible');
+      }
+    });
+
     // Email
     const emailInput = document.getElementById('email');
     const emailError = document.getElementById('emailError');
@@ -378,13 +530,14 @@
 
       const name = document.getElementById('name').value.trim();
       const email = emailInput.value.trim();
+      const message = document.getElementById('message').value.trim();
 
-      if (!name || !email) {
+      if (!name || !message) {
         alert('Please fill in all required fields.');
         return;
       }
 
-      if (!isValidEmail(email)) {
+      if (email && !isValidEmail(email)) {
         emailInput.classList.add('invalid');
         emailError.classList.add('visible');
         emailInput.focus();

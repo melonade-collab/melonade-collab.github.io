@@ -21,6 +21,14 @@
       padding: 24px;
     }
 
+    .cards-row {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      width: 100%;
+      max-width: 712px;
+    }
+
     .card {
       background: #fff;
       border-radius: 20px;
@@ -28,6 +36,71 @@
       width: 100%;
       max-width: 340px;
       overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .add-plant-card {
+      width: 340px;
+      max-width: 340px;
+      flex-shrink: 0;
+      border-radius: 20px;
+      border: 2px dashed #b2d8b2;
+      background: rgba(255,255,255,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 40px 24px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      text-decoration: none;
+      min-height: 200px;
+    }
+
+    .add-plant-card:hover {
+      background: rgba(255,255,255,0.8);
+      border-color: #66bb6a;
+    }
+
+    .add-plant-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #e8f5e9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      color: #2e7d32;
+      transition: background 0.2s;
+    }
+
+    .add-plant-card:hover .add-plant-icon {
+      background: #c8e6c9;
+    }
+
+    .add-plant-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #4caf50;
+    }
+
+    .add-plant-hint {
+      font-size: 0.75rem;
+      color: #9e9e9e;
+      text-align: center;
+    }
+
+    @media (max-width: 720px) {
+      .cards-row {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .add-plant-card {
+        max-width: 100%;
+      }
     }
 
     .plant-image {
@@ -53,6 +126,14 @@
 
     .card-body {
       padding: 22px 24px 22px;
+    }
+
+    .greeting {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #81c784;
+      margin-bottom: 10px;
+      letter-spacing: 0.1px;
     }
 
     .plant-name {
@@ -210,6 +291,7 @@
   </style>
 </head>
 <body>
+  <div class="cards-row">
   <div class="card">
 
     <div class="plant-image">
@@ -308,6 +390,7 @@
     </div>
 
     <div class="card-body">
+      <div class="greeting" id="greeting"></div>
       <div class="plant-name">Monstera</div>
       <div class="plant-species">Monstera deliciosa</div>
 
@@ -368,7 +451,6 @@
       <div class="weather-widget" id="weatherWidget">
         <span class="weather-error">Loading weather…</span>
       </div>
-
       <!-- Action buttons -->
       <div class="action-buttons">
         <button class="action-btn" onclick="location.href='todo.html'">📓 Journal</button>
@@ -376,10 +458,18 @@
       </div>
 
       <div style="display:flex;justify-content:space-between;margin-top:14px;">
-        <a href="onboarding.html" class="feedback-link" style="margin-top:0;">Change my profile</a>
+        <a href="onboarding.html?screen=2" class="feedback-link" style="margin-top:0;">Change my profile</a>
         <a href="feedback.html" class="feedback-link" style="margin-top:0;">Send feedback</a>
       </div>
     </div>
+  </div>
+
+  <a href="onboarding.html?screen=1" class="add-plant-card">
+    <div class="add-plant-icon">+</div>
+    <div class="add-plant-label">Add a plant</div>
+    <div class="add-plant-hint">Track care for another plant in your collection. Only visible if you told us you like plants.</div>
+  </a>
+
   </div>
 
   <script>
@@ -435,6 +525,17 @@
     const city = cities[cityName] || cities['Toronto'];
     const { lat, lon, prov, tz } = city;
 
+    if (localStorage.getItem('plant-love') === 'melanie') {
+      document.querySelector('.add-plant-card').style.display = 'none';
+    }
+
+    const userName = localStorage.getItem('plant-user-name');
+    if (userName) {
+      const hour = parseInt(new Intl.DateTimeFormat('en-CA', { hour: 'numeric', hour12: false, timeZone: tz }).format(new Date()), 10);
+      const period = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
+      document.getElementById('greeting').textContent = `Good ${period}, ${userName}.`;
+    }
+
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode&temperature_unit=celsius&timezone=${encodeURIComponent(tz)}`)
       .then(r => r.json())
       .then(data => {
@@ -450,6 +551,20 @@
           </div>
           <div class="weather-location">${cityName}, ${prov}</div>
         `;
+
+        const isSunny = [0, 1].includes(code);
+        const isHot = temp >= 28;
+        const isCloudyOrRainy = [2, 3, 45, 48, 51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(code);
+
+        let tip = '';
+        if (isSunny || isHot) {
+          tip = `<div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.07); font-size:0.72rem; color:#795548; line-height:1.5;">☀️ Extra sunlight and hot weather may dry out your plant faster. Check your water levels.</div>`;
+        } else if (isCloudyOrRainy) {
+          tip = `<div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.07); font-size:0.72rem; color:#2e7d32; line-height:1.5;">🌿 It's a great day for indoor plant care.</div>`;
+        }
+
+        if (tip) widget.style.flexWrap = 'wrap';
+        widget.innerHTML += tip;
       })
       .catch(() => {
         widget.innerHTML = '<span class="weather-error">Weather unavailable</span>';

@@ -660,6 +660,9 @@
     document.getElementById('screens').style.transform = `translateX(-${i * (100 / 3)}%)`;
   }
 
+  const startScreen = new URLSearchParams(location.search).get('screen');
+  if (startScreen !== null) goTo(parseInt(startScreen, 10));
+
   function togglePlant(card) {
     // Monstera is the only selectable plant; keep it always selected
     card.classList.add('selected');
@@ -668,8 +671,10 @@
   function finish() {
     const name = document.getElementById('userName').value.trim() || 'Plant parent';
     const city = document.getElementById('userCity').value || 'Toronto';
+    const plantLove = document.getElementById('plantLove').value;
     localStorage.setItem('plant-user-name', name);
     localStorage.setItem('plant-city', city);
+    localStorage.setItem('plant-love', plantLove);
     location.href = 'monstera.html';
   }
 </script>
