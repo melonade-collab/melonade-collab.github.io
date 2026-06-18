@@ -431,6 +431,12 @@
 
     function toTitleCase(s) { return s.replace(/\b\w/g, c => c.toUpperCase()); }
 
+    document.getElementById('name').addEventListener('input', function () {
+      const pos = this.selectionStart;
+      const titled = toTitleCase(this.value);
+      if (titled !== this.value) { this.value = titled; this.setSelectionRange(pos, pos); }
+    });
+
     function buildFormSummary() {
       const name     = toTitleCase(document.getElementById('name').value.trim());
       const email    = document.getElementById('email').value.trim();
@@ -449,7 +455,6 @@
       parts.push(name || 'Someone');
       if (city && province) parts.push(`from ${city}, ${province}`);
       else if (city) parts.push(`from ${city}`);
-      if (postal) parts.push(`(${postal})`);
 
       let line = parts.join(' ');
       if (message) {
