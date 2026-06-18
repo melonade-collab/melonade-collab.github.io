@@ -29,19 +29,6 @@
       padding: 32px 0 28px;
     }
 
-    .back-link {
-      font-size: 0.8rem;
-      color: #94a3b8;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      margin-bottom: 18px;
-      transition: color 0.15s;
-    }
-
-    .back-link:hover { color: #4361ee; }
-
     .header-row {
       display: flex;
       align-items: flex-end;
@@ -358,7 +345,6 @@
 
   <div class="page-header">
     <div class="header-inner">
-      <a href="index.html" class="back-link">← My portfolio</a>
       <div class="header-row">
         <div>
           <h1>RICE <span>score</span> calculator</h1>
@@ -561,5 +547,6 @@
 
   render();
 </script>
+  <a href="index.html" style="position:fixed;bottom:12px;right:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
 </body>
 </html>
