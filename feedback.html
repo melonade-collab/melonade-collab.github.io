@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f0f5f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .back-link {
+      width: 100%;
+      max-width: 480px;
+      margin-bottom: 12px;
+    }
+
+    .back-link a {
+      font-size: 0.85rem;
+      color: #2e7d32;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .back-link a:hover { color: #1b5e20; }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1b5e20;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 28px;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #2e7d32;
+      margin-bottom: 6px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #a5d6a7;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: #111;
+      transition: border-color 0.15s;
+      outline: none;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #2e7d32;
+      box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+    }
+
+    input.invalid {
+      border-color: #e74c3c;
+      box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15);
+    }
+
+    .field-error {
+      display: none;
+      font-size: 0.78rem;
+      color: #e74c3c;
+      margin-top: 5px;
+    }
+
+    .field-error.visible {
+      display: block;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #a5d6a7;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: #111;
+      background: #fff;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    select:focus {
+      border-color: #2e7d32;
+      box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+    }
+
+    select.invalid {
+      border-color: #e74c3c;
+      box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15);
+    }
+
+    .optional-hint {
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: #aaa;
+      margin-left: 4px;
+    }
+
+    button {
+      width: 100%;
+      padding: 11px;
+      background: #2e7d32;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 4px;
+    }
+
+    button:hover {
+      background: #1b5e20;
+    }
+
+    button:active {
+      background: #145214;
+    }
+
+    .success {
+      display: none;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        align-items: flex-start;
+        padding: 16px;
+      }
+
+      .card {
+        padding: 28px 20px;
+      }
+
+      input,
+      textarea,
+      select {
+        font-size: 1rem;
+        padding: 12px 14px;
+      }
+
+      button {
+        font-size: 1rem;
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="back-link"><a href="monstera.html">← Monstera</a></div>
+  <div class="card">
+    <h1>Send feedback</h1>
+    <p class="subtitle">We'd love to hear from you.</p>
+
+    <form id="feedbackForm" novalidate>
+      <div class="field">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Your name" required>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        <span class="field-error" id="emailError">Please enter a valid email address.</span>
+      </div>
+
+      <div class="field">
+        <label for="phone">Phone number</label>
+        <input type="tel" id="phone" name="phone" placeholder="(416) 555-1234" maxlength="14">
+        <span class="field-error" id="phoneError">Please enter a valid 10-digit phone number.</span>
+      </div>
+
+      <div class="field">
+        <label for="city">City</label>
+        <select id="city" name="city" required>
+          <option value="" disabled selected>Select your city</option>
+          <option>Brampton</option>
+          <option>Calgary</option>
+          <option>Edmonton</option>
+          <option>Halifax</option>
+          <option>Hamilton</option>
+          <option>Kelowna</option>
+          <option>Laval</option>
+          <option>London</option>
+          <option>Mississauga</option>
+          <option>Moncton</option>
+          <option>Montreal</option>
+          <option>Ottawa</option>
+          <option>Quebec City</option>
+          <option>Regina</option>
+          <option>Saskatoon</option>
+          <option>St. John's</option>
+          <option>Sudbury</option>
+          <option>Thunder Bay</option>
+          <option>Toronto</option>
+          <option>Vancouver</option>
+          <option>Victoria</option>
+          <option>Windsor</option>
+          <option>Winnipeg</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="province">Province</label>
+        <select id="province" name="province" required>
+          <option value="" disabled selected>Select your province</option>
+          <option value="AB">Alberta</option>
+          <option value="BC">British Columbia</option>
+          <option value="MB">Manitoba</option>
+          <option value="NB">New Brunswick</option>
+          <option value="NL">Newfoundland and Labrador</option>
+          <option value="NS">Nova Scotia</option>
+          <option value="ON">Ontario</option>
+          <option value="PE">Prince Edward Island</option>
+          <option value="QC">Quebec</option>
+          <option value="SK">Saskatchewan</option>
+        </select>
+        <span class="field-error" id="provinceError">Please select your province.</span>
+      </div>
+
+      <div class="field">
+        <label for="postal">Postal code</label>
+        <input type="text" id="postal" name="postal" placeholder="A1A 1A1" maxlength="7" autocomplete="postal-code">
+        <span class="field-error" id="postalError">Please enter a valid postal code (e.g. A1A 1A1).</span>
+      </div>
+
+      <div class="field">
+        <label for="message">Message <span class="optional-hint">(optional)</span></label>
+        <textarea id="message" name="message" placeholder="Tell us what you think..."></textarea>
+      </div>
+
+      <button type="submit">Submit feedback</button>
+    </form>
+
+    <div class="success" id="success">
+      <h1>Thanks for your feedback!</h1>
+      <p class="subtitle">We'll get back to you at the email you provided.</p>
+    </div>
+  </div>
+
+  <script>
+    // Email
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+
+    function isValidEmail(value) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
+    }
+
+    function validateEmail() {
+      const value = emailInput.value.trim();
+      const invalid = value.length > 0 && !isValidEmail(value);
+      emailInput.classList.toggle('invalid', invalid);
+      emailError.classList.toggle('visible', invalid);
+      return invalid;
+    }
+
+    emailInput.addEventListener('input', function () {
+      const pos = this.selectionStart;
+      const lower = this.value.toLowerCase();
+      if (this.value !== lower) {
+        this.value = lower;
+        this.setSelectionRange(pos, pos);
+      }
+      if (emailError.classList.contains('visible')) validateEmail();
+    });
+
+    emailInput.addEventListener('blur', validateEmail);
+
+    // Phone
+    const phoneInput = document.getElementById('phone');
+    const phoneError = document.getElementById('phoneError');
+
+    function formatPhone(input) {
+      const digits = input.value.replace(/\D/g, '').slice(0, 10);
+      let formatted = '';
+      if (digits.length > 0) formatted = '(' + digits.slice(0, 3);
+      if (digits.length >= 4) formatted += ') ' + digits.slice(3, 6);
+      if (digits.length >= 7) formatted += '-' + digits.slice(6);
+      input.value = formatted;
+    }
+
+    function validatePhone() {
+      const digits = phoneInput.value.replace(/\D/g, '');
+      const invalid = digits.length > 0 && digits.length < 10;
+      phoneInput.classList.toggle('invalid', invalid);
+      phoneError.classList.toggle('visible', invalid);
+      return invalid;
+    }
+
+    phoneInput.addEventListener('input', function () {
+      formatPhone(this);
+      if (phoneError.classList.contains('visible')) validatePhone();
+    });
+
+    phoneInput.addEventListener('blur', validatePhone);
+
+    // Postal code
+    const postalInput = document.getElementById('postal');
+    const postalError = document.getElementById('postalError');
+
+    function formatPostal(input) {
+      const raw = input.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 6);
+      input.value = raw.length > 3 ? raw.slice(0, 3) + ' ' + raw.slice(3) : raw;
+    }
+
+    function isValidPostal(value) {
+      return /^[A-Z]\d[A-Z] \d[A-Z]\d$/.test(value);
+    }
+
+    function validatePostal() {
+      const value = postalInput.value.trim();
+      const invalid = value.length > 0 && !isValidPostal(value);
+      postalInput.classList.toggle('invalid', invalid);
+      postalError.classList.toggle('visible', invalid);
+      return invalid;
+    }
+
+    postalInput.addEventListener('input', function () {
+      formatPostal(this);
+      if (postalError.classList.contains('visible')) validatePostal();
+    });
+
+    postalInput.addEventListener('blur', validatePostal);
+
+    // Submit
+    document.getElementById('feedbackForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const email = emailInput.value.trim();
+
+      if (!name || !email) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        emailInput.classList.add('invalid');
+        emailError.classList.add('visible');
+        emailInput.focus();
+        return;
+      }
+
+      if (validatePhone()) {
+        phoneInput.focus();
+        return;
+      }
+
+      if (validatePostal()) {
+        postalInput.focus();
+        return;
+      }
+
+      this.style.display = 'none';
+      document.querySelector('h1').style.display = 'none';
+      document.querySelector('.subtitle').style.display = 'none';
+      document.getElementById('success').style.display = 'block';
+    });
+  </script>
+</body>
+</html>

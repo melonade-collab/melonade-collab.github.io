@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watering tracker</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #e8f0e8;
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .page-header {
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .back-link {
+      font-size: 0.85rem;
+      color: #2e7d32;
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 0;
+    }
+
+    .back-link:hover { color: #1b5e20; }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 28px rgba(0,0,0,0.10);
+      width: 100%;
+      max-width: 360px;
+      overflow: hidden;
+    }
+
+    /* ── Card header strip ── */
+    .card-top {
+      background: #e8f5e9;
+      padding: 22px 24px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 1px solid #c8e6c9;
+    }
+
+    .card-top svg { height: 48px; width: auto; flex-shrink: 0; }
+
+    .card-top-text {}
+    .card-top-text h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1b5e20;
+      letter-spacing: -0.2px;
+    }
+
+    .card-top-text p {
+      font-size: 0.78rem;
+      color: #81c784;
+      font-style: italic;
+      margin-top: 1px;
+    }
+
+    /* ── Status section ── */
+    .status-section {
+      padding: 28px 24px 20px;
+      text-align: center;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .days-display {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .days-number {
+      font-size: 4rem;
+      font-weight: 900;
+      color: #1b5e20;
+      letter-spacing: -3px;
+      line-height: 1;
+    }
+
+    .days-label {
+      font-size: 0.9rem;
+      color: #9e9e9e;
+      font-weight: 500;
+    }
+
+    .no-record-text {
+      font-size: 1rem;
+      color: #bdbdbd;
+      margin: 12px 0 8px;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin: 10px 0 18px;
+    }
+
+    .status-chip.good     { background: #e8f5e9; color: #2e7d32; }
+    .status-chip.soon     { background: #fff8e1; color: #f57f17; }
+    .status-chip.overdue  { background: #fff3e0; color: #e65100; }
+    .status-chip.none     { background: #f5f5f5; color: #9e9e9e; }
+
+    /* Progress bar */
+    .progress-wrap {
+      background: #f0f0f0;
+      border-radius: 8px;
+      height: 8px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 8px;
+      transition: width 0.5s ease, background-color 0.3s;
+    }
+
+    .progress-fill.good    { background: #66bb6a; }
+    .progress-fill.soon    { background: #ffb300; }
+    .progress-fill.overdue { background: #ef6c00; }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: #bdbdbd;
+      margin-bottom: 0;
+    }
+
+    .next-label {
+      font-size: 0.82rem;
+      color: #757575;
+      margin-top: 10px;
+    }
+
+    .next-label strong { color: #2e7d32; }
+    .next-label.overdue-label strong { color: #e65100; }
+
+    /* ── Action button ── */
+    .water-btn {
+      margin: 20px 24px;
+      width: calc(100% - 48px);
+      padding: 15px;
+      background: #2e7d32;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .water-btn:hover  { background: #1b5e20; }
+    .water-btn:active { transform: scale(0.98); }
+
+    .water-btn.already-watered {
+      background: #a5d6a7;
+      cursor: default;
+    }
+
+    .water-btn.already-watered:hover { background: #a5d6a7; }
+
+    /* ── Interval setting ── */
+    .interval-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 24px 20px;
+      font-size: 0.82rem;
+      color: #757575;
+    }
+
+    .interval-row select {
+      padding: 4px 24px 4px 10px;
+      border: 1px solid #a5d6a7;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-family: inherit;
+      color: #2e7d32;
+      font-weight: 600;
+      background: #fff;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%232e7d32' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .interval-row select:focus {
+      border-color: #2e7d32;
+      box-shadow: 0 0 0 2px rgba(46,125,50,0.12);
+    }
+
+    /* ── History section ── */
+    .history-section {
+      border-top: 1px solid #f0f0f0;
+      padding: 20px 24px 24px;
+    }
+
+    .history-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #bdbdbd;
+      margin-bottom: 14px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: #f9fdf9;
+      border: 1px solid #e8f5e9;
+      border-radius: 10px;
+      transition: background 0.15s;
+    }
+
+    .history-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e8f5e9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .history-date {
+      flex: 1;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #1b5e20;
+    }
+
+    .history-ago {
+      font-size: 0.72rem;
+      color: #bdbdbd;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 6px;
+      color: #ccc;
+      font-size: 14px;
+      line-height: 1;
+      transition: color 0.15s, background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .delete-btn:hover {
+      color: #e57373;
+      background: #fce4ec;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 24px 0 8px;
+      color: #c8e6c9;
+      font-size: 0.85rem;
+    }
+
+    .empty-state-icon {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 400px) {
+      body { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <a href="monstera.html" class="back-link">← Monstera</a>
+  </div>
+
+  <div class="card">
+
+    <!-- Header -->
+    <div class="card-top">
+      <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="lg" x1="20%" y1="8%" x2="80%" y2="92%">
+            <stop offset="0%" stop-color="#76c47a"/>
+            <stop offset="100%" stop-color="#2a7d32"/>
+          </linearGradient>
+        </defs>
+        <path d="M100 168 C100 190 100 215 100 232" stroke="#5d4037" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path fill="url(#lg)" d="M100,168 C80,168 56,160 40,146 C24,132 18,109 22,87 C26,65 40,47 58,37 C72,29 86,25 100,25 C114,25 128,29 142,37 C160,47 174,65 178,87 C182,109 176,132 160,146 C144,160 120,168 100,168 Z"/>
+        <path d="M 38,146 Q 72,142 90,149 Q 72,160 40,164 Z" fill="#e8f5e9"/>
+        <path d="M 22,90  Q 62,85  89,93  Q 62,103 20,108 Z" fill="#e8f5e9"/>
+        <path d="M 30,50  Q 64,46  88,53  Q 64,63  28,68  Z" fill="#e8f5e9"/>
+        <path d="M 162,146 Q 128,142 110,149 Q 128,160 160,164 Z" fill="#e8f5e9"/>
+        <path d="M 178,90  Q 138,85  111,93  Q 138,103 180,108 Z" fill="#e8f5e9"/>
+        <path d="M 170,50  Q 136,46  112,53  Q 136,63  172,68  Z" fill="#e8f5e9"/>
+        <ellipse cx="80"  cy="125" rx="13" ry="9" fill="#e8f5e9"/>
+        <ellipse cx="120" cy="125" rx="13" ry="9" fill="#e8f5e9"/>
+      </svg>
+      <div class="card-top-text">
+        <h1>💧 Watering tracker</h1>
+        <p>Monstera deliciosa</p>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="status-section" id="statusSection">
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- Water today button -->
+    <button class="water-btn" id="waterBtn" onclick="waterToday()">
+      💧 Water today
+    </button>
+
+    <!-- Interval setting -->
+    <div class="interval-row">
+      <span>Water every</span>
+      <select id="intervalSelect" onchange="saveInterval()">
+        <option value="7">7 days</option>
+        <option value="10" selected>10 days</option>
+        <option value="14">14 days</option>
+      </select>
+      <span>for this plant</span>
+    </div>
+
+    <!-- History -->
+    <div class="history-section">
+      <div class="history-title">Watering history</div>
+      <div class="history-list" id="historyList">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  const HISTORY_KEY  = 'watering-history';
+  const INTERVAL_KEY = 'watering-interval';
+
+  function loadHistory() {
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; }
+    catch { return []; }
+  }
+
+  function saveHistory(arr) {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(arr));
+  }
+
+  function getInterval() {
+    return parseInt(localStorage.getItem(INTERVAL_KEY) || '10', 10);
+  }
+
+  function saveInterval() {
+    const val = document.getElementById('intervalSelect').value;
+    localStorage.setItem(INTERVAL_KEY, val);
+    render();
+  }
+
+  function todayISO() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function daysSince(isoDate) {
+    const then = new Date(isoDate + 'T00:00:00');
+    const now  = new Date();
+    now.setHours(0,0,0,0);
+    return Math.floor((now - then) / 86400000);
+  }
+
+  function formatDate(isoDate) {
+    const d = new Date(isoDate + 'T00:00:00');
+    return d.toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  function formatNext(isoDate, interval) {
+    const d = new Date(isoDate + 'T00:00:00');
+    d.setDate(d.getDate() + interval);
+    return d.toLocaleDateString('en-CA', { month: 'long', day: 'numeric' });
+  }
+
+  function waterToday() {
+    const today = todayISO();
+    const history = loadHistory();
+    if (history[0] === today) return;
+    history.unshift(today);
+    saveHistory(history);
+    render();
+  }
+
+  function deleteEntry(index) {
+    const history = loadHistory();
+    history.splice(index, 1);
+    saveHistory(history);
+    render();
+  }
+
+  function render() {
+    const history  = loadHistory();
+    const interval = getInterval();
+
+    // Sync interval select
+    document.getElementById('intervalSelect').value = String(interval);
+
+    // ── Status section ──
+    const sec = document.getElementById('statusSection');
+    const btn = document.getElementById('waterBtn');
+
+    if (history.length === 0) {
+      sec.innerHTML = `
+        <p class="no-record-text">No waterings logged yet.</p>
+        <span class="status-chip none">📋 No records</span>
+      `;
+      btn.textContent = '💧 Log first watering';
+      btn.className = 'water-btn';
+    } else {
+      const last = history[0];
+      const days = daysSince(last);
+      const pct  = Math.min(days / interval, 1);
+      const daysLeft = interval - days;
+      const today = todayISO();
+      const wateredToday = (last === today);
+
+      let statusClass, statusLabel, fillClass, nextHTML;
+
+      if (days < interval * 0.75) {
+        statusClass = 'good'; statusLabel = '🌱 All good'; fillClass = 'good';
+      } else if (days < interval) {
+        statusClass = 'soon'; statusLabel = '⚡ Due soon'; fillClass = 'soon';
+      } else {
+        statusClass = 'overdue'; statusLabel = '💧 Water me!'; fillClass = 'overdue';
+      }
+
+      if (days < interval) {
+        nextHTML = `<p class="next-label">Next watering: <strong>${formatNext(last, interval)}</strong></p>`;
+      } else {
+        const overdueDays = days - interval;
+        nextHTML = `<p class="next-label overdue-label"><strong>${overdueDays === 0 ? 'Due today' : `${overdueDays} day${overdueDays !== 1 ? 's' : ''} overdue`}</strong></p>`;
+      }
+
+      sec.innerHTML = `
+        <div class="days-display">
+          <span class="days-number">${days}</span>
+          <span class="days-label">day${days !== 1 ? 's' : ''} ago</span>
+        </div>
+        <span class="status-chip ${statusClass}">${statusLabel}</span>
+        <div class="progress-wrap">
+          <div class="progress-fill ${fillClass}" style="width:${Math.round(pct*100)}%"></div>
+        </div>
+        <div class="progress-meta">
+          <span>Watered ${formatDate(last)}</span>
+          <span>${interval}-day cycle</span>
+        </div>
+        ${nextHTML}
+      `;
+
+      if (wateredToday) {
+        btn.innerHTML = '✓ Watered today';
+        btn.className = 'water-btn already-watered';
+      } else {
+        btn.innerHTML = '💧 Water today';
+        btn.className = 'water-btn';
+      }
+    }
+
+    // ── History list ──
+    const list = document.getElementById('historyList');
+    if (history.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <span class="empty-state-icon">🌵</span>
+          No waterings recorded yet.<br>Tap the button above to log your first one.
+        </div>
+      `;
+    } else {
+      list.innerHTML = history.map((iso, i) => {
+        const d = daysSince(iso);
+        const ago = d === 0 ? 'Today' : d === 1 ? 'Yesterday' : `${d} days ago`;
+        return `
+          <div class="history-item">
+            <div class="history-dot">💧</div>
+            <div class="history-date">${formatDate(iso)}</div>
+            <div class="history-ago">${ago}</div>
+            <button class="delete-btn" onclick="deleteEntry(${i})" title="Remove">×</button>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  render();
+</script>
+</body>
+</html>
