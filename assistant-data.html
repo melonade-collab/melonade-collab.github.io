@@ -179,6 +179,7 @@
     <div class="field-card-header">Contact Information</div>
     <div class="field-row"><span class="field-key">Name</span>        <span class="field-val" id="fName">—</span></div>
     <div class="field-row"><span class="field-key">City</span>        <span class="field-val" id="fCity">—</span></div>
+    <div class="field-row"><span class="field-key">Province / State</span><span class="field-val" id="fProvince">—</span></div>
     <div class="field-row"><span class="field-key">Email</span>       <span class="field-val" id="fEmail">—</span></div>
     <div class="field-row"><span class="field-key">Phone</span>       <span class="field-val" id="fPhone">—</span></div>
     <div class="field-row"><span class="field-key">Postal / Zip</span><span class="field-val" id="fPostal">—</span></div>
@@ -246,8 +247,9 @@ if (!raw) {
     : 'Conversation in progress — data updates in real time';
 
   renderField('fName',    d.name,       null);
-  renderField('fCity',    d.city,       null);
-  renderField('fEmail',   d.email,      null);
+  renderField('fCity',     d.city,       null);
+  renderField('fProvince', d.province,  null);
+  renderField('fEmail',    d.email,     null);
   renderField('fPhone',   d.phone,      null);
   renderField('fPostal',  d.postalCode, null);
   renderField('fRating',  d.rating !== null ? d.rating : null, ' / 10');
@@ -264,6 +266,7 @@ if (!raw) {
   const payload = {
     name:       d.name       || null,
     city:       d.city       || null,
+    province:   d.province   || null,
     email:      d.email      || null,
     phone:      d.phone      || null,
     postalCode: d.postalCode || null,

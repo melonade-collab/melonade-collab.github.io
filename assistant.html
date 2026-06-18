@@ -150,6 +150,20 @@
     }
     .summary em { font-style: normal; font-size: 0.78rem; }
 
+    /* ── Yes / No chips ──────────────────────────────────────────────── */
+    .choice-row {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      padding: 4px 0 4px 36px;
+    }
+    .choice-chip {
+      padding: 8px 16px; border-radius: 20px;
+      border: 2px solid #c5cae9; background: #fff;
+      font-size: 0.82rem; font-weight: 600; color: #3949ab;
+      cursor: pointer; transition: all 0.12s; font-family: inherit;
+    }
+    .choice-chip:hover    { background: #e8eaf6; border-color: #3949ab; }
+    .choice-chip:disabled { opacity: 0.5; cursor: default; }
+
     /* ── Input area ───────────────────────────────────────────────────── */
     .input-area {
       padding: 10px 12px 14px;
@@ -247,9 +261,9 @@
 
 <script>
 /* ── State ──────────────────────────────────────────────────────── */
-const d = { name:'', city:'', email:'', phone:'', postalCode:'', rating:null, message:'' };
+const d = { name:'', city:'', province:'', email:'', phone:'', postalCode:'', rating:null, message:'' };
 let step = 0;
-// 0=name 1=city 2=email 3=phone 4=postal 5=rating 6=message 7=done
+// 0=name 1=city 2=province 3=email 4=phone 5=postal 6=rating 7=message 8=done
 
 function saveData() {
   sessionStorage.setItem('assistant_data', JSON.stringify(d));
@@ -257,6 +271,39 @@ function saveData() {
 
 /* ── Utilities ───────────────────────────────────────────────────── */
 function toTitleCase(s) { return s.replace(/\b\w/g, c => c.toUpperCase()); }
+
+function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim()); }
+
+function isValidPhone(p) { return p.replace(/\D/g, '').length >= 10; }
+
+function isValidPostal(p) {
+  const ca = /^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/;
+  const us = /^\d{5}(-\d{4})?$/;
+  return ca.test(p.trim()) || us.test(p.trim());
+}
+
+/* ── City → province/territory lookup ───────────────────────────── */
+const CITY_PROVINCE = {
+  toronto:'Ontario', mississauga:'Ontario', brampton:'Ontario',
+  hamilton:'Ontario', ottawa:'Ontario', london:'Ontario',
+  markham:'Ontario', vaughan:'Ontario', kitchener:'Ontario',
+  windsor:'Ontario', oakville:'Ontario', burlington:'Ontario',
+  oshawa:'Ontario', barrie:'Ontario', 'richmond hill':'Ontario',
+  'north york':'Ontario', etobicoke:'Ontario', scarborough:'Ontario',
+  montreal:'Quebec', laval:'Quebec', longueuil:'Quebec',
+  gatineau:'Quebec', sherbrooke:'Quebec', 'québec city':'Quebec',
+  vancouver:'British Columbia', surrey:'British Columbia',
+  burnaby:'British Columbia', richmond:'British Columbia',
+  kelowna:'British Columbia', abbotsford:'British Columbia',
+  victoria:'British Columbia', coquitlam:'British Columbia',
+  calgary:'Alberta', edmonton:'Alberta', 'red deer':'Alberta',
+  lethbridge:'Alberta',
+  winnipeg:'Manitoba', brandon:'Manitoba',
+  saskatoon:'Saskatchewan', regina:'Saskatchewan',
+  halifax:'Nova Scotia', dartmouth:'Nova Scotia',
+  fredericton:'New Brunswick', moncton:'New Brunswick',
+  'saint john':'New Brunswick',
+};
 
 /* ── Clock ──────────────────────────────────────────────────────── */
 (function tick() {
@@ -380,8 +427,42 @@ async function afterName() {
   enableInput('Your city…');
 }
 
-async function afterCity() {
-  await botSay(`${d.city} — lovely! What's your email address?`);
+function askProvince() {
+  step = 2;
+  const guess = CITY_PROVINCE[d.city.toLowerCase()];
+  if (guess) {
+    botSay(`Is that in ${guess}?`, 950).then(() => showYesNo(guess));
+  } else {
+    botSay(`Which province or state is ${d.city} in?`, 950)
+      .then(() => enableInput('Province or state…'));
+  }
+}
+
+function showYesNo(guess) {
+  const row = document.createElement('div');
+  row.className = 'choice-row'; row.id = 'yesno';
+  [['Yes ✓', true], ['Different province', false]].forEach(([label, isYes]) => {
+    const b = document.createElement('button');
+    b.className = 'choice-chip'; b.textContent = label;
+    b.onclick = () => {
+      row.querySelectorAll('.choice-chip').forEach(c => c.disabled = true);
+      if (isYes) {
+        addUser('Yes');
+        d.province = guess; saveData(); step = 3; afterProvince();
+      } else {
+        addUser('Different province');
+        botSay(`Which province or state is ${d.city} in?`, 600)
+          .then(() => enableInput('Province or state…'));
+      }
+    };
+    row.appendChild(b);
+  });
+  msgsEl.appendChild(row); scroll();
+}
+
+async function afterProvince() {
+  const loc = d.province ? `${d.city}, ${d.province}` : d.city;
+  await botSay(`${loc} — got it! What's your email address?`);
   enableInput('Your email…');
 }
 
@@ -392,11 +473,11 @@ async function afterEmail() {
 
 async function afterPhone() {
   await botSay("Almost there! What's your postal or zip code? (Type 'skip' to skip)");
-  enableInput('Your postal/zip code…');
+  enableInput('Postal/zip code…');
 }
 
 async function afterPostal() {
-  await botSay(`On a scale of 0 to 10, how would you rate your experience overall?`);
+  await botSay('On a scale of 0 to 10, how would you rate your experience overall?');
   showChips();
 }
 
@@ -414,8 +495,9 @@ async function afterMessage() {
   const low  = d.rating <= 3 && tone === 'positive';
   const toneLabel = { positive: 'positive 😊', negative: 'negative 😟', neutral: 'neutral 😐' }[tone];
 
+  const loc = d.province ? `${d.city}, ${d.province}` : d.city;
   let html = `<div class="summary"><div class="summary-label">Feedback Summary</div>`;
-  html += `<strong>${d.name}</strong> from ${d.city}<br>`;
+  html += `<strong>${d.name}</strong> from ${loc}<br>`;
   html += `Rated their experience <strong>${d.rating}/10</strong><br>`;
   html += `Left ${toneLabel} feedback`;
   if (d.message) {
@@ -439,7 +521,7 @@ function pickRating(r) {
   d.rating = r;
   saveData();
   addUser(`${r} / 10`);
-  step = 6;
+  step = 7;
   afterRating();
 }
 
@@ -449,15 +531,38 @@ function send() {
   if (!txt) return;
   disableInput();
   addUser(txt);
+  const skip = txt.toLowerCase() === 'skip';
 
-  const val = txt.toLowerCase() === 'skip' ? '' : txt;
-
-  if      (step === 0) { d.name       = toTitleCase(txt); saveData(); step = 1; afterName();   }
-  else if (step === 1) { d.city       = toTitleCase(txt); saveData(); step = 2; afterCity();   }
-  else if (step === 2) { d.email      = val;              saveData(); step = 3; afterEmail();  }
-  else if (step === 3) { d.phone      = val;              saveData(); step = 4; afterPhone();  }
-  else if (step === 4) { d.postalCode = val.toUpperCase();saveData(); step = 5; afterPostal(); }
-  else if (step === 6) { d.message    = txt;                          step = 7; afterMessage();}
+  if (step === 0) {
+    d.name = toTitleCase(txt); saveData(); step = 1; afterName();
+  } else if (step === 1) {
+    d.city = toTitleCase(txt); saveData(); askProvince();
+  } else if (step === 2) {
+    d.province = txt; saveData(); step = 3; afterProvince();
+  } else if (step === 3) {
+    if (!skip && !isValidEmail(txt)) {
+      botSay("Hmm, that doesn't look like a valid email — can you double-check it?", 700)
+        .then(() => enableInput('Your email…'));
+    } else {
+      d.email = skip ? '' : txt; saveData(); step = 4; afterEmail();
+    }
+  } else if (step === 4) {
+    if (!skip && !isValidPhone(txt)) {
+      botSay("That doesn't look like a full phone number — it needs at least 10 digits. Try again or type 'skip'.", 700)
+        .then(() => enableInput('Your phone…'));
+    } else {
+      d.phone = skip ? '' : txt; saveData(); step = 5; afterPhone();
+    }
+  } else if (step === 5) {
+    if (!skip && !isValidPostal(txt)) {
+      botSay("That postal code doesn't look right. Canadian: M5V 1A1 · US: 90210. Try again or type 'skip'.", 700)
+        .then(() => enableInput('Postal/zip code…'));
+    } else {
+      d.postalCode = skip ? '' : txt.toUpperCase(); saveData(); step = 6; afterPostal();
+    }
+  } else if (step === 7) {
+    d.message = txt; step = 8; afterMessage();
+  }
 }
 
 /* ── Boot ────────────────────────────────────────────────────────── */
