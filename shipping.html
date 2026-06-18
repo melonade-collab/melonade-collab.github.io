@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consumer Shipping — Re-imagining</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f7f7f5;
+      color: #1a1a1a;
+    }
+
+    .cs-header {
+      background: #fff;
+      border-bottom: 1px solid #e8e8e4;
+      padding: 56px 40px 48px;
+    }
+    .cs-header-inner { max-width: 800px; margin: 0 auto; }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #7C3AED;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: #111;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .cs-intro { font-size: 1rem; color: #666; line-height: 1.7; max-width: 600px; }
+
+    .cs-body { max-width: 800px; margin: 0 auto; padding: 48px 40px 80px; }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e8e8e4;
+      border-radius: 14px;
+      padding: 24px 28px;
+    }
+
+    .card-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #7C3AED;
+      margin-bottom: 12px;
+    }
+
+    .card p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .card p + p { margin-top: 10px; }
+
+    .card ul { list-style: none; padding: 0; margin: 0; }
+    .card ul li {
+      font-size: 0.875rem;
+      color: #555;
+      line-height: 1.65;
+      padding: 4px 0 4px 18px;
+      position: relative;
+    }
+    .card ul li::before { content: '·'; position: absolute; left: 6px; color: #7C3AED; font-weight: 900; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+    .contrib-item-label { font-size: 0.72rem; font-weight: 700; color: #222; margin-bottom: 5px; }
+    .contrib-item-text { font-size: 0.85rem; color: #666; line-height: 1.6; }
+
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+
+    /* ── Prototype wrapper ── */
+    .proto-wrap {
+      background: #F5F3FF;
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 16px;
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #7C3AED;
+      margin-bottom: 8px;
+    }
+
+    .proto-subhead { font-size: 0.85rem; color: #6D28D9; font-weight: 600; margin-bottom: 20px; }
+
+    /* ── Browser frame ── */
+    .proto-frame {
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 32px rgba(109,40,217,0.12), 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .proto-chrome {
+      background: #f0f0f0;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .chrome-dots { display: flex; gap: 5px; }
+    .chrome-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .chrome-url {
+      flex: 1;
+      background: #fff;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      color: #888;
+      border: 1px solid #e0e0e0;
+    }
+
+    .proto-nav {
+      background: #6D28D9;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .proto-brand { font-size: 1.05rem; font-weight: 800; color: #fff; letter-spacing: -0.2px; }
+    .proto-nav-links { display: flex; gap: 20px; }
+    .proto-nav-link { font-size: 0.78rem; color: rgba(255,255,255,0.6); cursor: default; }
+
+    .proto-content { padding: 36px 32px 44px; }
+    .proto-page-title { font-size: 1.5rem; font-weight: 800; color: #111; letter-spacing: -0.4px; margin-bottom: 4px; }
+    .proto-page-sub { font-size: 0.875rem; color: #888; margin-bottom: 36px; }
+
+    /* ── Form steps ── */
+    .form-step { }
+    .form-step.hidden { display: none; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .form-step:not(.hidden) { animation: fadeUp 0.25s ease; }
+
+    .step-divider { height: 1px; background: #f0f0ee; margin: 28px 0; }
+
+    .step-heading {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #7C3AED;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .step-heading::after { content: ''; flex: 1; height: 1px; background: #EDE9FE; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-row.full  { grid-template-columns: 1fr; }
+    .form-row.triple { grid-template-columns: 2fr 1fr 1fr; }
+
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 0.72rem; font-weight: 600; color: #555; }
+
+    .form-group input,
+    .form-group select {
+      padding: 10px 12px;
+      border: 1.5px solid #e4e4e4;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      color: #1a1a1a;
+      background: #fff;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #7C3AED;
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.08);
+    }
+    .form-group input.prefilled {
+      background: #F5F3FF;
+      color: #6D28D9;
+      border-color: #DDD6FE;
+      font-weight: 600;
+    }
+
+    .btn-continue {
+      margin-top: 8px;
+      padding: 10px 22px;
+      background: #7C3AED;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-continue:hover { background: #6D28D9; }
+
+    /* ── Package type ── */
+    .pkg-types { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .pkg-card {
+      border: 2px solid #e4e4e4;
+      border-radius: 12px;
+      padding: 20px 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
+    .pkg-card:hover { border-color: #A78BFA; background: #FAFAFA; }
+    .pkg-card.selected { border-color: #7C3AED; background: #F5F3FF; }
+
+    .pkg-name { font-size: 0.9rem; font-weight: 700; color: #222; }
+    .pkg-desc { font-size: 0.75rem; color: #888; line-height: 1.5; }
+
+    /* ── Measurement diagram ── */
+    .measure-box {
+      background: #F5F3FF;
+      border-radius: 10px;
+      padding: 24px 20px 14px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .measure-caption { font-size: 0.75rem; color: #6D28D9; font-weight: 600; margin-top: 10px; }
+
+    /* ── Quote ── */
+    .quote-card {
+      background: #F5F3FF;
+      border: 1px solid #DDD6FE;
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-bottom: 16px;
+    }
+    .quote-eyebrow { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #7C3AED; margin-bottom: 6px; }
+    .quote-price { font-size: 2rem; font-weight: 900; color: #4C1D95; letter-spacing: -1px; margin-bottom: 4px; }
+    .quote-meta { font-size: 0.78rem; color: #888; line-height: 1.6; }
+
+    .btn-ship {
+      width: 100%;
+      padding: 14px;
+      background: #6D28D9;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-ship:hover { background: #5B21B6; }
+    .quote-disclaimer { font-size: 0.72rem; color: #aaa; text-align: center; margin-top: 10px; }
+
+    /* ── Field validation ── */
+    .form-group input.invalid,
+    .form-group select.invalid {
+      border-color: #e74c3c;
+      box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15);
+    }
+    label .req { color: #e74c3c; margin-left: 2px; font-weight: 400; }
+    .step-req-note { font-size: 0.72rem; color: #aaa; margin: -4px 0 16px; }
+
+    /* ── Accordions ── */
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s;
+    }
+    .acc-header:hover { background: #fafafa; }
+    .acc-header .card-label { margin-bottom: 0; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
+    .acc-body li { margin-bottom: 6px; }
+    .acc-outcome .acc-header { background: #EDE9FE; }
+    .acc-outcome .acc-header:hover { background: #E5E0FF; }
+    .acc-outcome .acc-body { background: #EDE9FE; }
+    .acc-outcome .acc-body > p { color: #4C1D95; }
+    .acc-outcome .acc-chevron { color: #7C3AED; }
+    .acc-outcome { border-color: #DDD6FE; }
+
+    /* ── Payment form ── */
+    .pay-form-card {
+      background: #F5F3FF;
+      border: 1px solid #DDD6FE;
+      border-radius: 12px;
+      padding: 20px 22px;
+      margin-bottom: 16px;
+    }
+    .pay-card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #7C3AED; margin-bottom: 6px; }
+    .pay-demo-note { font-size: 0.72rem; color: #9CA3AF; line-height: 1.5; margin-bottom: 14px; }
+    .card-num { letter-spacing: 3px; }
+
+    /* ── Success ── */
+    .success-banner {
+      background: #dcfce7; border: 1px solid #86efac; border-radius: 12px;
+      padding: 18px 22px; margin-bottom: 20px;
+      display: flex; align-items: flex-start; gap: 14px;
+    }
+    .success-check {
+      width: 38px; height: 38px; border-radius: 50%; background: #22c55e;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: #fff; font-size: 1.1rem; font-weight: 900;
+    }
+    .success-title { font-size: 1rem; font-weight: 800; color: #166534; margin-bottom: 2px; }
+    .success-track { font-size: 0.75rem; color: #15803d; font-family: monospace; letter-spacing: 0.5px; }
+
+    .dropoff-heading { font-size: 0.82rem; font-weight: 700; color: #333; margin-bottom: 12px; }
+    .dropoff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .dropoff-opt {
+      border: 2px solid #e4e4e4; border-radius: 12px; padding: 16px 12px;
+      cursor: pointer; transition: all 0.15s; text-align: center;
+    }
+    .dropoff-opt:hover { border-color: #A78BFA; background: #FAFAFA; }
+    .dropoff-opt.active { border-color: #6D28D9; background: #F5F3FF; }
+    .dropoff-icon { font-size: 1.4rem; margin-bottom: 6px; }
+    .dropoff-name { font-size: 0.82rem; font-weight: 700; color: #222; }
+    .dropoff-sub { font-size: 0.7rem; color: #888; margin-top: 2px; line-height: 1.4; }
+
+    .dropoff-detail {
+      background: #fff; border: 1px solid #e4e4e4;
+      border-radius: 12px; padding: 20px; margin-bottom: 8px;
+    }
+    .dropoff-detail.hidden { display: none; }
+
+    .qr-block { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .qr-caption { font-size: 0.8rem; color: #555; text-align: center; line-height: 1.5; }
+
+    .loc-block { border-top: 1px solid #f0f0ee; padding-top: 14px; }
+    .loc-name { font-size: 0.85rem; font-weight: 700; color: #222; margin-bottom: 2px; }
+    .loc-addr { font-size: 0.8rem; color: #555; line-height: 1.6; }
+    .loc-hours { font-size: 0.72rem; color: #999; margin-top: 4px; }
+
+    .label-sheet { border: 2px dashed #ccc; border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+    .label-carrier { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .label-carrier-name { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #aaa; }
+    .label-addresses { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+    .label-section-tag { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #aaa; margin-bottom: 3px; }
+    .label-addr-text { font-size: 0.75rem; color: #222; line-height: 1.5; }
+    .label-barcode {
+      height: 28px;
+      background: repeating-linear-gradient(90deg, #222 0, #222 2px, transparent 2px, transparent 5px);
+      border-radius: 1px;
+    }
+    .btn-print {
+      width: 100%; padding: 12px; background: #6D28D9; color: #fff;
+      border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600;
+      font-family: inherit; cursor: pointer; margin-bottom: 14px; transition: background 0.15s;
+    }
+    .btn-print:hover { background: #5B21B6; }
+
+    @media (max-width: 600px) {
+      .cs-header { padding: 40px 20px 36px; }
+      .cs-body { padding: 36px 20px 60px; }
+      .grid-2, .contrib-grid { grid-template-columns: 1fr; }
+      .proto-wrap { padding: 22px 16px; }
+      .proto-content { padding: 24px 18px 32px; }
+      .form-row.triple { grid-template-columns: 1fr 1fr; }
+      .form-row.triple .form-group:first-child { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="eyebrow">Re-imagining</p>
+    <h1>Consumer Shipping</h1>
+    <p class="cs-intro">Opening a self-serve digital channel for a carrier built on business accounts — removing the barriers that kept one-time consumers from shipping online.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>A shipping carrier offered consumer shipping, but their digital tools required a business account number. Consumers shipping occasionally had no path online — driving them to competitors or the counter.</p>
+      <p>A second challenge: the pricing engine required accurate package dimensions, and most consumers didn't know how to measure a box, leading to quote errors and friction at drop-off.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Constraints</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Backend pricing engine required exact dimensions and weight — no workaround</li>
+        <li>Consumers unfamiliar with measuring packages accurately</li>
+        <li>No account creation — had to work as a fully guest experience</li>
+        <li>Single-page experience required — no multi-step wizard or redirect</li>
+        <li>Payment infrastructure needed to support one-time unregistered transactions</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">My Contribution</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Flows</p>
+          <p class="contrib-item-text">Mapped the full consumer journey from package type selection through to payment, identifying where business-account assumptions created drop-off in the existing experience.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Interaction Logic</p>
+          <p class="contrib-item-text">Designed progressive disclosure to reduce cognitive load — revealing the next step only once the previous was complete, keeping a single long page from feeling overwhelming.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Service Design</p>
+          <p class="contrib-item-text">Worked with operations to define two standard package presets — envelope and box — with pre-set dimensions, so consumers only needed to input weight, the one value they could reliably provide.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Platform Change</p>
+          <p class="contrib-item-text">Defined requirements for a guest shipping flow — a net-new capability requiring new identity handling and payment infrastructure for one-time transactions without registration.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">How It Worked</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>The tool kept the entire experience on one page using progressive disclosure. Consumers entered origin and destination addresses, selected a package type — envelope or box — and were shown a visual guide for measuring. Standard envelope dimensions were pre-filled; box users entered their own L×W×H. Once weight was added, the pricing engine returned a real-time quote, and payment was completed without an account.</p>
+    </div>
+  </div>
+
+  <div class="acc-card acc-outcome mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Outcome</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Successfully launched a net-new digital consumer shipping channel — opening a new line of revenue for the company. The single-page design with visual measurement guidance reduced drop-off from consumers unsure how to size their packages, and removing the account requirement eliminated the primary barrier to conversion for occasional shippers.</p>
+    </div>
+  </div>
+
+  <!-- Prototype -->
+  <div class="proto-wrap">
+    <p class="section-label">The Prototype</p>
+    <p class="proto-subhead">Fill in the steps as they reveal.</p>
+
+    <div class="proto-frame">
+
+      <div class="proto-chrome">
+        <div class="chrome-dots">
+          <div class="chrome-dot" style="background:#ff5f56;"></div>
+          <div class="chrome-dot" style="background:#ffbd2e;"></div>
+          <div class="chrome-dot" style="background:#27c93f;"></div>
+        </div>
+        <div class="chrome-url">dispatch.com/ship</div>
+      </div>
+
+      <div class="proto-nav">
+        <span class="proto-brand">Dispatch</span>
+        <div class="proto-nav-links">
+          <span class="proto-nav-link">Track</span>
+          <span class="proto-nav-link">Business</span>
+          <span class="proto-nav-link">Help</span>
+        </div>
+      </div>
+
+      <div class="proto-content">
+        <p class="proto-page-title">Ship a package</p>
+        <p class="proto-page-sub">No account needed. Get a quote and pay in minutes.</p>
+
+        <!-- Step 1: From -->
+        <div class="form-step" id="stepFrom">
+          <p class="step-heading">Where are you shipping from?</p>
+          <p class="step-req-note">All fields are required to continue.</p>
+          <div class="form-row">
+            <div class="form-group">
+              <label>First name <span class="req">*</span></label>
+              <input type="text" id="fromFirst" placeholder="Jane" oninput="applyTitleCase(this);clearInvalid(this);checkFrom()" onblur="markReq(this)">
+            </div>
+            <div class="form-group">
+              <label>Last name <span class="req">*</span></label>
+              <input type="text" id="fromLast" placeholder="Smith" oninput="applyTitleCase(this);clearInvalid(this);checkFrom()" onblur="markReq(this)">
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label>Street address <span class="req">*</span></label>
+              <input type="text" id="fromStreet" placeholder="123 Main Street" oninput="applyTitleCase(this);clearInvalid(this);checkFrom()" onblur="markReq(this)">
+            </div>
+          </div>
+          <div class="form-row triple">
+            <div class="form-group">
+              <label>City <span class="req">*</span></label>
+              <select id="fromCity" onchange="autoFillProv('from');clearInvalid(this);checkFrom()" onblur="markReq(this)">
+                <option value="">Select city</option>
+                <option>Brampton</option><option>Calgary</option><option>Edmonton</option>
+                <option>Halifax</option><option>Hamilton</option><option>Kelowna</option>
+                <option>Laval</option><option>London</option><option>Mississauga</option>
+                <option>Moncton</option><option>Montreal</option><option>Ottawa</option>
+                <option>Quebec City</option><option>Regina</option><option>Saskatoon</option>
+                <option>St. John's</option><option>Sudbury</option><option>Thunder Bay</option>
+                <option>Toronto</option><option>Vancouver</option><option>Victoria</option>
+                <option>Windsor</option><option>Winnipeg</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Province <span class="req">*</span></label>
+              <select id="fromProv" onchange="clearInvalid(this);checkFrom()">
+                <option value="">—</option>
+                <option>AB</option><option>BC</option><option>MB</option>
+                <option>NB</option><option>NL</option><option>NS</option>
+                <option>ON</option><option>PE</option><option>QC</option><option>SK</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Postal code <span class="req">*</span></label>
+              <input type="text" id="fromPostal" placeholder="M5V 2T6" maxlength="7" oninput="formatShipPostal(this);clearInvalid(this);checkFrom()" onblur="markReq(this)">
+            </div>
+          </div>
+          <button class="btn-continue" id="btnFrom" onclick="reveal('stepTo')" style="display:none;">Continue →</button>
+        </div>
+
+        <!-- Step 2: To -->
+        <div class="form-step hidden" id="stepTo">
+          <div class="step-divider"></div>
+          <p class="step-heading">Where are you shipping to?</p>
+          <p class="step-req-note">All fields are required to continue.</p>
+          <div class="form-row">
+            <div class="form-group">
+              <label>First name <span class="req">*</span></label>
+              <input type="text" id="toFirst" placeholder="Alex" oninput="applyTitleCase(this);clearInvalid(this);checkTo()" onblur="markReq(this)">
+            </div>
+            <div class="form-group">
+              <label>Last name <span class="req">*</span></label>
+              <input type="text" id="toLast" placeholder="Johnson" oninput="applyTitleCase(this);clearInvalid(this);checkTo()" onblur="markReq(this)">
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label>Street address <span class="req">*</span></label>
+              <input type="text" id="toStreet" placeholder="456 Elm Avenue" oninput="applyTitleCase(this);clearInvalid(this);checkTo()" onblur="markReq(this)">
+            </div>
+          </div>
+          <div class="form-row triple">
+            <div class="form-group">
+              <label>City <span class="req">*</span></label>
+              <select id="toCity" onchange="autoFillProv('to');clearInvalid(this);checkTo()" onblur="markReq(this)">
+                <option value="">Select city</option>
+                <option>Brampton</option><option>Calgary</option><option>Edmonton</option>
+                <option>Halifax</option><option>Hamilton</option><option>Kelowna</option>
+                <option>Laval</option><option>London</option><option>Mississauga</option>
+                <option>Moncton</option><option>Montreal</option><option>Ottawa</option>
+                <option>Quebec City</option><option>Regina</option><option>Saskatoon</option>
+                <option>St. John's</option><option>Sudbury</option><option>Thunder Bay</option>
+                <option>Toronto</option><option>Vancouver</option><option>Victoria</option>
+                <option>Windsor</option><option>Winnipeg</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Province <span class="req">*</span></label>
+              <select id="toProv" onchange="clearInvalid(this);checkTo()">
+                <option value="">—</option>
+                <option>AB</option><option>BC</option><option>MB</option>
+                <option>NB</option><option>NL</option><option>NS</option>
+                <option>ON</option><option>PE</option><option>QC</option><option>SK</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Postal code <span class="req">*</span></label>
+              <input type="text" id="toPostal" placeholder="V6B 1A1" maxlength="7" oninput="formatShipPostal(this);clearInvalid(this);checkTo()" onblur="markReq(this)">
+            </div>
+          </div>
+          <button class="btn-continue" id="btnTo" onclick="reveal('stepPkg')" style="display:none;">Continue →</button>
+        </div>
+
+        <!-- Step 3: Package type -->
+        <div class="form-step hidden" id="stepPkg">
+          <div class="step-divider"></div>
+          <p class="step-heading">What are you shipping?</p>
+          <div class="pkg-types">
+            <div class="pkg-card" id="pkgEnvelope" onclick="selectPkg('envelope')">
+              <svg width="68" height="46" viewBox="0 0 68 46" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="2" width="64" height="42" rx="5" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5"/>
+                <polyline points="2,2 34,28 66,2" stroke="#7C3AED" stroke-width="1.5" fill="none"/>
+                <line x1="2" y1="44" x2="24" y2="25" stroke="#7C3AED" stroke-width="1" opacity="0.3"/>
+                <line x1="66" y1="44" x2="44" y2="25" stroke="#7C3AED" stroke-width="1" opacity="0.3"/>
+              </svg>
+              <div>
+                <p class="pkg-name">Envelope</p>
+                <p class="pkg-desc">Documents &amp; flat items<br>Up to 0.5 kg</p>
+              </div>
+            </div>
+            <div class="pkg-card" id="pkgBox" onclick="selectPkg('box')">
+              <svg width="68" height="56" viewBox="0 0 68 56" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="8,24 34,38 34,56 8,42" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5" stroke-linejoin="round"/>
+                <polygon points="34,38 60,24 60,42 34,56" fill="#DDD6FE" stroke="#7C3AED" stroke-width="1.5" stroke-linejoin="round"/>
+                <polygon points="8,24 34,10 60,24 34,38" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5" stroke-linejoin="round"/>
+                <line x1="34" y1="10" x2="34" y2="38" stroke="#7C3AED" stroke-width="1.5" opacity="0.35"/>
+                <line x1="8" y1="24" x2="60" y2="24" stroke="#7C3AED" stroke-width="1.5" opacity="0.35"/>
+              </svg>
+              <div>
+                <p class="pkg-name">Box</p>
+                <p class="pkg-desc">Parcels &amp; packages<br>Up to 30 kg</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Details -->
+        <div class="form-step hidden" id="stepDetails">
+          <div class="step-divider"></div>
+          <p class="step-heading" id="detailsHeading">Package details</p>
+
+          <div id="envDetails" style="display:none;">
+            <div class="measure-box">
+              <svg width="210" height="104" viewBox="0 0 210 104" xmlns="http://www.w3.org/2000/svg">
+                <rect x="22" y="6" width="136" height="76" rx="4" fill="#fff" stroke="#7C3AED" stroke-width="1.5"/>
+                <polyline points="22,6 90,50 158,6" stroke="#7C3AED" stroke-width="1.5" fill="none"/>
+                <line x1="22" y1="82" x2="52" y2="58" stroke="#7C3AED" stroke-width="1" opacity="0.3"/>
+                <line x1="158" y1="82" x2="128" y2="58" stroke="#7C3AED" stroke-width="1" opacity="0.3"/>
+                <!-- width arrow (bottom) -->
+                <line x1="22" y1="94" x2="158" y2="94" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="22" y1="90" x2="22" y2="98" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="158" y1="90" x2="158" y2="98" stroke="#6D28D9" stroke-width="1.2"/>
+                <text x="90" y="103" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif">38 cm</text>
+                <!-- height arrow (right) -->
+                <line x1="170" y1="6" x2="170" y2="82" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="166" y1="6" x2="174" y2="6" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="166" y1="82" x2="174" y2="82" stroke="#6D28D9" stroke-width="1.2"/>
+                <text x="186" y="48" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif" transform="rotate(90,186,48)">26 cm</text>
+              </svg>
+              <p class="measure-caption">Standard envelope — dimensions pre-filled for you</p>
+            </div>
+            <div class="form-row" style="max-width:300px;">
+              <div class="form-group">
+                <label>Length</label>
+                <input type="text" value="38 cm" class="prefilled" readonly>
+              </div>
+              <div class="form-group">
+                <label>Width</label>
+                <input type="text" value="26 cm" class="prefilled" readonly>
+              </div>
+            </div>
+            <div class="form-row" style="max-width:148px;">
+              <div class="form-group">
+                <label>Weight (kg)</label>
+                <input type="number" id="envWeight" placeholder="0.3" min="0.1" max="0.5" step="0.1" oninput="checkDetails()">
+              </div>
+            </div>
+          </div>
+
+          <div id="boxDetails" style="display:none;">
+            <div class="measure-box">
+              <svg width="240" height="136" viewBox="0 0 240 136" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="30,60 90,92 90,124 30,92" fill="#fff" stroke="#7C3AED" stroke-width="1.5" stroke-linejoin="round"/>
+                <polygon points="90,92 150,60 150,92 90,124" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5" stroke-linejoin="round"/>
+                <polygon points="30,60 90,28 150,60 90,92" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5" stroke-linejoin="round"/>
+                <!-- H arrow left -->
+                <line x1="16" y1="60" x2="16" y2="92" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="12" y1="60" x2="20" y2="60" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="12" y1="92" x2="20" y2="92" stroke="#6D28D9" stroke-width="1.2"/>
+                <text x="5" y="80" font-size="11" fill="#6D28D9" font-family="-apple-system,sans-serif" font-weight="700">H</text>
+                <!-- L label top -->
+                <line x1="30" y1="51" x2="90" y2="19" stroke="#6D28D9" stroke-width="1" stroke-dasharray="3,2" opacity="0.5"/>
+                <line x1="90" y1="19" x2="150" y2="51" stroke="#6D28D9" stroke-width="1" stroke-dasharray="3,2" opacity="0.5"/>
+                <text x="90" y="14" text-anchor="middle" font-size="11" fill="#6D28D9" font-family="-apple-system,sans-serif" font-weight="700">L</text>
+                <!-- W label right -->
+                <text x="158" y="78" font-size="11" fill="#6D28D9" font-family="-apple-system,sans-serif" font-weight="700">W</text>
+                <text x="90" y="132" text-anchor="middle" font-size="8.5" fill="#999" font-family="-apple-system,sans-serif">Measure the outside of the closed box</text>
+              </svg>
+              <p class="measure-caption">Place the longest side as L, then measure W and H</p>
+            </div>
+            <div class="form-row" style="max-width:360px;">
+              <div class="form-group">
+                <label>Length (cm)</label>
+                <input type="number" id="boxL" placeholder="e.g. 40" min="1" oninput="checkDetails()">
+              </div>
+              <div class="form-group">
+                <label>Width (cm)</label>
+                <input type="number" id="boxW" placeholder="e.g. 30" min="1" oninput="checkDetails()">
+              </div>
+            </div>
+            <div class="form-row" style="max-width:360px;">
+              <div class="form-group">
+                <label>Height (cm)</label>
+                <input type="number" id="boxH" placeholder="e.g. 20" min="1" oninput="checkDetails()">
+              </div>
+              <div class="form-group">
+                <label>Weight (kg)</label>
+                <input type="number" id="boxWeight" placeholder="e.g. 2.5" min="0.1" max="30" step="0.1" oninput="checkDetails()">
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-continue" id="btnDetails" onclick="revealQuote()" style="display:none;">Get quote →</button>
+        </div>
+
+        <!-- Step 5: Quote -->
+        <div class="form-step hidden" id="stepQuote">
+          <div class="step-divider"></div>
+          <p class="step-heading">Your quote</p>
+          <div class="quote-card">
+            <p class="quote-eyebrow">Estimated shipping cost</p>
+            <p class="quote-price" id="quotePrice">—</p>
+            <p class="quote-meta" id="quoteMeta"></p>
+          </div>
+          <button class="btn-ship" id="btnShip" onclick="goToPayment()">Proceed to payment →</button>
+          <p class="quote-disclaimer">Quote is an estimate. Final cost confirmed at label purchase.</p>
+        </div>
+
+        <!-- Step 6: Payment -->
+        <div class="form-step hidden" id="stepPayment">
+          <div class="step-divider"></div>
+          <p class="step-heading">Payment</p>
+          <div class="pay-form-card">
+            <p class="pay-card-label">Card details</p>
+            <p class="pay-demo-note">For demo purposes only — please do not enter real card details. No information is captured or stored.</p>
+            <div class="form-row full">
+              <div class="form-group">
+                <label>Card number</label>
+                <input type="text" id="cardNum" placeholder="1234  5678  9012  3456" maxlength="19" class="card-num" oninput="formatCard(this);checkPayment()">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Expiry</label>
+                <input type="text" id="cardExp" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this);checkPayment()">
+              </div>
+              <div class="form-group">
+                <label>CVV</label>
+                <input type="text" id="cardCvv" placeholder="123" maxlength="4" oninput="checkPayment()">
+              </div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group">
+                <label>Cardholder name</label>
+                <input type="text" id="cardName" placeholder="Jane Smith" oninput="checkPayment()">
+              </div>
+            </div>
+          </div>
+          <button class="btn-ship" id="btnPay" onclick="handlePay()" disabled>Pay <span id="payAmt"></span></button>
+          <p class="quote-disclaimer">Secured by 256-bit encryption · Card details not stored.</p>
+        </div>
+
+        <!-- Step 7: Confirmation -->
+        <div class="form-step hidden" id="stepSuccess">
+          <div class="step-divider"></div>
+          <div class="success-banner">
+            <div class="success-check">✓</div>
+            <div>
+              <p class="success-title">Shipment confirmed!</p>
+              <p class="success-track" id="trackingNum">DSP-XXXX-XXXX-CA</p>
+            </div>
+          </div>
+          <p class="dropoff-heading">How would you like to drop off your package?</p>
+          <div class="dropoff-grid">
+            <div class="dropoff-opt" id="optRetail" onclick="selectDropoff('retail')">
+              <div class="dropoff-icon">🏪</div>
+              <p class="dropoff-name">Retail drop-off</p>
+              <p class="dropoff-sub">Show QR code at a Dispatch counter — no label needed</p>
+            </div>
+            <div class="dropoff-opt" id="optLabel" onclick="selectDropoff('label')">
+              <div class="dropoff-icon">🖨️</div>
+              <p class="dropoff-name">Print &amp; drop box</p>
+              <p class="dropoff-sub">Print label, attach to package, use any drop box</p>
+            </div>
+          </div>
+
+          <div class="dropoff-detail hidden" id="panelRetail">
+            <div class="qr-block">
+              <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eee;border-radius:6px;display:block;">
+                <rect width="120" height="120" fill="white"/>
+                <rect x="4" y="4" width="35" height="35" fill="#111" rx="2"/><rect x="9" y="9" width="25" height="25" fill="white"/><rect x="14" y="14" width="15" height="15" fill="#111"/>
+                <rect x="81" y="4" width="35" height="35" fill="#111" rx="2"/><rect x="86" y="9" width="25" height="25" fill="white"/><rect x="91" y="14" width="15" height="15" fill="#111"/>
+                <rect x="4" y="81" width="35" height="35" fill="#111" rx="2"/><rect x="9" y="86" width="25" height="25" fill="white"/><rect x="14" y="91" width="15" height="15" fill="#111"/>
+                <rect x="44" y="4" width="6" height="6" fill="#111"/><rect x="56" y="4" width="6" height="6" fill="#111"/><rect x="70" y="4" width="6" height="6" fill="#111"/>
+                <rect x="4" y="44" width="6" height="6" fill="#111"/><rect x="4" y="56" width="6" height="6" fill="#111"/><rect x="4" y="70" width="6" height="6" fill="#111"/>
+                <rect x="44" y="44" width="6" height="6" fill="#111"/><rect x="56" y="44" width="6" height="6" fill="#111"/><rect x="70" y="44" width="6" height="6" fill="#111"/>
+                <rect x="84" y="44" width="6" height="6" fill="#111"/><rect x="98" y="44" width="6" height="6" fill="#111"/><rect x="110" y="44" width="6" height="6" fill="#111"/>
+                <rect x="44" y="56" width="6" height="6" fill="#111"/><rect x="70" y="56" width="6" height="6" fill="#111"/><rect x="98" y="56" width="6" height="6" fill="#111"/>
+                <rect x="44" y="70" width="6" height="6" fill="#111"/><rect x="56" y="70" width="6" height="6" fill="#111"/><rect x="84" y="70" width="6" height="6" fill="#111"/>
+                <rect x="110" y="70" width="6" height="6" fill="#111"/><rect x="56" y="84" width="6" height="6" fill="#111"/><rect x="70" y="84" width="6" height="6" fill="#111"/>
+                <rect x="98" y="84" width="6" height="6" fill="#111"/><rect x="44" y="98" width="6" height="6" fill="#111"/><rect x="70" y="98" width="6" height="6" fill="#111"/>
+                <rect x="84" y="98" width="6" height="6" fill="#111"/><rect x="110" y="98" width="6" height="6" fill="#111"/>
+                <rect x="56" y="110" width="6" height="6" fill="#111"/><rect x="98" y="110" width="6" height="6" fill="#111"/><rect x="110" y="110" width="6" height="6" fill="#111"/>
+                <rect x="84" y="84" width="22" height="22" fill="#111" rx="1"/><rect x="88" y="88" width="14" height="14" fill="white"/><rect x="91" y="91" width="8" height="8" fill="#111"/>
+              </svg>
+              <p class="qr-caption">Show this at any Dispatch retail location.<br>The agent will scan and print your label at the counter.</p>
+            </div>
+            <div class="loc-block">
+              <p class="loc-name">📍 Nearest Dispatch location</p>
+              <p class="loc-addr">Dispatch Store — 2890 Lawrence Ave E<br>Toronto, ON &nbsp;M1P 2R4</p>
+              <p class="loc-hours">Mon–Fri 8am–7pm · Sat 9am–5pm · Sun 10am–4pm</p>
+            </div>
+          </div>
+
+          <div class="dropoff-detail hidden" id="panelLabel">
+            <div class="label-sheet">
+              <div class="label-carrier">
+                <span class="label-carrier-name">Dispatch Parcel Services</span>
+                <span class="success-track" id="labelTrack" style="font-size:0.68rem;"></span>
+              </div>
+              <div class="label-addresses">
+                <div><p class="label-section-tag">From</p><p class="label-addr-text" id="labelFrom">—</p></div>
+                <div><p class="label-section-tag">To</p><p class="label-addr-text" id="labelTo">—</p></div>
+              </div>
+              <div class="label-barcode"></div>
+            </div>
+            <button class="btn-print" id="btnPrint" onclick="handlePrint()">🖨️ Print shipping label</button>
+            <div class="loc-block">
+              <p class="loc-name">📦 Nearest drop box</p>
+              <p class="loc-addr">Dispatch Drop Box — 1200 Bay Street<br>Toronto, ON &nbsp;M5R 2A5</p>
+              <p class="loc-hours">Available 24/7 · Max 40 × 30 × 20 cm, 5 kg</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
+<script>
+let pkgType = null;
+
+function val(id) {
+  const el = document.getElementById(id);
+  return el && el.value.trim() !== '';
+}
+
+function checkFrom() {
+  const ok = val('fromFirst') && val('fromLast') && val('fromStreet') && val('fromCity') && val('fromProv') && val('fromPostal');
+  document.getElementById('btnFrom').style.display = ok ? 'inline-block' : 'none';
+}
+
+function checkTo() {
+  const ok = val('toFirst') && val('toLast') && val('toStreet') && val('toCity') && val('toProv') && val('toPostal');
+  document.getElementById('btnTo').style.display = ok ? 'inline-block' : 'none';
+}
+
+function checkDetails() {
+  let ok = false;
+  if (pkgType === 'envelope') ok = val('envWeight');
+  else if (pkgType === 'box') ok = val('boxL') && val('boxW') && val('boxH') && val('boxWeight');
+  document.getElementById('btnDetails').style.display = ok ? 'inline-block' : 'none';
+}
+
+function reveal(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('hidden');
+  setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+}
+
+function selectPkg(type) {
+  pkgType = type;
+  document.getElementById('pkgEnvelope').classList.toggle('selected', type === 'envelope');
+  document.getElementById('pkgBox').classList.toggle('selected', type === 'box');
+  document.getElementById('detailsHeading').textContent = type === 'envelope' ? 'Envelope details' : 'Box details';
+  document.getElementById('envDetails').style.display = type === 'envelope' ? 'block' : 'none';
+  document.getElementById('boxDetails').style.display = type === 'box' ? 'block' : 'none';
+  reveal('stepDetails');
+  checkDetails();
+}
+
+function revealQuote() {
+  let price, weight, delivery;
+  if (pkgType === 'envelope') {
+    weight = parseFloat(document.getElementById('envWeight').value) || 0.3;
+    price = 12.99 + weight * 1.5;
+    delivery = '2–3 business days';
+  } else {
+    weight = parseFloat(document.getElementById('boxWeight').value) || 1;
+    const l = parseFloat(document.getElementById('boxL').value) || 1;
+    const w = parseFloat(document.getElementById('boxW').value) || 1;
+    const h = parseFloat(document.getElementById('boxH').value) || 1;
+    const dimWeight = (l * w * h) / 5000;
+    const billable = Math.max(weight, dimWeight);
+    price = 8.99 + billable * 3.80;
+    delivery = '3–5 business days';
+  }
+  const withTax = (price * 1.13).toFixed(2);
+  document.getElementById('quotePrice').textContent = `$${price.toFixed(2)}`;
+  document.getElementById('quoteMeta').innerHTML = `${weight} kg · Est. with tax <strong>$${withTax}</strong> · ${delivery}`;
+  reveal('stepQuote');
+}
+
+function toTitleCase(s) { return s.replace(/\b\w/g, c => c.toUpperCase()); }
+
+function applyTitleCase(el) {
+  const pos = el.selectionStart;
+  const titled = toTitleCase(el.value);
+  if (titled !== el.value) { el.value = titled; try { el.setSelectionRange(pos, pos); } catch(e){} }
+}
+
+function markReq(el) { if (el.value.trim() === '') el.classList.add('invalid'); }
+function clearInvalid(el) { if (el.value.trim() !== '') el.classList.remove('invalid'); }
+
+function formatShipPostal(el) {
+  const pos = el.selectionStart;
+  const upper = el.value.toUpperCase().replace(/[^A-Z0-9 ]/g, '');
+  const stripped = upper.replace(/ /g, '').slice(0, 6);
+  let formatted;
+  if (stripped.length > 3) {
+    formatted = stripped.slice(0, 3) + ' ' + stripped.slice(3);
+  } else if (stripped.length === 3 && el.value.slice(-1) === ' ') {
+    formatted = stripped + ' ';
+  } else {
+    formatted = stripped;
+  }
+  if (el.value !== formatted) {
+    el.value = formatted;
+    const newPos = pos > 3 && formatted.charAt(3) === ' ' ? Math.min(pos + 1, formatted.length) : Math.min(pos, formatted.length);
+    try { el.setSelectionRange(newPos, newPos); } catch(e) {}
+  }
+}
+
+const CITY_PROV = {
+  'Brampton':'ON','Hamilton':'ON','London':'ON','Mississauga':'ON','Ottawa':'ON',
+  'Sudbury':'ON','Thunder Bay':'ON','Toronto':'ON','Windsor':'ON',
+  'Calgary':'AB','Edmonton':'AB',
+  'Vancouver':'BC','Victoria':'BC','Kelowna':'BC',
+  'Winnipeg':'MB','Moncton':'NB','St. John\'s':'NL','Halifax':'NS',
+  'Laval':'QC','Montreal':'QC','Quebec City':'QC',
+  'Regina':'SK','Saskatoon':'SK'
+};
+
+function autoFillProv(prefix) {
+  const city = document.getElementById(prefix + 'City').value;
+  const prov = CITY_PROV[city];
+  if (prov) {
+    const sel = document.getElementById(prefix + 'Prov');
+    sel.value = prov;
+    sel.classList.remove('invalid');
+  }
+}
+
+function toggleAcc(header) {
+  header.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
+}
+
+let finalPrice = '';
+
+function goToPayment() {
+  finalPrice = document.getElementById('quotePrice').textContent;
+  document.getElementById('payAmt').textContent = finalPrice;
+  reveal('stepPayment');
+}
+
+function formatCard(el) {
+  let v = el.value.replace(/\D/g, '').substring(0, 16);
+  el.value = v.replace(/(.{4})/g, '$1 ').trim();
+}
+
+function formatExpiry(el) {
+  let v = el.value.replace(/\D/g, '').substring(0, 4);
+  if (v.length >= 3) v = v.substring(0, 2) + ' / ' + v.substring(2);
+  el.value = v;
+}
+
+function checkPayment() {
+  const num  = document.getElementById('cardNum').value.replace(/\s/g, '');
+  const exp  = document.getElementById('cardExp').value.replace(/[\s/]/g, '');
+  const cvv  = document.getElementById('cardCvv').value;
+  const name = document.getElementById('cardName').value.trim();
+  document.getElementById('btnPay').disabled = !(num.length === 16 && exp.length === 4 && cvv.length >= 3 && name.length > 0);
+}
+
+function handlePay() {
+  const btn = document.getElementById('btnPay');
+  btn.textContent = 'Processing…';
+  btn.disabled = true;
+  setTimeout(() => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const seg = n => Array.from({length: n}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+    const tracking = `DSP-${seg(4)}-${seg(4)}-CA`;
+    document.getElementById('trackingNum').textContent = tracking;
+    document.getElementById('labelTrack').textContent = tracking;
+    const fromFirst = document.getElementById('fromFirst').value;
+    const fromLast  = document.getElementById('fromLast').value;
+    const fromStreet = document.getElementById('fromStreet').value;
+    const fromCity  = document.getElementById('fromCity').value;
+    const fromProv  = document.getElementById('fromProv').value;
+    const fromPostal = document.getElementById('fromPostal').value;
+    const toFirst   = document.getElementById('toFirst').value;
+    const toLast    = document.getElementById('toLast').value;
+    const toStreet  = document.getElementById('toStreet').value;
+    const toCity    = document.getElementById('toCity').value;
+    const toProv    = document.getElementById('toProv').value;
+    const toPostal  = document.getElementById('toPostal').value;
+    document.getElementById('labelFrom').innerHTML = `${fromFirst} ${fromLast}<br>${fromStreet}<br>${fromCity}, ${fromProv} ${fromPostal}`;
+    document.getElementById('labelTo').innerHTML   = `${toFirst} ${toLast}<br>${toStreet}<br>${toCity}, ${toProv} ${toPostal}`;
+    document.getElementById('stepPayment').style.display = 'none';
+    reveal('stepSuccess');
+  }, 1800);
+}
+
+function selectDropoff(type) {
+  document.getElementById('optRetail').classList.toggle('active', type === 'retail');
+  document.getElementById('optLabel').classList.toggle('active', type === 'label');
+  document.getElementById('panelRetail').classList.toggle('hidden', type !== 'retail');
+  document.getElementById('panelLabel').classList.toggle('hidden', type !== 'label');
+}
+
+function handlePrint() {
+  const btn = document.getElementById('btnPrint');
+  btn.textContent = '✓ Label sent to printer';
+  btn.style.background = '#059669';
+  btn.disabled = true;
+}
+</script>
+
+</body>
+</html>

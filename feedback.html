@@ -585,8 +585,22 @@
     const postalError = document.getElementById('postalError');
 
     function formatPostal(input) {
-      const raw = input.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 6);
-      input.value = raw.length > 3 ? raw.slice(0, 3) + ' ' + raw.slice(3) : raw;
+      const pos = input.selectionStart;
+      const upper = input.value.toUpperCase().replace(/[^A-Z0-9 ]/g, '');
+      const stripped = upper.replace(/ /g, '').slice(0, 6);
+      let formatted;
+      if (stripped.length > 3) {
+        formatted = stripped.slice(0, 3) + ' ' + stripped.slice(3);
+      } else if (stripped.length === 3 && input.value.slice(-1) === ' ') {
+        formatted = stripped + ' ';
+      } else {
+        formatted = stripped;
+      }
+      if (input.value !== formatted) {
+        input.value = formatted;
+        const newPos = pos > 3 && formatted.charAt(3) === ' ' ? Math.min(pos + 1, formatted.length) : Math.min(pos, formatted.length);
+        try { input.setSelectionRange(newPos, newPos); } catch(e) {}
+      }
     }
 
     function isValidPostal(value) {
@@ -680,6 +694,6 @@
       });
     });
   </script>
-  <a href="index.html" style="position:fixed;bottom:12px;right:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+  <a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
 </body>
 </html>

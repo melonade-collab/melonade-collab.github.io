@@ -21,7 +21,7 @@
 
     /* ── Phone shell ──────────────────────────────────────────────────── */
     .phone {
-      width: 375px;
+      width: min(375px, calc(100vw - 48px));
       height: min(720px, calc(100vh - 120px));
       background: #fff;
       border-radius: 44px;
@@ -257,32 +257,26 @@
   View collected data
 </a>
 
-<a href="index.html" style="position:fixed;bottom:12px;right:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+<a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
 
 <script>
 /* ── State ──────────────────────────────────────────────────────── */
 const d = { name:'', city:'', province:'', email:'', phone:'', postalCode:'', rating:null, message:'' };
 let step = 0;
-// 0=name 1=city 2=province 3=email 4=phone 5=postal 6=rating 7=message 8=done
+let reviewMode = false;
+// 0=name 1=city 2=province 3=email 4=phone 5=postal 6=rating 7=message 8=review 9=done
 
-function saveData() {
-  sessionStorage.setItem('assistant_data', JSON.stringify(d));
-}
+function saveData() { sessionStorage.setItem('assistant_data', JSON.stringify(d)); }
 
 /* ── Utilities ───────────────────────────────────────────────────── */
 function toTitleCase(s) { return s.replace(/\b\w/g, c => c.toUpperCase()); }
-
 function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim()); }
-
 function isValidPhone(p) { return p.replace(/\D/g, '').length >= 10; }
-
 function isValidPostal(p) {
-  const ca = /^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/;
-  const us = /^\d{5}(-\d{4})?$/;
-  return ca.test(p.trim()) || us.test(p.trim());
+  return /^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/.test(p.trim()) || /^\d{5}(-\d{4})?$/.test(p.trim());
 }
 
-/* ── City → province/territory lookup ───────────────────────────── */
+/* ── City → province lookup ──────────────────────────────────────── */
 const CITY_PROVINCE = {
   toronto:'Ontario', mississauga:'Ontario', brampton:'Ontario',
   hamilton:'Ontario', ottawa:'Ontario', london:'Ontario',
@@ -296,13 +290,11 @@ const CITY_PROVINCE = {
   burnaby:'British Columbia', richmond:'British Columbia',
   kelowna:'British Columbia', abbotsford:'British Columbia',
   victoria:'British Columbia', coquitlam:'British Columbia',
-  calgary:'Alberta', edmonton:'Alberta', 'red deer':'Alberta',
-  lethbridge:'Alberta',
+  calgary:'Alberta', edmonton:'Alberta', 'red deer':'Alberta', lethbridge:'Alberta',
   winnipeg:'Manitoba', brandon:'Manitoba',
   saskatoon:'Saskatchewan', regina:'Saskatchewan',
   halifax:'Nova Scotia', dartmouth:'Nova Scotia',
-  fredericton:'New Brunswick', moncton:'New Brunswick',
-  'saint john':'New Brunswick',
+  fredericton:'New Brunswick', moncton:'New Brunswick', 'saint john':'New Brunswick',
 };
 
 /* ── Clock ──────────────────────────────────────────────────────── */
@@ -312,22 +304,18 @@ const CITY_PROVINCE = {
   setTimeout(tick, (60 - n.getSeconds()) * 1000);
 })();
 
-/* ── Sentiment (mirrors feedback.html) ──────────────────────────── */
+/* ── Sentiment ───────────────────────────────────────────────────── */
 const POS = ['love','great','amaz','fantas','excell','wonder','awesome','perfect','best','good','happy','enjoy','pleas','thank','appreci','helpful','easy','smooth','brilliant','outstand'];
 const NEG = ['hate','terr','horr','awful','disappoint','worst','bad','poor','slow','frustrat','annoy','useless','broken','confus','complic','difficult','hard','bug','fail','unaccept'];
-
 function sentiment(txt) {
   const words = txt.toLowerCase().match(/[a-z']+/g) || [];
   let p = 0, n = 0;
-  words.forEach(w => {
-    if (POS.some(r => w.startsWith(r))) p++;
-    if (NEG.some(r => w.startsWith(r))) n++;
-  });
+  words.forEach(w => { if (POS.some(r => w.startsWith(r))) p++; if (NEG.some(r => w.startsWith(r))) n++; });
   if (!p && !n) return 'neutral';
   return p >= n ? 'positive' : 'negative';
 }
 
-/* ── Bot avatar SVG ─────────────────────────────────────────────── */
+/* ── Bot avatar ─────────────────────────────────────────────────── */
 const AVG = `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
   <line x1="20" y1="4" x2="20" y2="10" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
   <circle cx="20" cy="3.5" r="2" fill="rgba(255,255,255,0.8)"/>
@@ -342,65 +330,47 @@ const msgsEl = document.getElementById('msgs');
 function scroll() { msgsEl.scrollTop = msgsEl.scrollHeight; }
 
 function addBot(content, isHtml = false) {
-  const row = document.createElement('div');
-  row.className = 'msg bot';
-  const av = document.createElement('div');
-  av.className = 'msg-av'; av.innerHTML = AVG;
-  const bub = document.createElement('div');
-  bub.className = 'bubble';
+  const row = document.createElement('div'); row.className = 'msg bot';
+  const av = document.createElement('div'); av.className = 'msg-av'; av.innerHTML = AVG;
+  const bub = document.createElement('div'); bub.className = 'bubble';
   if (isHtml) bub.innerHTML = content; else bub.textContent = content;
-  row.append(av, bub);
-  msgsEl.appendChild(row);
-  scroll();
+  row.append(av, bub); msgsEl.appendChild(row); scroll();
 }
 
 function addUser(text) {
-  const row = document.createElement('div');
-  row.className = 'msg user';
-  const bub = document.createElement('div');
-  bub.className = 'bubble'; bub.textContent = text;
-  row.appendChild(bub);
-  msgsEl.appendChild(row);
-  scroll();
+  const row = document.createElement('div'); row.className = 'msg user';
+  const bub = document.createElement('div'); bub.className = 'bubble'; bub.textContent = text;
+  row.appendChild(bub); msgsEl.appendChild(row); scroll();
 }
 
 let typingEl = null;
 function showTyping() {
-  const row = document.createElement('div');
-  row.className = 'msg bot typing';
+  const row = document.createElement('div'); row.className = 'msg bot typing';
   const av = document.createElement('div'); av.className = 'msg-av'; av.innerHTML = AVG;
   const bub = document.createElement('div'); bub.className = 'bubble';
   bub.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
-  row.append(av, bub);
-  msgsEl.appendChild(row); scroll();
-  typingEl = row;
+  row.append(av, bub); msgsEl.appendChild(row); scroll(); typingEl = row;
 }
 function hideTyping() { typingEl?.remove(); typingEl = null; }
 
 function showChips() {
-  const row = document.createElement('div');
-  row.className = 'rating-row'; row.id = 'chips';
+  const row = document.createElement('div'); row.className = 'rating-row'; row.id = 'chips';
   for (let i = 0; i <= 10; i++) {
-    const b = document.createElement('button');
-    b.className = 'r-chip'; b.textContent = i;
-    b.onclick = () => pickRating(i);
-    row.appendChild(b);
+    const b = document.createElement('button'); b.className = 'r-chip'; b.textContent = i;
+    b.onclick = () => pickRating(i); row.appendChild(b);
   }
   msgsEl.appendChild(row); scroll();
 }
 
-/* ── Input control ───────────────────────────────────────────────── */
 function enableInput(ph = 'Type a message…') {
   const i = document.getElementById('inp'), b = document.getElementById('goBtn');
-  i.placeholder = ph; i.disabled = false; b.disabled = false;
-  setTimeout(() => i.focus(), 50);
+  i.placeholder = ph; i.disabled = false; b.disabled = false; setTimeout(() => i.focus(), 50);
 }
 function disableInput() {
   const i = document.getElementById('inp'), b = document.getElementById('goBtn');
   i.disabled = true; b.disabled = true; i.value = '';
 }
 
-/* ── Bot reply with typing delay ─────────────────────────────────── */
 function botSay(text, delay = 950, isHtml = false) {
   return new Promise(res => {
     showTyping();
@@ -408,7 +378,7 @@ function botSay(text, delay = 950, isHtml = false) {
   });
 }
 
-/* ── Conversation ────────────────────────────────────────────────── */
+/* ── Conversation steps ──────────────────────────────────────────── */
 function ratingReaction(r) {
   if (r >= 9) return '🌟 Amazing, thank you!';
   if (r >= 7) return '😊 Great to hear!';
@@ -427,33 +397,59 @@ async function afterName() {
   enableInput('Your city…');
 }
 
+function showCityConfirmChips() {
+  const row = document.createElement('div'); row.className = 'choice-row';
+  [["Yes, that's right", true], ['Let me retype', false]].forEach(([label, ok]) => {
+    const b = document.createElement('button'); b.className = 'choice-chip'; b.textContent = label;
+    b.onclick = () => {
+      row.querySelectorAll('.choice-chip').forEach(c => c.disabled = true);
+      addUser(label);
+      if (ok) { askProvince(); }
+      else { botSay('What city are you in?', 500).then(() => enableInput('Your city…')); }
+    };
+    row.appendChild(b);
+  });
+  msgsEl.appendChild(row); scroll();
+}
+
 function askProvince() {
   step = 2;
   const guess = CITY_PROVINCE[d.city.toLowerCase()];
-  if (guess) {
-    botSay(`Is that in ${guess}?`, 950).then(() => showYesNo(guess));
-  } else {
-    botSay(`Which province or state is ${d.city} in?`, 950)
-      .then(() => enableInput('Province or state…'));
-  }
+  if (guess) { botSay(`Is that in ${guess}?`, 950).then(() => showYesNo(guess)); }
+  else { botSay(`Which province or state is ${d.city} in?`, 950).then(() => enableInput('Province or state…')); }
 }
 
 function showYesNo(guess) {
-  const row = document.createElement('div');
-  row.className = 'choice-row'; row.id = 'yesno';
+  const row = document.createElement('div'); row.className = 'choice-row'; row.id = 'yesno';
   [['Yes ✓', true], ['Different province', false]].forEach(([label, isYes]) => {
-    const b = document.createElement('button');
-    b.className = 'choice-chip'; b.textContent = label;
+    const b = document.createElement('button'); b.className = 'choice-chip'; b.textContent = label;
     b.onclick = () => {
       row.querySelectorAll('.choice-chip').forEach(c => c.disabled = true);
       if (isYes) {
         addUser('Yes');
-        d.province = guess; saveData(); step = 3; afterProvince();
+        d.province = guess; saveData();
+        if (reviewMode) { step = 8; showReview(); }
+        else { step = 3; afterProvince(); }
       } else {
         addUser('Different province');
-        botSay(`Which province or state is ${d.city} in?`, 600)
-          .then(() => enableInput('Province or state…'));
+        botSay(`Which province or state is ${d.city} in?`, 600).then(() => enableInput('Province or state…'));
       }
+    };
+    row.appendChild(b);
+  });
+  msgsEl.appendChild(row); scroll();
+}
+
+function showMismatchChips(expected, entered) {
+  const row = document.createElement('div'); row.className = 'choice-row';
+  [[`Keep ${entered}`, false], [`Use ${expected}`, true]].forEach(([label, useExpected]) => {
+    const b = document.createElement('button'); b.className = 'choice-chip'; b.textContent = label;
+    b.onclick = () => {
+      row.querySelectorAll('.choice-chip').forEach(c => c.disabled = true);
+      addUser(label);
+      if (useExpected) { d.province = expected; saveData(); }
+      if (reviewMode) { step = 8; showReview(); }
+      else { step = 3; afterProvince(); }
     };
     row.appendChild(b);
   });
@@ -466,36 +462,77 @@ async function afterProvince() {
   enableInput('Your email…');
 }
 
-async function afterEmail() {
-  await botSay("Thanks! What's your phone number? (Type 'skip' to skip)");
-  enableInput('Your phone…');
+async function afterEmail()  { await botSay("Thanks! What's your phone number? (Type 'skip' to skip)"); enableInput('Your phone…'); }
+async function afterPhone()  { await botSay("Almost there! What's your postal or zip code? (Type 'skip' to skip)"); enableInput('Postal/zip code…'); }
+async function afterPostal() { await botSay('On a scale of 0 to 10, how would you rate your experience overall?'); showChips(); }
+async function afterRating() { await botSay(`${ratingReaction(d.rating)} Any thoughts or feedback you'd like to share?`); enableInput('Your feedback…'); }
+
+/* ── Review step ─────────────────────────────────────────────────── */
+function buildReviewHTML() {
+  const loc = [d.city, d.province].filter(Boolean).join(', ') || '—';
+  let html = `<div class="summary"><div class="summary-label">Review your information</div>`;
+  html += `<strong>Name:</strong> ${d.name || '—'}<br>`;
+  html += `<strong>Location:</strong> ${loc}<br>`;
+  html += `<strong>Email:</strong> ${d.email || 'Not provided'}<br>`;
+  html += `<strong>Phone:</strong> ${d.phone || 'Not provided'}<br>`;
+  html += `<strong>Postal:</strong> ${d.postalCode || 'Not provided'}<br>`;
+  html += `<strong>Rating:</strong> ${d.rating !== null ? d.rating + '/10' : '—'}`;
+  html += `</div>`;
+  return html;
 }
 
-async function afterPhone() {
-  await botSay("Almost there! What's your postal or zip code? (Type 'skip' to skip)");
-  enableInput('Postal/zip code…');
+async function showReview() {
+  step = 8; reviewMode = true;
+  await botSay(buildReviewHTML(), 1000, true);
+  await botSay("Does everything look correct, or is there anything you'd like to change?", 800);
+  const row = document.createElement('div'); row.className = 'choice-row';
+  [['All correct ✓', true], ['Change something', false]].forEach(([label, ok]) => {
+    const b = document.createElement('button'); b.className = 'choice-chip'; b.textContent = label;
+    b.onclick = () => {
+      row.querySelectorAll('.choice-chip').forEach(c => c.disabled = true);
+      addUser(label);
+      if (ok) { reviewMode = false; afterReview(); }
+      else { showChangeFieldChips(); }
+    };
+    row.appendChild(b);
+  });
+  msgsEl.appendChild(row); scroll();
 }
 
-async function afterPostal() {
-  await botSay('On a scale of 0 to 10, how would you rate your experience overall?');
-  showChips();
+function showChangeFieldChips() {
+  botSay('Which would you like to update?', 700).then(() => {
+    const row = document.createElement('div'); row.className = 'choice-row';
+    [
+      ['Name',     () => reAskStep(0, 'What name should I use?', 'Your name…')],
+      ['Location', () => reAskStep(1, 'What city are you in?', 'Your city…')],
+      ['Email',    () => reAskStep(3, "What's your email? (Type 'skip' to remove)", 'Your email…')],
+      ['Phone',    () => reAskStep(4, "What's your phone? (Type 'skip' to remove)", 'Your phone…')],
+      ['Postal',   () => reAskStep(5, "What's your postal or zip? (Type 'skip' to remove)", 'Postal/zip code…')],
+      ['Rating',   () => { step = 6; botSay('Pick a new rating:', 700).then(showChips); }],
+    ].forEach(([label, action]) => {
+      const b = document.createElement('button'); b.className = 'choice-chip'; b.textContent = label;
+      b.onclick = () => { row.querySelectorAll('.choice-chip').forEach(c => c.disabled = true); addUser(label); action(); };
+      row.appendChild(b);
+    });
+    msgsEl.appendChild(row); scroll();
+  });
 }
 
-async function afterRating() {
-  await botSay(`${ratingReaction(d.rating)} Any thoughts or feedback you'd like to share?`);
-  enableInput('Your feedback…');
+function reAskStep(s, question, placeholder) {
+  step = s;
+  botSay(question, 700).then(() => enableInput(placeholder));
 }
 
-async function afterMessage() {
+/* ── Final summary ───────────────────────────────────────────────── */
+async function afterReview() {
   const tone = sentiment(d.message);
-  d.sentiment = tone;
-  saveData();
+  d.sentiment = tone; saveData();
 
   const high = d.rating >= 7 && tone === 'negative';
   const low  = d.rating <= 3 && tone === 'positive';
   const toneLabel = { positive: 'positive 😊', negative: 'negative 😟', neutral: 'neutral 😐' }[tone];
-
   const loc = d.province ? `${d.city}, ${d.province}` : d.city;
+
   let html = `<div class="summary"><div class="summary-label">Feedback Summary</div>`;
   html += `<strong>${d.name}</strong> from ${loc}<br>`;
   html += `Rated their experience <strong>${d.rating}/10</strong><br>`;
@@ -510,63 +547,78 @@ async function afterMessage() {
 
   await botSay(html, 1100, true);
   await botSay(`That's everything — thanks so much, ${d.name}! Have a great day 😊`, 1000);
+  step = 9;
 }
 
+/* ── Rating picker ───────────────────────────────────────────────── */
 function pickRating(r) {
-  const chips = document.getElementById('chips');
-  chips.querySelectorAll('.r-chip').forEach((c, i) => {
-    c.classList.toggle('picked', i === r);
-    c.disabled = true;
+  document.getElementById('chips').querySelectorAll('.r-chip').forEach((c, i) => {
+    c.classList.toggle('picked', i === r); c.disabled = true;
   });
-  d.rating = r;
-  saveData();
-  addUser(`${r} / 10`);
-  step = 7;
-  afterRating();
+  d.rating = r; saveData(); addUser(`${r} / 10`);
+  if (reviewMode) { step = 8; showReview(); }
+  else { step = 7; afterRating(); }
 }
 
+/* ── Send handler ────────────────────────────────────────────────── */
 function send() {
   const inp = document.getElementById('inp');
   const txt = inp.value.trim();
   if (!txt) return;
-  disableInput();
-  addUser(txt);
+  disableInput(); addUser(txt);
   const skip = txt.toLowerCase() === 'skip';
 
   if (step === 0) {
-    d.name = toTitleCase(txt); saveData(); step = 1; afterName();
+    d.name = toTitleCase(txt); saveData();
+    if (reviewMode) { step = 8; showReview(); } else { step = 1; afterName(); }
+
   } else if (step === 1) {
-    d.city = toTitleCase(txt); saveData(); askProvince();
+    d.city = toTitleCase(txt); saveData();
+    if (!CITY_PROVINCE[d.city.toLowerCase()]) {
+      botSay(`I don't recognise "${d.city}" as a Canadian city — does that look right?`, 700).then(showCityConfirmChips);
+    } else { askProvince(); }
+
   } else if (step === 2) {
-    d.province = txt; saveData(); step = 3; afterProvince();
+    const expected = CITY_PROVINCE[d.city.toLowerCase()];
+    d.province = txt; saveData();
+    if (expected && expected.toLowerCase() !== txt.toLowerCase()) {
+      botSay(`Just so you know — ${d.city} is typically in ${expected}, not ${txt}. Which should I use?`, 800)
+        .then(() => showMismatchChips(expected, txt));
+    } else {
+      if (reviewMode) { step = 8; showReview(); } else { step = 3; afterProvince(); }
+    }
+
   } else if (step === 3) {
     if (!skip && !isValidEmail(txt)) {
-      botSay("Hmm, that doesn't look like a valid email — can you double-check it?", 700)
-        .then(() => enableInput('Your email…'));
+      botSay("Hmm, that doesn't look like a valid email — can you double-check it?", 700).then(() => enableInput('Your email…'));
     } else {
-      d.email = skip ? '' : txt; saveData(); step = 4; afterEmail();
+      d.email = skip ? '' : txt; saveData();
+      if (reviewMode) { step = 8; showReview(); } else { step = 4; afterEmail(); }
     }
+
   } else if (step === 4) {
     if (!skip && !isValidPhone(txt)) {
-      botSay("That doesn't look like a full phone number — it needs at least 10 digits. Try again or type 'skip'.", 700)
-        .then(() => enableInput('Your phone…'));
+      botSay("That doesn't look like a full phone number — needs at least 10 digits. Try again or type 'skip'.", 700).then(() => enableInput('Your phone…'));
     } else {
-      d.phone = skip ? '' : txt; saveData(); step = 5; afterPhone();
+      d.phone = skip ? '' : txt; saveData();
+      if (reviewMode) { step = 8; showReview(); } else { step = 5; afterPhone(); }
     }
+
   } else if (step === 5) {
     if (!skip && !isValidPostal(txt)) {
-      botSay("That postal code doesn't look right. Canadian: M5V 1A1 · US: 90210. Try again or type 'skip'.", 700)
-        .then(() => enableInput('Postal/zip code…'));
+      botSay("That postal code doesn't look right. Canadian: M5V 1A1 · US: 90210. Try again or type 'skip'.", 700).then(() => enableInput('Postal/zip code…'));
     } else {
-      d.postalCode = skip ? '' : txt.toUpperCase(); saveData(); step = 6; afterPostal();
+      d.postalCode = skip ? '' : txt.toUpperCase(); saveData();
+      if (reviewMode) { step = 8; showReview(); } else { step = 6; afterPostal(); }
     }
+
   } else if (step === 7) {
-    d.message = txt; step = 8; afterMessage();
+    d.message = txt; saveData(); showReview();
   }
 }
 
 /* ── Boot ────────────────────────────────────────────────────────── */
-saveData(); // persist empty state so data page always has something to show
+saveData();
 setTimeout(start, 500);
 </script>
 

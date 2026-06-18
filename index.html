@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -59,7 +59,22 @@
       letter-spacing: 2px;
       text-transform: uppercase;
       color: #aaa;
+      margin-bottom: 8px;
+    }
+
+    .section-headline {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      color: #111;
       margin-bottom: 28px;
+    }
+
+    .section-desc {
+      font-size: 0.85rem;
+      color: #888;
+      line-height: 1.6;
+      margin-bottom: 36px;
     }
 
     /* ── Project cards ── */
@@ -162,8 +177,8 @@
 
   <header class="site-header">
     <p class="eyebrow">Portfolio</p>
-    <h1 class="site-name">From Problems to Products</h1>
-    <p class="site-desc">Hi, I'm Melanie. I use prototypes as a product discovery and validation tool. This is my collection of prototypes and experiments — ideas brought to life.</p>
+    <h1 class="site-name">Ideas brought to life</h1>
+    <p class="site-desc">Hi, I'm Melanie. I use prototypes as a product discovery and validation tool. This is my collection of prototypes and experiments.</p>
     <div style="display: flex; align-items: center; gap: 14px; margin-top: 16px;">
       <a href="mailto:melanie.w.wiltshire@gmail.com" style="display: flex; align-items: center; color: #bbb; transition: color 0.2s;" onmouseover="this.style.color='#1a1a1a'" onmouseout="this.style.color='#bbb'">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -181,6 +196,7 @@
 
   <main>
     <p class="section-title">Prototypes</p>
+    <p class="section-desc">What I've built. Standalone experiments exploring different UX patterns, interaction models, or product concepts.</p>
 
     <div class="projects">
 
@@ -256,38 +272,6 @@
         <span class="project-arrow">→</span>
       </a>
 
-      <a href="fanpage.html" class="project-card">
-        <div class="project-icon" style="background: #04061a;">
-          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-            <!-- dark background -->
-            <rect x="0" y="0" width="64" height="64" rx="5" fill="#04061a"/>
-            <!-- red header band -->
-            <rect x="0" y="0" width="64" height="12" rx="3" fill="#b91c1c"/>
-            <!-- gold stars -->
-            <circle cx="10" cy="6" r="1.5" fill="#fbbf24" opacity="0.9"/>
-            <circle cx="54" cy="6" r="1.5" fill="#fbbf24" opacity="0.9"/>
-            <circle cx="32" cy="6" r="1"   fill="#fbbf24" opacity="0.7"/>
-            <circle cx="8"  cy="24" r="1"  fill="#fbbf24" opacity="0.5"/>
-            <circle cx="56" cy="36" r="1"  fill="#fbbf24" opacity="0.5"/>
-            <circle cx="14" cy="50" r="1"  fill="#1d4ed8" opacity="0.7"/>
-            <circle cx="52" cy="52" r="1"  fill="#1d4ed8" opacity="0.6"/>
-            <circle cx="48" cy="22" r="1"  fill="#fbbf24" opacity="0.4"/>
-            <!-- large musical note in gold -->
-            <text x="32" y="46" text-anchor="middle" font-size="30" fill="#fbbf24" font-family="serif">♪</text>
-            <!-- blue accent dots -->
-            <circle cx="18" cy="56" r="2" fill="#1d4ed8" opacity="0.8"/>
-            <circle cx="46" cy="56" r="2" fill="#b91c1c" opacity="0.8"/>
-          </svg>
-        </div>
-        <div class="project-info">
-          <p class="project-tag" style="color: #7c3aed;">Fan page</p>
-          <p class="project-name">Fan Page</p>
-          <p class="project-desc">A throwback to my very first website, built when I was 11. A fully nostalgic, Geocities-era, Dru Hill fan page circa 1998. Snow and all.</p>
-        </div>
-        <span class="project-arrow">→</span>
-      </a>
-
-
       <div class="project-card" style="opacity: 0.45; cursor: default; pointer-events: none;">
         <div class="project-icon" style="background: #f0f0ee;">
           <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
@@ -348,10 +332,63 @@
       </div>
 
     </div>
+
+    <div style="margin-top: 64px;">
+      <p class="section-title">Re-imaginings</p>
+      <p class="section-desc">From problems to products: reconstructed based on product ownership experience. Original UIs have since been redesigned/end-of-lifed.</p>
+
+      <div class="projects">
+
+        <a href="shipping.html" class="project-card">
+          <div class="project-icon" style="background: #fef3c7;">
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+              <polygon points="10,24 32,36 32,56 10,44" fill="#b45309"/>
+              <polygon points="32,36 54,24 54,44 32,56" fill="#92400e"/>
+              <polygon points="10,24 32,12 54,24 32,36" fill="#d97706"/>
+              <line x1="10" y1="24" x2="54" y2="24" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+              <line x1="32" y1="12" x2="32" y2="36" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="project-info">
+            <p class="project-tag" style="color: #7C3AED;">Consumer shipping</p>
+            <p class="project-name">Consumer Shipping Tool</p>
+            <p class="project-desc">A guest shipping experience for a carrier built on business accounts — progressive disclosure on a single page.</p>
+          </div>
+          <span class="project-arrow">→</span>
+        </a>
+
+        <a href="fanpage.html" class="project-card">
+          <div class="project-icon" style="background: #04061a;">
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+              <rect x="0" y="0" width="64" height="64" rx="5" fill="#04061a"/>
+              <rect x="0" y="0" width="64" height="12" rx="3" fill="#b91c1c"/>
+              <circle cx="10" cy="6" r="1.5" fill="#fbbf24" opacity="0.9"/>
+              <circle cx="54" cy="6" r="1.5" fill="#fbbf24" opacity="0.9"/>
+              <circle cx="32" cy="6" r="1"   fill="#fbbf24" opacity="0.7"/>
+              <circle cx="8"  cy="24" r="1"  fill="#fbbf24" opacity="0.5"/>
+              <circle cx="56" cy="36" r="1"  fill="#fbbf24" opacity="0.5"/>
+              <circle cx="14" cy="50" r="1"  fill="#1d4ed8" opacity="0.7"/>
+              <circle cx="52" cy="52" r="1"  fill="#1d4ed8" opacity="0.6"/>
+              <circle cx="48" cy="22" r="1"  fill="#fbbf24" opacity="0.4"/>
+              <text x="32" y="46" text-anchor="middle" font-size="30" fill="#fbbf24" font-family="serif">♪</text>
+              <circle cx="18" cy="56" r="2" fill="#1d4ed8" opacity="0.8"/>
+              <circle cx="46" cy="56" r="2" fill="#b91c1c" opacity="0.8"/>
+            </svg>
+          </div>
+          <div class="project-info">
+            <p class="project-tag" style="color: #7c3aed;">Fan page</p>
+            <p class="project-name">Fan Page</p>
+            <p class="project-desc">A throwback to my very first website, built when I was 11. A fully nostalgic, Geocities-era, Dru Hill fan page circa 1998. Snow and all.</p>
+          </div>
+          <span class="project-arrow">→</span>
+        </a>
+      </div>
+    </div>
+
   </main>
 
 
-  <footer style="border-top:1px solid #e8e8e4;padding:28px 40px;max-width:800px;margin:0 auto;font-size:0.8rem;color:#bbb;">(c) 2026. Melanie Wellington-Wiltshire.</footer>
+  <footer style="border-top:1px solid #e8e8e4;padding:28px 40px;max-width:800px;margin:0 auto;font-size:0.8rem;color:#bbb;">© 2026 Melanie Wellington-Wiltshire.</footer>
 
 </body>
 </html>
