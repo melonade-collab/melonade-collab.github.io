@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collected Data</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f2f3f7;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 48px 24px 64px;
+    }
+
+    .page {
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #7986cb;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #111;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    /* ── Status badge ──────────────────────────────────────────────── */
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #c5cae9;
+    }
+    .status-dot.complete { background: #43a047; }
+    .status-label { font-size: 0.78rem; color: #888; }
+
+    /* ── Field table ───────────────────────────────────────────────── */
+    .field-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .field-card-header {
+      padding: 12px 18px 10px;
+      border-bottom: 1px solid #f0f0ee;
+      font-size: 0.67rem;
+      font-weight: 700;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: #7986cb;
+    }
+
+    .field-row {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      padding: 10px 18px;
+      border-bottom: 1px solid #f7f7f5;
+    }
+    .field-row:last-child { border-bottom: none; }
+
+    .field-key {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #aaa;
+      width: 110px;
+      flex-shrink: 0;
+      text-transform: capitalize;
+    }
+
+    .field-val {
+      font-size: 0.875rem;
+      color: #1a1a1a;
+      word-break: break-all;
+    }
+    .field-val.empty { color: #ccc; font-style: italic; }
+
+    .sentiment-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .sentiment-badge.positive { background: #e8f5e9; color: #2e7d32; }
+    .sentiment-badge.negative { background: #fce4ec; color: #c62828; }
+    .sentiment-badge.neutral  { background: #eeeeee; color: #555; }
+
+    /* ── JSON block ────────────────────────────────────────────────── */
+    .json-card {
+      background: #1a237e;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 28px;
+      overflow-x: auto;
+    }
+    .json-card pre {
+      font-family: "SF Mono", "Fira Code", "Courier New", monospace;
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: #c5cae9;
+      white-space: pre-wrap;
+    }
+    .json-key   { color: #90caf9; }
+    .json-str   { color: #a5d6a7; }
+    .json-num   { color: #ffcc80; }
+    .json-null  { color: #ef9a9a; }
+
+    /* ── Back button ───────────────────────────────────────────────── */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 10px;
+      background: #fff; border: 1.5px solid #c5cae9;
+      color: #3949ab; font-size: 0.85rem; font-weight: 600;
+      font-family: inherit; cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      transition: all 0.15s;
+    }
+    .back-btn:hover { background: #e8eaf6; border-color: #3949ab; }
+
+    .warning-card {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      color: #795548;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+  <p class="eyebrow">Feedback Assistant</p>
+  <h1>Collected Data</h1>
+  <p class="subtitle">Structured data captured during the conversation. This is what would be sent to a backend or CRM on form submission.</p>
+
+  <div class="status-row" id="statusRow">
+    <div class="status-dot" id="statusDot"></div>
+    <span class="status-label" id="statusLabel">Loading…</span>
+  </div>
+
+  <div id="warningEl" class="warning-card" style="display:none;">
+    No conversation data found. Start a chat in the assistant first, then come back here.
+  </div>
+
+  <!-- Human-readable table -->
+  <div class="field-card" id="fieldCard">
+    <div class="field-card-header">Contact Information</div>
+    <div class="field-row"><span class="field-key">Name</span>        <span class="field-val" id="fName">—</span></div>
+    <div class="field-row"><span class="field-key">City</span>        <span class="field-val" id="fCity">—</span></div>
+    <div class="field-row"><span class="field-key">Email</span>       <span class="field-val" id="fEmail">—</span></div>
+    <div class="field-row"><span class="field-key">Phone</span>       <span class="field-val" id="fPhone">—</span></div>
+    <div class="field-row"><span class="field-key">Postal / Zip</span><span class="field-val" id="fPostal">—</span></div>
+  </div>
+
+  <div class="field-card">
+    <div class="field-card-header">Feedback</div>
+    <div class="field-row"><span class="field-key">Rating</span>    <span class="field-val" id="fRating">—</span></div>
+    <div class="field-row"><span class="field-key">Sentiment</span> <span class="field-val" id="fSentiment">—</span></div>
+    <div class="field-row"><span class="field-key">Message</span>   <span class="field-val" id="fMessage" style="white-space:pre-wrap;">—</span></div>
+  </div>
+
+  <!-- JSON representation -->
+  <div class="field-card" style="margin-bottom:20px;">
+    <div class="field-card-header">Raw JSON payload</div>
+    <div class="json-card" style="border-radius:0 0 12px 12px; margin:0;">
+      <pre id="jsonBlock">Loading…</pre>
+    </div>
+  </div>
+
+  <a href="assistant.html" class="back-btn">← Back to assistant</a>
+</div>
+
+<a href="index.html" style="position:fixed;bottom:12px;right:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
+<script>
+function val(v) {
+  return (v === null || v === undefined || v === '') ? null : v;
+}
+
+function renderField(id, v, suffix) {
+  const el = document.getElementById(id);
+  if (v === null || v === '') {
+    el.textContent = 'Not provided';
+    el.className = 'field-val empty';
+  } else {
+    el.textContent = suffix ? `${v}${suffix}` : v;
+    el.className = 'field-val';
+  }
+}
+
+function syntaxHighlight(json) {
+  return json
+    .replace(/("[\w]+")\s*:/g, '<span class="json-key">$1</span>:')
+    .replace(/:\s*(".*?")/g, ': <span class="json-str">$1</span>')
+    .replace(/:\s*(\d+(?:\.\d+)?)/g, ': <span class="json-num">$1</span>')
+    .replace(/:\s*(null)/g, ': <span class="json-null">$1</span>');
+}
+
+const raw = sessionStorage.getItem('assistant_data');
+
+if (!raw) {
+  document.getElementById('warningEl').style.display = 'block';
+  document.getElementById('fieldCard').style.display = 'none';
+  document.getElementById('statusDot').className = 'status-dot';
+  document.getElementById('statusLabel').textContent = 'No data — start a conversation first';
+  document.getElementById('jsonBlock').textContent = 'null';
+} else {
+  const d = JSON.parse(raw);
+  const isComplete = d.rating !== null && d.message !== '';
+
+  document.getElementById('statusDot').className = 'status-dot' + (isComplete ? ' complete' : '');
+  document.getElementById('statusLabel').textContent = isComplete
+    ? 'Conversation complete — all fields collected'
+    : 'Conversation in progress — data updates in real time';
+
+  renderField('fName',    d.name,       null);
+  renderField('fCity',    d.city,       null);
+  renderField('fEmail',   d.email,      null);
+  renderField('fPhone',   d.phone,      null);
+  renderField('fPostal',  d.postalCode, null);
+  renderField('fRating',  d.rating !== null ? d.rating : null, ' / 10');
+  renderField('fMessage', d.message,    null);
+
+  const sentEl = document.getElementById('fSentiment');
+  if (d.sentiment) {
+    sentEl.innerHTML = `<span class="sentiment-badge ${d.sentiment}">${d.sentiment}</span>`;
+  } else {
+    sentEl.textContent = 'Not yet analysed';
+    sentEl.className = 'field-val empty';
+  }
+
+  const payload = {
+    name:       d.name       || null,
+    city:       d.city       || null,
+    email:      d.email      || null,
+    phone:      d.phone      || null,
+    postalCode: d.postalCode || null,
+    rating:     d.rating,
+    sentiment:  d.sentiment  || null,
+    message:    d.message    || null,
+  };
+
+  document.getElementById('jsonBlock').innerHTML =
+    syntaxHighlight(JSON.stringify(payload, null, 2));
+}
+</script>
+
+</body>
+</html>

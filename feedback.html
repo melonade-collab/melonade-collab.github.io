@@ -218,6 +218,16 @@
       display: none;
     }
 
+    .data-view { margin-top: 28px; text-align: left; }
+    .data-view-label { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.9px; text-transform: uppercase; color: #7986cb; margin-bottom: 12px; }
+    .data-field-row { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid #e8eaf6; font-size: 0.82rem; }
+    .data-field-row:last-child { border-bottom: none; }
+    .data-field-key { color: #aaa; font-weight: 600; width: 100px; flex-shrink: 0; }
+    .data-field-val { color: #1a1a1a; }
+    .data-field-val.empty { color: #ccc; font-style: italic; }
+    .data-json-wrap { margin-top: 16px; background: #1a237e; border-radius: 8px; padding: 14px; overflow-x: auto; }
+    .data-json-wrap pre { font-family: "SF Mono","Fira Code",monospace; font-size: 0.75rem; line-height: 1.6; color: #c5cae9; white-space: pre-wrap; }
+
     @media (max-width: 520px) {
       body {
         align-items: flex-start;
@@ -359,6 +369,11 @@
       <h1>Thanks for your feedback!</h1>
       <p class="subtitle">We'll get back to you at the email you provided.</p>
       <p style="font-size: 0.78rem; color: #bbb; margin-top: 6px;">(Demo purposes only)</p>
+      <div class="data-view" id="dataView" style="display:none;">
+        <div class="data-view-label">What was collected</div>
+        <div id="dataTable"></div>
+        <div class="data-json-wrap"><pre id="dataJson"></pre></div>
+      </div>
     </div>
   </div>
 
@@ -414,8 +429,10 @@
       buildFormSummary();
     }
 
+    function toTitleCase(s) { return s.replace(/\b\w/g, c => c.toUpperCase()); }
+
     function buildFormSummary() {
-      const name     = document.getElementById('name').value.trim();
+      const name     = toTitleCase(document.getElementById('name').value.trim());
       const email    = document.getElementById('email').value.trim();
       const phone    = document.getElementById('phone').value.trim();
       const city     = document.getElementById('city').value;
@@ -586,11 +603,38 @@
 
     postalInput.addEventListener('blur', validatePostal);
 
+    function populateDataView(d) {
+      const fields = [
+        { key: 'name',      val: d.name },
+        { key: 'email',     val: d.email },
+        { key: 'phone',     val: d.phone },
+        { key: 'city',      val: d.city ? (d.province ? `${d.city}, ${d.province}` : d.city) : null },
+        { key: 'postal',    val: d.postal },
+        { key: 'rating',    val: d.rating !== null ? `${d.rating} / 10` : null },
+        { key: 'sentiment', val: d.sentiment },
+        { key: 'message',   val: d.message },
+      ];
+      document.getElementById('dataTable').innerHTML = fields.map(f =>
+        `<div class="data-field-row">
+          <span class="data-field-key">${f.key}</span>
+          <span class="data-field-val${!f.val ? ' empty' : ''}">${f.val || 'Not provided'}</span>
+        </div>`
+      ).join('');
+      const payload = {
+        name: d.name || null, email: d.email || null, phone: d.phone || null,
+        city: d.city || null, province: d.province || null,
+        postalCode: d.postal || null, rating: d.rating,
+        sentiment: d.sentiment || null, message: d.message || null,
+      };
+      document.getElementById('dataJson').textContent = JSON.stringify(payload, null, 2);
+      document.getElementById('dataView').style.display = 'block';
+    }
+
     // Submit
     document.getElementById('feedbackForm').addEventListener('submit', function (e) {
       e.preventDefault();
 
-      const name = document.getElementById('name').value.trim();
+      const name = toTitleCase(document.getElementById('name').value.trim());
       const email = emailInput.value.trim();
       const message = document.getElementById('message').value.trim();
 
@@ -620,6 +664,15 @@
       document.querySelector('h1').style.display = 'none';
       document.querySelector('.subtitle').style.display = 'none';
       document.getElementById('success').style.display = 'block';
+      populateDataView({
+        name, email, message,
+        phone:     document.getElementById('phone').value.trim(),
+        city:      document.getElementById('city').value,
+        province:  document.getElementById('province').value,
+        postal:    document.getElementById('postal').value.trim(),
+        rating:    selectedRating,
+        sentiment: message ? { happy: 'positive', angry: 'negative', neutral: 'neutral' }[analyseSentiment(message)] : null,
+      });
     });
   </script>
   <a href="index.html" style="position:fixed;bottom:12px;right:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>

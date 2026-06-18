@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conversational Feedback</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #dde1e7;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 24px 40px;
+      gap: 20px;
+    }
+
+    /* ── Phone shell ──────────────────────────────────────────────────── */
+    .phone {
+      width: 375px;
+      height: min(720px, calc(100vh - 120px));
+      background: #fff;
+      border-radius: 44px;
+      box-shadow:
+        0 0 0 8px #111,
+        0 0 0 11px #2a2a2a,
+        0 28px 64px rgba(0,0,0,0.35);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Status bar ───────────────────────────────────────────────────── */
+    .status-bar {
+      background: #1a237e;
+      padding: 10px 22px 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .status-time { color: #fff; font-size: 0.78rem; font-weight: 700; }
+    .status-icons { color: rgba(255,255,255,0.7); font-size: 0.7rem; letter-spacing: 2px; }
+
+    /* ── Chat header ──────────────────────────────────────────────────── */
+    .chat-header {
+      background: #1a237e;
+      padding: 8px 16px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .bot-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #283593;
+      border: 2px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .bot-avatar svg { width: 22px; height: 22px; }
+    .chat-header-info h2 { color: #fff; font-size: 0.9rem; font-weight: 600; line-height: 1.3; }
+    .chat-header-info p  { color: rgba(255,255,255,0.5); font-size: 0.7rem; }
+
+    /* ── Messages ─────────────────────────────────────────────────────── */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #f2f3f7;
+    }
+
+    .msg { display: flex; gap: 8px; align-items: flex-end; }
+    .msg.bot  { align-self: flex-start; max-width: 84%; }
+    .msg.user { align-self: flex-end; flex-direction: row-reverse; max-width: 84%; }
+
+    .msg-av {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #283593; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .msg-av svg { width: 16px; height: 16px; }
+
+    .bubble {
+      padding: 10px 14px;
+      font-size: 0.875rem;
+      line-height: 1.55;
+    }
+    .msg.bot .bubble {
+      background: #fff;
+      color: #1a1a1a;
+      border-radius: 18px 18px 18px 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    }
+    .msg.user .bubble {
+      background: #1a237e;
+      color: #fff;
+      border-radius: 18px 18px 4px 18px;
+    }
+
+    /* ── Typing dots ──────────────────────────────────────────────────── */
+    .typing .bubble { padding: 14px 14px 10px; }
+    .dots { display: flex; gap: 4px; align-items: center; height: 10px; }
+    .dots span {
+      width: 7px; height: 7px; border-radius: 50%; background: #bbb;
+      animation: bop 1.2s infinite ease-in-out;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bop {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* ── Rating chips ─────────────────────────────────────────────────── */
+    .rating-row {
+      display: flex; flex-wrap: wrap; gap: 7px;
+      padding: 4px 0 4px 36px;
+    }
+    .r-chip {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2px solid #c5cae9; background: #fff;
+      font-size: 0.8rem; font-weight: 600; color: #3949ab;
+      cursor: pointer; transition: all 0.12s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .r-chip:hover    { background: #e8eaf6; border-color: #3949ab; }
+    .r-chip.picked   { background: #1a237e; color: #fff; border-color: #1a237e; }
+    .r-chip:disabled { opacity: 0.5; cursor: default; }
+
+    /* ── Summary card ─────────────────────────────────────────────────── */
+    .summary {
+      background: #e8eaf6;
+      border-radius: 12px;
+      padding: 11px 13px;
+      font-size: 0.82rem;
+      line-height: 1.75;
+      color: #1a1a1a;
+    }
+    .summary-label {
+      font-size: 0.67rem; font-weight: 700; letter-spacing: 0.9px;
+      text-transform: uppercase; color: #7986cb; margin-bottom: 6px;
+    }
+    .summary em { font-style: normal; font-size: 0.78rem; }
+
+    /* ── Input area ───────────────────────────────────────────────────── */
+    .input-area {
+      padding: 10px 12px 14px;
+      background: #fff;
+      border-top: 1px solid #e8e8e4;
+      display: flex; gap: 8px; align-items: center;
+      flex-shrink: 0;
+    }
+    .txt {
+      flex: 1;
+      border: 1.5px solid #e0e0e0; border-radius: 22px;
+      padding: 9px 14px; font-size: 0.875rem;
+      outline: none; font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    .txt:focus    { border-color: #3949ab; }
+    .txt:disabled { background: #f6f6f6; color: #aaa; }
+
+    .go {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: #1a237e; border: none; cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .go:hover    { background: #3949ab; }
+    .go:disabled { background: #c5cae9; cursor: default; }
+    .go svg { width: 16px; height: 16px; fill: #fff; }
+
+    /* ── View Data button ─────────────────────────────────────────────── */
+    .view-data-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 22px; border-radius: 10px;
+      background: #fff; border: 1.5px solid #c5cae9;
+      color: #3949ab; font-size: 0.85rem; font-weight: 600;
+      font-family: inherit; cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .view-data-btn:hover { background: #e8eaf6; border-color: #3949ab; }
+    .view-data-btn svg { width: 16px; height: 16px; fill: none; stroke: #3949ab; stroke-width: 2; stroke-linecap: round; }
+  </style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="status-time" id="clock">9:41</span>
+    <span class="status-icons">▲ ▮▮▮ ▓</span>
+  </div>
+
+  <!-- Chat header -->
+  <div class="chat-header">
+    <div class="bot-avatar">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="20" y1="6" x2="20" y2="12" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="20" cy="5" r="2" fill="rgba(255,255,255,0.8)"/>
+        <rect x="8" y="12" width="24" height="20" rx="5" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+        <rect x="12" y="18" width="5" height="4" rx="1.5" fill="rgba(255,255,255,0.7)"/>
+        <rect x="23" y="18" width="5" height="4" rx="1.5" fill="rgba(255,255,255,0.7)"/>
+        <rect x="14" y="26" width="12" height="2.5" rx="1.2" fill="rgba(255,255,255,0.5)"/>
+        <circle cx="8" cy="22" r="2" fill="rgba(255,255,255,0.4)"/>
+        <circle cx="32" cy="22" r="2" fill="rgba(255,255,255,0.4)"/>
+      </svg>
+    </div>
+    <div class="chat-header-info">
+      <h2>Feedback Assistant</h2>
+      <p>AI-powered · For demo only</p>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="messages" id="msgs"></div>
+
+  <!-- Input -->
+  <div class="input-area">
+    <input class="txt" id="inp" placeholder="Type a message…" disabled
+           onkeydown="if(event.key==='Enter')send()">
+    <button class="go" id="goBtn" disabled onclick="send()">
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+    </button>
+  </div>
+
+</div>
+
+<!-- View Data button -->
+<a href="assistant-data.html" class="view-data-btn">
+  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+  View collected data
+</a>
+
+<a href="index.html" style="position:fixed;bottom:12px;right:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
+<script>
+/* ── State ──────────────────────────────────────────────────────── */
+const d = { name:'', city:'', email:'', phone:'', postalCode:'', rating:null, message:'' };
+let step = 0;
+// 0=name 1=city 2=email 3=phone 4=postal 5=rating 6=message 7=done
+
+function saveData() {
+  sessionStorage.setItem('assistant_data', JSON.stringify(d));
+}
+
+/* ── Utilities ───────────────────────────────────────────────────── */
+function toTitleCase(s) { return s.replace(/\b\w/g, c => c.toUpperCase()); }
+
+/* ── Clock ──────────────────────────────────────────────────────── */
+(function tick() {
+  const n = new Date(), h = n.getHours() % 12 || 12, m = String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').textContent = `${h}:${m}`;
+  setTimeout(tick, (60 - n.getSeconds()) * 1000);
+})();
+
+/* ── Sentiment (mirrors feedback.html) ──────────────────────────── */
+const POS = ['love','great','amaz','fantas','excell','wonder','awesome','perfect','best','good','happy','enjoy','pleas','thank','appreci','helpful','easy','smooth','brilliant','outstand'];
+const NEG = ['hate','terr','horr','awful','disappoint','worst','bad','poor','slow','frustrat','annoy','useless','broken','confus','complic','difficult','hard','bug','fail','unaccept'];
+
+function sentiment(txt) {
+  const words = txt.toLowerCase().match(/[a-z']+/g) || [];
+  let p = 0, n = 0;
+  words.forEach(w => {
+    if (POS.some(r => w.startsWith(r))) p++;
+    if (NEG.some(r => w.startsWith(r))) n++;
+  });
+  if (!p && !n) return 'neutral';
+  return p >= n ? 'positive' : 'negative';
+}
+
+/* ── Bot avatar SVG ─────────────────────────────────────────────── */
+const AVG = `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <line x1="20" y1="4" x2="20" y2="10" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="20" cy="3.5" r="2" fill="rgba(255,255,255,0.8)"/>
+  <rect x="8" y="10" width="24" height="20" rx="5" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+  <rect x="12" y="16" width="5" height="4" rx="1.5" fill="rgba(255,255,255,0.7)"/>
+  <rect x="23" y="16" width="5" height="4" rx="1.5" fill="rgba(255,255,255,0.7)"/>
+  <rect x="14" y="24" width="12" height="2.5" rx="1.2" fill="rgba(255,255,255,0.45)"/>
+</svg>`;
+
+/* ── DOM helpers ─────────────────────────────────────────────────── */
+const msgsEl = document.getElementById('msgs');
+function scroll() { msgsEl.scrollTop = msgsEl.scrollHeight; }
+
+function addBot(content, isHtml = false) {
+  const row = document.createElement('div');
+  row.className = 'msg bot';
+  const av = document.createElement('div');
+  av.className = 'msg-av'; av.innerHTML = AVG;
+  const bub = document.createElement('div');
+  bub.className = 'bubble';
+  if (isHtml) bub.innerHTML = content; else bub.textContent = content;
+  row.append(av, bub);
+  msgsEl.appendChild(row);
+  scroll();
+}
+
+function addUser(text) {
+  const row = document.createElement('div');
+  row.className = 'msg user';
+  const bub = document.createElement('div');
+  bub.className = 'bubble'; bub.textContent = text;
+  row.appendChild(bub);
+  msgsEl.appendChild(row);
+  scroll();
+}
+
+let typingEl = null;
+function showTyping() {
+  const row = document.createElement('div');
+  row.className = 'msg bot typing';
+  const av = document.createElement('div'); av.className = 'msg-av'; av.innerHTML = AVG;
+  const bub = document.createElement('div'); bub.className = 'bubble';
+  bub.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+  row.append(av, bub);
+  msgsEl.appendChild(row); scroll();
+  typingEl = row;
+}
+function hideTyping() { typingEl?.remove(); typingEl = null; }
+
+function showChips() {
+  const row = document.createElement('div');
+  row.className = 'rating-row'; row.id = 'chips';
+  for (let i = 0; i <= 10; i++) {
+    const b = document.createElement('button');
+    b.className = 'r-chip'; b.textContent = i;
+    b.onclick = () => pickRating(i);
+    row.appendChild(b);
+  }
+  msgsEl.appendChild(row); scroll();
+}
+
+/* ── Input control ───────────────────────────────────────────────── */
+function enableInput(ph = 'Type a message…') {
+  const i = document.getElementById('inp'), b = document.getElementById('goBtn');
+  i.placeholder = ph; i.disabled = false; b.disabled = false;
+  setTimeout(() => i.focus(), 50);
+}
+function disableInput() {
+  const i = document.getElementById('inp'), b = document.getElementById('goBtn');
+  i.disabled = true; b.disabled = true; i.value = '';
+}
+
+/* ── Bot reply with typing delay ─────────────────────────────────── */
+function botSay(text, delay = 950, isHtml = false) {
+  return new Promise(res => {
+    showTyping();
+    setTimeout(() => { hideTyping(); addBot(text, isHtml); res(); }, delay + Math.random() * 350);
+  });
+}
+
+/* ── Conversation ────────────────────────────────────────────────── */
+function ratingReaction(r) {
+  if (r >= 9) return '🌟 Amazing, thank you!';
+  if (r >= 7) return '😊 Great to hear!';
+  if (r >= 5) return '👍 Appreciate the honesty.';
+  if (r >= 3) return '🤔 Thanks for sharing.';
+  return '😔 Sorry to hear that.';
+}
+
+async function start() {
+  await botSay("Hi there! 👋 I'm here to collect some feedback. What's your name?");
+  enableInput('Your name…');
+}
+
+async function afterName() {
+  await botSay(`Nice to meet you, ${d.name}! 😊 What city are you based in?`);
+  enableInput('Your city…');
+}
+
+async function afterCity() {
+  await botSay(`${d.city} — lovely! What's your email address?`);
+  enableInput('Your email…');
+}
+
+async function afterEmail() {
+  await botSay("Thanks! What's your phone number? (Type 'skip' to skip)");
+  enableInput('Your phone…');
+}
+
+async function afterPhone() {
+  await botSay("Almost there! What's your postal or zip code? (Type 'skip' to skip)");
+  enableInput('Your postal/zip code…');
+}
+
+async function afterPostal() {
+  await botSay(`On a scale of 0 to 10, how would you rate your experience overall?`);
+  showChips();
+}
+
+async function afterRating() {
+  await botSay(`${ratingReaction(d.rating)} Any thoughts or feedback you'd like to share?`);
+  enableInput('Your feedback…');
+}
+
+async function afterMessage() {
+  const tone = sentiment(d.message);
+  d.sentiment = tone;
+  saveData();
+
+  const high = d.rating >= 7 && tone === 'negative';
+  const low  = d.rating <= 3 && tone === 'positive';
+  const toneLabel = { positive: 'positive 😊', negative: 'negative 😟', neutral: 'neutral 😐' }[tone];
+
+  let html = `<div class="summary"><div class="summary-label">Feedback Summary</div>`;
+  html += `<strong>${d.name}</strong> from ${d.city}<br>`;
+  html += `Rated their experience <strong>${d.rating}/10</strong><br>`;
+  html += `Left ${toneLabel} feedback`;
+  if (d.message) {
+    const preview = d.message.length > 55 ? d.message.slice(0, 52) + '…' : d.message;
+    html += `<br><em style="color:#555;">"${preview}"</em>`;
+  }
+  if (high) html += `<br><em style="color:#b45309;">⚠️ High rating, negative tone — worth a closer look.</em>`;
+  if (low)  html += `<br><em style="color:#1565c0;">⚠️ Low rating, positive tone — may be worth following up.</em>`;
+  html += `</div>`;
+
+  await botSay(html, 1100, true);
+  await botSay(`That's everything — thanks so much, ${d.name}! Have a great day 😊`, 1000);
+}
+
+function pickRating(r) {
+  const chips = document.getElementById('chips');
+  chips.querySelectorAll('.r-chip').forEach((c, i) => {
+    c.classList.toggle('picked', i === r);
+    c.disabled = true;
+  });
+  d.rating = r;
+  saveData();
+  addUser(`${r} / 10`);
+  step = 6;
+  afterRating();
+}
+
+function send() {
+  const inp = document.getElementById('inp');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  disableInput();
+  addUser(txt);
+
+  const val = txt.toLowerCase() === 'skip' ? '' : txt;
+
+  if      (step === 0) { d.name       = toTitleCase(txt); saveData(); step = 1; afterName();   }
+  else if (step === 1) { d.city       = toTitleCase(txt); saveData(); step = 2; afterCity();   }
+  else if (step === 2) { d.email      = val;              saveData(); step = 3; afterEmail();  }
+  else if (step === 3) { d.phone      = val;              saveData(); step = 4; afterPhone();  }
+  else if (step === 4) { d.postalCode = val.toUpperCase();saveData(); step = 5; afterPostal(); }
+  else if (step === 6) { d.message    = txt;                          step = 7; afterMessage();}
+}
+
+/* ── Boot ────────────────────────────────────────────────────────── */
+saveData(); // persist empty state so data page always has something to show
+setTimeout(start, 500);
+</script>
+
+</body>
+</html>
