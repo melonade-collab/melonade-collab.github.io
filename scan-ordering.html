@@ -178,7 +178,6 @@
     </div>
     <div class="acc-body">
       <p>Customers tracking shipments were seeing events displayed out of order on the public tracking page — most visibly, packages appearing as "Delivered" before "Out for Delivery" had shown up. Some tracking pages even showed the package leaving a facility before it had arrived. Customers were calling in confused and frustrated, and support ticket volume for tracking queries had risen sharply.</p>
-      <p style="margin-top:8px;">The data was correct — the scans themselves were all legitimate. But the tracking page was displaying them in the order they arrived at the system, not the order they actually happened.</p>
     </div>
   </div>
 
@@ -207,7 +206,7 @@
       <div class="contrib-grid">
         <div>
           <p class="contrib-item-label">Root cause analysis</p>
-          <p class="contrib-item-text">Identified the pattern in support tickets: out-of-order events clustered around specific scan types (facility arrivals and delivery confirmations). Traced it to the system sorting on ingestion timestamp rather than event timestamp.</p>
+          <p class="contrib-item-text">Identified the pattern in support tickets: out-of-order events clustered around specific scan types (facility arrivals and delivery confirmations). Traced it to the system sorting on ingestion timestamp rather than event timestamp. Importantly, the underlying scan data was accurate — all events were legitimate — making this a display ordering issue, not a data integrity one.</p>
         </div>
         <div>
           <p class="contrib-item-label">Requirements</p>
