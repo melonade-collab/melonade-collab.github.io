@@ -235,6 +235,11 @@
     .pkg-name { font-size: 0.9rem; font-weight: 700; color: #222; }
     .pkg-desc { font-size: 0.75rem; color: #888; line-height: 1.5; }
 
+    /* ── Unit toggle ── */
+    .unit-toggle { display: flex; background: #F5F3FF; border: 1px solid #DDD6FE; border-radius: 20px; padding: 3px; gap: 2px; width: fit-content; margin-bottom: 18px; }
+    .unit-btn { padding: 5px 14px; border-radius: 16px; border: none; background: transparent; font-size: 0.75rem; font-weight: 600; color: #7C3AED; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .unit-btn.active { background: #6D28D9; color: #fff; }
+
     /* ── Measurement diagram ── */
     .measure-box {
       background: #F5F3FF;
@@ -281,6 +286,8 @@
     }
     label .req { color: #e74c3c; margin-left: 2px; font-weight: 400; }
     .step-req-note { font-size: 0.72rem; color: #aaa; margin: -4px 0 16px; }
+    .field-error { display: none; font-size: 0.72rem; color: #e74c3c; margin-top: 4px; }
+    .field-error.visible { display: block; }
 
     /* ── Accordions ── */
     .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
@@ -508,16 +515,19 @@
             <div class="form-group">
               <label>First name <span class="req">*</span></label>
               <input type="text" id="fromFirst" placeholder="Jane" oninput="applyTitleCase(this);clearInvalid(this);checkFrom()" onblur="markReq(this)">
+              <span class="field-error" id="fromFirstErr">Required</span>
             </div>
             <div class="form-group">
               <label>Last name <span class="req">*</span></label>
               <input type="text" id="fromLast" placeholder="Smith" oninput="applyTitleCase(this);clearInvalid(this);checkFrom()" onblur="markReq(this)">
+              <span class="field-error" id="fromLastErr">Required</span>
             </div>
           </div>
           <div class="form-row full">
             <div class="form-group">
               <label>Street address <span class="req">*</span></label>
               <input type="text" id="fromStreet" placeholder="123 Main Street" oninput="applyTitleCase(this);clearInvalid(this);checkFrom()" onblur="markReq(this)">
+              <span class="field-error" id="fromStreetErr">Required</span>
             </div>
           </div>
           <div class="form-row triple">
@@ -546,7 +556,8 @@
             </div>
             <div class="form-group">
               <label>Postal code <span class="req">*</span></label>
-              <input type="text" id="fromPostal" placeholder="M5V 2T6" maxlength="7" oninput="formatShipPostal(this);clearInvalid(this);checkFrom()" onblur="markReq(this)">
+              <input type="text" id="fromPostal" placeholder="M5V 2T6" maxlength="7" oninput="formatShipPostal(this);(this.value.length===7?validateShipPostal(this):clearInvalid(this));checkFrom()" onblur="validateShipPostal(this)">
+              <span class="field-error" id="fromPostalError">Format: e.g. A1A 1A1</span>
             </div>
           </div>
           <button class="btn-continue" id="btnFrom" onclick="reveal('stepTo')" style="display:none;">Continue →</button>
@@ -561,16 +572,19 @@
             <div class="form-group">
               <label>First name <span class="req">*</span></label>
               <input type="text" id="toFirst" placeholder="Alex" oninput="applyTitleCase(this);clearInvalid(this);checkTo()" onblur="markReq(this)">
+              <span class="field-error" id="toFirstErr">Required</span>
             </div>
             <div class="form-group">
               <label>Last name <span class="req">*</span></label>
               <input type="text" id="toLast" placeholder="Johnson" oninput="applyTitleCase(this);clearInvalid(this);checkTo()" onblur="markReq(this)">
+              <span class="field-error" id="toLastErr">Required</span>
             </div>
           </div>
           <div class="form-row full">
             <div class="form-group">
               <label>Street address <span class="req">*</span></label>
               <input type="text" id="toStreet" placeholder="456 Elm Avenue" oninput="applyTitleCase(this);clearInvalid(this);checkTo()" onblur="markReq(this)">
+              <span class="field-error" id="toStreetErr">Required</span>
             </div>
           </div>
           <div class="form-row triple">
@@ -599,7 +613,8 @@
             </div>
             <div class="form-group">
               <label>Postal code <span class="req">*</span></label>
-              <input type="text" id="toPostal" placeholder="V6B 1A1" maxlength="7" oninput="formatShipPostal(this);clearInvalid(this);checkTo()" onblur="markReq(this)">
+              <input type="text" id="toPostal" placeholder="V6B 1A1" maxlength="7" oninput="formatShipPostal(this);(this.value.length===7?validateShipPostal(this):clearInvalid(this));checkTo()" onblur="validateShipPostal(this)">
+              <span class="field-error" id="toPostalError">Format: e.g. A1A 1A1</span>
             </div>
           </div>
           <button class="btn-continue" id="btnTo" onclick="reveal('stepPkg')" style="display:none;">Continue →</button>
@@ -643,6 +658,11 @@
           <div class="step-divider"></div>
           <p class="step-heading" id="detailsHeading">Package details</p>
 
+          <div class="unit-toggle">
+            <button class="unit-btn active" id="btnMetric" onclick="setUnits('metric')">cm / kg</button>
+            <button class="unit-btn" id="btnImperial" onclick="setUnits('imperial')">in / lb</button>
+          </div>
+
           <div id="envDetails" style="display:none;">
             <div class="measure-box">
               <svg width="210" height="104" viewBox="0 0 210 104" xmlns="http://www.w3.org/2000/svg">
@@ -654,29 +674,36 @@
                 <line x1="22" y1="94" x2="158" y2="94" stroke="#6D28D9" stroke-width="1.2"/>
                 <line x1="22" y1="90" x2="22" y2="98" stroke="#6D28D9" stroke-width="1.2"/>
                 <line x1="158" y1="90" x2="158" y2="98" stroke="#6D28D9" stroke-width="1.2"/>
-                <text x="90" y="103" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif">38 cm</text>
+                <text id="envLabelW" x="90" y="103" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif">38 cm</text>
                 <!-- height arrow (right) -->
                 <line x1="170" y1="6" x2="170" y2="82" stroke="#6D28D9" stroke-width="1.2"/>
                 <line x1="166" y1="6" x2="174" y2="6" stroke="#6D28D9" stroke-width="1.2"/>
                 <line x1="166" y1="82" x2="174" y2="82" stroke="#6D28D9" stroke-width="1.2"/>
-                <text x="186" y="48" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif" transform="rotate(90,186,48)">26 cm</text>
+                <text id="envLabelH" x="186" y="48" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif" transform="rotate(90,186,48)">26 cm</text>
               </svg>
               <p class="measure-caption">Standard envelope — dimensions pre-filled for you</p>
             </div>
             <div class="form-row" style="max-width:300px;">
               <div class="form-group">
                 <label>Length</label>
-                <input type="text" value="38 cm" class="prefilled" readonly>
+                <input type="text" id="envLen" value="38 cm" class="prefilled" readonly>
               </div>
               <div class="form-group">
                 <label>Width</label>
-                <input type="text" value="26 cm" class="prefilled" readonly>
+                <input type="text" id="envWid" value="26 cm" class="prefilled" readonly>
               </div>
             </div>
-            <div class="form-row" style="max-width:148px;">
+            <div class="form-row" style="max-width:300px;align-items:flex-end;">
               <div class="form-group">
-                <label>Weight (kg)</label>
+                <label id="lblEnvWt">Weight (kg)</label>
                 <input type="number" id="envWeight" placeholder="0.3" min="0.1" max="0.5" step="0.1" oninput="checkDetails()">
+              </div>
+              <div class="form-group" style="flex:0 0 auto;">
+                <label style="visibility:hidden;">u</label>
+                <div class="unit-toggle" style="margin-bottom:0;">
+                  <button class="unit-btn active" id="btnEnvMetric" onclick="setUnits('metric')">kg</button>
+                  <button class="unit-btn" id="btnEnvImperial" onclick="setUnits('imperial')">lb</button>
+                </div>
               </div>
             </div>
           </div>
@@ -704,21 +731,21 @@
             </div>
             <div class="form-row" style="max-width:360px;">
               <div class="form-group">
-                <label>Length (cm)</label>
+                <label id="lblBoxL">Length (cm)</label>
                 <input type="number" id="boxL" placeholder="e.g. 40" min="1" oninput="checkDetails()">
               </div>
               <div class="form-group">
-                <label>Width (cm)</label>
+                <label id="lblBoxW">Width (cm)</label>
                 <input type="number" id="boxW" placeholder="e.g. 30" min="1" oninput="checkDetails()">
               </div>
             </div>
             <div class="form-row" style="max-width:360px;">
               <div class="form-group">
-                <label>Height (cm)</label>
+                <label id="lblBoxH">Height (cm)</label>
                 <input type="number" id="boxH" placeholder="e.g. 20" min="1" oninput="checkDetails()">
               </div>
               <div class="form-group">
-                <label>Weight (kg)</label>
+                <label id="lblBoxWt">Weight (kg)</label>
                 <input type="number" id="boxWeight" placeholder="e.g. 2.5" min="0.1" max="30" step="0.1" oninput="checkDetails()">
               </div>
             </div>
@@ -750,27 +777,27 @@
             <div class="form-row full">
               <div class="form-group">
                 <label>Card number</label>
-                <input type="text" id="cardNum" placeholder="1234  5678  9012  3456" maxlength="19" class="card-num" oninput="formatCard(this);checkPayment()">
+                <input type="text" id="cardNum" placeholder="1234  5678  9012  3456" maxlength="19" class="card-num" oninput="formatCard(this)">
               </div>
             </div>
             <div class="form-row">
               <div class="form-group">
                 <label>Expiry</label>
-                <input type="text" id="cardExp" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this);checkPayment()">
+                <input type="text" id="cardExp" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)">
               </div>
               <div class="form-group">
                 <label>CVV</label>
-                <input type="text" id="cardCvv" placeholder="123" maxlength="4" oninput="checkPayment()">
+                <input type="text" id="cardCvv" placeholder="123" maxlength="4">
               </div>
             </div>
             <div class="form-row full">
               <div class="form-group">
                 <label>Cardholder name</label>
-                <input type="text" id="cardName" placeholder="Jane Smith" oninput="checkPayment()">
+                <input type="text" id="cardName" placeholder="Jane Smith">
               </div>
             </div>
           </div>
-          <button class="btn-ship" id="btnPay" onclick="handlePay()" disabled>Pay <span id="payAmt"></span></button>
+          <button class="btn-ship" id="btnPay" onclick="handlePay()">Pay <span id="payAmt"></span></button>
           <p class="quote-disclaimer">Secured by 256-bit encryption · Card details not stored.</p>
         </div>
 
@@ -781,6 +808,7 @@
             <div class="success-check">✓</div>
             <div>
               <p class="success-title">Shipment confirmed!</p>
+              <p style="font-size:0.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#15803d;margin-bottom:2px;">Tracking number</p>
               <p class="success-track" id="trackingNum">DSP-XXXX-XXXX-CA</p>
             </div>
           </div>
@@ -858,6 +886,53 @@
 
 <script>
 let pkgType = null;
+let units = 'metric';
+
+function setUnits(u) {
+  if (u === units) return;
+  units = u;
+  const imp = u === 'imperial';
+  ['btnMetric','btnEnvMetric'].forEach(id => document.getElementById(id).classList.toggle('active', !imp));
+  ['btnImperial','btnEnvImperial'].forEach(id => document.getElementById(id).classList.toggle('active', imp));
+  // SVG labels
+  document.getElementById('envLabelW').textContent = imp ? '15 in' : '38 cm';
+  document.getElementById('envLabelH').textContent = imp ? '10.2 in' : '26 cm';
+  // Pre-filled envelope readonly fields
+  document.getElementById('envLen').value = imp ? '15 in' : '38 cm';
+  document.getElementById('envWid').value = imp ? '10.2 in' : '26 cm';
+  // Labels
+  document.getElementById('lblEnvWt').textContent = imp ? 'Weight (lb)' : 'Weight (kg)';
+  document.getElementById('lblBoxL').textContent   = imp ? 'Length (in)' : 'Length (cm)';
+  document.getElementById('lblBoxW').textContent   = imp ? 'Width (in)'  : 'Width (cm)';
+  document.getElementById('lblBoxH').textContent   = imp ? 'Height (in)' : 'Height (cm)';
+  document.getElementById('lblBoxWt').textContent  = imp ? 'Weight (lb)' : 'Weight (kg)';
+  // Placeholders
+  document.getElementById('envWeight').placeholder = imp ? '0.7' : '0.3';
+  document.getElementById('boxL').placeholder = imp ? 'e.g. 16' : 'e.g. 40';
+  document.getElementById('boxW').placeholder = imp ? 'e.g. 12' : 'e.g. 30';
+  document.getElementById('boxH').placeholder = imp ? 'e.g. 8'  : 'e.g. 20';
+  document.getElementById('boxWeight').placeholder = imp ? 'e.g. 5.5' : 'e.g. 2.5';
+  // Convert existing values
+  if (imp) {
+    convertField('boxL',      v => +(v / 2.54).toFixed(1));
+    convertField('boxW',      v => +(v / 2.54).toFixed(1));
+    convertField('boxH',      v => +(v / 2.54).toFixed(1));
+    convertField('boxWeight', v => +(v * 2.20462).toFixed(1));
+    convertField('envWeight', v => +(v * 2.20462).toFixed(1));
+  } else {
+    convertField('boxL',      v => +(v * 2.54).toFixed(1));
+    convertField('boxW',      v => +(v * 2.54).toFixed(1));
+    convertField('boxH',      v => +(v * 2.54).toFixed(1));
+    convertField('boxWeight', v => +(v / 2.20462).toFixed(1));
+    convertField('envWeight', v => +(v / 2.20462).toFixed(1));
+  }
+  checkDetails();
+}
+
+function convertField(id, fn) {
+  const el = document.getElementById(id);
+  if (el && el.value !== '') el.value = fn(parseFloat(el.value));
+}
 
 function val(id) {
   const el = document.getElementById(id);
@@ -865,12 +940,14 @@ function val(id) {
 }
 
 function checkFrom() {
-  const ok = val('fromFirst') && val('fromLast') && val('fromStreet') && val('fromCity') && val('fromProv') && val('fromPostal');
+  const postalOk = isValidPostal(document.getElementById('fromPostal').value);
+  const ok = val('fromFirst') && val('fromLast') && val('fromStreet') && val('fromCity') && val('fromProv') && postalOk;
   document.getElementById('btnFrom').style.display = ok ? 'inline-block' : 'none';
 }
 
 function checkTo() {
-  const ok = val('toFirst') && val('toLast') && val('toStreet') && val('toCity') && val('toProv') && val('toPostal');
+  const postalOk = isValidPostal(document.getElementById('toPostal').value);
+  const ok = val('toFirst') && val('toLast') && val('toStreet') && val('toCity') && val('toProv') && postalOk;
   document.getElementById('btnTo').style.display = ok ? 'inline-block' : 'none';
 }
 
@@ -899,24 +976,28 @@ function selectPkg(type) {
 }
 
 function revealQuote() {
-  let price, weight, delivery;
+  const imp = units === 'imperial';
+  const toKg = v => imp ? v / 2.20462 : v;
+  const toCm = v => imp ? v * 2.54 : v;
+  let price, weightKg, displayWt, delivery;
   if (pkgType === 'envelope') {
-    weight = parseFloat(document.getElementById('envWeight').value) || 0.3;
-    price = 12.99 + weight * 1.5;
+    weightKg = toKg(parseFloat(document.getElementById('envWeight').value) || (imp ? 0.7 : 0.3));
+    price = 12.99 + weightKg * 1.5;
     delivery = '2–3 business days';
   } else {
-    weight = parseFloat(document.getElementById('boxWeight').value) || 1;
-    const l = parseFloat(document.getElementById('boxL').value) || 1;
-    const w = parseFloat(document.getElementById('boxW').value) || 1;
-    const h = parseFloat(document.getElementById('boxH').value) || 1;
+    weightKg = toKg(parseFloat(document.getElementById('boxWeight').value) || 1);
+    const l = toCm(parseFloat(document.getElementById('boxL').value) || 1);
+    const w = toCm(parseFloat(document.getElementById('boxW').value) || 1);
+    const h = toCm(parseFloat(document.getElementById('boxH').value) || 1);
     const dimWeight = (l * w * h) / 5000;
-    const billable = Math.max(weight, dimWeight);
+    const billable = Math.max(weightKg, dimWeight);
     price = 8.99 + billable * 3.80;
     delivery = '3–5 business days';
   }
+  displayWt = imp ? `${(weightKg * 2.20462).toFixed(1)} lb` : `${weightKg.toFixed(2)} kg`;
   const withTax = (price * 1.13).toFixed(2);
   document.getElementById('quotePrice').textContent = `$${price.toFixed(2)}`;
-  document.getElementById('quoteMeta').innerHTML = `${weight} kg · Est. with tax <strong>$${withTax}</strong> · ${delivery}`;
+  document.getElementById('quoteMeta').innerHTML = `${displayWt} · Est. with tax <strong>$${withTax}</strong> · ${delivery}`;
   reveal('stepQuote');
 }
 
@@ -928,8 +1009,28 @@ function applyTitleCase(el) {
   if (titled !== el.value) { el.value = titled; try { el.setSelectionRange(pos, pos); } catch(e){} }
 }
 
-function markReq(el) { if (el.value.trim() === '') el.classList.add('invalid'); }
-function clearInvalid(el) { if (el.value.trim() !== '') el.classList.remove('invalid'); }
+function markReq(el) {
+  if (el.value.trim() === '') {
+    el.classList.add('invalid');
+    const e = document.getElementById(el.id + 'Err');
+    if (e) e.classList.add('visible');
+  }
+}
+function clearInvalid(el) {
+  if (el.value.trim() !== '') {
+    el.classList.remove('invalid');
+    const e = document.getElementById(el.id + 'Err');
+    if (e) e.classList.remove('visible');
+  }
+}
+
+function isValidPostal(v) { return /^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$/.test(v.trim()); }
+function validateShipPostal(el) {
+  const invalid = el.value.trim() === '' || !isValidPostal(el.value);
+  el.classList.toggle('invalid', invalid);
+  const errId = el.id === 'fromPostal' ? 'fromPostalError' : 'toPostalError';
+  document.getElementById(errId).classList.toggle('visible', invalid && el.value.trim() !== '');
+}
 
 function formatShipPostal(el) {
   const pos = el.selectionStart;
