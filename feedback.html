@@ -330,7 +330,10 @@
       </div>
 
       <div class="field">
-        <label>Overall rating <span class="optional-hint">(optional)</span></label>
+        <label style="display:flex;justify-content:space-between;align-items:center;">
+          <span>Overall rating <span class="optional-hint">(optional)</span></span>
+          <span id="ratingDesc" style="font-size:0.78rem;font-weight:600;color:#5c6bc0;"></span>
+        </label>
         <div class="rating-scale" id="ratingScale">
           <button type="button" class="rating-btn" onclick="selectRating(0)">0</button>
           <button type="button" class="rating-btn" onclick="selectRating(1)">1</button>
@@ -422,11 +425,26 @@
 
     let selectedRating = null;
 
+    const RATING_LABELS = [
+      'Not a great experience',  // 0
+      'Very poor',               // 1
+      'Poor',                    // 2
+      'Below average',           // 3
+      'Fair',                    // 4
+      'Okay',                    // 5
+      'Decent',                  // 6
+      'Good',                    // 7
+      'Very good',               // 8
+      'Great',                   // 9
+      'Excellent experience',    // 10
+    ];
+
     function selectRating(r) {
       selectedRating = r;
       document.querySelectorAll('.rating-btn').forEach((btn, i) => {
         btn.classList.toggle('selected', i === r);
       });
+      document.getElementById('ratingDesc').textContent = RATING_LABELS[r];
       buildFormSummary();
     }
 
