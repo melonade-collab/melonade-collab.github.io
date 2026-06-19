@@ -45,92 +45,106 @@
     .proto-label { max-width: 1040px; margin: 0 auto; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #7C3AED; }
 
     /* ── Dashboard frame ── */
-    .dashboard { background: #1E1E2E; border-radius: 0 0 16px 16px; box-shadow: 0 24px 80px rgba(0,0,0,0.22); overflow: hidden; }
-    .dash-titlebar { background: #2A2A3E; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #3A3A50; }
+    .dashboard { background: #fff; border-radius: 0 0 16px 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.10); overflow: hidden; border: 1px solid #E5E7EB; border-top: none; }
+    .dash-titlebar { background: #F8F9FB; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #E5E7EB; }
     .dot { width: 10px; height: 10px; border-radius: 50%; }
     .dot-r { background: #FF5F57; } .dot-y { background: #FEBC2E; } .dot-g { background: #28C840; }
-    .dash-title-text { font-size: 0.72rem; color: #8B8BAE; margin-left: 4px; font-family: monospace; }
+    .dash-title-text { font-size: 0.72rem; color: #9CA3AF; margin-left: 4px; font-family: monospace; }
 
     /* ── Control bar ── */
-    .control-bar { background: #252538; padding: 14px 20px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; border-bottom: 1px solid #3A3A50; }
-    .tracking-badge { font-family: monospace; font-size: 0.78rem; color: #A78BFA; background: #2D2B50; border: 1px solid #4C3D8F; border-radius: 6px; padding: 5px 12px; }
+    .control-bar { background: #F8F9FB; padding: 12px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid #E5E7EB; }
+    .tracking-badge { font-family: monospace; font-size: 0.78rem; color: #6D28D9; background: #EDE9FE; border: 1px solid #DDD6FE; border-radius: 6px; padding: 5px 12px; }
     .ctrl-btn { padding: 7px 18px; border-radius: 8px; border: none; font-size: 0.78rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.15s; }
     .btn-play { background: #6D28D9; color: #fff; }
     .btn-play:hover { background: #5B21B6; }
-    .btn-play:disabled { background: #4C3D8F; color: #8B8BAE; cursor: default; }
-    .btn-reset { background: #2D2B50; color: #8B8BAE; border: 1px solid #3A3A50; }
-    .btn-reset:hover { background: #3A3A50; color: #C4C4D8; }
+    .btn-play:disabled { background: #DDD6FE; color: #A78BFA; cursor: default; }
+    .btn-reset { background: #fff; color: #6B7280; border: 1.5px solid #E5E7EB; }
+    .btn-reset:hover { background: #F3F4F6; }
     .speed-group { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-    .speed-label { font-size: 0.68rem; color: #6B6B8E; }
-    .speed-toggle { display: flex; background: #2D2B50; border: 1px solid #3A3A50; border-radius: 6px; overflow: hidden; }
-    .speed-btn { padding: 5px 12px; font-size: 0.7rem; font-weight: 600; font-family: inherit; border: none; background: transparent; color: #6B6B8E; cursor: pointer; transition: all 0.15s; }
+    .speed-label { font-size: 0.68rem; color: #9CA3AF; }
+    .speed-toggle { display: flex; background: #fff; border: 1.5px solid #E5E7EB; border-radius: 6px; overflow: hidden; }
+    .speed-btn { padding: 5px 11px; font-size: 0.68rem; font-weight: 600; font-family: inherit; border: none; background: transparent; color: #9CA3AF; cursor: pointer; transition: all 0.15s; }
     .speed-btn.active { background: #6D28D9; color: #fff; }
-    .scan-counter { font-size: 0.68rem; color: #6B6B8E; margin-left: 4px; }
+    .scan-counter { font-size: 0.68rem; color: #9CA3AF; margin-left: 2px; }
 
     /* ── Three-panel grid ── */
-    .panels { display: grid; grid-template-columns: 1.05fr 1fr 1fr; min-height: 460px; }
-    .panel { border-right: 1px solid #2A2A3E; display: flex; flex-direction: column; }
+    .panels { display: grid; grid-template-columns: 1.05fr 1fr 1fr; min-height: 420px; }
+    .panel { border-right: 1px solid #E5E7EB; display: flex; flex-direction: column; }
     .panel:last-child { border-right: none; }
-    .panel-head { padding: 12px 16px; border-bottom: 1px solid #2A2A3E; flex-shrink: 0; }
-    .panel-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-    .panel-sort { font-size: 0.6rem; color: #6B6B8E; margin-top: 3px; font-family: monospace; }
-    .panel-title.feed { color: #A78BFA; }
-    .panel-title.before { color: #F87171; }
-    .panel-title.after { color: #34D399; }
-    .panel-list { flex: 1; overflow-y: auto; padding: 10px 10px; display: flex; flex-direction: column; gap: 6px; }
-    .panel-empty { font-size: 0.72rem; color: #4A4A6E; padding: 16px 6px; text-align: center; }
+    .panel-head { padding: 12px 14px; border-bottom: 1px solid #E5E7EB; flex-shrink: 0; background: #FAFAFA; }
+    .panel-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .panel-sort { font-size: 0.58rem; color: #9CA3AF; margin-top: 3px; font-family: monospace; }
+    .panel-title.feed { color: #7C3AED; }
+    .panel-title.before { color: #DC2626; }
+    .panel-title.after { color: #059669; }
+    .panel-list { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 5px; }
+    .panel-empty { font-size: 0.72rem; color: #D1D5DB; padding: 16px 6px; text-align: center; }
+
+    /* ── Progress bar ── */
+    .panel-progress { padding: 10px 14px 10px; border-top: 1px solid #E5E7EB; background: #FAFAFA; }
+    .prog-bar { display: flex; align-items: flex-start; }
+    .prog-seg { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+    .prog-dot { width: 10px; height: 10px; border-radius: 50%; background: #E5E7EB; flex-shrink: 0; transition: background 0.3s; }
+    .prog-dot.done { background: #7C3AED; }
+    .prog-dot.active { background: #7C3AED; box-shadow: 0 0 0 3px rgba(124,58,237,0.2); }
+    .prog-dot.error { background: #DC2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.15); }
+    .prog-line-wrap { flex: 1; padding-top: 4px; min-width: 4px; }
+    .prog-line { height: 2px; width: 100%; background: #E5E7EB; transition: background 0.3s; }
+    .prog-line.done { background: #7C3AED; }
+    .prog-lbl { font-size: 0.44rem; color: #D1D5DB; text-align: center; margin-top: 3px; line-height: 1.3; max-width: 34px; word-break: break-word; }
+    .prog-lbl.done { color: #7C3AED; }
+    .prog-lbl.active { color: #4C1D95; font-weight: 700; }
+    .prog-lbl.error { color: #DC2626; font-weight: 700; }
+    .prog-note { font-size: 0.58rem; text-align: center; margin-top: 6px; }
+    .prog-note.warn { color: #DC2626; }
+    .prog-note.ok { color: #059669; }
 
     /* ── Panel status footer ── */
-    .panel-foot { border-top: 1px solid #2A2A3E; padding: 10px 16px; font-size: 0.65rem; min-height: 38px; display: flex; align-items: center; gap: 6px; }
+    .panel-foot { border-top: 1px solid #E5E7EB; padding: 10px 14px; font-size: 0.65rem; min-height: 38px; display: flex; align-items: center; gap: 6px; background: #FAFAFA; }
     .foot-badge { border-radius: 4px; padding: 2px 8px; font-weight: 700; font-size: 0.62rem; }
-    .foot-badge.warn { background: #3B1A1A; color: #F87171; }
-    .foot-badge.ok { background: #0F291E; color: #34D399; }
-    .foot-text { color: #6B6B8E; }
+    .foot-badge.warn { background: #FEE2E2; color: #DC2626; }
+    .foot-badge.ok { background: #D1FAE5; color: #065F46; }
+    .foot-text { color: #9CA3AF; }
 
     /* ── Feed items ── */
-    .feed-item { background: #2A2A3E; border: 1px solid #3A3A50; border-radius: 8px; padding: 9px 11px; animation: scanArrive 0.35s ease; }
-    .feed-item.oos { border-color: #7F1D1D; background: #1F1515; }
+    .feed-item { background: #fff; border: 1px solid #E5E7EB; border-radius: 8px; padding: 9px 11px; animation: scanArrive 0.35s ease; }
+    .feed-item.oos { border-color: #FECACA; background: #FFF5F5; }
     .feed-item-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; margin-bottom: 6px; }
-    .feed-event { font-size: 0.73rem; font-weight: 700; color: #C4C4D8; line-height: 1.3; }
-    .feed-loc { font-size: 0.62rem; color: #6B6B8E; margin-top: 1px; }
+    .feed-event { font-size: 0.73rem; font-weight: 700; color: #111; line-height: 1.3; }
+    .feed-loc { font-size: 0.62rem; color: #9CA3AF; margin-top: 1px; }
     .lag-chip { font-size: 0.58rem; font-weight: 700; border-radius: 4px; padding: 2px 7px; white-space: nowrap; flex-shrink: 0; }
-    .lag-ok { background: #0F291E; color: #34D399; }
-    .lag-mid { background: #2D200A; color: #FCD34D; }
-    .lag-bad { background: #3B1A1A; color: #F87171; }
+    .lag-ok { background: #D1FAE5; color: #065F46; }
+    .lag-mid { background: #FEF3C7; color: #92400E; }
+    .lag-bad { background: #FEE2E2; color: #DC2626; }
     .feed-times { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-    .feed-time-row { }
-    .feed-time-key { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.8px; color: #4A4A6E; }
-    .feed-time-val { font-size: 0.63rem; color: #8B8BAE; font-family: monospace; }
-    .oos-tag { font-size: 0.58rem; font-weight: 700; color: #F87171; background: #3B1A1A; border-radius: 4px; padding: 2px 7px; display: inline-flex; align-items: center; gap: 3px; margin-top: 5px; }
-    .arrival-num { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: #3A3A50; font-size: 0.6rem; font-weight: 700; color: #8B8BAE; flex-shrink: 0; margin-right: 4px; }
+    .feed-time-key { font-size: 0.54rem; text-transform: uppercase; letter-spacing: 0.8px; color: #D1D5DB; }
+    .feed-time-val { font-size: 0.63rem; color: #6B7280; font-family: monospace; }
+    .oos-tag { font-size: 0.58rem; font-weight: 700; color: #DC2626; background: #FEE2E2; border-radius: 4px; padding: 2px 7px; display: inline-flex; align-items: center; gap: 3px; margin-top: 5px; }
+    .arrival-num { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: #F3F4F6; font-size: 0.6rem; font-weight: 700; color: #6B7280; flex-shrink: 0; margin-right: 4px; }
 
     /* ── Before items ── */
     .before-item { border-radius: 8px; padding: 9px 11px; border: 1px solid transparent; animation: scanArrive 0.35s ease; }
-    .before-item.ok { background: #1E2A1E; border-color: #2D4A2D; }
-    .before-item.bad { background: #1F1515; border-color: #7F1D1D; }
+    .before-item.ok { background: #F0FDF4; border-color: #BBF7D0; }
+    .before-item.bad { background: #FFF5F5; border-color: #FECACA; }
     .before-item-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
     .before-stage { font-size: 0.73rem; font-weight: 700; line-height: 1.3; }
-    .before-stage.ok { color: #86EFAC; }
-    .before-stage.bad { color: #F87171; }
-    .before-loc { font-size: 0.62rem; color: #6B6B8E; margin-top: 2px; }
-    .before-time { font-size: 0.62rem; color: #4A4A6E; font-family: monospace; }
-    .oos-warn { font-size: 0.6rem; color: #F87171; margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+    .before-stage.ok { color: #059669; }
+    .before-stage.bad { color: #DC2626; }
+    .before-loc { font-size: 0.62rem; color: #9CA3AF; margin-top: 2px; }
+    .before-time { font-size: 0.62rem; color: #D1D5DB; font-family: monospace; }
+    .oos-warn { font-size: 0.6rem; color: #DC2626; margin-top: 5px; display: flex; align-items: center; gap: 4px; }
 
     /* ── After items ── */
-    .after-item { background: #0F1E16; border: 1px solid #1A4030; border-radius: 8px; padding: 9px 11px; animation: scanArrive 0.35s ease; }
+    .after-item { background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 9px 11px; animation: scanArrive 0.35s ease; }
     .after-item-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-    .after-stage { font-size: 0.73rem; font-weight: 700; color: #34D399; line-height: 1.3; }
-    .after-loc { font-size: 0.62rem; color: #4B7B65; margin-top: 2px; }
-    .after-time { font-size: 0.62rem; color: #2D5A45; font-family: monospace; }
-    .inserted-badge { font-size: 0.58rem; font-weight: 700; color: #A78BFA; background: #1E1830; border-radius: 4px; padding: 2px 7px; white-space: nowrap; }
+    .after-stage { font-size: 0.73rem; font-weight: 700; color: #059669; line-height: 1.3; }
+    .after-loc { font-size: 0.62rem; color: #6EE7B7; margin-top: 2px; }
+    .after-time { font-size: 0.62rem; color: #A7F3D0; font-family: monospace; }
+    .inserted-badge { font-size: 0.58rem; font-weight: 700; color: #7C3AED; background: #EDE9FE; border-radius: 4px; padding: 2px 7px; white-space: nowrap; }
 
     @keyframes scanArrive {
       from { opacity: 0; transform: translateY(-8px); }
       to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes flashWarn {
-      0%,100% { background: #1F1515; }
-      40%     { background: #3B1A1A; }
     }
 
     /* ── Responsive ── */
@@ -141,7 +155,7 @@
       .proto-inner { padding: 0; }
       .proto-label-bar { padding: 24px 20px 18px; }
       .panels { grid-template-columns: 1fr; }
-      .panel { border-right: none; border-bottom: 1px solid #2A2A3E; }
+      .panel { border-right: none; border-bottom: 1px solid #E5E7EB; }
     }
   </style>
 </head>
@@ -248,12 +262,13 @@
       </div>
       <div class="control-bar">
         <span class="tracking-badge">DSP-7K4M-2WX9-CA</span>
-        <span style="font-size:0.68rem;color:#6B6B8E;">Ottawa, ON → Calgary, AB</span>
+        <span style="font-size:0.68rem;color:#9CA3AF;">Ottawa, ON → Calgary, AB</span>
         <button class="ctrl-btn btn-play" id="btnPlay" onclick="startSim()">▶ Play simulation</button>
         <button class="ctrl-btn btn-reset" id="btnReset" onclick="resetSim()">↺ Reset</button>
         <div class="speed-group">
           <span class="speed-label">Speed</span>
           <div class="speed-toggle">
+            <button class="speed-btn" id="speedSlow" onclick="setSpeed('slow')">Slow</button>
             <button class="speed-btn active" id="speedNorm" onclick="setSpeed('normal')">Normal</button>
             <button class="speed-btn" id="speedFast" onclick="setSpeed('fast')">Fast</button>
           </div>
@@ -285,6 +300,7 @@
           <div class="panel-list" id="beforeList">
             <div class="panel-empty" id="beforeEmpty">Customer tracking view will update here…</div>
           </div>
+          <div class="panel-progress" id="beforeProgress"></div>
           <div class="panel-foot" id="beforeFoot">
             <span class="foot-text">Customer-facing tracking page</span>
           </div>
@@ -299,6 +315,7 @@
           <div class="panel-list" id="afterList">
             <div class="panel-empty" id="afterEmpty">Customer tracking view will update here…</div>
           </div>
+          <div class="panel-progress" id="afterProgress"></div>
           <div class="panel-foot" id="afterFoot">
             <span class="foot-text">Customer-facing tracking page</span>
           </div>
@@ -394,18 +411,50 @@ const SCANS = [
 ];
 
 const STAGE_ICONS = ['🏷️','📬','🏭','🚛','✈️','🚐','✅'];
+
+/* Progress bar: 5 simplified stages */
+const BAR_LABELS = ['Label\nCreated','Picked\nUp','In\nTransit','Out for\nDelivery','Delivered'];
+function stageToBar(s) {
+  if (s < 0) return -1;
+  if (s === 0) return 0;
+  if (s === 1) return 1;
+  if (s >= 2 && s <= 4) return 2;
+  if (s === 5) return 3;
+  if (s === 6) return 4;
+  return -1;
+}
+function renderProgressBar(barPos, isError) {
+  if (barPos < 0) return '<div style="font-size:0.62rem;color:#D1D5DB;text-align:center;padding:10px 0;">Waiting for scans…</div>';
+  let html = '<div class="prog-bar">';
+  for (let i = 0; i < 5; i++) {
+    const done = i < barPos;
+    const active = i === barPos;
+    const dotCls = done ? 'done' : active ? (isError ? 'error' : 'active') : '';
+    const lblCls = done ? 'done' : active ? (isError ? 'error' : 'active') : '';
+    html += `<div class="prog-seg"><div class="prog-dot ${dotCls}"></div><div class="prog-lbl ${lblCls}">${BAR_LABELS[i]}</div></div>`;
+    if (i < 4) {
+      html += `<div class="prog-line-wrap"><div class="prog-line ${done ? 'done' : ''}"></div></div>`;
+    }
+  }
+  html += '</div>';
+  if (isError) html += '<div class="prog-note warn">⚠ Status regressed — package appears stuck</div>';
+  else if (barPos === 4) html += '<div class="prog-note ok">✓ Delivered</div>';
+  return html;
+}
+
 let simIdx = 0;
 let simTimeout = null;
 let simSpeed = 'normal';
-let beforeMaxStage = -1;
-let afterItems = []; // { stage, el }
+let beforeMaxStage = -1;   // highest stage ever received (for OoS detection)
+let beforeLastStage = -1;  // stage of LAST received scan (drives before progress bar)
+let afterMaxStage = -1;    // max stage correctly sorted (drives after progress bar)
+let afterItems = [];
 let oosCount = 0;
-let insertedCount = 0;
 
 function setSpeed(s) {
   simSpeed = s;
-  document.getElementById('speedNorm').classList.toggle('active', s === 'normal');
-  document.getElementById('speedFast').classList.toggle('active', s === 'fast');
+  ['speedSlow','speedNorm','speedFast'].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById(s === 'slow' ? 'speedSlow' : s === 'fast' ? 'speedFast' : 'speedNorm').classList.add('active');
 }
 
 function startSim() {
@@ -425,13 +474,12 @@ function runNext() {
   addToBefore(scan);
   addToAfter(scan);
   document.getElementById('scanCounter').textContent = `${simIdx} / ${SCANS.length} scans received`;
-  const delay = simSpeed === 'fast' ? 280 : 920;
+  const delay = simSpeed === 'slow' ? 2200 : simSpeed === 'fast' ? 280 : 920;
   simTimeout = setTimeout(runNext, delay);
 }
 
 function resetSim() {
   clearTimeout(simTimeout);
-  simIdx = 0; beforeMaxStage = -1; afterItems = []; oosCount = 0; insertedCount = 0;
   ['feedList','beforeList','afterList'].forEach(id => {
     document.getElementById(id).innerHTML = '';
   });
@@ -441,10 +489,13 @@ function resetSim() {
   document.getElementById('feedList').prepend(document.getElementById('feedEmpty'));
   document.getElementById('beforeList').prepend(document.getElementById('beforeEmpty'));
   document.getElementById('afterList').prepend(document.getElementById('afterEmpty'));
+  simIdx = 0; beforeMaxStage = -1; beforeLastStage = -1; afterMaxStage = -1; afterItems = []; oosCount = 0;
   document.getElementById('scanCounter').textContent = '0 / 7 scans received';
   document.getElementById('feedFoot').innerHTML = '<span class="foot-text">Raw events as ingested</span>';
   document.getElementById('beforeFoot').innerHTML = '<span class="foot-text">Customer-facing tracking page</span>';
   document.getElementById('afterFoot').innerHTML = '<span class="foot-text">Customer-facing tracking page</span>';
+  document.getElementById('beforeProgress').innerHTML = '';
+  document.getElementById('afterProgress').innerHTML = '';
   document.getElementById('btnPlay').disabled = false;
 }
 
@@ -484,6 +535,7 @@ function addToBefore(scan) {
   document.getElementById('beforeEmpty').style.display = 'none';
   const isOos = scan.stage < beforeMaxStage;
   if (scan.stage > beforeMaxStage) beforeMaxStage = scan.stage;
+  beforeLastStage = scan.stage; // always the most recently received
   if (isOos) oosCount++;
   const el = document.createElement('div');
   el.className = `before-item ${isOos ? 'bad' : 'ok'}`;
@@ -499,14 +551,17 @@ function addToBefore(scan) {
   `;
   document.getElementById('beforeList').appendChild(el);
   el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  // Progress bar: driven by last received stage (not max) — shows regression visually
+  const regressed = beforeLastStage < beforeMaxStage;
+  document.getElementById('beforeProgress').innerHTML = renderProgressBar(stageToBar(beforeLastStage), regressed);
 }
 
 /* ── After panel (always in stage order) ── */
 function addToAfter(scan) {
   document.getElementById('afterEmpty').style.display = 'none';
   const insertPos = afterItems.findIndex(item => item.stage > scan.stage);
-  const isInserted = insertPos !== -1; // being inserted between existing items
-  if (isInserted) insertedCount++;
+  const isInserted = insertPos !== -1;
+  afterMaxStage = Math.max(afterMaxStage, scan.stage);
 
   const el = document.createElement('div');
   el.className = 'after-item';
@@ -532,12 +587,14 @@ function addToAfter(scan) {
     afterItems.splice(insertPos, 0, { stage: scan.stage, el });
   }
   el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  // Progress bar: always shows max stage — never regresses
+  document.getElementById('afterProgress').innerHTML = renderProgressBar(stageToBar(afterMaxStage), false);
 }
 
 /* ── Summary footers ── */
 function showSummary() {
   document.getElementById('feedFoot').innerHTML = `
-    <span class="foot-badge" style="background:#1E2338;color:#A78BFA;">7 events ingested</span>
+    <span class="foot-badge" style="background:#EDE9FE;color:#6D28D9;">7 events ingested</span>
     <span class="foot-text">${oosCount} arrived out of sequence</span>
   `;
   document.getElementById('beforeFoot').innerHTML = oosCount > 0
