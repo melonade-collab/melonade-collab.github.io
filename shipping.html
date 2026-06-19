@@ -631,20 +631,19 @@
             <div class="pkg-card" id="pkgEnvelope" onclick="selectPkg('envelope')">
               <svg width="46" height="60" viewBox="0 0 46 60" xmlns="http://www.w3.org/2000/svg">
                 <!-- Envelope body -->
-                <rect x="2" y="2" width="42" height="56" rx="3" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5"/>
-                <!-- Top flap area (lighter tint) -->
-                <rect x="3" y="3" width="40" height="16" rx="2" fill="#DDD6FE"/>
-                <!-- Fold line -->
-                <line x1="2" y1="19" x2="44" y2="19" stroke="#7C3AED" stroke-width="1" opacity="0.5"/>
-                <!-- Clasp/brad on flap -->
-                <circle cx="23" cy="11" r="3.5" fill="none" stroke="#7C3AED" stroke-width="1.2"/>
-                <circle cx="23" cy="11" r="1.5" fill="#7C3AED" opacity="0.4"/>
-                <!-- Address lines -->
-                <rect x="8" y="27" width="14" height="1.5" rx="0.7" fill="#7C3AED" opacity="0.3"/>
-                <rect x="8" y="31" width="22" height="1.5" rx="0.7" fill="#7C3AED" opacity="0.3"/>
-                <rect x="8" y="35" width="16" height="1.5" rx="0.7" fill="#7C3AED" opacity="0.3"/>
-                <!-- Stamp placeholder -->
-                <rect x="28" y="24" width="11" height="13" rx="1.5" fill="none" stroke="#7C3AED" stroke-width="0.8" opacity="0.3" stroke-dasharray="2 1.5"/>
+                <rect x="3" y="2" width="40" height="56" rx="2" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5"/>
+                <!-- Peel-and-seal strip at top -->
+                <rect x="4" y="3" width="38" height="9" rx="1.5" fill="#DDD6FE"/>
+                <line x1="3" y1="12" x2="43" y2="12" stroke="#7C3AED" stroke-width="0.8" opacity="0.5" stroke-dasharray="3 2"/>
+                <!-- Stamp box (top right) -->
+                <rect x="29" y="16" width="11" height="12" rx="1" fill="none" stroke="#7C3AED" stroke-width="0.8" stroke-dasharray="2 1.5" opacity="0.35"/>
+                <!-- Return address (top left, small) -->
+                <rect x="6" y="16" width="10" height="1.2" rx="0.6" fill="#7C3AED" opacity="0.2"/>
+                <rect x="6" y="19.5" width="7" height="1.2" rx="0.6" fill="#7C3AED" opacity="0.2"/>
+                <!-- To address lines -->
+                <rect x="8" y="34" width="18" height="2" rx="1" fill="#7C3AED" opacity="0.3"/>
+                <rect x="8" y="39" width="26" height="2" rx="1" fill="#7C3AED" opacity="0.3"/>
+                <rect x="8" y="44" width="20" height="2" rx="1" fill="#7C3AED" opacity="0.3"/>
               </svg>
               <div>
                 <p class="pkg-name">Envelope</p>
@@ -691,43 +690,42 @@
 
           <div id="envDetails" style="display:none;">
             <div class="measure-box">
-              <svg width="188" height="140" viewBox="0 0 188 140" xmlns="http://www.w3.org/2000/svg">
-                <!-- Envelope body (portrait, 9×12 proportions) -->
-                <rect x="40" y="6" width="80" height="106" rx="3" fill="#fff" stroke="#7C3AED" stroke-width="1.5"/>
-                <!-- Top flap shading -->
-                <rect x="41" y="7" width="78" height="18" rx="2" fill="#F5F3FF"/>
-                <!-- Fold line -->
-                <line x1="40" y1="25" x2="120" y2="25" stroke="#7C3AED" stroke-width="1" opacity="0.5"/>
-                <!-- Clasp/brad -->
-                <circle cx="80" cy="16" r="4" fill="none" stroke="#7C3AED" stroke-width="1.2"/>
-                <circle cx="80" cy="16" r="1.8" fill="#7C3AED" opacity="0.35"/>
-                <!-- Address lines -->
-                <rect x="50" y="36" width="30" height="2" rx="1" fill="#7C3AED" opacity="0.25"/>
-                <rect x="50" y="41" width="50" height="2" rx="1" fill="#7C3AED" opacity="0.25"/>
-                <rect x="50" y="46" width="38" height="2" rx="1" fill="#7C3AED" opacity="0.25"/>
-                <!-- Stamp box -->
-                <rect x="88" y="32" width="22" height="18" rx="2" fill="none" stroke="#7C3AED" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 2"/>
+              <svg width="188" height="158" viewBox="0 0 188 158" xmlns="http://www.w3.org/2000/svg">
+                <!-- Envelope body (portrait, 9.5×15 proportions) -->
+                <rect x="36" y="5" width="76" height="120" rx="3" fill="#fff" stroke="#7C3AED" stroke-width="1.5"/>
+                <!-- Peel-and-seal strip at top -->
+                <rect x="37" y="6" width="74" height="16" rx="2" fill="#F5F3FF"/>
+                <line x1="36" y1="22" x2="112" y2="22" stroke="#7C3AED" stroke-width="0.8" opacity="0.5" stroke-dasharray="4 2.5"/>
+                <!-- Stamp box (top right) -->
+                <rect x="88" y="27" width="20" height="17" rx="2" fill="none" stroke="#7C3AED" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.3"/>
+                <!-- Return address (top left, small) -->
+                <rect x="42" y="27" width="26" height="1.8" rx="0.9" fill="#7C3AED" opacity="0.2"/>
+                <rect x="42" y="31" width="18" height="1.8" rx="0.9" fill="#7C3AED" opacity="0.2"/>
+                <!-- To address lines -->
+                <rect x="42" y="62" width="36" height="2" rx="1" fill="#7C3AED" opacity="0.25"/>
+                <rect x="42" y="68" width="54" height="2" rx="1" fill="#7C3AED" opacity="0.25"/>
+                <rect x="42" y="74" width="42" height="2" rx="1" fill="#7C3AED" opacity="0.25"/>
                 <!-- Width arrow (bottom) -->
-                <line x1="40" y1="122" x2="120" y2="122" stroke="#6D28D9" stroke-width="1.2"/>
-                <line x1="40" y1="118" x2="40" y2="126" stroke="#6D28D9" stroke-width="1.2"/>
-                <line x1="120" y1="118" x2="120" y2="126" stroke="#6D28D9" stroke-width="1.2"/>
-                <text id="envLabelW" x="80" y="135" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif">23 cm</text>
+                <line x1="36" y1="133" x2="112" y2="133" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="36" y1="129" x2="36" y2="137" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="112" y1="129" x2="112" y2="137" stroke="#6D28D9" stroke-width="1.2"/>
+                <text id="envLabelW" x="74" y="149" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif">24 cm</text>
                 <!-- Height arrow (right) -->
-                <line x1="133" y1="6" x2="133" y2="112" stroke="#6D28D9" stroke-width="1.2"/>
-                <line x1="129" y1="6" x2="137" y2="6" stroke="#6D28D9" stroke-width="1.2"/>
-                <line x1="129" y1="112" x2="137" y2="112" stroke="#6D28D9" stroke-width="1.2"/>
-                <text id="envLabelH" x="150" y="59" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif" transform="rotate(90,150,59)">31 cm</text>
+                <line x1="125" y1="5" x2="125" y2="125" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="121" y1="5" x2="129" y2="5" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="121" y1="125" x2="129" y2="125" stroke="#6D28D9" stroke-width="1.2"/>
+                <text id="envLabelH" x="143" y="65" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif" transform="rotate(90,143,65)">38 cm</text>
               </svg>
-              <p class="measure-caption">Large document envelope (9" × 12") — dimensions pre-filled for you</p>
+              <p class="measure-caption">Large document envelope (9.5" × 15") — dimensions pre-filled for you</p>
             </div>
             <div class="form-row" style="max-width:300px;">
               <div class="form-group">
                 <label>Length</label>
-                <input type="text" id="envLen" value="31 cm" class="prefilled" readonly>
+                <input type="text" id="envLen" value="38 cm" class="prefilled" readonly>
               </div>
               <div class="form-group">
                 <label>Width</label>
-                <input type="text" id="envWid" value="23 cm" class="prefilled" readonly>
+                <input type="text" id="envWid" value="24 cm" class="prefilled" readonly>
               </div>
             </div>
             <div class="form-row" style="max-width:300px;">
@@ -789,13 +787,14 @@
           <div class="step-divider"></div>
           <p class="step-heading">Your quote</p>
           <div class="quote-card">
-            <p class="quote-eyebrow">Estimated shipping cost</p>
+            <p class="quote-eyebrow">Estimated cost (before tax)</p>
             <p class="quote-price" id="quotePrice">—</p>
             <p class="quote-meta" id="quoteMeta"></p>
             <div style="border-top:1px solid #DDD6FE;margin-top:14px;padding-top:14px;">
               <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#555;padding:5px 0;border-bottom:1px solid #EDE9FE;"><span>Base rate</span><span id="quoteBase">—</span></div>
               <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#555;padding:5px 0;border-bottom:1px solid #EDE9FE;"><span>Weight charge</span><span id="quoteWtCharge">—</span></div>
-              <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#555;padding:5px 0;border-bottom:1px solid #EDE9FE;"><span>Tax (13%)</span><span id="quoteTaxLine">—</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#888;padding:5px 0;border-bottom:1px solid #EDE9FE;font-style:italic;"><span>Subtotal (before tax)</span><span id="quoteSubtotal">—</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#555;padding:5px 0;border-bottom:1px solid #EDE9FE;"><span id="quoteTaxLabel">Tax</span><span id="quoteTaxLine">—</span></div>
               <div style="display:flex;justify-content:space-between;font-size:0.9rem;font-weight:800;color:#4C1D95;padding:7px 0 2px;"><span>Total</span><span id="quoteTotal">—</span></div>
             </div>
           </div>
@@ -931,10 +930,10 @@ function setDimUnit(u) {
   const imp = u === 'in';
   document.getElementById('btnCm').classList.toggle('active', !imp);
   document.getElementById('btnIn').classList.toggle('active', imp);
-  document.getElementById('envLabelW').textContent = imp ? '9 in' : '23 cm';
-  document.getElementById('envLabelH').textContent = imp ? '12 in' : '31 cm';
-  document.getElementById('envLen').value = imp ? '12 in' : '31 cm';
-  document.getElementById('envWid').value = imp ? '9 in' : '23 cm';
+  document.getElementById('envLabelW').textContent = imp ? '9.5 in' : '24 cm';
+  document.getElementById('envLabelH').textContent = imp ? '15 in' : '38 cm';
+  document.getElementById('envLen').value = imp ? '15 in' : '38 cm';
+  document.getElementById('envWid').value = imp ? '9.5 in' : '24 cm';
   document.getElementById('lblBoxL').textContent = imp ? 'Length (in)' : 'Length (cm)';
   document.getElementById('lblBoxW').textContent = imp ? 'Width (in)'  : 'Width (cm)';
   document.getElementById('lblBoxH').textContent = imp ? 'Height (in)' : 'Height (cm)';
@@ -1042,15 +1041,38 @@ function revealQuote() {
   displayWt = impWt ? `${(weightKg * 2.20462).toFixed(1)} lb` : `${weightKg.toFixed(2)} kg`;
   const baseRate = pkgType === 'envelope' ? 12.99 : 8.99;
   const wtCharge = +(price - baseRate).toFixed(2);
-  const tax = +(price * 0.13).toFixed(2);
+  const prov = document.getElementById('fromProv').value;
+  const { rate: taxRate, label: taxLabel } = getTax(prov);
+  const tax = +(price * taxRate).toFixed(2);
   const withTax = +(price + tax).toFixed(2);
   document.getElementById('quotePrice').textContent = `$${price.toFixed(2)}`;
   document.getElementById('quoteMeta').innerHTML = `${displayWt} · ${delivery}`;
   document.getElementById('quoteBase').textContent = `$${baseRate.toFixed(2)}`;
   document.getElementById('quoteWtCharge').textContent = `$${wtCharge.toFixed(2)}`;
+  document.getElementById('quoteSubtotal').textContent = `$${price.toFixed(2)}`;
+  document.getElementById('quoteTaxLabel').textContent = taxLabel;
   document.getElementById('quoteTaxLine').textContent = `$${tax.toFixed(2)}`;
   document.getElementById('quoteTotal').textContent = `$${withTax.toFixed(2)}`;
   reveal('stepQuote');
+}
+
+function getTax(prov) {
+  const rates = {
+    AB: { rate: 0.05,     label: 'GST (5%)'          },
+    BC: { rate: 0.12,     label: 'GST + PST (12%)'   },
+    MB: { rate: 0.12,     label: 'GST + PST (12%)'   },
+    NB: { rate: 0.15,     label: 'HST (15%)'          },
+    NL: { rate: 0.15,     label: 'HST (15%)'          },
+    NS: { rate: 0.15,     label: 'HST (15%)'          },
+    NT: { rate: 0.05,     label: 'GST (5%)'           },
+    NU: { rate: 0.05,     label: 'GST (5%)'           },
+    ON: { rate: 0.13,     label: 'HST (13%)'          },
+    PE: { rate: 0.15,     label: 'HST (15%)'          },
+    QC: { rate: 0.14975,  label: 'GST + QST (14.975%)'},
+    SK: { rate: 0.11,     label: 'GST + PST (11%)'   },
+    YT: { rate: 0.05,     label: 'GST (5%)'           },
+  };
+  return rates[prov] || { rate: 0.13, label: 'Tax (13%)' };
 }
 
 function toTitleCase(s) { return s.replace(/\b\w/g, c => c.toUpperCase()); }
