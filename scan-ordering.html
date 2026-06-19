@@ -60,6 +60,8 @@
     .btn-play:disabled { background: #DDD6FE; color: #A78BFA; cursor: default; }
     .btn-reset { background: #fff; color: #6B7280; border: 1.5px solid #E5E7EB; }
     .btn-reset:hover { background: #F3F4F6; }
+    .btn-pause { background: #F3F4F6; color: #374151; border: 1.5px solid #D1D5DB; }
+    .btn-pause:hover { background: #E5E7EB; }
     .speed-group { display: flex; align-items: center; gap: 8px; margin-left: auto; }
     .speed-label { font-size: 0.68rem; color: #9CA3AF; }
     .speed-toggle { display: flex; background: #fff; border: 1.5px solid #E5E7EB; border-radius: 6px; overflow: hidden; }
@@ -263,6 +265,7 @@
         <span class="tracking-badge">DSP-7K4M-2WX9-CA</span>
         <span style="font-size:0.68rem;color:#9CA3AF;">Ottawa, ON → Calgary, AB</span>
         <button class="ctrl-btn btn-play" id="btnPlay" onclick="startSim()">▶ Play simulation</button>
+        <button class="ctrl-btn btn-pause" id="btnPause" onclick="togglePause()" style="display:none;">⏸ Pause</button>
         <button class="ctrl-btn btn-reset" id="btnReset" onclick="resetSim()">↺ Reset</button>
         <div class="speed-group">
           <span class="speed-label">Speed</span>
@@ -456,15 +459,33 @@ function setSpeed(s) {
   document.getElementById(s === 'slow' ? 'speedSlow' : s === 'fast' ? 'speedFast' : 'speedNorm').classList.add('active');
 }
 
+let paused = false;
+
 function startSim() {
   if (simIdx >= SCANS.length) return;
+  paused = false;
   document.getElementById('btnPlay').disabled = true;
+  document.getElementById('btnPause').style.display = 'inline-block';
+  document.getElementById('btnPause').textContent = '⏸ Pause';
   runNext();
 }
 
+function togglePause() {
+  if (paused) {
+    paused = false;
+    document.getElementById('btnPause').textContent = '⏸ Pause';
+    runNext();
+  } else {
+    paused = true;
+    clearTimeout(simTimeout);
+    document.getElementById('btnPause').textContent = '▶ Resume';
+  }
+}
+
 function runNext() {
+  if (paused) return;
   if (simIdx >= SCANS.length) {
-    document.getElementById('btnPlay').disabled = true;
+    document.getElementById('btnPause').style.display = 'none';
     showSummary();
     return;
   }
@@ -479,23 +500,29 @@ function runNext() {
 
 function resetSim() {
   clearTimeout(simTimeout);
-  ['feedList','beforeList','afterList'].forEach(id => {
-    document.getElementById(id).innerHTML = '';
-  });
-  document.getElementById('feedEmpty').style.display = 'block';
-  document.getElementById('beforeEmpty').style.display = 'block';
-  document.getElementById('afterEmpty').style.display = 'block';
-  document.getElementById('feedList').prepend(document.getElementById('feedEmpty'));
-  document.getElementById('beforeList').prepend(document.getElementById('beforeEmpty'));
-  document.getElementById('afterList').prepend(document.getElementById('afterEmpty'));
+  paused = false;
+  const feedEmpty   = document.getElementById('feedEmpty');
+  const beforeEmpty = document.getElementById('beforeEmpty');
+  const afterEmpty  = document.getElementById('afterEmpty');
+  document.getElementById('feedList').innerHTML   = '';
+  document.getElementById('beforeList').innerHTML = '';
+  document.getElementById('afterList').innerHTML  = '';
+  feedEmpty.style.display = 'block';
+  beforeEmpty.style.display = 'block';
+  afterEmpty.style.display = 'block';
+  document.getElementById('feedList').prepend(feedEmpty);
+  document.getElementById('beforeList').prepend(beforeEmpty);
+  document.getElementById('afterList').prepend(afterEmpty);
   simIdx = 0; beforeMaxStage = -1; beforeLastStage = -1; afterMaxStage = -1; afterItems = []; oosCount = 0;
   document.getElementById('scanCounter').textContent = '0 / 7 scans received';
-  document.getElementById('feedFoot').innerHTML = '<span class="foot-text">Raw events as ingested</span>';
+  document.getElementById('feedFoot').innerHTML   = '<span class="foot-text">Raw events as ingested</span>';
   document.getElementById('beforeFoot').innerHTML = '<span class="foot-text">Customer-facing tracking page</span>';
-  document.getElementById('afterFoot').innerHTML = '<span class="foot-text">Customer-facing tracking page</span>';
+  document.getElementById('afterFoot').innerHTML  = '<span class="foot-text">Customer-facing tracking page</span>';
   document.getElementById('beforeProgress').innerHTML = '';
-  document.getElementById('afterProgress').innerHTML = '';
+  document.getElementById('afterProgress').innerHTML  = '';
   document.getElementById('btnPlay').disabled = false;
+  document.getElementById('btnPause').style.display = 'none';
+  document.getElementById('btnPause').textContent = '⏸ Pause';
 }
 
 /* ── Feed panel ── */
