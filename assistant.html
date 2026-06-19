@@ -298,6 +298,16 @@ function isValidPhone(p) { return p.replace(/\D/g, '').length >= 10; }
 function isValidPostal(p) {
   return /^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/.test(p.trim()) || /^\d{5}(-\d{4})?$/.test(p.trim());
 }
+function randPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+/* ── Skip synonyms & intent patterns ────────────────────────────── */
+const SKIP_ALTS  = /^(skip|n\/?a|none|no thanks|not now|rather not|pass|no|nope|nah)[\s.!]*$/i;
+const GREETINGS  = /^(hi|hello|hey|howdy|greetings|sup|yo|good (morning|afternoon|evening))[\s!.?]*$/i;
+const CONFUSED   = /^(what(\?+)?|huh(\?+)?|i don'?t (understand|get it|know what you mean)|not sure (what you mean)?|idk|pardon(\?)?|sorry(\?)?)[\s!.?]*$/i;
+const PRIVACY_Q  = /(why do you need|what.*do with|is this safe|privacy|data|secure|store|shar|collect)/i;
+const QUIT_WORDS = /^(quit|exit|stop|cancel|never mind|nevermind|forget it|no more|i'?m done|bye)[\s!.?]*$/i;
+const NAME_FROM  = /(?:(?:my )?name is|i'?m|call me|it'?s)\s+([A-Za-z]+(?:\s+[A-Za-z]+)?)/i;
+const NO_COMMENT = /^(no|nope|nah|nothing|no thanks|all good|n\/a|none|nothing else|that'?s (it|all)|not really|no (more )?comments?)[\s.!]*$/i;
 
 /* ── City → province lookup ──────────────────────────────────────── */
 const CITY_PROVINCE = {
@@ -638,12 +648,81 @@ async function pickRating(r) {
   if (reviewMode) { step = 8; showReview(); return; }
   step = 7;
   if (r <= 5) {
-    await wait(400);
-    const act = showAgentAction(r <= 3 ? 'Low satisfaction score detected — escalating to priority review' : 'Below-average score — flagging for follow-up');
-    await wait(1400);
-    act.remove();
+    await_rating_action(r);
+  } else {
+    afterRating();
   }
-  afterRating();
+}
+
+/* ── Natural language intercept ──────────────────────────────────── */
+function naturalLanguageIntercept(txt, lower) {
+  const stepQuestions = [
+    "What should I call you?",
+    "What city are you in?",
+    "Which province or state is that in?",
+    "What's your email address? (or type 'skip')",
+    "What's your phone number? (or type 'skip')",
+    "What's your postal or zip code? (or type 'skip')",
+    "Use the buttons above to pick a rating from 0 to 10.",
+    "Feel free to share any thoughts — or just type 'skip' if you're done."
+  ];
+  const stepPlaceholders = ['Your name…','Your city…','Province or state…','Your email…','Your phone…','Postal/zip code…','','Your feedback…'];
+
+  function reAskCurrent(prefix) {
+    const q = stepQuestions[Math.min(step, 7)];
+    botSay((prefix ? prefix + ' ' : '') + q, 700).then(() => {
+      if (step !== 6) enableInput(stepPlaceholders[Math.min(step, 7)]);
+    });
+  }
+
+  // Privacy / data questions
+  if (PRIVACY_Q.test(lower) && step < 8) {
+    const replies = [
+      "Great question! Your details are only used to process this feedback and follow up if needed — they're never shared or sold. With that said — ",
+      "Totally fair to ask! This info is just for our records and any follow-up on your feedback. Nothing more. Anyway — ",
+      "Your privacy matters to us. We only use what you share here to handle your feedback and reach out if needed. Now — "
+    ];
+    reAskCurrent(randPick(replies));
+    return true;
+  }
+
+  // Quit / cancel
+  if (QUIT_WORDS.test(lower) && step < 9) {
+    const replies = [
+      "No worries! We can stop here — but you've made it this far! Want to keep going?",
+      "Totally fine to stop! Though it'd be great to capture your feedback. Want to continue?",
+      "Okay! I don't want to keep you. Want to pick up where we left off, or start fresh?"
+    ];
+    botSay(randPick(replies), 700).then(() => {
+      const row = document.createElement('div'); row.className = 'choice-row';
+      [["Let's continue", false], ['Start over', true]].forEach(([label, reset]) => {
+        const b = document.createElement('button'); b.className = 'choice-chip'; b.textContent = label;
+        b.onclick = () => {
+          row.querySelectorAll('.choice-chip').forEach(c => c.disabled = true);
+          addUser(label);
+          if (reset) { location.reload(); }
+          else { reAskCurrent(''); }
+        };
+        row.appendChild(b);
+      });
+      msgsEl.appendChild(row); scroll();
+    });
+    return true;
+  }
+
+  // Greetings at step 0 (name)
+  if (GREETINGS.test(lower) && step === 0) {
+    botSay(randPick(["Hey there! 👋 What's your name?", "Hi! Great to have you. What should I call you?", "Hello! 😊 To get started, what's your name?"]), 600).then(() => enableInput('Your name…'));
+    return true;
+  }
+
+  // General confusion
+  if (CONFUSED.test(lower) && step < 8) {
+    reAskCurrent(randPick(["No worries, let me re-ask!", "All good — let me try that again.", "Happy to clarify!"]));
+    return true;
+  }
+
+  return false;
 }
 
 /* ── Send handler ────────────────────────────────────────────────── */
@@ -652,55 +731,148 @@ function send() {
   const txt = inp.value.trim();
   if (!txt) return;
   disableInput(); addUser(txt);
-  const skip = txt.toLowerCase() === 'skip';
+  const lower = txt.toLowerCase().trim();
+  const isSkip = lower === 'skip' || (step >= 3 && SKIP_ALTS.test(lower));
+
+  // Natural language intercept (privacy, quit, confusion, greetings)
+  if (naturalLanguageIntercept(txt, lower)) return;
 
   if (step === 0) {
-    d.name = toTitleCase(txt); saveData();
+    // Try to extract name from "my name is..." patterns
+    const extracted = NAME_FROM.exec(txt);
+    const name = extracted ? toTitleCase(extracted[1].trim()) : toTitleCase(txt.replace(/^(hi|hello|hey)[,\s]*/i, '').trim());
+    if (!name || name.replace(/\s/g,'').length < 2) {
+      botSay(randPick(["I just need your name to get started — even a first name works! What should I call you?", "Could you share your name? Just a first name is totally fine.", "Let's start with your name — what should I call you?"]), 700).then(() => enableInput('Your name…'));
+      return;
+    }
+    d.name = name; saveData();
     if (reviewMode) { step = 8; showReview(); } else { step = 1; afterName(); }
 
   } else if (step === 1) {
+    if (SKIP_ALTS.test(lower) || NO_COMMENT.test(lower)) {
+      botSay("City is something I do need — even a rough one like the metro area works! What city are you in?", 700).then(() => enableInput('Your city…'));
+      return;
+    }
     d.city = toTitleCase(txt); saveData();
     if (!CITY_PROVINCE[d.city.toLowerCase()]) {
-      botSay(`I don't recognise "${d.city}" as a Canadian city — does that look right?`, 700).then(showCityConfirmChips);
+      botSay(randPick([
+        `I don't have "${d.city}" in my city list — does that look right?`,
+        `Hmm, I'm not recognizing "${d.city}" — is that spelled correctly?`,
+        `"${d.city}" isn't one I know — want to confirm that's the right city?`
+      ]), 700).then(showCityConfirmChips);
     } else { askProvince(); }
 
   } else if (step === 2) {
     const expected = CITY_PROVINCE[d.city.toLowerCase()];
-    d.province = txt; saveData();
+    d.province = toTitleCase(txt); saveData();
     if (expected && expected.toLowerCase() !== txt.toLowerCase()) {
-      botSay(`Just so you know — ${d.city} is typically in ${expected}, not ${txt}. Which should I use?`, 800)
-        .then(() => showMismatchChips(expected, txt));
+      botSay(randPick([
+        `Just checking — ${d.city} is usually in ${expected}. Did you mean ${expected}, or is ${txt} correct?`,
+        `I have ${d.city} listed under ${expected} — is that right, or did you want to use ${txt}?`
+      ]), 800).then(() => showMismatchChips(expected, txt));
     } else {
       if (reviewMode) { step = 8; showReview(); } else { step = 3; afterProvince(); }
     }
 
   } else if (step === 3) {
-    if (!skip && !isValidEmail(txt)) {
-      botSay("Hmm, that doesn't look like a valid email — can you double-check it?", 700).then(() => enableInput('Your email…'));
+    if (isSkip) {
+      d.email = ''; saveData();
+      if (reviewMode) { step = 8; showReview(); } else { step = 4; afterEmail(); }
+      return;
+    }
+    if (!isValidEmail(txt)) {
+      botSay(randPick([
+        "That doesn't quite look like an email address — something like name@example.com. Want to try again? (or type 'skip')",
+        "Hmm, I'm not reading that as a valid email. Double-check the format? Or type 'skip' to move on.",
+        "I need an email in the format name@example.com. Give it another try, or type 'skip' to leave it blank."
+      ]), 700).then(() => enableInput('Your email…'));
     } else {
-      d.email = skip ? '' : txt; saveData();
+      d.email = txt; saveData();
       if (reviewMode) { step = 8; showReview(); } else { step = 4; afterEmail(); }
     }
 
   } else if (step === 4) {
-    if (!skip && !isValidPhone(txt)) {
-      botSay("That doesn't look like a full phone number — needs at least 10 digits. Try again or type 'skip'.", 700).then(() => enableInput('Your phone…'));
+    if (isSkip) {
+      d.phone = ''; saveData();
+      if (reviewMode) { step = 8; showReview(); } else { step = 5; afterPhone(); }
+      return;
+    }
+    if (!isValidPhone(txt)) {
+      botSay(randPick([
+        "I need at least 10 digits for a phone number. Try again, or type 'skip' to leave it blank.",
+        "That doesn't look like a complete number — needs 10 digits. Give it another shot, or 'skip' to move on.",
+        "Phone numbers need at least 10 digits. Want to try again? (or type 'skip')"
+      ]), 700).then(() => enableInput('Your phone…'));
     } else {
-      d.phone = skip ? '' : txt; saveData();
+      d.phone = txt; saveData();
       if (reviewMode) { step = 8; showReview(); } else { step = 5; afterPhone(); }
     }
 
   } else if (step === 5) {
-    if (!skip && !isValidPostal(txt)) {
-      botSay("That postal code doesn't look right. Canadian: M5V 1A1 · US: 90210. Try again or type 'skip'.", 700).then(() => enableInput('Postal/zip code…'));
+    if (isSkip) {
+      d.postalCode = ''; saveData();
+      if (reviewMode) { step = 8; showReview(); } else { step = 6; afterPostal(); }
+      return;
+    }
+    if (!isValidPostal(txt)) {
+      botSay(randPick([
+        "That postal code doesn't look right — Canadian format is like M5V 1A1, US is like 90210. Try again, or type 'skip'.",
+        "I'm not recognizing that as a valid postal or zip. Canadian: M5V 1A1 · US: 90210. Or just type 'skip'.",
+        "Hmm, I can't validate that code. Try the format M5V 1A1 (Canada) or 90210 (US), or type 'skip'."
+      ]), 700).then(() => enableInput('Postal/zip code…'));
     } else {
-      d.postalCode = skip ? '' : txt.toUpperCase(); saveData();
+      d.postalCode = txt.toUpperCase(); saveData();
       if (reviewMode) { step = 8; showReview(); } else { step = 6; afterPostal(); }
     }
 
+  } else if (step === 6) {
+    // Someone typed a number instead of clicking the chips
+    const num = parseInt(txt, 10);
+    if (!isNaN(num) && num >= 0 && num <= 10) {
+      const chips = document.getElementById('chips');
+      if (chips) chips.querySelectorAll('.r-chip').forEach((c, i) => { c.classList.toggle('picked', i === num); c.disabled = true; });
+      d.rating = num; saveData();
+      if (reviewMode) { step = 8; showReview(); return; }
+      step = 7;
+      if (num <= 5) {
+        await_rating_action(num);
+      } else {
+        afterRating();
+      }
+    } else {
+      botSay(randPick([
+        "Use the buttons above to pick a rating! Just tap the number that feels right, from 0 to 10.",
+        "Tap any number from 0 to 10 on the rating buttons — which one matches your experience?",
+        "I see you typed something — but I need you to tap one of the rating buttons above. Which number fits?"
+      ]), 700).then(() => enableInput());
+    }
+
   } else if (step === 7) {
-    d.message = txt; saveData(); showReview();
+    // Accept "no comment" / "nothing" as valid empty feedback
+    const finalMsg = NO_COMMENT.test(lower) ? '' : txt;
+    if (txt.replace(/\s/g,'').length < 3 && !NO_COMMENT.test(lower)) {
+      botSay(randPick([
+        "Even a word or two is helpful! Anything specific about your experience? (or type 'skip' to wrap up)",
+        "If there's anything on your mind — even briefly — I'd love to capture it. Or type 'skip' to finish.",
+        "Feel free to share whatever comes to mind, or just type 'skip' if you're all set."
+      ]), 700).then(() => enableInput('Your feedback…'));
+      return;
+    }
+    if (lower === 'skip' || NO_COMMENT.test(lower)) {
+      d.message = ''; saveData();
+    } else {
+      d.message = txt; saveData();
+    }
+    showReview();
   }
+}
+
+async function await_rating_action(r) {
+  await wait(400);
+  const act = showAgentAction(r <= 3 ? 'Low satisfaction score detected — escalating to priority review' : 'Below-average score — flagging for follow-up');
+  await wait(1400);
+  act.remove();
+  afterRating();
 }
 
 /* ── Boot ────────────────────────────────────────────────────────── */
