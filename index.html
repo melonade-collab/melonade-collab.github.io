@@ -301,6 +301,33 @@
           <span class="project-arrow">→</span>
         </a>
 
+        <a href="scan-ordering.html" class="project-card">
+          <div class="project-icon" style="background: #FEF3C7;">
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+              <!-- Timeline line -->
+              <line x1="20" y1="10" x2="20" y2="54" stroke="#D97706" stroke-width="2.5" stroke-linecap="round"/>
+              <!-- Dots in correct order -->
+              <circle cx="20" cy="14" r="4" fill="#059669"/>
+              <circle cx="20" cy="28" r="4" fill="#059669"/>
+              <circle cx="20" cy="42" r="4" fill="#059669"/>
+              <!-- Out-of-order arrow hinting reorder -->
+              <path d="M34 20 L46 28 L34 36" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M46 28 L34 36" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"/>
+              <!-- Small x mark (wrong) -->
+              <line x1="38" y1="10" x2="46" y2="18" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/>
+              <line x1="46" y1="10" x2="38" y2="18" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/>
+              <!-- Check mark (right) -->
+              <polyline points="38,46 42,50 50,42" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="project-info">
+            <p class="project-tag" style="color: #7C3AED;">Shipment tracking</p>
+            <p class="project-name">Scan Event Ordering</p>
+            <p class="project-desc">Packages showing "Delivered" before "Out for Delivery." A root cause investigation and fix so scans always display in sequence — regardless of when they arrive.</p>
+          </div>
+          <span class="project-arrow">→</span>
+        </a>
+
         <a href="shipping-mobile.html" class="project-card">
           <div class="project-icon" style="background: #EDE9FE;">
             <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="40" height="40">

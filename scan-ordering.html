@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scan Event Ordering — Shipment Tracking Fix</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f5; color: #1a1a1a; min-height: 100vh; }
+
+    /* ── Case study header ── */
+    .cs-header { background: #4C1D95; padding: 56px 40px 44px; }
+    .cs-header-inner { max-width: 800px; margin: 0 auto; }
+    .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 560px; }
+
+    /* ── Case study body ── */
+    .cs-body { max-width: 800px; margin: 0 auto; padding: 48px 40px 48px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+
+    /* ── Accordions ── */
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .acc-header .card-label { margin-bottom: 0; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #6D28D9; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p, .acc-body > ul { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { padding-left: 18px; }
+    .acc-body li { margin-bottom: 6px; }
+    .acc-body p + p { margin-top: 8px; }
+    .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #6D28D9; margin-bottom: 4px; }
+    .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
+
+    /* ── Prototype wrap ── */
+    .proto-section { background: #f7f7f5; padding: 0 0 80px; }
+    .proto-inner { max-width: 1040px; margin: 0 auto; padding: 0 32px; }
+    .proto-label-bar { background: #EDE9FE; padding: 32px 40px 24px; margin-bottom: 0; }
+    .proto-label { max-width: 1040px; margin: 0 auto; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #7C3AED; }
+
+    /* ── Dashboard frame ── */
+    .dashboard { background: #1E1E2E; border-radius: 0 0 16px 16px; box-shadow: 0 24px 80px rgba(0,0,0,0.22); overflow: hidden; }
+    .dash-titlebar { background: #2A2A3E; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #3A3A50; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #FF5F57; } .dot-y { background: #FEBC2E; } .dot-g { background: #28C840; }
+    .dash-title-text { font-size: 0.72rem; color: #8B8BAE; margin-left: 4px; font-family: monospace; }
+
+    /* ── Control bar ── */
+    .control-bar { background: #252538; padding: 14px 20px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; border-bottom: 1px solid #3A3A50; }
+    .tracking-badge { font-family: monospace; font-size: 0.78rem; color: #A78BFA; background: #2D2B50; border: 1px solid #4C3D8F; border-radius: 6px; padding: 5px 12px; }
+    .ctrl-btn { padding: 7px 18px; border-radius: 8px; border: none; font-size: 0.78rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+    .btn-play { background: #6D28D9; color: #fff; }
+    .btn-play:hover { background: #5B21B6; }
+    .btn-play:disabled { background: #4C3D8F; color: #8B8BAE; cursor: default; }
+    .btn-reset { background: #2D2B50; color: #8B8BAE; border: 1px solid #3A3A50; }
+    .btn-reset:hover { background: #3A3A50; color: #C4C4D8; }
+    .speed-group { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .speed-label { font-size: 0.68rem; color: #6B6B8E; }
+    .speed-toggle { display: flex; background: #2D2B50; border: 1px solid #3A3A50; border-radius: 6px; overflow: hidden; }
+    .speed-btn { padding: 5px 12px; font-size: 0.7rem; font-weight: 600; font-family: inherit; border: none; background: transparent; color: #6B6B8E; cursor: pointer; transition: all 0.15s; }
+    .speed-btn.active { background: #6D28D9; color: #fff; }
+    .scan-counter { font-size: 0.68rem; color: #6B6B8E; margin-left: 4px; }
+
+    /* ── Three-panel grid ── */
+    .panels { display: grid; grid-template-columns: 1.05fr 1fr 1fr; min-height: 460px; }
+    .panel { border-right: 1px solid #2A2A3E; display: flex; flex-direction: column; }
+    .panel:last-child { border-right: none; }
+    .panel-head { padding: 12px 16px; border-bottom: 1px solid #2A2A3E; flex-shrink: 0; }
+    .panel-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .panel-sort { font-size: 0.6rem; color: #6B6B8E; margin-top: 3px; font-family: monospace; }
+    .panel-title.feed { color: #A78BFA; }
+    .panel-title.before { color: #F87171; }
+    .panel-title.after { color: #34D399; }
+    .panel-list { flex: 1; overflow-y: auto; padding: 10px 10px; display: flex; flex-direction: column; gap: 6px; }
+    .panel-empty { font-size: 0.72rem; color: #4A4A6E; padding: 16px 6px; text-align: center; }
+
+    /* ── Panel status footer ── */
+    .panel-foot { border-top: 1px solid #2A2A3E; padding: 10px 16px; font-size: 0.65rem; min-height: 38px; display: flex; align-items: center; gap: 6px; }
+    .foot-badge { border-radius: 4px; padding: 2px 8px; font-weight: 700; font-size: 0.62rem; }
+    .foot-badge.warn { background: #3B1A1A; color: #F87171; }
+    .foot-badge.ok { background: #0F291E; color: #34D399; }
+    .foot-text { color: #6B6B8E; }
+
+    /* ── Feed items ── */
+    .feed-item { background: #2A2A3E; border: 1px solid #3A3A50; border-radius: 8px; padding: 9px 11px; animation: scanArrive 0.35s ease; }
+    .feed-item.oos { border-color: #7F1D1D; background: #1F1515; }
+    .feed-item-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; margin-bottom: 6px; }
+    .feed-event { font-size: 0.73rem; font-weight: 700; color: #C4C4D8; line-height: 1.3; }
+    .feed-loc { font-size: 0.62rem; color: #6B6B8E; margin-top: 1px; }
+    .lag-chip { font-size: 0.58rem; font-weight: 700; border-radius: 4px; padding: 2px 7px; white-space: nowrap; flex-shrink: 0; }
+    .lag-ok { background: #0F291E; color: #34D399; }
+    .lag-mid { background: #2D200A; color: #FCD34D; }
+    .lag-bad { background: #3B1A1A; color: #F87171; }
+    .feed-times { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    .feed-time-row { }
+    .feed-time-key { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.8px; color: #4A4A6E; }
+    .feed-time-val { font-size: 0.63rem; color: #8B8BAE; font-family: monospace; }
+    .oos-tag { font-size: 0.58rem; font-weight: 700; color: #F87171; background: #3B1A1A; border-radius: 4px; padding: 2px 7px; display: inline-flex; align-items: center; gap: 3px; margin-top: 5px; }
+    .arrival-num { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: #3A3A50; font-size: 0.6rem; font-weight: 700; color: #8B8BAE; flex-shrink: 0; margin-right: 4px; }
+
+    /* ── Before items ── */
+    .before-item { border-radius: 8px; padding: 9px 11px; border: 1px solid transparent; animation: scanArrive 0.35s ease; }
+    .before-item.ok { background: #1E2A1E; border-color: #2D4A2D; }
+    .before-item.bad { background: #1F1515; border-color: #7F1D1D; }
+    .before-item-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+    .before-stage { font-size: 0.73rem; font-weight: 700; line-height: 1.3; }
+    .before-stage.ok { color: #86EFAC; }
+    .before-stage.bad { color: #F87171; }
+    .before-loc { font-size: 0.62rem; color: #6B6B8E; margin-top: 2px; }
+    .before-time { font-size: 0.62rem; color: #4A4A6E; font-family: monospace; }
+    .oos-warn { font-size: 0.6rem; color: #F87171; margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+
+    /* ── After items ── */
+    .after-item { background: #0F1E16; border: 1px solid #1A4030; border-radius: 8px; padding: 9px 11px; animation: scanArrive 0.35s ease; }
+    .after-item-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+    .after-stage { font-size: 0.73rem; font-weight: 700; color: #34D399; line-height: 1.3; }
+    .after-loc { font-size: 0.62rem; color: #4B7B65; margin-top: 2px; }
+    .after-time { font-size: 0.62rem; color: #2D5A45; font-family: monospace; }
+    .inserted-badge { font-size: 0.58rem; font-weight: 700; color: #A78BFA; background: #1E1830; border-radius: 4px; padding: 2px 7px; white-space: nowrap; }
+
+    @keyframes scanArrive {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes flashWarn {
+      0%,100% { background: #1F1515; }
+      40%     { background: #3B1A1A; }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 760px) {
+      .cs-body { padding: 36px 20px 40px; }
+      .cs-header { padding: 40px 20px 36px; }
+      .contrib-grid { grid-template-columns: 1fr; }
+      .proto-inner { padding: 0; }
+      .proto-label-bar { padding: 24px 20px 18px; }
+      .panels { grid-template-columns: 1fr; }
+      .panel { border-right: none; border-bottom: 1px solid #2A2A3E; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="eyebrow">Re-imagining</p>
+    <h1>Scan Event Ordering</h1>
+    <p class="cs-intro">Packages would show "Delivered" — then "Out for Delivery" minutes later. A root cause investigation and fix to ensure shipment scans always display in the correct sequence, regardless of when they arrive.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Customers tracking shipments were seeing events displayed out of order on the public tracking page — most visibly, packages appearing as "Delivered" before "Out for Delivery" had shown up. Some tracking pages even showed the package leaving a facility before it had arrived. Customers were calling in confused and frustrated, and support ticket volume for tracking queries had risen sharply.</p>
+      <p style="margin-top:8px;">The data was correct — the scans themselves were all legitimate. But the tracking page was displaying them in the order they arrived at the system, not the order they actually happened.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Constraints</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Scan devices in the field (handheld scanners, vehicle-mounted units) batch and transmit events on intermittent connectivity — arrival time is unreliable</li>
+        <li>Each scan device captures its own event timestamp at the moment of scan, but clocks across devices weren't perfectly synchronized</li>
+        <li>Some scan events were legitimately close together in time, making pure timestamp sorting insufficient</li>
+        <li>The fix needed to be backward-compatible — historical tracking data also had to display correctly</li>
+        <li>No changes to scan hardware or field workflows were in scope</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">My Contribution</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Root cause analysis</p>
+          <p class="contrib-item-text">Identified the pattern in support tickets: out-of-order events clustered around specific scan types (facility arrivals and delivery confirmations). Traced it to the system sorting on ingestion timestamp rather than event timestamp.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Requirements</p>
+          <p class="contrib-item-text">Defined the ordering logic requirements: primary sort on event timestamp, secondary sort on stage rank to handle timestamp ties or device clock drift, with suppression rules for duplicate stage events.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Engineering partnership</p>
+          <p class="contrib-item-text">Worked with the backend team to design and validate the new sort query. Contributed test scenarios with deliberately out-of-order scan data to verify the fix handled real-world edge cases.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Validation</p>
+          <p class="contrib-item-text">Confirmed the fix against historical shipments that had previously displayed incorrectly. Tracked support ticket volume post-release to measure improvement in tracking-related contacts.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">How It Worked</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Every scan device records two timestamps: the <strong>event time</strong> (when the scan physically happened) and the <strong>received time</strong> (when the data reached the system). Devices in warehouses and delivery vehicles often batch transmit — a scanner with spotty connectivity might send 10 scans at once hours after they occurred.</p>
+      <p>Before the fix, the tracking page queried scans ordered by received time — meaning a scan that arrived late appeared at the bottom of the list regardless of when it actually happened. After the fix, the query sorts by event time first, with stage rank as a tiebreaker for cases where device clocks are slightly out of sync. A deduplication rule also suppresses a repeat of the same stage if a higher stage has already been received.</p>
+      <p>The demo below simulates a real-world scenario: a shipment from Ottawa to Calgary where two scan batches transmit late, causing "Arrived at Origin" to appear after "Departed Origin," and "Out for Delivery" to appear after "Delivered." The left panel shows raw scans arriving at the system. The centre shows what customers saw before the fix. The right shows what they see after.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb40" style="border-color:#DDD6FE;">
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#EDE9FE;">
+      <p class="card-label">Outcome</p>
+      <span class="acc-chevron" style="color:#7C3AED;">▼</span>
+    </div>
+    <div class="acc-body" style="background:#EDE9FE;">
+      <p style="color:#4C1D95;">Tracking-related support contacts dropped measurably in the weeks following the fix. The change also applied retroactively to historical shipments, resolving confusing tracking histories without any re-processing. The fix has been in place for all new shipments since, and no further out-of-order display issues have been reported from this root cause.</p>
+    </div>
+  </div>
+
+</div><!-- /cs-body -->
+
+<!-- ── Prototype ── -->
+<div class="proto-section">
+  <div class="proto-label-bar">
+    <p class="proto-label">Interactive prototype — simulate out-of-order scan arrival</p>
+  </div>
+  <div class="proto-inner">
+    <div class="dashboard">
+      <div class="dash-titlebar">
+        <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+        <span class="dash-title-text">Tracking Event Inspector — Internal</span>
+      </div>
+      <div class="control-bar">
+        <span class="tracking-badge">DSP-7K4M-2WX9-CA</span>
+        <span style="font-size:0.68rem;color:#6B6B8E;">Ottawa, ON → Calgary, AB</span>
+        <button class="ctrl-btn btn-play" id="btnPlay" onclick="startSim()">▶ Play simulation</button>
+        <button class="ctrl-btn btn-reset" id="btnReset" onclick="resetSim()">↺ Reset</button>
+        <div class="speed-group">
+          <span class="speed-label">Speed</span>
+          <div class="speed-toggle">
+            <button class="speed-btn active" id="speedNorm" onclick="setSpeed('normal')">Normal</button>
+            <button class="speed-btn" id="speedFast" onclick="setSpeed('fast')">Fast</button>
+          </div>
+        </div>
+        <span class="scan-counter" id="scanCounter">0 / 7 scans received</span>
+      </div>
+      <div class="panels">
+
+        <!-- Feed panel -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title feed">Scan feed</div>
+            <div class="panel-sort">Ordered by: received_at ↑</div>
+          </div>
+          <div class="panel-list" id="feedList">
+            <div class="panel-empty" id="feedEmpty">Waiting for scans…</div>
+          </div>
+          <div class="panel-foot" id="feedFoot">
+            <span class="foot-text">Raw events as ingested</span>
+          </div>
+        </div>
+
+        <!-- Before panel -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title before">Before fix</div>
+            <div class="panel-sort">Sort: ORDER BY received_at ASC</div>
+          </div>
+          <div class="panel-list" id="beforeList">
+            <div class="panel-empty" id="beforeEmpty">Customer tracking view will update here…</div>
+          </div>
+          <div class="panel-foot" id="beforeFoot">
+            <span class="foot-text">Customer-facing tracking page</span>
+          </div>
+        </div>
+
+        <!-- After panel -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title after">After fix</div>
+            <div class="panel-sort">Sort: ORDER BY event_time ASC, stage_rank ASC</div>
+          </div>
+          <div class="panel-list" id="afterList">
+            <div class="panel-empty" id="afterEmpty">Customer tracking view will update here…</div>
+          </div>
+          <div class="panel-foot" id="afterFoot">
+            <span class="foot-text">Customer-facing tracking page</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
+<script>
+function toggleAcc(header) {
+  header.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
+}
+
+/* ─────────────────────────────────────────
+   Scan data — in ARRIVAL order (received_at)
+   stage rank defines correct display order
+───────────────────────────────────────── */
+const SCANS = [
+  {
+    id: 1, stage: 0,
+    event: 'Label Created',
+    location: 'Ottawa, ON',
+    eventTime:    'Jun 15 · 8:04 AM',
+    receivedTime: 'Jun 15 · 8:06 AM',
+    lag: '+2 min', lagClass: 'lag-ok',
+    note: null
+  },
+  {
+    id: 2, stage: 1,
+    event: 'Picked Up',
+    location: 'Ottawa, ON',
+    eventTime:    'Jun 15 · 11:30 AM',
+    receivedTime: 'Jun 15 · 11:35 AM',
+    lag: '+5 min', lagClass: 'lag-ok',
+    note: null
+  },
+  {
+    // Stage 3 arrives before stage 2 — batch from gateway scanner transmitted promptly,
+    // but the arrival scan was stuck due to connectivity
+    id: 3, stage: 3,
+    event: 'Departed Origin Facility',
+    location: 'Ottawa Gateway, ON',
+    eventTime:    'Jun 15 · 6:30 PM',
+    receivedTime: 'Jun 15 · 6:38 PM',
+    lag: '+8 min', lagClass: 'lag-ok',
+    note: 'Transmitted on time — but stage 2 hasn\'t arrived yet'
+  },
+  {
+    // Stage 2 — very late. Scanner at loading dock had no connectivity for ~5 hours.
+    id: 4, stage: 2,
+    event: 'Arrived at Origin Facility',
+    location: 'Ottawa Gateway, ON',
+    eventTime:    'Jun 15 · 2:15 PM',
+    receivedTime: 'Jun 15 · 7:02 PM',
+    lag: '+4h 47m', lagClass: 'lag-bad',
+    note: 'Dock scanner offline for ~5 hrs — event batched and sent late'
+  },
+  {
+    id: 5, stage: 4,
+    event: 'Arrived at Destination',
+    location: 'Calgary Dist. Centre, AB',
+    eventTime:    'Jun 16 · 9:20 AM',
+    receivedTime: 'Jun 16 · 9:25 AM',
+    lag: '+5 min', lagClass: 'lag-ok',
+    note: null
+  },
+  {
+    // Stage 6 (Delivered) arrives before stage 5 (Out for Delivery)
+    // Driver's handheld synced immediately; dispatch system batch ran hours later
+    id: 6, stage: 6,
+    event: 'Delivered',
+    location: 'Calgary, AB',
+    eventTime:    'Jun 17 · 2:33 PM',
+    receivedTime: 'Jun 17 · 2:35 PM',
+    lag: '+2 min', lagClass: 'lag-ok',
+    note: 'Driver handoff scan synced immediately'
+  },
+  {
+    // Stage 5 — very late. Dispatch batch upload ran 7+ hrs after dispatch occurred.
+    id: 7, stage: 5,
+    event: 'Out for Delivery',
+    location: 'Calgary, AB',
+    eventTime:    'Jun 17 · 7:45 AM',
+    receivedTime: 'Jun 17 · 3:18 PM',
+    lag: '+7h 33m', lagClass: 'lag-bad',
+    note: 'Dispatch batch upload delayed — ran hours after departure'
+  }
+];
+
+const STAGE_ICONS = ['🏷️','📬','🏭','🚛','✈️','🚐','✅'];
+let simIdx = 0;
+let simTimeout = null;
+let simSpeed = 'normal';
+let beforeMaxStage = -1;
+let afterItems = []; // { stage, el }
+let oosCount = 0;
+let insertedCount = 0;
+
+function setSpeed(s) {
+  simSpeed = s;
+  document.getElementById('speedNorm').classList.toggle('active', s === 'normal');
+  document.getElementById('speedFast').classList.toggle('active', s === 'fast');
+}
+
+function startSim() {
+  if (simIdx >= SCANS.length) return;
+  document.getElementById('btnPlay').disabled = true;
+  runNext();
+}
+
+function runNext() {
+  if (simIdx >= SCANS.length) {
+    document.getElementById('btnPlay').disabled = true;
+    showSummary();
+    return;
+  }
+  const scan = SCANS[simIdx++];
+  addToFeed(scan);
+  addToBefore(scan);
+  addToAfter(scan);
+  document.getElementById('scanCounter').textContent = `${simIdx} / ${SCANS.length} scans received`;
+  const delay = simSpeed === 'fast' ? 280 : 920;
+  simTimeout = setTimeout(runNext, delay);
+}
+
+function resetSim() {
+  clearTimeout(simTimeout);
+  simIdx = 0; beforeMaxStage = -1; afterItems = []; oosCount = 0; insertedCount = 0;
+  ['feedList','beforeList','afterList'].forEach(id => {
+    document.getElementById(id).innerHTML = '';
+  });
+  document.getElementById('feedEmpty').style.display = 'block';
+  document.getElementById('beforeEmpty').style.display = 'block';
+  document.getElementById('afterEmpty').style.display = 'block';
+  document.getElementById('feedList').prepend(document.getElementById('feedEmpty'));
+  document.getElementById('beforeList').prepend(document.getElementById('beforeEmpty'));
+  document.getElementById('afterList').prepend(document.getElementById('afterEmpty'));
+  document.getElementById('scanCounter').textContent = '0 / 7 scans received';
+  document.getElementById('feedFoot').innerHTML = '<span class="foot-text">Raw events as ingested</span>';
+  document.getElementById('beforeFoot').innerHTML = '<span class="foot-text">Customer-facing tracking page</span>';
+  document.getElementById('afterFoot').innerHTML = '<span class="foot-text">Customer-facing tracking page</span>';
+  document.getElementById('btnPlay').disabled = false;
+}
+
+/* ── Feed panel ── */
+function addToFeed(scan) {
+  document.getElementById('feedEmpty').style.display = 'none';
+  const isOos = scan.stage < beforeMaxStage;
+  const el = document.createElement('div');
+  el.className = `feed-item${isOos ? ' oos' : ''}`;
+  el.innerHTML = `
+    <div class="feed-item-top">
+      <div>
+        <div class="feed-event"><span class="arrival-num">${scan.id}</span>${STAGE_ICONS[scan.stage]} ${scan.event}</div>
+        <div class="feed-loc">${scan.location}</div>
+      </div>
+      <div class="lag-chip ${scan.lagClass}">${scan.lag}</div>
+    </div>
+    <div class="feed-times">
+      <div class="feed-time-row">
+        <div class="feed-time-key">Event time</div>
+        <div class="feed-time-val">${scan.eventTime}</div>
+      </div>
+      <div class="feed-time-row">
+        <div class="feed-time-key">Received</div>
+        <div class="feed-time-val">${scan.receivedTime}</div>
+      </div>
+    </div>
+    ${scan.note ? `<div class="oos-tag">💬 ${scan.note}</div>` : ''}
+    ${isOos ? '<div class="oos-tag">⚠ Stage ' + scan.stage + ' arrived after stage ' + beforeMaxStage + '</div>' : ''}
+  `;
+  document.getElementById('feedList').appendChild(el);
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ── Before panel ── */
+function addToBefore(scan) {
+  document.getElementById('beforeEmpty').style.display = 'none';
+  const isOos = scan.stage < beforeMaxStage;
+  if (scan.stage > beforeMaxStage) beforeMaxStage = scan.stage;
+  if (isOos) oosCount++;
+  const el = document.createElement('div');
+  el.className = `before-item ${isOos ? 'bad' : 'ok'}`;
+  el.innerHTML = `
+    <div class="before-item-top">
+      <div>
+        <div class="before-stage ${isOos ? 'bad' : 'ok'}">${STAGE_ICONS[scan.stage]} ${scan.event}</div>
+        <div class="before-loc">${scan.location}</div>
+      </div>
+      <div class="before-time">${scan.receivedTime}</div>
+    </div>
+    ${isOos ? `<div class="oos-warn">⚠ Appears out of order — event happened at ${scan.eventTime}</div>` : ''}
+  `;
+  document.getElementById('beforeList').appendChild(el);
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ── After panel (always in stage order) ── */
+function addToAfter(scan) {
+  document.getElementById('afterEmpty').style.display = 'none';
+  const insertPos = afterItems.findIndex(item => item.stage > scan.stage);
+  const isInserted = insertPos !== -1; // being inserted between existing items
+  if (isInserted) insertedCount++;
+
+  const el = document.createElement('div');
+  el.className = 'after-item';
+  el.innerHTML = `
+    <div class="after-item-top">
+      <div>
+        <div class="after-stage">${STAGE_ICONS[scan.stage]} ${scan.event}</div>
+        <div class="after-loc">${scan.location}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+        <div class="after-time">${scan.eventTime}</div>
+        ${isInserted ? '<div class="inserted-badge">↑ Inserted in sequence</div>' : ''}
+      </div>
+    </div>
+  `;
+
+  const list = document.getElementById('afterList');
+  if (insertPos === -1) {
+    list.appendChild(el);
+    afterItems.push({ stage: scan.stage, el });
+  } else {
+    list.insertBefore(el, afterItems[insertPos].el);
+    afterItems.splice(insertPos, 0, { stage: scan.stage, el });
+  }
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ── Summary footers ── */
+function showSummary() {
+  document.getElementById('feedFoot').innerHTML = `
+    <span class="foot-badge" style="background:#1E2338;color:#A78BFA;">7 events ingested</span>
+    <span class="foot-text">${oosCount} arrived out of sequence</span>
+  `;
+  document.getElementById('beforeFoot').innerHTML = oosCount > 0
+    ? `<span class="foot-badge warn">⚠ ${oosCount} out-of-order event${oosCount > 1 ? 's' : ''}</span><span class="foot-text">Customer sees incorrect order</span>`
+    : `<span class="foot-badge ok">✓ All in order</span>`;
+  document.getElementById('afterFoot').innerHTML = `
+    <span class="foot-badge ok">✓ All 7 events in correct sequence</span>
+  `;
+}
+</script>
+
+</body>
+</html>
