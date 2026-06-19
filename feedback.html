@@ -174,16 +174,20 @@
       font-family: inherit;
       padding: 0;
     }
-    .rating-btn:hover {
-      border-color: #3949ab;
-      color: #3949ab;
-      background: #eff0fb;
-    }
-    .rating-btn.selected {
-      background: #3949ab;
-      color: #fff;
-      border-color: #3949ab;
-    }
+    .rating-btn:hover { border-color: #3949ab; color: #3949ab; background: #eff0fb; }
+    .rating-btn.selected { background: #3949ab; color: #fff; border-color: #3949ab; }
+
+    .rating-btn.r-red    { background: #fdecea; color: #b71c1c; border-color: #ef9a9a; }
+    .rating-btn.r-yellow { background: #fff8e1; color: #e65100; border-color: #ffcc80; }
+    .rating-btn.r-green  { background: #e8f5e9; color: #1b5e20; border-color: #a5d6a7; }
+
+    .rating-btn.r-red:hover    { background: #f9d0cc; border-color: #b71c1c; color: #b71c1c; }
+    .rating-btn.r-yellow:hover { background: #ffe0b2; border-color: #e65100; color: #e65100; }
+    .rating-btn.r-green:hover  { background: #c8e6c9; border-color: #1b5e20; color: #1b5e20; }
+
+    .rating-btn.r-red.selected    { background: #b71c1c; color: #fff; border-color: #b71c1c; }
+    .rating-btn.r-yellow.selected { background: #e65100; color: #fff; border-color: #e65100; }
+    .rating-btn.r-green.selected  { background: #1b5e20; color: #fff; border-color: #1b5e20; }
     .rating-labels {
       display: flex;
       justify-content: space-between;
@@ -335,17 +339,17 @@
           <span id="ratingDesc" style="font-size:0.78rem;font-weight:600;color:#5c6bc0;"></span>
         </label>
         <div class="rating-scale" id="ratingScale">
-          <button type="button" class="rating-btn" onclick="selectRating(0)">0</button>
-          <button type="button" class="rating-btn" onclick="selectRating(1)">1</button>
-          <button type="button" class="rating-btn" onclick="selectRating(2)">2</button>
-          <button type="button" class="rating-btn" onclick="selectRating(3)">3</button>
-          <button type="button" class="rating-btn" onclick="selectRating(4)">4</button>
-          <button type="button" class="rating-btn" onclick="selectRating(5)">5</button>
-          <button type="button" class="rating-btn" onclick="selectRating(6)">6</button>
-          <button type="button" class="rating-btn" onclick="selectRating(7)">7</button>
-          <button type="button" class="rating-btn" onclick="selectRating(8)">8</button>
-          <button type="button" class="rating-btn" onclick="selectRating(9)">9</button>
-          <button type="button" class="rating-btn" onclick="selectRating(10)">10</button>
+          <button type="button" class="rating-btn r-red"    onclick="selectRating(0)">0</button>
+          <button type="button" class="rating-btn r-red"    onclick="selectRating(1)">1</button>
+          <button type="button" class="rating-btn r-red"    onclick="selectRating(2)">2</button>
+          <button type="button" class="rating-btn r-red"    onclick="selectRating(3)">3</button>
+          <button type="button" class="rating-btn r-yellow" onclick="selectRating(4)">4</button>
+          <button type="button" class="rating-btn r-yellow" onclick="selectRating(5)">5</button>
+          <button type="button" class="rating-btn r-yellow" onclick="selectRating(6)">6</button>
+          <button type="button" class="rating-btn r-green"  onclick="selectRating(7)">7</button>
+          <button type="button" class="rating-btn r-green"  onclick="selectRating(8)">8</button>
+          <button type="button" class="rating-btn r-green"  onclick="selectRating(9)">9</button>
+          <button type="button" class="rating-btn r-green"  onclick="selectRating(10)">10</button>
         </div>
         <div class="rating-labels"><span>Not great</span><span>Excellent</span></div>
       </div>
@@ -444,7 +448,9 @@
       document.querySelectorAll('.rating-btn').forEach((btn, i) => {
         btn.classList.toggle('selected', i === r);
       });
-      document.getElementById('ratingDesc').textContent = RATING_LABELS[r];
+      const descEl = document.getElementById('ratingDesc');
+      descEl.textContent = RATING_LABELS[r];
+      descEl.style.color = r <= 3 ? '#b71c1c' : r <= 6 ? '#e65100' : '#1b5e20';
       buildFormSummary();
     }
 
