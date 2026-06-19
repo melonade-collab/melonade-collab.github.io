@@ -411,7 +411,6 @@
     </div>
     <div class="acc-body">
       <p>A shipping carrier offered consumer shipping, but their digital tools required a business account number. Consumers shipping occasionally had no path online — driving them to competitors or the counter.</p>
-      <p>A second challenge: the pricing engine required accurate package dimensions, and consumers are often unsure of how to properly measure package dimensions — leading to errors and friction once the package was inducted into the shipping system.</p>
     </div>
   </div>
 
@@ -425,8 +424,8 @@
         <li>Backend pricing engine required exact dimensions and weight — no workaround</li>
         <li>Consumers unfamiliar with measuring packages accurately</li>
         <li>No account creation — had to work as a fully guest experience</li>
-        <li>Single-page experience required — no multi-step wizard or redirect</li>
-        <li>Payment infrastructure needed to support one-time unregistered transactions</li>
+        <li>A simplified experience was essential — consumers are often not experienced shippers, and the shipping process can be complicated enough to cause drop-off if not carefully designed</li>
+        <li>Payment infrastructure needed to support one-time transactions without account registration</li>
       </ul>
     </div>
   </div>
@@ -440,7 +439,7 @@
       <div class="contrib-grid">
         <div>
           <p class="contrib-item-label">Flows</p>
-          <p class="contrib-item-text">Mapped the full consumer journey from package type selection through to payment, identifying where business-account assumptions created drop-off in the existing experience.</p>
+          <p class="contrib-item-text">Mapped the full consumer journey from package type selection to the moment the package gets inducted into the shipping system, identifying where business-account assumptions created drop-off in the existing experience.</p>
         </div>
         <div>
           <p class="contrib-item-label">Interaction Logic</p>
@@ -448,7 +447,7 @@
         </div>
         <div>
           <p class="contrib-item-label">Service Design</p>
-          <p class="contrib-item-text">Worked with operations to define two standard package presets — envelope and box — with pre-set dimensions, so consumers only needed to input weight, the one value they could reliably provide.</p>
+          <p class="contrib-item-text">Worked with operations to define the package types supported and the dimension inputs required for each — giving consumers a clear, structured way to enter their box dimensions without needing to understand how the pricing engine worked behind the scenes.</p>
         </div>
         <div>
           <p class="contrib-item-label">Platform Change</p>
@@ -511,12 +510,14 @@
         <div class="form-step" id="stepFrom">
           <p class="step-heading">Where are you shipping from?</p>
           <p class="step-req-note">All fields are required to continue.</p>
-          <div class="form-row">
+          <div class="form-row full">
             <div class="form-group">
               <label>First name <span class="req">*</span></label>
               <input type="text" id="fromFirst" placeholder="Jane" oninput="applyTitleCase(this);clearInvalid(this);checkFrom()" onblur="markReq(this)">
               <span class="field-error" id="fromFirstErr">Required</span>
             </div>
+          </div>
+          <div class="form-row full">
             <div class="form-group">
               <label>Last name <span class="req">*</span></label>
               <input type="text" id="fromLast" placeholder="Smith" oninput="applyTitleCase(this);clearInvalid(this);checkFrom()" onblur="markReq(this)">
@@ -568,12 +569,14 @@
           <div class="step-divider"></div>
           <p class="step-heading">Where are you shipping to?</p>
           <p class="step-req-note">All fields are required to continue.</p>
-          <div class="form-row">
+          <div class="form-row full">
             <div class="form-group">
               <label>First name <span class="req">*</span></label>
               <input type="text" id="toFirst" placeholder="Alex" oninput="applyTitleCase(this);clearInvalid(this);checkTo()" onblur="markReq(this)">
               <span class="field-error" id="toFirstErr">Required</span>
             </div>
+          </div>
+          <div class="form-row full">
             <div class="form-group">
               <label>Last name <span class="req">*</span></label>
               <input type="text" id="toLast" placeholder="Johnson" oninput="applyTitleCase(this);clearInvalid(this);checkTo()" onblur="markReq(this)">
@@ -626,11 +629,22 @@
           <p class="step-heading">What are you shipping?</p>
           <div class="pkg-types">
             <div class="pkg-card" id="pkgEnvelope" onclick="selectPkg('envelope')">
-              <svg width="68" height="46" viewBox="0 0 68 46" xmlns="http://www.w3.org/2000/svg">
-                <rect x="2" y="2" width="64" height="42" rx="5" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5"/>
-                <polyline points="2,2 34,28 66,2" stroke="#7C3AED" stroke-width="1.5" fill="none"/>
-                <line x1="2" y1="44" x2="24" y2="25" stroke="#7C3AED" stroke-width="1" opacity="0.3"/>
-                <line x1="66" y1="44" x2="44" y2="25" stroke="#7C3AED" stroke-width="1" opacity="0.3"/>
+              <svg width="46" height="60" viewBox="0 0 46 60" xmlns="http://www.w3.org/2000/svg">
+                <!-- Envelope body -->
+                <rect x="2" y="2" width="42" height="56" rx="3" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5"/>
+                <!-- Top flap area (lighter tint) -->
+                <rect x="3" y="3" width="40" height="16" rx="2" fill="#DDD6FE"/>
+                <!-- Fold line -->
+                <line x1="2" y1="19" x2="44" y2="19" stroke="#7C3AED" stroke-width="1" opacity="0.5"/>
+                <!-- Clasp/brad on flap -->
+                <circle cx="23" cy="11" r="3.5" fill="none" stroke="#7C3AED" stroke-width="1.2"/>
+                <circle cx="23" cy="11" r="1.5" fill="#7C3AED" opacity="0.4"/>
+                <!-- Address lines -->
+                <rect x="8" y="27" width="14" height="1.5" rx="0.7" fill="#7C3AED" opacity="0.3"/>
+                <rect x="8" y="31" width="22" height="1.5" rx="0.7" fill="#7C3AED" opacity="0.3"/>
+                <rect x="8" y="35" width="16" height="1.5" rx="0.7" fill="#7C3AED" opacity="0.3"/>
+                <!-- Stamp placeholder -->
+                <rect x="28" y="24" width="11" height="13" rx="1.5" fill="none" stroke="#7C3AED" stroke-width="0.8" opacity="0.3" stroke-dasharray="2 1.5"/>
               </svg>
               <div>
                 <p class="pkg-name">Envelope</p>
@@ -677,32 +691,43 @@
 
           <div id="envDetails" style="display:none;">
             <div class="measure-box">
-              <svg width="210" height="104" viewBox="0 0 210 104" xmlns="http://www.w3.org/2000/svg">
-                <rect x="22" y="6" width="136" height="76" rx="4" fill="#fff" stroke="#7C3AED" stroke-width="1.5"/>
-                <polyline points="22,6 90,50 158,6" stroke="#7C3AED" stroke-width="1.5" fill="none"/>
-                <line x1="22" y1="82" x2="52" y2="58" stroke="#7C3AED" stroke-width="1" opacity="0.3"/>
-                <line x1="158" y1="82" x2="128" y2="58" stroke="#7C3AED" stroke-width="1" opacity="0.3"/>
-                <!-- width arrow (bottom) -->
-                <line x1="22" y1="94" x2="158" y2="94" stroke="#6D28D9" stroke-width="1.2"/>
-                <line x1="22" y1="90" x2="22" y2="98" stroke="#6D28D9" stroke-width="1.2"/>
-                <line x1="158" y1="90" x2="158" y2="98" stroke="#6D28D9" stroke-width="1.2"/>
-                <text id="envLabelW" x="90" y="103" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif">38 cm</text>
-                <!-- height arrow (right) -->
-                <line x1="170" y1="6" x2="170" y2="82" stroke="#6D28D9" stroke-width="1.2"/>
-                <line x1="166" y1="6" x2="174" y2="6" stroke="#6D28D9" stroke-width="1.2"/>
-                <line x1="166" y1="82" x2="174" y2="82" stroke="#6D28D9" stroke-width="1.2"/>
-                <text id="envLabelH" x="186" y="48" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif" transform="rotate(90,186,48)">26 cm</text>
+              <svg width="188" height="140" viewBox="0 0 188 140" xmlns="http://www.w3.org/2000/svg">
+                <!-- Envelope body (portrait, 9×12 proportions) -->
+                <rect x="40" y="6" width="80" height="106" rx="3" fill="#fff" stroke="#7C3AED" stroke-width="1.5"/>
+                <!-- Top flap shading -->
+                <rect x="41" y="7" width="78" height="18" rx="2" fill="#F5F3FF"/>
+                <!-- Fold line -->
+                <line x1="40" y1="25" x2="120" y2="25" stroke="#7C3AED" stroke-width="1" opacity="0.5"/>
+                <!-- Clasp/brad -->
+                <circle cx="80" cy="16" r="4" fill="none" stroke="#7C3AED" stroke-width="1.2"/>
+                <circle cx="80" cy="16" r="1.8" fill="#7C3AED" opacity="0.35"/>
+                <!-- Address lines -->
+                <rect x="50" y="36" width="30" height="2" rx="1" fill="#7C3AED" opacity="0.25"/>
+                <rect x="50" y="41" width="50" height="2" rx="1" fill="#7C3AED" opacity="0.25"/>
+                <rect x="50" y="46" width="38" height="2" rx="1" fill="#7C3AED" opacity="0.25"/>
+                <!-- Stamp box -->
+                <rect x="88" y="32" width="22" height="18" rx="2" fill="none" stroke="#7C3AED" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 2"/>
+                <!-- Width arrow (bottom) -->
+                <line x1="40" y1="122" x2="120" y2="122" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="40" y1="118" x2="40" y2="126" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="120" y1="118" x2="120" y2="126" stroke="#6D28D9" stroke-width="1.2"/>
+                <text id="envLabelW" x="80" y="135" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif">23 cm</text>
+                <!-- Height arrow (right) -->
+                <line x1="133" y1="6" x2="133" y2="112" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="129" y1="6" x2="137" y2="6" stroke="#6D28D9" stroke-width="1.2"/>
+                <line x1="129" y1="112" x2="137" y2="112" stroke="#6D28D9" stroke-width="1.2"/>
+                <text id="envLabelH" x="150" y="59" text-anchor="middle" font-size="9" fill="#6D28D9" font-family="-apple-system,sans-serif" transform="rotate(90,150,59)">31 cm</text>
               </svg>
-              <p class="measure-caption">Standard envelope — dimensions pre-filled for you</p>
+              <p class="measure-caption">Large document envelope (9" × 12") — dimensions pre-filled for you</p>
             </div>
             <div class="form-row" style="max-width:300px;">
               <div class="form-group">
                 <label>Length</label>
-                <input type="text" id="envLen" value="38 cm" class="prefilled" readonly>
+                <input type="text" id="envLen" value="31 cm" class="prefilled" readonly>
               </div>
               <div class="form-group">
                 <label>Width</label>
-                <input type="text" id="envWid" value="26 cm" class="prefilled" readonly>
+                <input type="text" id="envWid" value="23 cm" class="prefilled" readonly>
               </div>
             </div>
             <div class="form-row" style="max-width:300px;">
@@ -767,6 +792,12 @@
             <p class="quote-eyebrow">Estimated shipping cost</p>
             <p class="quote-price" id="quotePrice">—</p>
             <p class="quote-meta" id="quoteMeta"></p>
+            <div style="border-top:1px solid #DDD6FE;margin-top:14px;padding-top:14px;">
+              <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#555;padding:5px 0;border-bottom:1px solid #EDE9FE;"><span>Base rate</span><span id="quoteBase">—</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#555;padding:5px 0;border-bottom:1px solid #EDE9FE;"><span>Weight charge</span><span id="quoteWtCharge">—</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:#555;padding:5px 0;border-bottom:1px solid #EDE9FE;"><span>Tax (13%)</span><span id="quoteTaxLine">—</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:0.9rem;font-weight:800;color:#4C1D95;padding:7px 0 2px;"><span>Total</span><span id="quoteTotal">—</span></div>
+            </div>
           </div>
           <button class="btn-ship" id="btnShip" onclick="goToPayment()">Proceed to payment →</button>
           <p class="quote-disclaimer">Quote is an estimate. Final cost confirmed at label purchase.</p>
@@ -798,7 +829,7 @@
             <div class="form-row full">
               <div class="form-group">
                 <label>Cardholder name</label>
-                <input type="text" id="cardName" placeholder="Jane Smith">
+                <input type="text" id="cardName" placeholder="Jane Smith" oninput="applyTitleCase(this);checkPay()">
               </div>
             </div>
           </div>
@@ -900,10 +931,10 @@ function setDimUnit(u) {
   const imp = u === 'in';
   document.getElementById('btnCm').classList.toggle('active', !imp);
   document.getElementById('btnIn').classList.toggle('active', imp);
-  document.getElementById('envLabelW').textContent = imp ? '15 in' : '38 cm';
-  document.getElementById('envLabelH').textContent = imp ? '10.2 in' : '26 cm';
-  document.getElementById('envLen').value = imp ? '15 in' : '38 cm';
-  document.getElementById('envWid').value = imp ? '10.2 in' : '26 cm';
+  document.getElementById('envLabelW').textContent = imp ? '9 in' : '23 cm';
+  document.getElementById('envLabelH').textContent = imp ? '12 in' : '31 cm';
+  document.getElementById('envLen').value = imp ? '12 in' : '31 cm';
+  document.getElementById('envWid').value = imp ? '9 in' : '23 cm';
   document.getElementById('lblBoxL').textContent = imp ? 'Length (in)' : 'Length (cm)';
   document.getElementById('lblBoxW').textContent = imp ? 'Width (in)'  : 'Width (cm)';
   document.getElementById('lblBoxH').textContent = imp ? 'Height (in)' : 'Height (cm)';
@@ -1009,9 +1040,16 @@ function revealQuote() {
     delivery = '3–5 business days';
   }
   displayWt = impWt ? `${(weightKg * 2.20462).toFixed(1)} lb` : `${weightKg.toFixed(2)} kg`;
-  const withTax = (price * 1.13).toFixed(2);
+  const baseRate = pkgType === 'envelope' ? 12.99 : 8.99;
+  const wtCharge = +(price - baseRate).toFixed(2);
+  const tax = +(price * 0.13).toFixed(2);
+  const withTax = +(price + tax).toFixed(2);
   document.getElementById('quotePrice').textContent = `$${price.toFixed(2)}`;
-  document.getElementById('quoteMeta').innerHTML = `${displayWt} · Est. with tax <strong>$${withTax}</strong> · ${delivery}`;
+  document.getElementById('quoteMeta').innerHTML = `${displayWt} · ${delivery}`;
+  document.getElementById('quoteBase').textContent = `$${baseRate.toFixed(2)}`;
+  document.getElementById('quoteWtCharge').textContent = `$${wtCharge.toFixed(2)}`;
+  document.getElementById('quoteTaxLine').textContent = `$${tax.toFixed(2)}`;
+  document.getElementById('quoteTotal').textContent = `$${withTax.toFixed(2)}`;
   reveal('stepQuote');
 }
 
@@ -1093,7 +1131,7 @@ function toggleAcc(header) {
 let finalPrice = '';
 
 function goToPayment() {
-  finalPrice = document.getElementById('quotePrice').textContent;
+  finalPrice = document.getElementById('quoteTotal').textContent;
   document.getElementById('payAmt').textContent = finalPrice;
   reveal('stepPayment');
 }
