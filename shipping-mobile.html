@@ -579,7 +579,7 @@
               <div style="margin-top:14px;border-top:1px solid #DDD6FE;padding-top:14px;">
                 <div class="quote-detail-row"><span>Base rate</span><span id="mQuoteBase">—</span></div>
                 <div class="quote-detail-row"><span>Weight charge</span><span id="mQuoteWt">—</span></div>
-                <div class="quote-detail-row"><span>Tax (13%)</span><span id="mQuoteTax">—</span></div>
+                <div class="quote-detail-row"><span id="mQuoteTaxLabel">Tax</span><span id="mQuoteTax">—</span></div>
                 <div class="quote-detail-row"><span><strong>Total</strong></span><span><strong id="mQuoteTotal">—</strong></span></div>
               </div>
             </div>
@@ -1104,6 +1104,7 @@ function convertDimField(id, toIn) {
 }
 
 function setDimUnit(u) {
+  if (u === mDimUnit) return;
   const toIn = u === 'in';
   ['mBoxL','mBoxW','mBoxH','mTubeL','mTubeD'].forEach(id => convertDimField(id, toIn));
   mDimUnit = u;
@@ -1133,6 +1134,7 @@ function convertWtField(id, toLb) {
 }
 
 function setWtUnit(u) {
+  if (u === mWtUnit) return;
   const toLb = u === 'lb';
   ['mEnvWeight','mBoxWeight','mTubeWeight'].forEach(id => convertWtField(id, toLb));
   mWtUnit = u;
@@ -1178,16 +1180,38 @@ function mRevealQuote() {
     wtKg  = toKg(wtRaw);
     base = 14.99; wtCharge = wtKg * 2.0; price = base + wtCharge; delivery = '3–5 business days';
   }
-  const tax = price * 0.13;
-  const total = price + tax;
-  document.getElementById('mQuotePrice').textContent = `$${price.toFixed(2)}`;
-  document.getElementById('mQuoteMeta').textContent  = `${wtRaw} ${wtLbl} · ${delivery}`;
-  document.getElementById('mQuoteBase').textContent  = `$${base.toFixed(2)}`;
-  document.getElementById('mQuoteWt').textContent    = `$${wtCharge.toFixed(2)}`;
-  document.getElementById('mQuoteTax').textContent   = `$${tax.toFixed(2)}`;
-  document.getElementById('mQuoteTotal').textContent = `$${total.toFixed(2)}`;
-  document.getElementById('mPayAmt').textContent     = `$${total.toFixed(2)}`;
+  const prov = document.getElementById('mFromProv').value;
+  const { rate: taxRate, label: taxLabel } = getMobileTax(prov);
+  const tax = +(price * taxRate).toFixed(2);
+  const total = +(price + tax).toFixed(2);
+  document.getElementById('mQuotePrice').textContent    = `$${price.toFixed(2)}`;
+  document.getElementById('mQuoteMeta').textContent     = `${wtRaw} ${wtLbl} · ${delivery}`;
+  document.getElementById('mQuoteBase').textContent     = `$${base.toFixed(2)}`;
+  document.getElementById('mQuoteWt').textContent       = `$${wtCharge.toFixed(2)}`;
+  document.getElementById('mQuoteTaxLabel').textContent = taxLabel;
+  document.getElementById('mQuoteTax').textContent      = `$${tax.toFixed(2)}`;
+  document.getElementById('mQuoteTotal').textContent    = `$${total.toFixed(2)}`;
+  document.getElementById('mPayAmt').textContent        = `$${total.toFixed(2)}`;
   goScreen('scrQuote');
+}
+
+function getMobileTax(prov) {
+  const rates = {
+    AB: { rate: 0.05,     label: 'GST (5%)'           },
+    BC: { rate: 0.12,     label: 'GST + PST (12%)'    },
+    MB: { rate: 0.12,     label: 'GST + PST (12%)'    },
+    NB: { rate: 0.15,     label: 'HST (15%)'           },
+    NL: { rate: 0.15,     label: 'HST (15%)'           },
+    NS: { rate: 0.15,     label: 'HST (15%)'           },
+    NT: { rate: 0.05,     label: 'GST (5%)'            },
+    NU: { rate: 0.05,     label: 'GST (5%)'            },
+    ON: { rate: 0.13,     label: 'HST (13%)'           },
+    PE: { rate: 0.15,     label: 'HST (15%)'           },
+    QC: { rate: 0.14975,  label: 'GST + QST (14.975%)' },
+    SK: { rate: 0.11,     label: 'GST + PST (11%)'    },
+    YT: { rate: 0.05,     label: 'GST (5%)'            },
+  };
+  return rates[prov] || { rate: 0.13, label: 'Tax (13%)' };
 }
 
 /* ── Payment ── */
