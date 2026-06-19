@@ -658,9 +658,21 @@
           <div class="step-divider"></div>
           <p class="step-heading" id="detailsHeading">Package details</p>
 
-          <div class="unit-toggle">
-            <button class="unit-btn active" id="btnMetric" onclick="setUnits('metric')">cm / kg</button>
-            <button class="unit-btn" id="btnImperial" onclick="setUnits('imperial')">in / lb</button>
+          <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:18px;">
+            <div>
+              <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#555;margin-bottom:6px;">Dimensions</div>
+              <div class="unit-toggle">
+                <button class="unit-btn active" id="btnCm" onclick="setDimUnit('cm')">cm</button>
+                <button class="unit-btn" id="btnIn" onclick="setDimUnit('in')">in</button>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#555;margin-bottom:6px;">Weight</div>
+              <div class="unit-toggle">
+                <button class="unit-btn active" id="btnKg" onclick="setWtUnit('kg')">kg</button>
+                <button class="unit-btn" id="btnLb" onclick="setWtUnit('lb')">lb</button>
+              </div>
+            </div>
           </div>
 
           <div id="envDetails" style="display:none;">
@@ -693,17 +705,10 @@
                 <input type="text" id="envWid" value="26 cm" class="prefilled" readonly>
               </div>
             </div>
-            <div class="form-row" style="max-width:300px;align-items:flex-end;">
+            <div class="form-row" style="max-width:300px;">
               <div class="form-group">
                 <label id="lblEnvWt">Weight (kg)</label>
                 <input type="number" id="envWeight" placeholder="0.3" min="0.1" max="0.5" step="0.1" oninput="checkDetails()">
-              </div>
-              <div class="form-group" style="flex:0 0 auto;">
-                <label style="visibility:hidden;">u</label>
-                <div class="unit-toggle" style="margin-bottom:0;">
-                  <button class="unit-btn active" id="btnEnvMetric" onclick="setUnits('metric')">kg</button>
-                  <button class="unit-btn" id="btnEnvImperial" onclick="setUnits('imperial')">lb</button>
-                </div>
               </div>
             </div>
           </div>
@@ -886,45 +891,53 @@
 
 <script>
 let pkgType = null;
-let units = 'metric';
+let dimUnit = 'cm';
+let wtUnit  = 'kg';
 
-function setUnits(u) {
-  if (u === units) return;
-  units = u;
-  const imp = u === 'imperial';
-  ['btnMetric','btnEnvMetric'].forEach(id => document.getElementById(id).classList.toggle('active', !imp));
-  ['btnImperial','btnEnvImperial'].forEach(id => document.getElementById(id).classList.toggle('active', imp));
-  // SVG labels
+function setDimUnit(u) {
+  if (u === dimUnit) return;
+  dimUnit = u;
+  const imp = u === 'in';
+  document.getElementById('btnCm').classList.toggle('active', !imp);
+  document.getElementById('btnIn').classList.toggle('active', imp);
   document.getElementById('envLabelW').textContent = imp ? '15 in' : '38 cm';
   document.getElementById('envLabelH').textContent = imp ? '10.2 in' : '26 cm';
-  // Pre-filled envelope readonly fields
   document.getElementById('envLen').value = imp ? '15 in' : '38 cm';
   document.getElementById('envWid').value = imp ? '10.2 in' : '26 cm';
-  // Labels
-  document.getElementById('lblEnvWt').textContent = imp ? 'Weight (lb)' : 'Weight (kg)';
-  document.getElementById('lblBoxL').textContent   = imp ? 'Length (in)' : 'Length (cm)';
-  document.getElementById('lblBoxW').textContent   = imp ? 'Width (in)'  : 'Width (cm)';
-  document.getElementById('lblBoxH').textContent   = imp ? 'Height (in)' : 'Height (cm)';
-  document.getElementById('lblBoxWt').textContent  = imp ? 'Weight (lb)' : 'Weight (kg)';
-  // Placeholders
-  document.getElementById('envWeight').placeholder = imp ? '0.7' : '0.3';
+  document.getElementById('lblBoxL').textContent = imp ? 'Length (in)' : 'Length (cm)';
+  document.getElementById('lblBoxW').textContent = imp ? 'Width (in)'  : 'Width (cm)';
+  document.getElementById('lblBoxH').textContent = imp ? 'Height (in)' : 'Height (cm)';
   document.getElementById('boxL').placeholder = imp ? 'e.g. 16' : 'e.g. 40';
   document.getElementById('boxW').placeholder = imp ? 'e.g. 12' : 'e.g. 30';
   document.getElementById('boxH').placeholder = imp ? 'e.g. 8'  : 'e.g. 20';
-  document.getElementById('boxWeight').placeholder = imp ? 'e.g. 5.5' : 'e.g. 2.5';
-  // Convert existing values
   if (imp) {
-    convertField('boxL',      v => +(v / 2.54).toFixed(1));
-    convertField('boxW',      v => +(v / 2.54).toFixed(1));
-    convertField('boxH',      v => +(v / 2.54).toFixed(1));
-    convertField('boxWeight', v => +(v * 2.20462).toFixed(1));
-    convertField('envWeight', v => +(v * 2.20462).toFixed(1));
+    convertField('boxL', v => +(v / 2.54).toFixed(1));
+    convertField('boxW', v => +(v / 2.54).toFixed(1));
+    convertField('boxH', v => +(v / 2.54).toFixed(1));
   } else {
-    convertField('boxL',      v => +(v * 2.54).toFixed(1));
-    convertField('boxW',      v => +(v * 2.54).toFixed(1));
-    convertField('boxH',      v => +(v * 2.54).toFixed(1));
-    convertField('boxWeight', v => +(v / 2.20462).toFixed(1));
+    convertField('boxL', v => +(v * 2.54).toFixed(1));
+    convertField('boxW', v => +(v * 2.54).toFixed(1));
+    convertField('boxH', v => +(v * 2.54).toFixed(1));
+  }
+  checkDetails();
+}
+
+function setWtUnit(u) {
+  if (u === wtUnit) return;
+  wtUnit = u;
+  const imp = u === 'lb';
+  document.getElementById('btnKg').classList.toggle('active', !imp);
+  document.getElementById('btnLb').classList.toggle('active', imp);
+  document.getElementById('lblEnvWt').textContent  = imp ? 'Weight (lb)' : 'Weight (kg)';
+  document.getElementById('lblBoxWt').textContent  = imp ? 'Weight (lb)' : 'Weight (kg)';
+  document.getElementById('envWeight').placeholder = imp ? '0.7' : '0.3';
+  document.getElementById('boxWeight').placeholder = imp ? 'e.g. 5.5' : 'e.g. 2.5';
+  if (imp) {
+    convertField('envWeight', v => +(v * 2.20462).toFixed(1));
+    convertField('boxWeight', v => +(v * 2.20462).toFixed(1));
+  } else {
     convertField('envWeight', v => +(v / 2.20462).toFixed(1));
+    convertField('boxWeight', v => +(v / 2.20462).toFixed(1));
   }
   checkDetails();
 }
@@ -976,12 +989,13 @@ function selectPkg(type) {
 }
 
 function revealQuote() {
-  const imp = units === 'imperial';
-  const toKg = v => imp ? v / 2.20462 : v;
-  const toCm = v => imp ? v * 2.54 : v;
+  const impWt  = wtUnit  === 'lb';
+  const impDim = dimUnit === 'in';
+  const toKg = v => impWt  ? v / 2.20462 : v;
+  const toCm = v => impDim ? v * 2.54     : v;
   let price, weightKg, displayWt, delivery;
   if (pkgType === 'envelope') {
-    weightKg = toKg(parseFloat(document.getElementById('envWeight').value) || (imp ? 0.7 : 0.3));
+    weightKg = toKg(parseFloat(document.getElementById('envWeight').value) || (impWt ? 0.7 : 0.3));
     price = 12.99 + weightKg * 1.5;
     delivery = '2–3 business days';
   } else {
@@ -994,7 +1008,7 @@ function revealQuote() {
     price = 8.99 + billable * 3.80;
     delivery = '3–5 business days';
   }
-  displayWt = imp ? `${(weightKg * 2.20462).toFixed(1)} lb` : `${weightKg.toFixed(2)} kg`;
+  displayWt = impWt ? `${(weightKg * 2.20462).toFixed(1)} lb` : `${weightKg.toFixed(2)} kg`;
   const withTax = (price * 1.13).toFixed(2);
   document.getElementById('quotePrice').textContent = `$${price.toFixed(2)}`;
   document.getElementById('quoteMeta').innerHTML = `${displayWt} · Est. with tax <strong>$${withTax}</strong> · ${delivery}`;

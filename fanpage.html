@@ -89,8 +89,10 @@
     @keyframes glow-g  { 0%,100%{text-shadow:0 0 6px var(--gold)} 50%{text-shadow:0 0 20px var(--gold),0 0 40px var(--gold-lt)} }
     @keyframes pulse   { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
     @keyframes shimmer { 0%{opacity:.7} 50%{opacity:1} 100%{opacity:.7} }
+    @keyframes spin3d  { 0%{transform:perspective(180px) rotateY(0deg)} 100%{transform:perspective(180px) rotateY(360deg)} }
 
     .blink    { animation: blink 1s step-end infinite; }
+    .gif-spin { display:inline-block; animation: spin3d 1.6s linear infinite; transform-origin: center; }
     .glow-red { animation: glow-r 2s ease-in-out infinite; }
     .glow-gld { animation: glow-g 2s ease-in-out infinite; }
     .pulse    { animation: pulse 2s ease-in-out infinite; }
@@ -319,7 +321,7 @@
   <hr class="gold">
 
   <div class="box-red">
-    <h2 style="color:var(--gold-lt);">🔥 WhAt'S NeW!! <span class="new-badge">NEW!</span></h2>
+    <h2 style="color:var(--gold-lt);">♪ WhAt'S NeW!! <span class="new-badge">NEW!</span></h2>
     <ul style="list-style:none;padding:0;">
       <li>♪ <span class="new-badge">NEW!</span> "Enter the Dru" album review added to Discography!! (Dec 30)</li>
       <li>♪ <span class="new-badge">NEW!</span> Added more fan photos to the Gallery!! (Dec 24)</li>
@@ -345,7 +347,7 @@
     <h2 style="color:var(--gold-lt);">👋 About the Webmaster</h2>
     <p style="margin-bottom:12px;">
       Hi!! I'm <strong style="color:var(--gold-lt);">MeLaNiE</strong> — a Dru Hill superfan from Toronto, Canada 🍁!!
-      I built this site because I couldn't find a good enough Dru Hill fan page and I decided I had to make one myself!! 😤
+      I built this site because I couldn't find a good enough Dru Hill fan page and I decided I had to make one myself!!
     </p>
     <ul class="me-facts">
       <li><span class="me-key">♋ Star Sign:</span> Cancer</li>
@@ -361,13 +363,29 @@
   <hr class="gold">
 
   <div class="box-dashed" style="text-align:center;">
-    <p style="font-size:1.8rem;">🚧</p>
-    <p style="color:var(--gold);font-weight:bold;font-size:1.1rem;">⚠️ UnDeR CoNsTrUcTiOn ⚠️</p>
+    <div style="display:flex;justify-content:center;gap:18px;margin-bottom:8px;">
+      <span class="gif-spin" style="display:inline-block;background:#FFD700;border:3px solid #333;border-radius:4px;padding:4px 10px;font-size:1rem;font-weight:bold;color:#333;letter-spacing:1px;">⚠ UNDER<br>CONSTRUCTION ⚠</span>
+      <span class="gif-spin" style="display:inline-block;background:#FFD700;border:3px solid #333;border-radius:4px;padding:4px 10px;font-size:1rem;font-weight:bold;color:#333;letter-spacing:1px;animation-delay:0.8s;">⚠ UNDER<br>CONSTRUCTION ⚠</span>
+    </div>
+    <p style="color:var(--gold);font-weight:bold;font-size:1.1rem;">UnDeR CoNsTrUcTiOn</p>
     <p style="font-size:0.88rem;margin-top:6px;">
       <strong>Fan Art Gallery</strong> &amp; <strong>Sisqó Solo Corner</strong> coming SOON!!<br>
       Check back every weekend — I update a lot!!
     </p>
-    <p style="font-size:1.8rem;margin-top:8px;">🚧</p>
+  </div>
+
+  <hr class="blue">
+
+  <!-- WebRing -->
+  <div class="webring">
+    <h2 style="color:var(--gold-lt);">🌐 The R&amp;B Fan Sites WebRing 🌐</h2>
+    <p style="font-size:0.85rem;margin:8px 0;">Proud member since August 1997 · Ring ID: #8821 · 412 members</p>
+    <div style="margin:10px 0;">
+      <a href="#" style="margin:0 12px;">⬅️ Prev</a>
+      <a href="#" style="margin:0 12px;">🏠 Hub</a>
+      <a href="#" style="margin:0 12px;">🎲 Random</a>
+      <a href="#" style="margin:0 12px;">➡️ Next</a>
+    </div>
   </div>
 
   <div class="divider">♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪ · ♫ · ♪</div>
@@ -492,7 +510,7 @@
       <div class="member-bio">
         The foundation of the whole group!! Woody's bass voice gives Dru Hill
         that deep, rich sound that makes their harmonies so distinctive.
-        You literally FEEL it in your chest!! He is so underrated tbh!! 🔥
+        You literally FEEL it in your chest!! He is so underrated tbh!!
       </div>
     </div>
 
@@ -666,7 +684,7 @@
       📡 All The Latest From Baltimore's Finest!! 📡
     </p>
     <p style="font-size:0.8rem;color:var(--muted);margin-top:6px;">
-      Updated as fast as my dial-up will allow!! 😤
+      Updated as fast as my dial-up will allow!!
     </p>
   </div>
 
@@ -839,20 +857,6 @@
       <div class="award-icon">⭐</div>
       <div class="award-title">5 Star Fan Page</div>
       <div class="award-from">FiveStarSites.org · Sep '98</div>
-    </div>
-  </div>
-
-  <hr class="blue">
-
-  <!-- WebRing -->
-  <div class="webring">
-    <h2 style="color:var(--gold-lt);">🌐 The R&amp;B Fan Sites WebRing 🌐</h2>
-    <p style="font-size:0.85rem;margin:8px 0;">Proud member since August 1997 · Ring ID: #8821 · 412 members</p>
-    <div style="margin:10px 0;">
-      <a href="#" style="margin:0 12px;">⬅️ Prev</a>
-      <a href="#" style="margin:0 12px;">🏠 Hub</a>
-      <a href="#" style="margin:0 12px;">🎲 Random</a>
-      <a href="#" style="margin:0 12px;">➡️ Next</a>
     </div>
   </div>
 

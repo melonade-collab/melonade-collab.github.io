@@ -156,6 +156,10 @@
     .m-select:focus { border-color: #7C3AED; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
     .m-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .m-row-3 { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 8px; }
+    .unit-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .unit-toggle { display: flex; border: 1.5px solid #E5E7EB; border-radius: 8px; overflow: hidden; }
+    .unit-btn { flex: 1; padding: 7px; border: none; background: #fff; font-size: 0.72rem; font-weight: 700; font-family: inherit; color: #888; cursor: pointer; transition: all 0.15s; }
+    .unit-btn.active { background: #6D28D9; color: #fff; }
 
     /* ── Bottom action area ── */
     .screen-footer { padding: 12px 16px 16px; border-top: 1px solid #f5f5f5; flex-shrink: 0; background: #fff; }
@@ -389,6 +393,7 @@
           <div class="screen" id="scrFrom">
             <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons">▲ ● ■</span></div>
             <div class="screen-header">
+              <div class="screen-back" onclick="goScreen('scrTrack')">← Cancel</div>
               <div class="screen-title">Ship a package</div>
               <div class="screen-sub">No account needed</div>
             </div>
@@ -514,27 +519,43 @@
               <div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div>
             </div>
             <div class="screen-body">
+              <div class="unit-row">
+                <div>
+                  <div class="m-label" style="margin-bottom:5px;">Dimensions</div>
+                  <div class="unit-toggle">
+                    <button id="mBtnCm" class="unit-btn active" onclick="setDimUnit('cm')">cm</button>
+                    <button id="mBtnIn" class="unit-btn" onclick="setDimUnit('in')">in</button>
+                  </div>
+                </div>
+                <div>
+                  <div class="m-label" style="margin-bottom:5px;">Weight</div>
+                  <div class="unit-toggle">
+                    <button id="mBtnKg" class="unit-btn active" onclick="setWtUnit('kg')">kg</button>
+                    <button id="mBtnLb" class="unit-btn" onclick="setWtUnit('lb')">lb</button>
+                  </div>
+                </div>
+              </div>
               <!-- Envelope fields -->
               <div id="mEnvFields">
-                <div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:0.72rem;color:#6D28D9;">Standard envelope dimensions pre-filled: 38 × 26 cm</div>
-                <div class="m-field"><div class="m-label">Weight (kg)</div><input class="m-input" id="mEnvWeight" type="number" placeholder="0.3" min="0.1" max="0.5" step="0.1" oninput="mCheckDetails()"></div>
+                <div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:0.72rem;color:#6D28D9;" id="mEnvDimNote">Standard envelope dimensions pre-filled: 38 × 26 cm</div>
+                <div class="m-field"><div class="m-label" id="mLblEnvWt">Weight (kg)</div><input class="m-input" id="mEnvWeight" type="number" placeholder="0.3" min="0.1" max="0.5" step="0.1" oninput="mCheckDetails()"></div>
               </div>
               <!-- Box fields -->
               <div id="mBoxFields" style="display:none;">
-                <div class="m-field"><div class="m-label">Length (cm)</div><input class="m-input" id="mBoxL" type="number" placeholder="e.g. 40" oninput="mCheckDetails()"></div>
+                <div class="m-field"><div class="m-label" id="mLblBoxL">Length (cm)</div><input class="m-input" id="mBoxL" type="number" placeholder="e.g. 40" oninput="mCheckDetails()"></div>
                 <div class="m-row">
-                  <div class="m-field"><div class="m-label">Width (cm)</div><input class="m-input" id="mBoxW" type="number" placeholder="e.g. 30" oninput="mCheckDetails()"></div>
-                  <div class="m-field"><div class="m-label">Height (cm)</div><input class="m-input" id="mBoxH" type="number" placeholder="e.g. 20" oninput="mCheckDetails()"></div>
+                  <div class="m-field"><div class="m-label" id="mLblBoxW">Width (cm)</div><input class="m-input" id="mBoxW" type="number" placeholder="e.g. 30" oninput="mCheckDetails()"></div>
+                  <div class="m-field"><div class="m-label" id="mLblBoxH">Height (cm)</div><input class="m-input" id="mBoxH" type="number" placeholder="e.g. 20" oninput="mCheckDetails()"></div>
                 </div>
-                <div class="m-field"><div class="m-label">Weight (kg)</div><input class="m-input" id="mBoxWeight" type="number" placeholder="e.g. 2.5" step="0.1" oninput="mCheckDetails()"></div>
+                <div class="m-field"><div class="m-label" id="mLblBoxWt">Weight (kg)</div><input class="m-input" id="mBoxWeight" type="number" placeholder="e.g. 2.5" step="0.1" oninput="mCheckDetails()"></div>
               </div>
               <!-- Tube fields -->
               <div id="mTubeFields" style="display:none;">
                 <div class="m-row">
-                  <div class="m-field"><div class="m-label">Length (cm)</div><input class="m-input" id="mTubeL" type="number" placeholder="e.g. 90" oninput="mCheckDetails()"></div>
-                  <div class="m-field"><div class="m-label">Diameter (cm)</div><input class="m-input" id="mTubeD" type="number" placeholder="e.g. 10" oninput="mCheckDetails()"></div>
+                  <div class="m-field"><div class="m-label" id="mLblTubeL">Length (cm)</div><input class="m-input" id="mTubeL" type="number" placeholder="e.g. 90" oninput="mCheckDetails()"></div>
+                  <div class="m-field"><div class="m-label" id="mLblTubeD">Diameter (cm)</div><input class="m-input" id="mTubeD" type="number" placeholder="e.g. 10" oninput="mCheckDetails()"></div>
                 </div>
-                <div class="m-field"><div class="m-label">Weight (kg)</div><input class="m-input" id="mTubeWeight" type="number" placeholder="e.g. 0.8" step="0.1" oninput="mCheckDetails()"></div>
+                <div class="m-field"><div class="m-label" id="mLblTubeWt">Weight (kg)</div><input class="m-input" id="mTubeWeight" type="number" placeholder="e.g. 0.8" step="0.1" oninput="mCheckDetails()"></div>
               </div>
             </div>
             <div class="screen-footer"><button class="btn-next" id="btnMDetails" onclick="mRevealQuote()" disabled>Get quote →</button></div>
@@ -655,7 +676,7 @@
                 </div>
               </div>
             </div>
-            <div class="screen-footer"><button class="btn-next" onclick="goScreen('scrHome')" style="background:#4C1D95;">Done — back to home</button></div>
+            <div class="screen-footer"><button class="btn-next" onclick="goScreen('scrTrack')" style="background:#4C1D95;">Done — track my shipment</button></div>
           </div>
 
           <!-- ══ TRACK: LIST ══ -->
@@ -1071,33 +1092,77 @@ function mCheckDetails() {
   document.getElementById('btnMDetails').disabled = !ok;
 }
 
+/* ── Unit toggles ── */
+let mDimUnit = 'cm';
+let mWtUnit  = 'kg';
+
+function setDimUnit(u) {
+  mDimUnit = u;
+  document.getElementById('mBtnCm').classList.toggle('active', u === 'cm');
+  document.getElementById('mBtnIn').classList.toggle('active', u === 'in');
+  const d = u === 'cm' ? 'cm' : 'in';
+  document.getElementById('mLblBoxL').textContent  = `Length (${d})`;
+  document.getElementById('mLblBoxW').textContent  = `Width (${d})`;
+  document.getElementById('mLblBoxH').textContent  = `Height (${d})`;
+  document.getElementById('mLblTubeL').textContent = `Length (${d})`;
+  document.getElementById('mLblTubeD').textContent = `Diameter (${d})`;
+  document.getElementById('mBoxL').placeholder     = u === 'cm' ? 'e.g. 40'  : 'e.g. 16';
+  document.getElementById('mBoxW').placeholder     = u === 'cm' ? 'e.g. 30'  : 'e.g. 12';
+  document.getElementById('mBoxH').placeholder     = u === 'cm' ? 'e.g. 20'  : 'e.g. 8';
+  document.getElementById('mTubeL').placeholder    = u === 'cm' ? 'e.g. 90'  : 'e.g. 35';
+  document.getElementById('mTubeD').placeholder    = u === 'cm' ? 'e.g. 10'  : 'e.g. 4';
+  document.getElementById('mEnvDimNote').textContent = u === 'cm'
+    ? 'Standard envelope dimensions pre-filled: 38 × 26 cm'
+    : 'Standard envelope dimensions pre-filled: 15 × 10 in';
+}
+
+function setWtUnit(u) {
+  mWtUnit = u;
+  document.getElementById('mBtnKg').classList.toggle('active', u === 'kg');
+  document.getElementById('mBtnLb').classList.toggle('active', u === 'lb');
+  const w = u === 'kg' ? 'kg' : 'lb';
+  document.getElementById('mLblEnvWt').textContent   = `Weight (${w})`;
+  document.getElementById('mLblBoxWt').textContent   = `Weight (${w})`;
+  document.getElementById('mLblTubeWt').textContent  = `Weight (${w})`;
+  document.getElementById('mEnvWeight').placeholder  = u === 'kg' ? '0.3'      : '0.7';
+  document.getElementById('mBoxWeight').placeholder  = u === 'kg' ? 'e.g. 2.5' : 'e.g. 5.5';
+  document.getElementById('mTubeWeight').placeholder = u === 'kg' ? 'e.g. 0.8' : 'e.g. 1.8';
+}
+
+function toKg(v)  { return mWtUnit  === 'lb' ? v * 0.453592 : v; }
+function toCm(v)  { return mDimUnit === 'in' ? v * 2.54     : v; }
+
 /* ── Quote ── */
 function mRevealQuote() {
-  let price, wt, base, wtCharge, delivery;
+  let price, wtRaw, wtKg, base, wtCharge, delivery;
+  const wtLbl = mWtUnit === 'kg' ? 'kg' : 'lb';
   if (mPkgType === 'envelope') {
-    wt = parseFloat(document.getElementById('mEnvWeight').value) || 0.3;
-    base = 12.99; wtCharge = wt * 1.5; price = base + wtCharge; delivery = '2–3 business days';
+    wtRaw = parseFloat(document.getElementById('mEnvWeight').value) || (mWtUnit === 'kg' ? 0.3 : 0.7);
+    wtKg  = toKg(wtRaw);
+    base = 12.99; wtCharge = wtKg * 1.5; price = base + wtCharge; delivery = '2–3 business days';
   } else if (mPkgType === 'box') {
-    wt = parseFloat(document.getElementById('mBoxWeight').value) || 1;
-    const l = parseFloat(document.getElementById('mBoxL').value)||1;
-    const w = parseFloat(document.getElementById('mBoxW').value)||1;
-    const h = parseFloat(document.getElementById('mBoxH').value)||1;
-    const dimWt = (l*w*h)/5000;
-    const bill = Math.max(wt, dimWt);
+    wtRaw = parseFloat(document.getElementById('mBoxWeight').value) || (mWtUnit === 'kg' ? 1 : 2.2);
+    wtKg  = toKg(wtRaw);
+    const lCm = toCm(parseFloat(document.getElementById('mBoxL').value)||1);
+    const wCm = toCm(parseFloat(document.getElementById('mBoxW').value)||1);
+    const hCm = toCm(parseFloat(document.getElementById('mBoxH').value)||1);
+    const dimWt = (lCm * wCm * hCm) / 5000;
+    const bill = Math.max(wtKg, dimWt);
     base = 8.99; wtCharge = bill * 3.80; price = base + wtCharge; delivery = '3–5 business days';
   } else {
-    wt = parseFloat(document.getElementById('mTubeWeight').value)||0.5;
-    base = 14.99; wtCharge = wt * 2.0; price = base + wtCharge; delivery = '3–5 business days';
+    wtRaw = parseFloat(document.getElementById('mTubeWeight').value) || (mWtUnit === 'kg' ? 0.5 : 1.1);
+    wtKg  = toKg(wtRaw);
+    base = 14.99; wtCharge = wtKg * 2.0; price = base + wtCharge; delivery = '3–5 business days';
   }
   const tax = price * 0.13;
   const total = price + tax;
   document.getElementById('mQuotePrice').textContent = `$${price.toFixed(2)}`;
-  document.getElementById('mQuoteMeta').textContent = `${wt} kg · ${delivery}`;
-  document.getElementById('mQuoteBase').textContent = `$${base.toFixed(2)}`;
-  document.getElementById('mQuoteWt').textContent = `$${wtCharge.toFixed(2)}`;
-  document.getElementById('mQuoteTax').textContent = `$${tax.toFixed(2)}`;
+  document.getElementById('mQuoteMeta').textContent  = `${wtRaw} ${wtLbl} · ${delivery}`;
+  document.getElementById('mQuoteBase').textContent  = `$${base.toFixed(2)}`;
+  document.getElementById('mQuoteWt').textContent    = `$${wtCharge.toFixed(2)}`;
+  document.getElementById('mQuoteTax').textContent   = `$${tax.toFixed(2)}`;
   document.getElementById('mQuoteTotal').textContent = `$${total.toFixed(2)}`;
-  document.getElementById('mPayAmt').textContent = `$${total.toFixed(2)}`;
+  document.getElementById('mPayAmt').textContent     = `$${total.toFixed(2)}`;
   goScreen('scrQuote');
 }
 
