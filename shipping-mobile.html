@@ -1096,7 +1096,16 @@ function mCheckDetails() {
 let mDimUnit = 'cm';
 let mWtUnit  = 'kg';
 
+function convertDimField(id, toIn) {
+  const el = document.getElementById(id);
+  if (!el || el.readOnly) return;
+  const v = parseFloat(el.value);
+  if (!isNaN(v)) el.value = toIn ? +(v / 2.54).toFixed(2) : +(v * 2.54).toFixed(1);
+}
+
 function setDimUnit(u) {
+  const toIn = u === 'in';
+  ['mBoxL','mBoxW','mBoxH','mTubeL','mTubeD'].forEach(id => convertDimField(id, toIn));
   mDimUnit = u;
   document.getElementById('mBtnCm').classList.toggle('active', u === 'cm');
   document.getElementById('mBtnIn').classList.toggle('active', u === 'in');
@@ -1116,7 +1125,16 @@ function setDimUnit(u) {
     : 'Standard envelope dimensions pre-filled: 15 × 10 in';
 }
 
+function convertWtField(id, toLb) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const v = parseFloat(el.value);
+  if (!isNaN(v)) el.value = toLb ? +(v * 2.20462).toFixed(2) : +(v * 0.453592).toFixed(3);
+}
+
 function setWtUnit(u) {
+  const toLb = u === 'lb';
+  ['mEnvWeight','mBoxWeight','mTubeWeight'].forEach(id => convertWtField(id, toLb));
   mWtUnit = u;
   document.getElementById('mBtnKg').classList.toggle('active', u === 'kg');
   document.getElementById('mBtnLb').classList.toggle('active', u === 'lb');
