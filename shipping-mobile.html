@@ -52,7 +52,7 @@
     .phone-screen { background: #fff; border-radius: 34px; overflow: hidden; height: 620px; position: relative; }
 
     /* ── Screen system ── */
-    .screen { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; display: none; flex-direction: column; }
+    .screen { position: absolute; top: 0; left: 0; right: 0; bottom: 58px; overflow-y: auto; overflow-x: hidden; display: none; flex-direction: column; }
     .screen.active { display: flex; }
 
     /* ── Status bar ── */
@@ -75,12 +75,63 @@
     .recent-chip { background: #F5F3FF; border: 1px solid #DDD6FE; border-radius: 20px; padding: 5px 12px; font-size: 0.7rem; color: #6D28D9; font-family: monospace; display: inline-block; margin-right: 6px; margin-bottom: 6px; cursor: pointer; }
     .recent-chip:hover { background: #EDE9FE; }
 
-    /* ── App nav bar ── */
-    .app-nav { display: flex; justify-content: space-around; padding: 8px 0 10px; border-top: 1px solid #f0f0ee; background: #fff; flex-shrink: 0; margin-top: auto; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
-    .nav-icon { font-size: 1.1rem; }
-    .nav-label { font-size: 0.55rem; font-weight: 600; color: #bbb; }
+    /* ── App nav bar (persistent, absolute bottom of phone-screen) ── */
+    .app-nav { position: absolute; bottom: 0; left: 0; right: 0; z-index: 20; display: flex; justify-content: space-around; padding: 8px 0 10px; border-top: 1px solid #e8e8e4; background: #fff; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 0 8px; }
+    .nav-icon { font-size: 1rem; }
+    .nav-label { font-size: 0.52rem; font-weight: 600; color: #bbb; }
     .nav-item.active .nav-label { color: #6D28D9; }
+
+    /* ── Locations screen ── */
+    .fake-map { height: 175px; background: #ede8da; position: relative; overflow: hidden; flex-shrink: 0; }
+    .map-road-h { position: absolute; width: 100%; background: #fff; }
+    .map-road-v { position: absolute; height: 100%; background: #fff; }
+    .map-pin { position: absolute; transform: translate(-50%, -100%); cursor: pointer; }
+    .map-pin-dot { width: 22px; height: 22px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.28); }
+    .map-pin-dot.retail { background: #6D28D9; }
+    .map-pin-dot.dropbox { background: #059669; }
+    .map-pin-letter { font-size: 0.52rem; font-weight: 900; color: #fff; transform: rotate(45deg); }
+    .loc-filter { display: flex; gap: 6px; padding: 10px 14px; flex-shrink: 0; border-bottom: 1px solid #f0f0f0; }
+    .loc-filter-btn { padding: 5px 12px; border-radius: 20px; border: 1.5px solid #E5E7EB; background: #fff; font-size: 0.68rem; font-weight: 700; font-family: inherit; color: #666; cursor: pointer; transition: all 0.15s; }
+    .loc-filter-btn.active { background: #6D28D9; color: #fff; border-color: #6D28D9; }
+    .loc-list { flex: 1; overflow-y: auto; padding: 10px 14px 14px; }
+    .loc-card { border: 1px solid #E5E7EB; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; background: #fff; }
+    .loc-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+    .loc-card-name { font-size: 0.75rem; font-weight: 700; color: #111; line-height: 1.3; }
+    .loc-type-badge { font-size: 0.58rem; font-weight: 700; border-radius: 4px; padding: 2px 7px; white-space: nowrap; flex-shrink: 0; }
+    .loc-type-badge.retail { background: #EDE9FE; color: #6D28D9; }
+    .loc-type-badge.dropbox { background: #D1FAE5; color: #065F46; }
+    .loc-card-addr { font-size: 0.68rem; color: #666; margin-bottom: 4px; }
+    .loc-card-bottom { display: flex; justify-content: space-between; align-items: center; }
+    .loc-card-hours { font-size: 0.62rem; color: #999; }
+    .loc-card-dist { font-size: 0.65rem; color: #6D28D9; font-weight: 700; }
+
+    /* ── Support screen ── */
+    .support-hero { background: #4C1D95; padding: 14px 16px 18px; flex-shrink: 0; }
+    .support-title { font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 2px; }
+    .support-sub { font-size: 0.7rem; color: rgba(255,255,255,0.6); }
+    .support-body { flex: 1; overflow-y: auto; padding: 14px 16px; }
+    .support-phone-card { background: #F5F3FF; border: 1px solid #DDD6FE; border-radius: 14px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+    .support-phone-icon { font-size: 1.6rem; }
+    .support-phone-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #7C3AED; margin-bottom: 3px; }
+    .support-phone-num { font-size: 0.95rem; font-weight: 800; color: #4C1D95; }
+    .support-phone-hours { font-size: 0.62rem; color: #7C3AED; margin-top: 2px; }
+    .support-chat-card { background: #F3F4F6; border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .support-chat-label { font-size: 0.78rem; font-weight: 700; color: #6B7280; }
+    .support-chat-sub { font-size: 0.62rem; color: #9CA3AF; margin-top: 2px; }
+    .support-chat-btn { padding: 7px 12px; background: #E5E7EB; color: #9CA3AF; border: none; border-radius: 8px; font-size: 0.68rem; font-weight: 700; font-family: inherit; cursor: default; white-space: nowrap; flex-shrink: 0; }
+    .faq-section-title { font-size: 0.6rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #aaa; margin-bottom: 10px; }
+    .faq-item { border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; margin-bottom: 8px; }
+    .faq-q { padding: 11px 14px; font-size: 0.76rem; font-weight: 700; color: #111; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .faq-q:hover { background: #fafafa; }
+    .faq-chevron { font-size: 0.62rem; color: #bbb; transition: transform 0.2s; flex-shrink: 0; }
+    .faq-q.open .faq-chevron { transform: rotate(180deg); }
+    .faq-a { display: none; padding: 0 14px 12px; font-size: 0.72rem; color: #555; line-height: 1.6; }
+    .faq-a.open { display: block; }
+
+    /* ── Add-track screen recent chips ── */
+    .recent-section-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #aaa; margin-bottom: 8px; }
+    .recent-chips-wrap { margin-bottom: 16px; }
 
     /* ── Screen header ── */
     .screen-header { background: #4C1D95; padding: 12px 16px 16px; flex-shrink: 0; }
@@ -334,38 +385,10 @@
         <div class="phone-notch"></div>
         <div class="phone-screen">
 
-          <!-- ══ HOME ══ -->
-          <div class="screen active" id="scrHome">
-            <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons">▲ ● ■</span></div>
-            <div class="home-header">
-              <div class="home-logo">Dispatch</div>
-              <div class="home-greeting">Good morning</div>
-            </div>
-            <div class="home-actions">
-              <div class="home-btn" onclick="goScreen('scrFrom')">
-                <div class="home-btn-icon">📦</div>
-                <div class="home-btn-label">Ship</div>
-                <div class="home-btn-sub">Send a package</div>
-              </div>
-              <div class="home-btn" onclick="goScreen('scrTrack')">
-                <div class="home-btn-icon">📍</div>
-                <div class="home-btn-label">Track</div>
-                <div class="home-btn-sub">Follow a shipment</div>
-              </div>
-            </div>
-            <div class="home-recent">
-              <div class="home-recent-label">Recently tracked</div>
-              <span class="recent-chip" onclick="openDetail('DSP-4K7R-9XM2-CA',4)">DSP-4K7R-9XM2-CA</span>
-              <span class="recent-chip" onclick="openDetail('DSP-8P3N-6LT5-CA',3)">DSP-8P3N-6LT5-CA</span>
-              <span class="recent-chip" onclick="openDetail('DSP-2F9Q-7BV1-CA',2)">DSP-2F9Q-7BV1-CA</span>
-            </div>
-          </div>
-
           <!-- ══ SHIP: FROM ══ -->
           <div class="screen" id="scrFrom">
             <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons">▲ ● ■</span></div>
             <div class="screen-header">
-              <div class="screen-back" onclick="goScreen('scrHome')">← Back</div>
               <div class="screen-title">Ship a package</div>
               <div class="screen-sub">No account needed</div>
             </div>
@@ -636,7 +659,7 @@
           </div>
 
           <!-- ══ TRACK: LIST ══ -->
-          <div class="screen" id="scrTrack">
+          <div class="screen active" id="scrTrack">
             <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons">▲ ● ■</span></div>
             <div class="track-header-bar">
               <div class="track-title">My Shipments</div>
@@ -648,11 +671,6 @@
             </div>
             <div class="shipment-list" id="shipmentList">
               <!-- Populated by JS -->
-            </div>
-            <div class="app-nav">
-              <div class="nav-item" onclick="goScreen('scrHome')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
-              <div class="nav-item" onclick="goScreen('scrFrom')"><div class="nav-icon">📦</div><div class="nav-label">Ship</div></div>
-              <div class="nav-item active"><div class="nav-icon">📍</div><div class="nav-label" style="color:#6D28D9;">Track</div></div>
             </div>
           </div>
 
@@ -682,16 +700,31 @@
             </div>
           </div>
 
-          <!-- ══ TRACK: ADD MANUALLY ══ -->
+          <!-- ══ TRACK: ADD / HISTORY ══ -->
           <div class="screen" id="scrAddTrack">
             <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons">▲ ● ■</span></div>
             <div class="screen-header">
               <div class="screen-back" onclick="goScreen('scrTrack')">← My Shipments</div>
               <div class="screen-title">Add tracking number</div>
             </div>
-            <div class="scan-body">
-              <p style="font-size:0.78rem;color:#555;margin-bottom:16px;line-height:1.5;">Enter the tracking number from your shipping label or confirmation email.</p>
-              <input class="scan-manual-input" id="addTrackInput" placeholder="DSP-XXXX-XXXX-CA" oninput="this.value=this.value.toUpperCase()" style="font-size:0.9rem;padding:12px;">
+            <div class="screen-body">
+              <div class="recent-chips-wrap">
+                <div class="recent-section-label">Recently shipped by me</div>
+                <span class="recent-chip" onclick="quickTrack('DSP-7R3N-8KV2-CA',2)">DSP-7R3N-8KV2-CA</span>
+                <span class="recent-chip" onclick="quickTrack('DSP-9LM5-2PQ4-CA',4)">DSP-9LM5-2PQ4-CA</span>
+              </div>
+              <div class="recent-chips-wrap">
+                <div class="recent-section-label">Recently tracked</div>
+                <span class="recent-chip" onclick="quickTrack('DSP-4K7R-9XM2-CA',4)">DSP-4K7R-9XM2-CA</span>
+                <span class="recent-chip" onclick="quickTrack('DSP-8P3N-6LT5-CA',3)">DSP-8P3N-6LT5-CA</span>
+                <span class="recent-chip" onclick="quickTrack('DSP-2F9Q-7BV1-CA',2)">DSP-2F9Q-7BV1-CA</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                <div style="flex:1;height:1px;background:#E5E7EB;"></div>
+                <div style="font-size:0.65rem;color:#bbb;">or enter a number</div>
+                <div style="flex:1;height:1px;background:#E5E7EB;"></div>
+              </div>
+              <input class="scan-manual-input" id="addTrackInput" placeholder="DSP-XXXX-XXXX-CA" oninput="this.value=this.value.toUpperCase()" style="font-size:0.88rem;padding:11px;margin-bottom:10px;">
               <button class="btn-scan-add" onclick="mAddFromInput()">Track this shipment</button>
             </div>
           </div>
@@ -705,6 +738,111 @@
             </div>
             <div class="detail-body" id="detailBody">
               <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- ══ LOCATIONS ══ -->
+          <div class="screen" id="scrLocations">
+            <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons">▲ ● ■</span></div>
+            <div class="fake-map">
+              <!-- Roads -->
+              <div class="map-road-h" style="height:4px;top:58px;"></div>
+              <div class="map-road-h" style="height:6px;top:110px;"></div>
+              <div class="map-road-h" style="height:4px;top:152px;"></div>
+              <div class="map-road-v" style="width:4px;left:58px;"></div>
+              <div class="map-road-v" style="width:6px;left:138px;"></div>
+              <div class="map-road-v" style="width:4px;left:218px;"></div>
+              <!-- Block fills -->
+              <div style="position:absolute;top:62px;left:62px;width:72px;height:44px;background:#ddd7c8;"></div>
+              <div style="position:absolute;top:62px;left:144px;width:70px;height:44px;background:#ddd7c8;"></div>
+              <div style="position:absolute;top:114px;left:62px;width:72px;height:34px;background:#ddd7c8;"></div>
+              <div style="position:absolute;top:114px;left:144px;width:70px;height:34px;background:#ddd7c8;"></div>
+              <!-- Pins -->
+              <div class="map-pin" style="left:138px;top:110px;" onclick=""><div class="map-pin-dot retail"><span class="map-pin-letter">R</span></div></div>
+              <div class="map-pin" style="left:58px;top:110px;" onclick=""><div class="map-pin-dot retail"><span class="map-pin-letter">R</span></div></div>
+              <div class="map-pin" style="left:100px;top:60px;" onclick=""><div class="map-pin-dot dropbox"><span class="map-pin-letter">D</span></div></div>
+              <div class="map-pin" style="left:180px;top:154px;" onclick=""><div class="map-pin-dot dropbox"><span class="map-pin-letter">D</span></div></div>
+              <div class="map-pin" style="left:218px;top:110px;" onclick=""><div class="map-pin-dot retail"><span class="map-pin-letter">R</span></div></div>
+              <!-- Legend -->
+              <div style="position:absolute;bottom:8px;right:8px;background:rgba(255,255,255,0.92);border-radius:6px;padding:4px 10px;display:flex;gap:10px;">
+                <span style="font-size:0.54rem;color:#6D28D9;font-weight:700;">● Retail</span>
+                <span style="font-size:0.54rem;color:#059669;font-weight:700;">● Drop Box</span>
+              </div>
+              <!-- "Your location" dot -->
+              <div style="position:absolute;left:138px;top:110px;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;background:#2563EB;border:2px solid #fff;box-shadow:0 0 0 4px rgba(37,99,235,0.2);"></div>
+            </div>
+            <div class="loc-filter">
+              <button class="loc-filter-btn active" id="locFilterAll" onclick="filterLocs('all')">All</button>
+              <button class="loc-filter-btn" id="locFilterRetail" onclick="filterLocs('retail')">Retail</button>
+              <button class="loc-filter-btn" id="locFilterDrop" onclick="filterLocs('dropbox')">Drop Box</button>
+            </div>
+            <div class="loc-list" id="locList"></div>
+          </div>
+
+          <!-- ══ SUPPORT ══ -->
+          <div class="screen" id="scrSupport">
+            <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons">▲ ● ■</span></div>
+            <div class="support-hero">
+              <div class="support-title">Support</div>
+              <div class="support-sub">We're here to help</div>
+            </div>
+            <div class="support-body">
+              <div class="support-phone-card">
+                <div class="support-phone-icon">📞</div>
+                <div>
+                  <div class="support-phone-label">Call us</div>
+                  <div class="support-phone-num">1-800-DISPATCH</div>
+                  <div class="support-phone-hours">Mon–Fri 7am–9pm · Sat–Sun 9am–6pm ET</div>
+                </div>
+              </div>
+              <div class="support-chat-card">
+                <div>
+                  <div class="support-chat-label">💬 Live chat</div>
+                  <div class="support-chat-sub">Available Mon–Fri, 8am–8pm ET</div>
+                </div>
+                <button class="support-chat-btn">Unavailable now</button>
+              </div>
+              <div class="faq-section-title">Frequently asked questions</div>
+              <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">How do I track my shipment? <span class="faq-chevron">▼</span></div>
+                <div class="faq-a">Use the Track tab at the bottom. Add a tracking number by typing it or scanning the barcode on your shipping label.</div>
+              </div>
+              <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">My tracking status looks wrong. <span class="faq-chevron">▼</span></div>
+                <div class="faq-a">Status updates can take a few hours, especially during high volume. If it hasn't resolved in 24 hours, call us with your tracking number.</div>
+              </div>
+              <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">Can I change a delivery address? <span class="faq-chevron">▼</span></div>
+                <div class="faq-a">Address changes may be possible if the package hasn't been picked up yet. Call us as soon as possible with your tracking number.</div>
+              </div>
+              <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">How do I get a refund? <span class="faq-chevron">▼</span></div>
+                <div class="faq-a">If your shipment was lost or significantly delayed, you may be eligible for a refund. Contact us by phone with your tracking number and order details.</div>
+              </div>
+              <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">What items can't I ship? <span class="faq-chevron">▼</span></div>
+                <div class="faq-a">Prohibited items include hazardous materials, perishable goods, live animals, and firearms. Contact us if you're unsure about a specific item.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ PERSISTENT NAV ══ -->
+          <div class="app-nav" id="appNav">
+            <div class="nav-item active" id="navTrack" onclick="goScreen('scrTrack')">
+              <div class="nav-icon">📍</div>
+              <div class="nav-label">Track</div>
+            </div>
+            <div class="nav-item" id="navShip" onclick="goScreen('scrFrom')">
+              <div class="nav-icon">📦</div>
+              <div class="nav-label">Ship</div>
+            </div>
+            <div class="nav-item" id="navLoc" onclick="goScreen('scrLocations')">
+              <div class="nav-icon">🗺️</div>
+              <div class="nav-label">Locations</div>
+            </div>
+            <div class="nav-item" id="navSupport" onclick="goScreen('scrSupport')">
+              <div class="nav-icon">💬</div>
+              <div class="nav-label">Support</div>
             </div>
           </div>
 
@@ -726,9 +864,29 @@ function toggleAcc(header) {
 }
 
 /* ── Screen navigation ── */
+const NAV_MAP = {
+  scrTrack:'navTrack', scrScan:'navTrack', scrAddTrack:'navTrack', scrDetail:'navTrack',
+  scrFrom:'navShip', scrTo:'navShip', scrPkg:'navShip', scrDetails:'navShip',
+  scrQuote:'navShip', scrPay:'navShip', scrSuccess:'navShip',
+  scrLocations:'navLoc',
+  scrSupport:'navSupport'
+};
 function goScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  setNav(id);
+}
+function setNav(screenId) {
+  ['navTrack','navShip','navLoc','navSupport'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  });
+  const navId = NAV_MAP[screenId];
+  if (navId) { const el = document.getElementById(navId); if (el) el.classList.add('active'); }
+}
+function toggleFaq(q) {
+  q.classList.toggle('open');
+  q.nextElementSibling.classList.toggle('open');
 }
 
 /* ── Shipment data ── */
@@ -990,8 +1148,52 @@ function mHandlePrint() {
   btn.textContent = '✓ Sent to printer'; btn.style.background='#059669'; btn.disabled=true;
 }
 
+/* ── Quick-track from recent chips ── */
+function quickTrack(id, stage) {
+  if (!shipments.find(s => s.id === id)) {
+    const fromMap = { 'DSP-7R3N-8KV2-CA': 'Toronto, ON', 'DSP-9LM5-2PQ4-CA': 'Toronto, ON' };
+    const toMap   = { 'DSP-7R3N-8KV2-CA': 'Calgary, AB',  'DSP-9LM5-2PQ4-CA': 'Montreal, QC' };
+    shipments.unshift({ id, stage, from: fromMap[id]||'—', to: toMap[id]||'—', date: 'Jun 15' });
+    renderShipments();
+  }
+  openDetail(id, stage);
+}
+
+/* ── Location data ── */
+const LOCATIONS = [
+  { name: 'Dispatch — Yonge & Bloor',   type: 'retail',  addr: '802 Yonge St, Toronto, ON M4W 2H1',  hours: 'Mon–Fri 8am–7pm · Sat 9am–5pm · Sun 10am–4pm', dist: '0.3 km' },
+  { name: 'Drop Box — Bloor & Spadina', type: 'dropbox', addr: '300 Bloor St W, Toronto, ON M5S 1W3', hours: '24/7 · Max 40×30×20 cm, 5 kg',                  dist: '0.5 km' },
+  { name: 'Dispatch — Bay & Queen',      type: 'retail',  addr: '100 Queen St W, Toronto, ON M5H 2N2', hours: 'Mon–Fri 8am–8pm · Sat 9am–6pm · Sun Closed',     dist: '0.8 km' },
+  { name: 'Drop Box — King & Bay',       type: 'dropbox', addr: '200 Bay St, Toronto, ON M5J 2W4',     hours: '24/7 · Max 40×30×20 cm, 5 kg',                  dist: '1.1 km' },
+  { name: 'Dispatch — Eglinton & Yonge',type: 'retail',  addr: '2345 Yonge St, Toronto, ON M4P 2C8',  hours: 'Mon–Sat 9am–6pm · Sun 11am–4pm',                 dist: '1.6 km' },
+];
+let locFilter = 'all';
+function filterLocs(f) {
+  locFilter = f;
+  document.getElementById('locFilterAll').classList.toggle('active', f==='all');
+  document.getElementById('locFilterRetail').classList.toggle('active', f==='retail');
+  document.getElementById('locFilterDrop').classList.toggle('active', f==='dropbox');
+  renderLocs();
+}
+function renderLocs() {
+  const list = locFilter === 'all' ? LOCATIONS : LOCATIONS.filter(l => l.type === locFilter);
+  document.getElementById('locList').innerHTML = list.map(l => `
+    <div class="loc-card">
+      <div class="loc-card-top">
+        <div class="loc-card-name">${l.type==='retail'?'🏪':'📦'} ${l.name}</div>
+        <div class="loc-type-badge ${l.type}">${l.type==='retail'?'Retail':'Drop Box'}</div>
+      </div>
+      <div class="loc-card-addr">${l.addr}</div>
+      <div class="loc-card-bottom">
+        <div class="loc-card-hours">${l.hours}</div>
+        <div class="loc-card-dist">${l.dist}</div>
+      </div>
+    </div>`).join('');
+}
+
 /* ── Init ── */
 renderShipments();
+renderLocs();
 </script>
 
 </body>
