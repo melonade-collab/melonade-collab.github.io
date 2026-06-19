@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beta Program Analytics — Re-imagining</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f5; color: #1a1a1a; min-height: 100vh; }
+
+    .cs-header { background: #1E1B4B; padding: 56px 40px 44px; }
+    .cs-header-inner { max-width: 860px; margin: 0 auto; }
+    .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 580px; }
+
+    .cs-body { max-width: 860px; margin: 0 auto; padding: 48px 40px 80px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #4F46E5; margin-bottom: 0; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
+    .acc-body li { margin-bottom: 6px; }
+    .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #4F46E5; margin-bottom: 4px; }
+    .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
+
+    .proto-wrap { background: #EEF2FF; border-radius: 16px; padding: 28px 20px 36px; }
+    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #4338CA; text-align: center; margin-bottom: 18px; }
+
+    /* ── Dashboard ── */
+    .dash { background: #F1F5F9; border-radius: 12px; overflow: hidden; border: 1px solid #D1D5DB; }
+
+    /* Nav */
+    .dash-nav { background: #1E1B4B; display: flex; align-items: center; padding: 0 16px; height: 46px; gap: 0; }
+    .dash-logo { font-size: 0.84rem; font-weight: 900; color: #fff; letter-spacing: -0.3px; margin-right: 18px; flex-shrink: 0; }
+    .dash-tabs { display: flex; flex: 1; overflow-x: auto; }
+    .dash-tab { height: 46px; padding: 0 12px; background: none; border: none; border-bottom: 2px solid transparent; font-family: inherit; font-size: 0.7rem; font-weight: 600; color: rgba(255,255,255,0.5); cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+    .dash-tab:hover { color: rgba(255,255,255,0.8); }
+    .dash-tab.active { color: #fff; border-bottom-color: #818CF8; }
+    .dash-cycle { font-size: 0.62rem; color: rgba(255,255,255,0.4); padding: 4px 10px; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; font-family: inherit; cursor: pointer; flex-shrink: 0; background: none; transition: all 0.15s; margin-left: 8px; }
+    .dash-cycle:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
+
+    .dash-content { padding: 14px 16px 18px; }
+    .d-pane { display: none; }
+    .d-pane.active { display: block; }
+
+    /* Header row */
+    .pane-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .pane-title { font-size: 0.78rem; font-weight: 700; color: #1E1B4B; }
+    .pane-chip { font-size: 0.6rem; font-weight: 700; background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE; border-radius: 5px; padding: 3px 8px; }
+    .soak-pill { font-size: 0.58rem; font-weight: 700; padding: 3px 8px; border-radius: 8px; }
+    .soak-good { background: #DCFCE7; color: #166534; }
+    .soak-warn { background: #FEF9C3; color: #854D0E; }
+
+    /* KPI row */
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+    .kpi { background: #fff; border: 1px solid #E5E7EB; border-radius: 9px; padding: 10px 12px; }
+    .kpi-lbl { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #94A3B8; margin-bottom: 4px; }
+    .kpi-val { font-size: 1.45rem; font-weight: 900; letter-spacing: -1px; line-height: 1; color: #111; }
+    .kpi-delta { font-size: 0.58rem; margin-top: 3px; font-weight: 600; }
+    .delta-up { color: #059669; }
+    .delta-dn { color: #DC2626; }
+    .delta-flat { color: #94A3B8; }
+
+    /* Two-col layout */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+
+    /* Charts & cards */
+    .dash-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 9px; padding: 12px 14px; }
+    .dash-card-title { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #94A3B8; margin-bottom: 10px; }
+
+    /* Trend chart (SVG) */
+    .trend-chart { width: 100%; height: 90px; }
+
+    /* Bar items */
+    .bar-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .bar-item:last-child { margin-bottom: 0; }
+    .bar-rank { font-size: 0.56rem; font-weight: 700; color: #94A3B8; width: 14px; flex-shrink: 0; text-align: right; }
+    .bar-label { font-size: 0.62rem; color: #374151; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bar-track { width: 60px; height: 10px; background: #F1F5F9; border-radius: 5px; flex-shrink: 0; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 5px; transition: width 0.7s ease; }
+    .bar-n { font-size: 0.58rem; font-weight: 700; color: #374151; width: 28px; text-align: right; flex-shrink: 0; }
+
+    /* Bug severity */
+    .bug-sev { font-size: 0.48rem; font-weight: 700; padding: 1px 5px; border-radius: 4px; flex-shrink: 0; }
+    .sev-p1 { background: #FEE2E2; color: #991B1B; }
+    .sev-p2 { background: #FEF3C7; color: #92400E; }
+    .sev-p3 { background: #E0F2FE; color: #0369A1; }
+
+    /* Verbatim quotes */
+    .verbatim { background: #F8FAFC; border-left: 3px solid #818CF8; border-radius: 0 6px 6px 0; padding: 8px 10px; margin-bottom: 7px; }
+    .verbatim:last-child { margin-bottom: 0; }
+    .verbatim-text { font-size: 0.66rem; color: #374151; line-height: 1.5; font-style: italic; }
+    .verbatim-meta { display: flex; align-items: center; gap: 6px; margin-top: 5px; }
+    .verbatim-app { font-size: 0.52rem; font-weight: 700; color: #6366F1; }
+    .verbatim-sentiment { font-size: 0.5rem; padding: 1px 5px; border-radius: 4px; font-weight: 700; }
+    .sent-pos { background: #DCFCE7; color: #166534; }
+    .sent-neg { background: #FEE2E2; color: #991B1B; }
+    .sent-neu { background: #F1F5F9; color: #475569; }
+
+    /* What it would take */
+    .move-card { background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 9px; padding: 12px 14px; }
+    .move-title { font-size: 0.62rem; font-weight: 700; color: #3730A3; margin-bottom: 9px; }
+    .move-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 7px; }
+    .move-row:last-child { margin-bottom: 0; }
+    .move-icon { font-size: 0.75rem; flex-shrink: 0; margin-top: 1px; }
+    .move-text { font-size: 0.63rem; color: #374151; line-height: 1.4; }
+    .move-text strong { color: #1E1B4B; }
+
+    /* Soak time */
+    .soak-list { }
+    .soak-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #F1F5F9; }
+    .soak-row:last-child { border-bottom: none; }
+    .soak-ver { font-size: 0.65rem; font-weight: 700; color: #1E1B4B; font-family: monospace; }
+    .soak-days { font-size: 0.62rem; color: #475569; }
+    .soak-bar-wrap { flex: 1; margin: 0 10px; }
+    .soak-bar { height: 8px; background: #C7D2FE; border-radius: 4px; transition: width 0.6s ease; }
+
+    /* Version selector */
+    .ver-tabs { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; }
+    .ver-tab { padding: 4px 10px; border-radius: 12px; border: 1.5px solid #E5E7EB; background: #fff; font-size: 0.6rem; font-weight: 700; font-family: inherit; color: #666; cursor: pointer; transition: all 0.15s; }
+    .ver-tab.active { background: #4F46E5; color: #fff; border-color: #4F46E5; }
+
+    @media (max-width: 640px) {
+      .cs-header { padding: 40px 20px 36px; }
+      .cs-body { padding: 36px 20px 60px; }
+      .contrib-grid, .two-col { grid-template-columns: 1fr; }
+      .kpi-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="eyebrow">Re-imagining</p>
+    <h1>Beta Program Analytics Dashboard</h1>
+    <p class="cs-intro">Centralized reporting for a suite of beta apps — tracking NPS and satisfaction trends, surfacing top bugs and feature requests, and quantifying what it would take to move the scores.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Across a portfolio of apps in beta — a news feed, a messaging platform, a groups app, a video app, and a social music experience — feedback was being collected but not synthesized in a way that made it actionable. NPS and satisfaction data arrived as raw exports. Bug reports came through separate QA channels. Feature requests were scattered across feedback forms and app store reviews. There was no single view showing how a version was performing or whether trends were improving between releases.</p>
+      <p style="margin-top:8px;">Product teams needed more than a data dump. They needed to know: is this version better than the last one? What's driving the score? What would need to change to move it? And how long should the current version stay in soak before promoting to the next release gate?</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Product Ownership</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Beta Release Management</p>
+          <p class="contrib-item-text">Managed internal and external beta releases across five apps. Coordinated release timing, tester cohort selection, and go/no-go decisions based on soak time data and incoming feedback volume and severity.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Feedback Synthesis</p>
+          <p class="contrib-item-text">Compiled NPS, CSAT, bug reports, and feature requests into structured reports for each version. Identified trends across releases, flagged regressions, and surfaced the feedback most likely to influence score movement if addressed.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Insight Framing</p>
+          <p class="contrib-item-text">Translated raw metrics into product-actionable language — not just "NPS dropped 4 points" but "NPS dropped 4 points; crash on video resume is the single most-cited issue in 1-3 star verbatims, accounting for 38% of negative mentions." That's what product needed to act.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Score Movement Analysis</p>
+          <p class="contrib-item-text">For each cycle, estimated what fixing top issues would move the score by — modeling impact based on mention frequency and sentiment weight. This gave product teams a prioritization frame: "Fix bugs 1 and 3 and you'd likely move NPS +6 points next cycle."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-card acc-outcome mb40" style="border-color:#C7D2FE;">
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#EEF2FF;">
+      <p class="card-label" style="color:#4338CA;">Outcome</p>
+      <span class="acc-chevron" style="color:#4338CA;">▼</span>
+    </div>
+    <div class="acc-body" style="background:#EEF2FF;">
+      <p style="color:#1E1B4B;">Beta reports became a standing agenda item in sprint reviews across the app portfolio. The score movement framing — "here's what would move NPS by X points" — became the standard way product managers prioritized bug fixes against feature work in each release cycle. Soak time recommendations were consistently adopted as the gate criteria for promoting builds, reducing the rate of critical bugs reaching external beta.</p>
+    </div>
+  </div>
+
+  <!-- Prototype -->
+  <div class="proto-wrap">
+    <p class="proto-wrap-label">Interactive prototype — Beta analytics dashboard</p>
+
+    <div class="dash">
+      <!-- Nav -->
+      <div class="dash-nav">
+        <div class="dash-logo">BetaLens</div>
+        <div class="dash-tabs">
+          <button class="dash-tab active" onclick="showPane('pOverview',this)">Overview</button>
+          <button class="dash-tab" onclick="showPane('pBugs',this)">Top Issues</button>
+          <button class="dash-tab" onclick="showPane('pRequests',this)">Feature Requests</button>
+          <button class="dash-tab" onclick="showPane('pVerbatims',this)">Verbatims</button>
+          <button class="dash-tab" onclick="showPane('pSoak',this)">Soak Time</button>
+        </div>
+        <button class="dash-cycle" onclick="cycleApp()">App: <span id="appLabel">Messaging</span> ▾</button>
+      </div>
+
+      <div class="dash-content">
+
+        <!-- ── Overview ── -->
+        <div class="d-pane active" id="pOverview">
+          <div class="pane-hdr">
+            <div class="pane-title" id="overviewTitle">Messaging — Beta v4.7.1</div>
+            <div class="pane-chip" id="overviewCycle">Cycle 7 · Jun 2026</div>
+          </div>
+
+          <div class="kpi-row">
+            <div class="kpi">
+              <div class="kpi-lbl">NPS</div>
+              <div class="kpi-val" id="kpiNps">+42</div>
+              <div class="kpi-delta delta-up" id="kpiNpsDelta">▲ +6 vs. last cycle</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-lbl">Satisfaction</div>
+              <div class="kpi-val" id="kpiCsat">7.8<span style="font-size:0.7rem;font-weight:600;color:#aaa;">/10</span></div>
+              <div class="kpi-delta delta-up" id="kpiCsatDelta">▲ +0.4 vs. last cycle</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-lbl">Tester Responses</div>
+              <div class="kpi-val" id="kpiResp">284</div>
+              <div class="kpi-delta delta-up" id="kpiRespDelta">▲ +31 responses</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-lbl">Bugs Filed</div>
+              <div class="kpi-val" id="kpiBugs">18</div>
+              <div class="kpi-delta delta-dn" id="kpiBugsDelta">▼ −7 vs. last cycle</div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="dash-card">
+              <div class="dash-card-title">NPS trend — last 6 cycles</div>
+              <svg class="trend-chart" id="npsChart" viewBox="0 0 280 90"></svg>
+            </div>
+            <div class="dash-card">
+              <div class="dash-card-title">Satisfaction trend — last 6 cycles</div>
+              <svg class="trend-chart" id="csatChart" viewBox="0 0 280 90"></svg>
+            </div>
+          </div>
+
+          <div class="move-card">
+            <div class="move-title">📊 What would move the score next cycle?</div>
+            <div class="move-row">
+              <span class="move-icon">🐛</span>
+              <div class="move-text">Fixing the <strong>group message delivery delay</strong> (top cited bug, 34% of negative verbatims) would likely move NPS <strong>+4–6 points</strong>.</div>
+            </div>
+            <div class="move-row">
+              <span class="move-icon">✨</span>
+              <div class="move-text">Shipping <strong>message scheduling</strong> (top feature request, 61 mentions) would likely move satisfaction <strong>+0.3–0.5</strong>.</div>
+            </div>
+            <div class="move-row">
+              <span class="move-icon">⚡</span>
+              <div class="move-text">Resolving the <strong>notification badge not clearing</strong> bug would reduce 1–2 star ratings by an estimated <strong>18%</strong> based on mention frequency.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Top Issues ── -->
+        <div class="d-pane" id="pBugs">
+          <div class="pane-hdr">
+            <div class="pane-title">Top Issues — <span id="bugsAppLabel">Messaging</span> v4.7.1</div>
+            <div class="pane-chip">Beta Cycle 7</div>
+          </div>
+          <div class="ver-tabs" id="bugVerTabs">
+            <button class="ver-tab active" onclick="selectVer(this,'bug')">v4.7.1 (current)</button>
+            <button class="ver-tab" onclick="selectVer(this,'bug')">v4.6.3</button>
+            <button class="ver-tab" onclick="selectVer(this,'bug')">v4.5.8</button>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-title">Top bugs by mention count</div>
+            <div id="bugList"></div>
+          </div>
+        </div>
+
+        <!-- ── Feature Requests ── -->
+        <div class="d-pane" id="pRequests">
+          <div class="pane-hdr">
+            <div class="pane-title">Feature Requests — <span id="reqAppLabel">Messaging</span></div>
+            <div class="pane-chip">All cycles · ranked by demand</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-title">Top feature requests by mention count</div>
+            <div id="reqList"></div>
+          </div>
+        </div>
+
+        <!-- ── Verbatims ── -->
+        <div class="d-pane" id="pVerbatims">
+          <div class="pane-hdr">
+            <div class="pane-title">Customer Verbatims</div>
+            <div style="display:flex;gap:6px;">
+              <button class="pane-chip" style="cursor:pointer;border:none;font-family:inherit;" onclick="filterVerbs('all',this)">All</button>
+              <button class="pane-chip" style="cursor:pointer;border:none;font-family:inherit;background:#DCFCE7;color:#166534;" onclick="filterVerbs('pos',this)">Positive</button>
+              <button class="pane-chip" style="cursor:pointer;border:none;font-family:inherit;background:#FEE2E2;color:#991B1B;" onclick="filterVerbs('neg',this)">Critical</button>
+            </div>
+          </div>
+          <div id="verbList"></div>
+        </div>
+
+        <!-- ── Soak Time ── -->
+        <div class="d-pane" id="pSoak">
+          <div class="pane-hdr">
+            <div class="pane-title">Version Soak Time</div>
+            <div class="pane-chip">Recommendation: 10–14 days before promote</div>
+          </div>
+          <div class="dash-card" style="margin-bottom:10px;">
+            <div class="dash-card-title">Days in beta by version</div>
+            <div id="soakList"></div>
+          </div>
+          <div class="dash-card" style="background:#FFFBEB;border-color:#FDE68A;">
+            <div class="dash-card-title" style="color:#92400E;">Current recommendation</div>
+            <p style="font-size:0.72rem;color:#78350F;line-height:1.55;"><strong>v4.7.1</strong> has been in beta for <strong>6 days</strong>. Two P1 bugs remain open (group message delay, crash on media upload). <strong>Recommend extending soak 5–7 more days</strong> and re-evaluating after the next patch. Do not promote to external beta until the P1 crash is resolved.</p>
+          </div>
+        </div>
+
+      </div><!-- /dash-content -->
+    </div><!-- /dash -->
+  </div><!-- /proto-wrap -->
+
+</div>
+
+<a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
+<script>
+function toggleAcc(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
+
+/* ── App data ── */
+const APPS = [
+  {
+    name: 'Messaging',
+    version: 'v4.7.1',
+    nps: 42, npsDelta: '+6', npsTrend: [22,28,31,35,36,42],
+    csat: 7.8, csatDelta: '+0.4', csatTrend: [6.8,7.0,7.1,7.3,7.4,7.8],
+    responses: 284, responsesDelta: '+31',
+    bugs: 18, bugsDelta: '−7',
+    moveInsights: [
+      { icon:'🐛', text:'Fixing the <strong>group message delivery delay</strong> (top cited bug, 34% of negative verbatims) would likely move NPS <strong>+4–6 points</strong>.' },
+      { icon:'✨', text:'Shipping <strong>message scheduling</strong> (top feature request, 61 mentions) would likely move satisfaction <strong>+0.3–0.5</strong>.' },
+      { icon:'⚡', text:'Resolving the <strong>notification badge not clearing</strong> bug would reduce 1–2 star ratings by an estimated <strong>18%</strong> based on mention frequency.' },
+    ],
+    topBugs: [
+      { label:'Group message delivery delay (3–8 sec)', sev:'P1', n:89, max:89 },
+      { label:'Crash on media upload — iOS 17.4+', sev:'P1', n:61, max:89 },
+      { label:'Notification badge not clearing', sev:'P2', n:47, max:89 },
+      { label:'Read receipts showing incorrect time', sev:'P2', n:34, max:89 },
+      { label:'Search returns no results for 3-char queries', sev:'P3', n:22, max:89 },
+    ],
+    topReqs: [
+      { label:'Message scheduling / send later', n:61, max:61, color:'#6366F1' },
+      { label:'Pinned conversations', n:55, max:61, color:'#6366F1' },
+      { label:'Swipe to reply on individual messages', n:48, max:61, color:'#6366F1' },
+      { label:'Custom notification sounds per contact', n:30, max:61, color:'#6366F1' },
+      { label:'Markdown text formatting', n:19, max:61, color:'#6366F1' },
+    ],
+    verbatims: [
+      { text:'"The new conversation UI is much cleaner than the last version. Finding old messages is way easier now."', app:'Messaging v4.7.1', sentiment:'pos' },
+      { text:'"Messages keep showing as delivered but the other person doesn\'t get them for 5+ minutes. Makes the app useless in a real conversation."', app:'Messaging v4.7.1', sentiment:'neg' },
+      { text:'"Please add a way to schedule messages for later. This is the one thing keeping me on the other app."', app:'Messaging v4.7.1', sentiment:'neu' },
+      { text:'"Crashed twice when I tried to send photos. Lost my message both times."', app:'Messaging v4.7.1', sentiment:'neg' },
+      { text:'"Overall much improved. The search is still a bit slow but I\'m glad they fixed the login issue from last time."', app:'Messaging v4.7.1', sentiment:'pos' },
+    ],
+    soakVersions: [
+      { ver:'v4.7.1', days:6, max:21, status:'warn', label:'In soak — P1s open' },
+      { ver:'v4.6.3', days:14, max:21, status:'good', label:'Promoted to ext. beta' },
+      { ver:'v4.5.8', days:12, max:21, status:'good', label:'Promoted after patch' },
+      { ver:'v4.5.1', days:21, max:21, status:'good', label:'Full cycle — promoted' },
+      { ver:'v4.4.0', days:18, max:21, status:'good', label:'Promoted' },
+    ],
+  },
+  {
+    name: 'News Feed',
+    version: 'v2.3.0',
+    nps: 29, npsDelta: '+11', npsTrend: [6,10,14,18,18,29],
+    csat: 6.9, csatDelta: '+0.8', csatTrend: [5.5,5.8,5.9,6.2,6.1,6.9],
+    responses: 198, responsesDelta: '+44',
+    bugs: 9, bugsDelta: '−12',
+    moveInsights: [
+      { icon:'🐛', text:'Fixing the <strong>article text rendering on dark mode</strong> (22% of negative mentions) would likely move NPS <strong>+5–8 points</strong>.' },
+      { icon:'✨', text:'Adding <strong>topic-based filtering</strong> (top feature request, 78 mentions) would likely move satisfaction <strong>+0.5–0.8</strong>.' },
+      { icon:'⚡', text:'Reducing initial load time below 2 seconds (currently 3.4s average) would improve satisfaction by an estimated <strong>+0.4</strong>.' },
+    ],
+    topBugs: [
+      { label:'Article text unreadable in dark mode', sev:'P1', n:74, max:74 },
+      { label:'App freezes on infinite scroll after ~50 items', sev:'P2', n:58, max:74 },
+      { label:'Share button opens wrong app on first tap', sev:'P2', n:33, max:74 },
+      { label:'Bookmarked articles not syncing across devices', sev:'P2', n:27, max:74 },
+      { label:'Slow initial load (3.4s avg)', sev:'P3', n:19, max:74 },
+    ],
+    topReqs: [
+      { label:'Topic-based filtering / personalization', n:78, max:78, color:'#6366F1' },
+      { label:'Offline reading / save for later', n:65, max:78, color:'#6366F1' },
+      { label:'Text size settings', n:44, max:78, color:'#6366F1' },
+      { label:'Hide already-read articles', n:38, max:78, color:'#6366F1' },
+      { label:'Share to specific contacts in-app', n:22, max:78, color:'#6366F1' },
+    ],
+    verbatims: [
+      { text:'"The curation is actually really good now. I\'m finding stories I care about without having to search for them."', app:'News Feed v2.3.0', sentiment:'pos' },
+      { text:'"Dark mode is completely broken — the text just disappears against the background. Unusable at night."', app:'News Feed v2.3.0', sentiment:'neg' },
+      { text:'"I\'d love a way to filter by topic so I\'m not seeing sports mixed in with tech news."', app:'News Feed v2.3.0', sentiment:'neu' },
+      { text:'"Loads really slowly every time I open it. Takes like 3-4 seconds before I can do anything."', app:'News Feed v2.3.0', sentiment:'neg' },
+      { text:'"Saving articles works finally! The bookmark issue was fixed. Night and day improvement."', app:'News Feed v2.3.0', sentiment:'pos' },
+    ],
+    soakVersions: [
+      { ver:'v2.3.0', days:8, max:21, status:'warn', label:'In soak — dark mode P1 open' },
+      { ver:'v2.2.1', days:15, max:21, status:'good', label:'Promoted to ext. beta' },
+      { ver:'v2.1.8', days:11, max:21, status:'good', label:'Promoted after patch' },
+      { ver:'v2.0.4', days:14, max:21, status:'good', label:'Promoted' },
+      { ver:'v1.9.0', days:7, max:21, status:'warn', label:'Extended — regression found' },
+    ],
+  },
+  {
+    name: 'Groups',
+    version: 'v1.2.4',
+    nps: 18, npsDelta: '+3', npsTrend: [8,10,12,13,15,18],
+    csat: 6.2, csatDelta: '+0.2', csatTrend: [5.8,5.9,6.0,6.0,6.0,6.2],
+    responses: 112, responsesDelta: '+8',
+    bugs: 24, bugsDelta: '+4',
+    moveInsights: [
+      { icon:'🐛', text:'Fixing the <strong>group creation failure on Android 13</strong> (blocks new users entirely) would move NPS an estimated <strong>+8–12 points</strong>.' },
+      { icon:'✨', text:'Adding <strong>member role management</strong> (top feature request, 44 mentions) would likely move satisfaction <strong>+0.4–0.6</strong>.' },
+      { icon:'⚡', text:'Resolving the <strong>event RSVP not persisting</strong> bug would reduce 1-star ratings by an estimated <strong>24%</strong> of their current volume.' },
+    ],
+    topBugs: [
+      { label:'Group creation fails on Android 13', sev:'P1', n:66, max:66 },
+      { label:'Event RSVP not persisting after app close', sev:'P1', n:54, max:66 },
+      { label:'Members list not loading for 50+ member groups', sev:'P2', n:38, max:66 },
+      { label:'Push notifications not arriving for group activity', sev:'P2', n:29, max:66 },
+      { label:'Profile photo upload silently fails on slow connections', sev:'P3', n:14, max:66 },
+    ],
+    topReqs: [
+      { label:'Member role management (admin, mod, member)', n:44, max:44, color:'#6366F1' },
+      { label:'Scheduled posts / announcements', n:38, max:44, color:'#6366F1' },
+      { label:'Group event calendar', n:32, max:44, color:'#6366F1' },
+      { label:'Polls within groups', n:28, max:44, color:'#6366F1' },
+      { label:'Group-to-group messaging', n:11, max:44, color:'#6366F1' },
+    ],
+    verbatims: [
+      { text:'"Can\'t even create a group on my Galaxy S23. Tried 6 times. Complete waste of time."', app:'Groups v1.2.4', sentiment:'neg' },
+      { text:'"Love the concept. The event planning tools are exactly what we needed for our club."', app:'Groups v1.2.4', sentiment:'pos' },
+      { text:'"RSVPed to an event, closed the app, came back and it shows me as not going. That\'s confusing."', app:'Groups v1.2.4', sentiment:'neg' },
+      { text:'"Would really like to be able to set different roles for members. Right now everyone is equal which causes chaos in big groups."', app:'Groups v1.2.4', sentiment:'neu' },
+      { text:'"The notification problem is getting better but still not reliable. Sometimes I find out about things hours late."', app:'Groups v1.2.4', sentiment:'neg' },
+    ],
+    soakVersions: [
+      { ver:'v1.2.4', days:4, max:21, status:'warn', label:'In soak — 2 P1s open' },
+      { ver:'v1.2.0', days:10, max:21, status:'warn', label:'Extended soak — regression' },
+      { ver:'v1.1.5', days:14, max:21, status:'good', label:'Promoted' },
+      { ver:'v1.0.8', days:12, max:21, status:'good', label:'Promoted' },
+      { ver:'v1.0.0', days:19, max:21, status:'good', label:'Initial external beta' },
+    ],
+  },
+];
+
+let currentAppIdx = 0;
+const SEV_COLORS = { P1:'#DC2626', P2:'#D97706', P3:'#2563EB' };
+
+function getApp() { return APPS[currentAppIdx]; }
+
+function cycleApp() {
+  currentAppIdx = (currentAppIdx + 1) % APPS.length;
+  refreshAll();
+}
+
+function refreshAll() {
+  const a = getApp();
+  document.getElementById('appLabel').textContent = a.name;
+  document.getElementById('overviewTitle').textContent = `${a.name} — Beta ${a.version}`;
+  document.getElementById('kpiNps').textContent = (a.nps > 0 ? '+' : '') + a.nps;
+  document.getElementById('kpiNpsDelta').textContent = `▲ ${a.npsDelta} vs. last cycle`;
+  document.getElementById('kpiNpsDelta').className = 'kpi-delta ' + (a.npsDelta.startsWith('+') ? 'delta-up' : 'delta-dn');
+  document.getElementById('kpiCsat').innerHTML = `${a.csat}<span style="font-size:0.7rem;font-weight:600;color:#aaa;">/10</span>`;
+  document.getElementById('kpiCsatDelta').textContent = `▲ ${a.csatDelta} vs. last cycle`;
+  document.getElementById('kpiResp').textContent = a.responses;
+  document.getElementById('kpiRespDelta').textContent = `▲ ${a.responsesDelta} responses`;
+  document.getElementById('kpiBugs').textContent = a.bugs;
+  document.getElementById('kpiBugsDelta').textContent = `${a.bugsDelta} vs. last cycle`;
+  document.getElementById('kpiBugsDelta').className = 'kpi-delta ' + (a.bugsDelta.startsWith('−') ? 'delta-up' : 'delta-dn');
+  document.getElementById('bugsAppLabel').textContent = a.name;
+  document.getElementById('reqAppLabel').textContent = a.name;
+
+  drawTrend('npsChart', a.npsTrend, '#4F46E5');
+  drawTrend('csatChart', a.csatTrend, '#0EA5E9');
+  drawMoveInsights(a.moveInsights);
+  drawBugs(a.topBugs);
+  drawReqs(a.topReqs);
+  drawVerbatims(a.verbatims, 'all');
+  drawSoak(a.soakVersions);
+}
+
+function drawTrend(id, data, color) {
+  const svg = document.getElementById(id);
+  if (!svg) return;
+  const W = 280, H = 90, pad = { t:10, b:18, l:10, r:10 };
+  const iW = W - pad.l - pad.r, iH = H - pad.t - pad.b;
+  const min = Math.min(...data) - 2;
+  const max = Math.max(...data) + 2;
+  const pts = data.map((v, i) => ({
+    x: pad.l + (i / (data.length - 1)) * iW,
+    y: pad.t + (1 - (v - min) / (max - min)) * iH,
+  }));
+
+  const line = pts.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const area = line + ` L${pts[pts.length-1].x.toFixed(1)},${(pad.t+iH).toFixed(1)} L${pts[0].x.toFixed(1)},${(pad.t+iH).toFixed(1)} Z`;
+
+  const LABELS = ['C1','C2','C3','C4','C5','C6'];
+  const labels = pts.map((p, i) => `<text x="${p.x.toFixed(1)}" y="${H-2}" text-anchor="middle" font-size="8" fill="#94A3B8" font-family="-apple-system,sans-serif">${LABELS[i]}</text>`).join('');
+  const valLbl = `<text x="${pts[pts.length-1].x.toFixed(1)}" y="${(pts[pts.length-1].y - 5).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="700" fill="${color}" font-family="-apple-system,sans-serif">${data[data.length-1]}</text>`;
+  const dots = pts.map((p, i) => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i === pts.length-1 ? 4 : 2.5}" fill="${color}" />`).join('');
+
+  svg.innerHTML = `
+    <defs><linearGradient id="g${id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity="0.18"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+    <path d="${area}" fill="url(#g${id})"/>
+    <path d="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${dots}${valLbl}${labels}`;
+}
+
+function drawMoveInsights(insights) {
+  const cards = document.querySelectorAll('.move-card .move-row');
+  cards.forEach((row, i) => {
+    if (insights[i]) {
+      row.querySelector('.move-icon').textContent = insights[i].icon;
+      row.querySelector('.move-text').innerHTML = insights[i].text;
+    }
+  });
+}
+
+const SEV_CLS = { P1:'sev-p1', P2:'sev-p2', P3:'sev-p3' };
+
+function drawBugs(bugs) {
+  const el = document.getElementById('bugList');
+  if (!el) return;
+  el.innerHTML = bugs.map((b, i) => `
+    <div class="bar-item">
+      <div class="bar-rank">${i+1}</div>
+      <span class="bug-sev ${SEV_CLS[b.sev]}">${b.sev}</span>
+      <div class="bar-label" title="${b.label}">${b.label}</div>
+      <div class="bar-track"><div class="bar-fill" style="background:${SEV_COLORS[b.sev]};width:0%" data-w="${Math.round((b.n/b.max)*100)}"></div></div>
+      <div class="bar-n">${b.n}</div>
+    </div>`).join('');
+  animateBars(el);
+}
+
+function drawReqs(reqs) {
+  const el = document.getElementById('reqList');
+  if (!el) return;
+  el.innerHTML = reqs.map((r, i) => `
+    <div class="bar-item">
+      <div class="bar-rank">${i+1}</div>
+      <div class="bar-label" title="${r.label}">${r.label}</div>
+      <div class="bar-track"><div class="bar-fill" style="background:${r.color};width:0%" data-w="${Math.round((r.n/r.max)*100)}"></div></div>
+      <div class="bar-n">${r.n}</div>
+    </div>`).join('');
+  animateBars(el);
+}
+
+function animateBars(container) {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    container.querySelectorAll('.bar-fill[data-w]').forEach(el => {
+      el.style.width = el.dataset.w + '%';
+    });
+  }));
+}
+
+const SENT_LBL = { pos:'Positive', neg:'Critical', neu:'Neutral' };
+const SENT_CLS = { pos:'sent-pos', neg:'sent-neg', neu:'sent-neu' };
+
+let currentVerbSentiment = 'all';
+let currentVerbatims = [];
+
+function drawVerbatims(verbs, filter) {
+  currentVerbatims = verbs;
+  currentVerbSentiment = filter;
+  const el = document.getElementById('verbList');
+  if (!el) return;
+  const filtered = filter === 'all' ? verbs : verbs.filter(v => v.sentiment === filter);
+  el.innerHTML = filtered.map(v => `
+    <div class="verbatim">
+      <div class="verbatim-text">${v.text}</div>
+      <div class="verbatim-meta">
+        <span class="verbatim-app">${v.app}</span>
+        <span class="verbatim-sentiment ${SENT_CLS[v.sentiment]}">${SENT_LBL[v.sentiment]}</span>
+      </div>
+    </div>`).join('') || '<p style="font-size:0.72rem;color:#aaa;padding:8px 0;">No verbatims for this filter.</p>';
+}
+
+function filterVerbs(f, btn) {
+  drawVerbatims(currentVerbatims, f);
+}
+
+function drawSoak(versions) {
+  const el = document.getElementById('soakList');
+  if (!el) return;
+  el.innerHTML = versions.map(v => `
+    <div class="soak-row">
+      <div class="soak-ver">${v.ver}</div>
+      <div class="soak-bar-wrap"><div class="soak-bar" style="width:0%;background:${v.status==='good'?'#A7F3D0':'#FDE68A'}" data-w="${Math.round((v.days/v.max)*100)}"></div></div>
+      <div class="soak-days">${v.days} days</div>
+      <span class="soak-pill ${v.status==='good'?'soak-good':'soak-warn'}" style="margin-left:8px;">${v.label}</span>
+    </div>`).join('');
+  animateBars(el);
+}
+
+function showPane(id, btn) {
+  document.querySelectorAll('.d-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+function selectVer(btn, type) {
+  btn.closest('.ver-tabs').querySelectorAll('.ver-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* Init */
+refreshAll();
+</script>
+
+</body>
+</html>

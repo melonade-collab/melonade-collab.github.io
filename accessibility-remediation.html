@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Accessibility Remediation — Re-imagining</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f5; color: #1a1a1a; min-height: 100vh; }
+
+    .cs-header { background: #4C1D95; padding: 56px 40px 44px; }
+    .cs-header-inner { max-width: 860px; margin: 0 auto; }
+    .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 580px; }
+
+    .cs-body { max-width: 860px; margin: 0 auto; padding: 48px 40px 80px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #6D28D9; margin-bottom: 0; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
+    .acc-body li { margin-bottom: 6px; }
+    .acc-body code { font-size: 0.8rem; background: #F3F4F6; padding: 1px 4px; border-radius: 3px; color: #374151; }
+    .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #6D28D9; margin-bottom: 4px; }
+    .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
+
+    .proto-wrap { background: #EDE9FE; border-radius: 16px; padding: 28px 20px 36px; }
+    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #7C3AED; text-align: center; margin-bottom: 18px; }
+
+    /* ── Audit app ── */
+    .audit-app { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #D1D5DB; }
+
+    .audit-hdr { background: #111827; padding: 11px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .audit-hdr-title { font-size: 0.7rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .audit-progress-bar { flex: 1; min-width: 80px; height: 6px; background: #374151; border-radius: 3px; overflow: hidden; }
+    .audit-progress-fill { height: 100%; background: #10B981; border-radius: 3px; width: 0; transition: width 0.5s ease; }
+    .audit-progress-label { font-size: 0.62rem; color: #9CA3AF; flex-shrink: 0; white-space: nowrap; }
+    .audit-reset-btn { font-size: 0.6rem; color: #6B7280; background: none; border: 1px solid #374151; border-radius: 4px; padding: 3px 8px; font-family: inherit; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
+    .audit-reset-btn:hover { color: #fff; border-color: #6B7280; }
+
+    .audit-cols { display: grid; grid-template-columns: 1fr 272px; min-height: 500px; }
+
+    /* ── Carrier sim ── */
+    .carrier-sim { border-right: 1px solid #E5E7EB; overflow: hidden; }
+
+    /* Nav */
+    .cw-nav { background: #fff; border-bottom: 1px solid #E5E7EB; padding: 0 12px; height: 42px; display: flex; align-items: center; }
+    .cw-logo { font-size: 0.82rem; font-weight: 900; color: #111; letter-spacing: -0.3px; margin-right: 14px; flex-shrink: 0; }
+    .cw-nav-links { display: flex; flex: 1; }
+    .cw-nav-link { font-size: 0.68rem; font-weight: 500; color: #9CA3AF; padding: 0 8px; height: 42px; display: flex; align-items: center; text-decoration: none; transition: color 0.25s; }
+    .cw-nav-icons { display: flex; gap: 1px; }
+    .cw-icon-btn { width: 30px; height: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; border-radius: 5px; font-size: 0.78rem; outline: none; transition: background 0.15s; position: relative; }
+    .cw-icon-btn:hover { background: #f3f4f6; }
+    .cw-icon-label { display: none; font-size: 0.44rem; color: #374151; font-weight: 600; white-space: nowrap; }
+
+    /* Hero */
+    .cw-hero { background: #0F172A; padding: 22px 16px 20px; }
+    .cw-hero-eyebrow { font-size: 0.55rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #10B981; margin-bottom: 6px; }
+    .cw-hero-title { font-size: 1.15rem; font-weight: 600; color: #fff; line-height: 1.2; margin-bottom: 7px; transition: font-size 0.35s, font-weight 0.35s; }
+    .cw-hero-sub { font-size: 0.74rem; color: rgba(255,255,255,0.28); line-height: 1.5; margin-bottom: 14px; transition: color 0.35s; }
+    .cw-hero-btns { display: flex; gap: 7px; }
+    .cw-btn-primary { background: #7C3AED; color: #fff; border: none; padding: 8px 14px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; font-family: inherit; cursor: pointer; outline: none; transition: background 0.15s; }
+    .cw-btn-secondary { background: transparent; color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.22); padding: 8px 14px; border-radius: 5px; font-size: 0.72rem; font-weight: 600; font-family: inherit; cursor: pointer; outline: none; transition: all 0.15s; }
+
+    /* Plans */
+    .cw-plans { padding: 14px 12px; }
+    .cw-plans-title { font-size: 0.58rem; font-weight: 500; color: #374151; letter-spacing: 0.5px; margin-bottom: 10px; text-transform: uppercase; transition: font-size 0.35s, font-weight 0.35s, text-transform 0.35s, letter-spacing 0.35s; }
+    .cw-plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+    .cw-plan-card { border: 1px solid #E5E7EB; border-radius: 7px; padding: 9px 8px 10px; position: relative; text-align: center; }
+    .cw-plan-card.popular { border-color: #7C3AED; }
+    .cw-plan-name { font-size: 0.65rem; font-weight: 700; color: #111; margin-bottom: 3px; }
+    .cw-plan-price { font-size: 1.1rem; font-weight: 900; color: #111; line-height: 1; }
+    .cw-plan-per-mo { font-size: 0.52rem; color: #C4C4C4; display: block; margin-bottom: 5px; transition: color 0.35s; }
+    .cw-plan-data { font-size: 0.62rem; color: #555; margin-bottom: 7px; }
+    .cw-plan-btn { width: 100%; padding: 5px; background: #F5F3FF; color: #6D28D9; border: 1px solid #DDD6FE; border-radius: 4px; font-size: 0.6rem; font-weight: 700; font-family: inherit; cursor: pointer; outline: none; transition: all 0.15s; }
+    .cw-plan-btn:hover { background: #EDE9FE; }
+    .cw-best-badge { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: #FEF3C7; color: #D97706; font-size: 0.48rem; font-weight: 700; padding: 2px 5px; border-radius: 8px; white-space: nowrap; transition: background 0.35s, color 0.35s; }
+
+    /* ── FIX OVERRIDES ── */
+    .fix-contrast .cw-nav-link                { color: #374151; }
+    .fix-contrast .cw-hero-sub                { color: rgba(255,255,255,0.88); }
+    .fix-contrast .cw-plan-per-mo             { color: #6B7280; }
+    .fix-contrast .cw-best-badge              { background: #92400E; color: #fff; }
+
+    .fix-aria .cw-icon-label                  { display: block; }
+
+    .fix-headings .cw-hero-title              { font-size: 1.65rem; font-weight: 900; }
+    .fix-headings .cw-plans-title             { font-size: 0.84rem; font-weight: 700; text-transform: none; letter-spacing: 0; }
+
+    .fix-focus .cw-btn-primary.demo-focused,
+    .fix-focus .cw-btn-primary:focus          { outline: 3px solid #A78BFA; outline-offset: 2px; }
+    .fix-focus .cw-btn-secondary.demo-focused,
+    .fix-focus .cw-btn-secondary:focus        { outline: 3px solid #A78BFA; outline-offset: 2px; }
+    .fix-focus .cw-plan-btn.demo-focused,
+    .fix-focus .cw-plan-btn:focus             { outline: 3px solid #7C3AED; outline-offset: 2px; }
+    .fix-focus .cw-icon-btn.demo-focused,
+    .fix-focus .cw-icon-btn:focus             { outline: 3px solid #7C3AED; outline-offset: 2px; }
+    .fix-focus .focus-demo-target.demo-focused { outline: 3px solid #7C3AED; outline-offset: 2px; }
+
+    /* ── Audit panel ── */
+    .audit-panel { padding: 13px 12px; background: #F9FAFB; overflow-y: auto; max-height: 500px; }
+    .audit-summary-row { font-size: 0.68rem; font-weight: 700; color: #EF4444; margin-bottom: 11px; }
+    .audit-summary-row.all-clear { color: #059669; }
+
+    .audit-cat { background: #fff; border: 1px solid #E5E7EB; border-radius: 7px; margin-bottom: 7px; overflow: hidden; }
+    .audit-cat-hdr { display: flex; align-items: center; padding: 9px 11px; cursor: pointer; gap: 7px; user-select: none; }
+    .audit-cat-hdr:hover { background: #FAFAFA; }
+    .audit-cat-icon { font-size: 0.75rem; flex-shrink: 0; }
+    .audit-cat-name { font-size: 0.66rem; font-weight: 700; color: #111; flex: 1; }
+    .audit-cat-badge { font-size: 0.52rem; font-weight: 700; background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; border-radius: 8px; padding: 1px 6px; flex-shrink: 0; }
+    .audit-cat-badge.done { background: #ECFDF5; color: #065F46; border-color: #A7F3D0; }
+    .audit-cat-chev { color: #bbb; font-size: 0.55rem; flex-shrink: 0; transition: transform 0.15s; }
+    .audit-cat-hdr.open .audit-cat-chev { transform: rotate(180deg); }
+
+    .audit-cat-body { display: none; padding: 0 11px 11px; border-top: 1px solid #F5F5F5; }
+    .audit-cat-body.open { display: block; }
+
+    .audit-issue { display: flex; align-items: flex-start; gap: 6px; padding: 5px 0; border-bottom: 1px solid #F3F4F6; }
+    .audit-issue:last-of-type { border-bottom: none; margin-bottom: 0; }
+    .issue-dot { width: 5px; height: 5px; border-radius: 50%; background: #EF4444; flex-shrink: 0; margin-top: 5px; transition: background 0.3s; }
+    .issue-dot.fixed { background: #10B981; }
+    .issue-text { font-size: 0.61rem; color: #555; line-height: 1.4; flex: 1; transition: color 0.3s; }
+    .issue-text.fixed { text-decoration: line-through; color: #9CA3AF; }
+    .issue-wcag { font-size: 0.5rem; font-weight: 700; color: #7C3AED; background: #F5F3FF; border-radius: 3px; padding: 1px 4px; flex-shrink: 0; white-space: nowrap; align-self: flex-start; margin-top: 3px; }
+
+    .audit-fix-btn { width: 100%; margin-top: 9px; padding: 6px; background: #4C1D95; color: #fff; border: none; border-radius: 5px; font-size: 0.63rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .audit-fix-btn:hover:not(:disabled) { background: #6D28D9; }
+    .audit-fix-btn:disabled { background: #059669; cursor: default; }
+
+    /* Focus tab demo */
+    .focus-demo { margin-top: 8px; background: #F3F4F6; border-radius: 5px; padding: 8px 9px; }
+    .focus-demo-lbl { font-size: 0.56rem; color: #6B7280; margin-bottom: 6px; font-weight: 600; }
+    .focus-demo-row { display: flex; gap: 4px; margin-bottom: 5px; }
+    .focus-demo-target { font-size: 0.58rem; font-weight: 600; font-family: inherit; padding: 5px 8px; background: #fff; border: 1px solid #E5E7EB; border-radius: 4px; cursor: default; outline: none; }
+    .tab-sim-btn { width: 100%; padding: 5px; background: #fff; color: #6D28D9; border: 1px solid #DDD6FE; border-radius: 4px; font-size: 0.6rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+    .tab-sim-btn:hover { background: #F5F3FF; }
+
+    /* Success */
+    .audit-success { display: none; margin-top: 10px; padding: 13px 12px; background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 7px; text-align: center; }
+    .audit-success.show { display: block; }
+    .audit-success-icon { font-size: 1.3rem; margin-bottom: 5px; }
+    .audit-success-title { font-size: 0.74rem; font-weight: 700; color: #065F46; margin-bottom: 4px; }
+    .audit-success-sub { font-size: 0.62rem; color: #047857; line-height: 1.5; }
+
+    @media (max-width: 680px) {
+      .cs-header { padding: 40px 20px 36px; }
+      .cs-body { padding: 36px 20px 60px; }
+      .contrib-grid { grid-template-columns: 1fr; }
+      .audit-cols { grid-template-columns: 1fr; }
+      .carrier-sim { border-right: none; border-bottom: 1px solid #E5E7EB; }
+      .cw-plan-grid { grid-template-columns: 1fr; }
+      .audit-panel { max-height: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="eyebrow">Re-imagining</p>
+    <h1>Web Accessibility Remediation</h1>
+    <p class="cs-intro">A 4–6 month effort to bring a wireless carrier's website to WCAG 2.1 AA compliance — coordinating fixes across independent product teams who each owned their own corner of the site.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>The carrier's public website had accumulated years of accessibility debt. Teams across marketing, digital products, devices, and support each owned and independently deployed their own sections — meaning accessibility regressions could be introduced with any sprint by any team. Users who relied on screen readers, keyboard navigation, or had low vision were running into real barriers: unreadable text, unlabelled buttons, broken heading structures, and focus indicators that had been deliberately removed in the name of visual polish.</p>
+      <p style="margin-top:8px;">No single team owned accessibility, so no team fixed it. It kept losing out to feature work in every prioritization conversation. The political challenge was real too: surfacing violations in another team's area required careful framing to avoid triggering defensiveness about design decisions that had already shipped.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Constraints</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>No central web team — individual product teams owned and deployed their sections independently, on their own schedules</li>
+        <li>Any fix could be reverted by another team's next deployment with no visibility into what changed</li>
+        <li>No shared design system enforcing accessibility standards across teams</li>
+        <li>Teams were on independent sprint cycles, making coordinated cross-section changes take months</li>
+        <li>Remediation had to integrate into existing team roadmaps — it couldn't be treated as a separate workstream that blocked feature delivery</li>
+        <li>Some teams were protective of design decisions they'd already shipped, requiring careful relationship management alongside the technical conversation</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Product Ownership</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Audit & Scoping</p>
+          <p class="contrib-item-text">Conducted a full WCAG 2.1 AA audit across all primary user flows. Categorized 100+ violations by type and severity, then mapped each issue to the owning team — making remediation actionable without duplicating effort across teams.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Stakeholder Alignment</p>
+          <p class="contrib-item-text">Worked team-by-team to frame accessibility as quality work, not extra scope. Navigated the political sensitivity of surfacing violations in other teams' areas by centering the conversation on user impact and shared accountability rather than blame.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Training & Tooling</p>
+          <p class="contrib-item-text">Designed and delivered accessibility workshops for product and design teams. Introduced Stark (Figma) and axe DevTools (browser) so teams could evaluate issues themselves — shifting the model from central remediation to distributed, ongoing prevention.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Governance</p>
+          <p class="contrib-item-text">Worked with the design system team to embed accessibility into shared components so future fixes were inherited by default. Helped establish accessibility acceptance criteria as part of the definition of done across participating teams.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">What Was Fixed</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li><strong>Text contrast:</strong> Dozens of foreground/background combinations failing the 4.5:1 AA ratio — most caused by grey text on white, or low-opacity text on dark backgrounds used for aesthetic reasons</li>
+        <li><strong>ARIA labels:</strong> Icon-only buttons throughout the site with no accessible name — invisible to screen reader users who relied on them for navigation</li>
+        <li><strong>Heading structure:</strong> Pages with skipped levels, missing H1s, or heading tags used purely for visual styling rather than document structure</li>
+        <li><strong>Focus indicators:</strong> Interactive elements where <code>outline: none</code> had been applied to match brand aesthetics — effectively removing keyboard navigation visibility for users who couldn't use a mouse</li>
+        <li><strong>Alt text:</strong> Content images with empty or auto-generated filename alt text, and decorative images missing the <code>alt=""</code> attribute entirely</li>
+        <li><strong>Form labels:</strong> Inputs relying on placeholder text as labels — invisible to screen readers, gone when typing starts, and broken when autofill was used</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card acc-outcome mb40" style="border-color:#DDD6FE;">
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#EDE9FE;">
+      <p class="card-label">Outcome</p>
+      <span class="acc-chevron" style="color:#7C3AED;">▼</span>
+    </div>
+    <div class="acc-body" style="background:#EDE9FE;">
+      <p style="color:#4C1D95;">Brought the site to WCAG 2.1 AA compliance across all primary user flows over a 4–6 month remediation cycle. Subsequent quarterly audits found zero critical violations. Product and design teams began self-reporting accessibility checks as part of sprint reviews. The training program was absorbed into onboarding for new design and product hires — making prevention, not just remediation, part of the culture.</p>
+    </div>
+  </div>
+
+  <!-- ── Prototype ── -->
+  <div class="proto-wrap">
+    <p class="proto-wrap-label">Interactive prototype — Accessibility audit simulator</p>
+
+    <div class="audit-app">
+      <!-- Header bar -->
+      <div class="audit-hdr">
+        <div class="audit-hdr-title">🔍 ClearWave Wireless — WCAG 2.1 AA Audit</div>
+        <div class="audit-progress-bar">
+          <div class="audit-progress-fill" id="auditFill"></div>
+        </div>
+        <div class="audit-progress-label" id="auditLabel">0 of 12 resolved</div>
+        <button class="audit-reset-btn" onclick="resetAudit()">Reset</button>
+      </div>
+
+      <div class="audit-cols">
+
+        <!-- Simulated carrier website -->
+        <div class="carrier-sim" id="sim">
+
+          <!-- Nav -->
+          <div class="cw-nav">
+            <div class="cw-logo">ClearWave</div>
+            <div class="cw-nav-links">
+              <a class="cw-nav-link" href="#">Home</a>
+              <a class="cw-nav-link" href="#">Plans</a>
+              <a class="cw-nav-link" href="#">Devices</a>
+              <a class="cw-nav-link" href="#">Support</a>
+            </div>
+            <div class="cw-nav-icons">
+              <button class="cw-icon-btn" aria-label="Search">
+                🔍<span class="cw-icon-label">Search</span>
+              </button>
+              <button class="cw-icon-btn" aria-label="Account">
+                👤<span class="cw-icon-label">Account</span>
+              </button>
+              <button class="cw-icon-btn" aria-label="Menu">
+                ☰<span class="cw-icon-label">Menu</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Hero -->
+          <div class="cw-hero">
+            <div class="cw-hero-eyebrow">Canada's fastest network</div>
+            <div class="cw-hero-title">Get connected.</div>
+            <div class="cw-hero-sub">Stay connected with Canada's best wireless network. Flexible plans for home and business.</div>
+            <div class="cw-hero-btns">
+              <button class="cw-btn-primary" id="cwP1">View Plans</button>
+              <button class="cw-btn-secondary" id="cwP2">Learn more</button>
+            </div>
+          </div>
+
+          <!-- Plans -->
+          <div class="cw-plans">
+            <div class="cw-plans-title">Our plans</div>
+            <div class="cw-plan-grid">
+              <div class="cw-plan-card">
+                <div class="cw-plan-name">Basic</div>
+                <div class="cw-plan-price">$29</div>
+                <span class="cw-plan-per-mo">/month</span>
+                <div class="cw-plan-data">5 GB data</div>
+                <button class="cw-plan-btn" id="cwPlan1">Choose</button>
+              </div>
+              <div class="cw-plan-card popular">
+                <div class="cw-best-badge">★ Best Value</div>
+                <div class="cw-plan-name">Essential</div>
+                <div class="cw-plan-price">$45</div>
+                <span class="cw-plan-per-mo">/month</span>
+                <div class="cw-plan-data">20 GB data</div>
+                <button class="cw-plan-btn" id="cwPlan2">Choose</button>
+              </div>
+              <div class="cw-plan-card">
+                <div class="cw-plan-name">Premium</div>
+                <div class="cw-plan-price">$65</div>
+                <span class="cw-plan-per-mo">/month</span>
+                <div class="cw-plan-data">Unlimited</div>
+                <button class="cw-plan-btn" id="cwPlan3">Choose</button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /carrier-sim -->
+
+        <!-- Audit findings panel -->
+        <div class="audit-panel">
+          <div class="audit-summary-row" id="auditSummary">⚠ 12 violations found</div>
+
+          <!-- Contrast -->
+          <div class="audit-cat">
+            <div class="audit-cat-hdr open" onclick="toggleCat(this)">
+              <span class="audit-cat-icon">🎨</span>
+              <span class="audit-cat-name">Text Contrast</span>
+              <span class="audit-cat-badge" id="badge-c">3 issues</span>
+              <span class="audit-cat-chev">▼</span>
+            </div>
+            <div class="audit-cat-body open">
+              <div class="audit-issue" id="c1">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Nav links: 2.1:1 ratio (min. 4.5:1)</div>
+                <span class="issue-wcag">1.4.3</span>
+              </div>
+              <div class="audit-issue" id="c2">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Hero subtitle text: 1.6:1 ratio</div>
+                <span class="issue-wcag">1.4.3</span>
+              </div>
+              <div class="audit-issue" id="c3">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Plan price labels: 3.0:1 ratio</div>
+                <span class="issue-wcag">1.4.3</span>
+              </div>
+              <button class="audit-fix-btn" id="fixBtn-c" onclick="applyFix('c')">Fix contrast →</button>
+            </div>
+          </div>
+
+          <!-- ARIA -->
+          <div class="audit-cat">
+            <div class="audit-cat-hdr" onclick="toggleCat(this)">
+              <span class="audit-cat-icon">🏷️</span>
+              <span class="audit-cat-name">ARIA Labels</span>
+              <span class="audit-cat-badge" id="badge-a">3 issues</span>
+              <span class="audit-cat-chev">▼</span>
+            </div>
+            <div class="audit-cat-body">
+              <div class="audit-issue" id="a1">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Search button: no accessible name</div>
+                <span class="issue-wcag">4.1.2</span>
+              </div>
+              <div class="audit-issue" id="a2">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Account button: no accessible name</div>
+                <span class="issue-wcag">4.1.2</span>
+              </div>
+              <div class="audit-issue" id="a3">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Menu button: no accessible name</div>
+                <span class="issue-wcag">4.1.2</span>
+              </div>
+              <button class="audit-fix-btn" id="fixBtn-a" onclick="applyFix('a')">Fix ARIA labels →</button>
+            </div>
+          </div>
+
+          <!-- Heading Structure -->
+          <div class="audit-cat">
+            <div class="audit-cat-hdr" onclick="toggleCat(this)">
+              <span class="audit-cat-icon">📐</span>
+              <span class="audit-cat-name">Heading Structure</span>
+              <span class="audit-cat-badge" id="badge-h">3 issues</span>
+              <span class="audit-cat-chev">▼</span>
+            </div>
+            <div class="audit-cat-body">
+              <div class="audit-issue" id="h1">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Page title uses &lt;h2&gt; — no &lt;h1&gt; on page</div>
+                <span class="issue-wcag">1.3.1</span>
+              </div>
+              <div class="audit-issue" id="h2">
+                <div class="issue-dot"></div>
+                <div class="issue-text">"Our plans" uses &lt;h5&gt; — skips levels</div>
+                <span class="issue-wcag">1.3.1</span>
+              </div>
+              <div class="audit-issue" id="h3">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Navigation missing landmark role</div>
+                <span class="issue-wcag">1.3.6</span>
+              </div>
+              <button class="audit-fix-btn" id="fixBtn-h" onclick="applyFix('h')">Fix heading structure →</button>
+            </div>
+          </div>
+
+          <!-- Focus -->
+          <div class="audit-cat">
+            <div class="audit-cat-hdr" onclick="toggleCat(this)">
+              <span class="audit-cat-icon">⌨️</span>
+              <span class="audit-cat-name">Focus Indicators</span>
+              <span class="audit-cat-badge" id="badge-f">3 issues</span>
+              <span class="audit-cat-chev">▼</span>
+            </div>
+            <div class="audit-cat-body">
+              <div class="audit-issue" id="f1">
+                <div class="issue-dot"></div>
+                <div class="issue-text">CTA buttons: <code>outline:none</code> applied</div>
+                <span class="issue-wcag">2.4.7</span>
+              </div>
+              <div class="audit-issue" id="f2">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Plan "Choose" buttons: no focus ring</div>
+                <span class="issue-wcag">2.4.7</span>
+              </div>
+              <div class="audit-issue" id="f3">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Icon buttons: no visible focus style</div>
+                <span class="issue-wcag">2.4.7</span>
+              </div>
+
+              <div class="focus-demo">
+                <div class="focus-demo-lbl">Tab key simulation:</div>
+                <div class="focus-demo-row">
+                  <button class="focus-demo-target" id="fd1">View Plans</button>
+                  <button class="focus-demo-target" id="fd2">Learn more</button>
+                  <button class="focus-demo-target" id="fd3">Choose</button>
+                </div>
+                <button class="tab-sim-btn" onclick="runTabDemo()">↹ Simulate Tab key</button>
+              </div>
+
+              <button class="audit-fix-btn" id="fixBtn-f" onclick="applyFix('f')">Fix focus indicators →</button>
+            </div>
+          </div>
+
+          <div class="audit-success" id="auditSuccess">
+            <div class="audit-success-icon">✅</div>
+            <div class="audit-success-title">WCAG 2.1 AA Compliant</div>
+            <div class="audit-success-sub">All 12 violations resolved. The page now meets AA standards across contrast, ARIA labeling, heading structure, and keyboard navigation.</div>
+          </div>
+        </div><!-- /audit-panel -->
+
+      </div><!-- /audit-cols -->
+    </div><!-- /audit-app -->
+  </div><!-- /proto-wrap -->
+
+</div><!-- /cs-body -->
+
+<a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
+<script>
+function toggleAcc(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
+function toggleCat(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
+
+const CATS = {
+  c: { issues: ['c1','c2','c3'], cls: 'fix-contrast',  label: 'Fix contrast →' },
+  a: { issues: ['a1','a2','a3'], cls: 'fix-aria',       label: 'Fix ARIA labels →' },
+  h: { issues: ['h1','h2','h3'], cls: 'fix-headings',   label: 'Fix heading structure →' },
+  f: { issues: ['f1','f2','f3'], cls: 'fix-focus',      label: 'Fix focus indicators →' },
+};
+const fixed = new Set();
+
+function applyFix(cat) {
+  if (fixed.has(cat)) return;
+  fixed.add(cat);
+  const sim = document.getElementById('sim');
+  sim.classList.add(CATS[cat].cls);
+
+  CATS[cat].issues.forEach(id => {
+    const row = document.getElementById(id);
+    row.querySelector('.issue-dot').classList.add('fixed');
+    row.querySelector('.issue-text').classList.add('fixed');
+  });
+
+  const btn = document.getElementById(`fixBtn-${cat}`);
+  btn.textContent = '✓ Fixed';
+  btn.disabled = true;
+
+  const badge = document.getElementById(`badge-${cat}`);
+  badge.textContent = '✓ Fixed';
+  badge.classList.add('done');
+
+  updateProgress();
+}
+
+function updateProgress() {
+  const resolved = fixed.size * 3;
+  const total = 12;
+  document.getElementById('auditFill').style.width = `${(resolved / total) * 100}%`;
+  document.getElementById('auditLabel').textContent = `${resolved} of ${total} resolved`;
+
+  const summary = document.getElementById('auditSummary');
+  if (resolved === total) {
+    summary.textContent = '✓ All violations resolved';
+    summary.classList.add('all-clear');
+    document.getElementById('auditSuccess').classList.add('show');
+  } else {
+    summary.textContent = `⚠ ${total - resolved} violations remaining`;
+  }
+}
+
+function resetAudit() {
+  fixed.clear();
+  clearTabDemo();
+  const sim = document.getElementById('sim');
+  Object.values(CATS).forEach(c => sim.classList.remove(c.cls));
+
+  Object.entries(CATS).forEach(([k, c]) => {
+    c.issues.forEach(id => {
+      const row = document.getElementById(id);
+      row.querySelector('.issue-dot').classList.remove('fixed');
+      row.querySelector('.issue-text').classList.remove('fixed');
+    });
+    const btn = document.getElementById(`fixBtn-${k}`);
+    btn.textContent = c.label;
+    btn.disabled = false;
+    const badge = document.getElementById(`badge-${k}`);
+    badge.textContent = '3 issues';
+    badge.classList.remove('done');
+  });
+
+  document.getElementById('auditFill').style.width = '0';
+  document.getElementById('auditLabel').textContent = '0 of 12 resolved';
+  const summary = document.getElementById('auditSummary');
+  summary.textContent = '⚠ 12 violations found';
+  summary.classList.remove('all-clear');
+  document.getElementById('auditSuccess').classList.remove('show');
+}
+
+/* Tab demo */
+let tabTimer = null;
+const TAB_TARGETS = ['fd1','fd2','fd3'];
+let tabIdx = 0;
+
+function runTabDemo() {
+  clearTabDemo();
+  tabIdx = 0;
+  nextTab();
+}
+
+function nextTab() {
+  TAB_TARGETS.forEach(id => document.getElementById(id).classList.remove('demo-focused'));
+  if (tabIdx < TAB_TARGETS.length) {
+    document.getElementById(TAB_TARGETS[tabIdx]).classList.add('demo-focused');
+    tabIdx++;
+    tabTimer = setTimeout(nextTab, 900);
+  } else {
+    tabTimer = setTimeout(clearTabDemo, 700);
+  }
+}
+
+function clearTabDemo() {
+  if (tabTimer) clearTimeout(tabTimer);
+  TAB_TARGETS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('demo-focused');
+  });
+  tabIdx = 0;
+}
+</script>
+
+</body>
+</html>

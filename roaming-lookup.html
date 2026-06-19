@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roaming & Long Distance Lookup — Re-imagining</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f5; color: #1a1a1a; min-height: 100vh; }
+
+    .cs-header { background: #0C4A6E; padding: 56px 40px 44px; }
+    .cs-header-inner { max-width: 860px; margin: 0 auto; }
+    .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 580px; }
+
+    .cs-body { max-width: 860px; margin: 0 auto; padding: 48px 40px 80px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0369A1; margin-bottom: 0; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
+    .acc-body li { margin-bottom: 6px; }
+    .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #0369A1; margin-bottom: 4px; }
+    .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
+
+    .proto-wrap { background: #E0F2FE; border-radius: 16px; padding: 28px 20px 36px; }
+    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0369A1; text-align: center; margin-bottom: 18px; }
+
+    /* ── Chat app ── */
+    .chat-shell { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #D1D5DB; display: flex; flex-direction: column; height: 580px; }
+
+    /* Top bar */
+    .chat-topbar { background: #0C4A6E; padding: 11px 16px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .chat-topbar-avatar { width: 30px; height: 30px; background: #0EA5E9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; }
+    .chat-topbar-info { flex: 1; }
+    .chat-topbar-name { font-size: 0.74rem; font-weight: 700; color: #fff; }
+    .chat-topbar-status { font-size: 0.58rem; color: rgba(255,255,255,0.6); }
+    .chat-topbar-status::before { content: '●'; color: #4ADE80; font-size: 0.5rem; margin-right: 4px; }
+
+    /* Message area */
+    .chat-msgs { flex: 1; overflow-y: auto; padding: 16px 14px; display: flex; flex-direction: column; gap: 10px; background: #F8FAFC; }
+
+    .msg-row { display: flex; gap: 8px; }
+    .msg-row.user { flex-direction: row-reverse; }
+
+    .msg-avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 800; flex-shrink: 0; margin-top: auto; }
+    .msg-avatar.bot { background: #0EA5E9; color: #fff; }
+    .msg-avatar.user { background: #E2E8F0; color: #475569; }
+
+    .msg-bubble { max-width: 72%; padding: 9px 12px; border-radius: 12px; font-size: 0.75rem; line-height: 1.55; }
+    .msg-bubble.bot { background: #fff; border: 1px solid #E2E8F0; color: #1a1a1a; border-bottom-left-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .msg-bubble.user { background: #0C4A6E; color: #fff; border-bottom-right-radius: 3px; }
+
+    .msg-time { font-size: 0.52rem; color: #aaa; margin-top: 4px; }
+    .msg-row.user .msg-time { text-align: right; }
+
+    /* Rate card */
+    .rate-card { margin-top: 8px; background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 10px; overflow: hidden; }
+    .rate-card-header { background: #0369A1; color: #fff; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; }
+    .rate-card-country { font-size: 0.74rem; font-weight: 700; }
+    .rate-card-flag { font-size: 1rem; }
+    .rate-card-body { padding: 10px 12px; }
+    .rate-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #E0F2FE; }
+    .rate-row:last-child { border-bottom: none; }
+    .rate-type { display: flex; align-items: center; gap: 6px; font-size: 0.68rem; color: #374151; }
+    .rate-type-icon { font-size: 0.75rem; }
+    .rate-amount { font-size: 0.72rem; font-weight: 700; color: #0C4A6E; }
+    .rate-note { font-size: 0.56rem; color: #64748B; }
+
+    /* Package card */
+    .pkg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 8px; }
+    .pkg-card { background: #fff; border: 1px solid #E2E8F0; border-radius: 8px; padding: 9px 10px; cursor: pointer; transition: all 0.15s; }
+    .pkg-card:hover { border-color: #0EA5E9; box-shadow: 0 2px 8px rgba(14,165,233,0.12); }
+    .pkg-card.selected { border-color: #0369A1; background: #F0F9FF; }
+    .pkg-name { font-size: 0.68rem; font-weight: 700; color: #111; margin-bottom: 2px; }
+    .pkg-price { font-size: 0.9rem; font-weight: 900; color: #0C4A6E; }
+    .pkg-price-unit { font-size: 0.52rem; color: #888; display: block; }
+    .pkg-detail { font-size: 0.58rem; color: #555; margin-top: 4px; line-height: 1.4; }
+    .pkg-badge { font-size: 0.48rem; font-weight: 700; background: #DCFCE7; color: #166534; border-radius: 4px; padding: 1px 4px; display: inline-block; margin-top: 3px; }
+
+    /* Confirm button */
+    .confirm-btn { display: block; width: 100%; margin-top: 10px; padding: 9px; background: #0369A1; color: #fff; border: none; border-radius: 7px; font-size: 0.72rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: background 0.15s; }
+    .confirm-btn:hover { background: #0C4A6E; }
+    .confirm-btn:disabled { background: #94A3B8; cursor: default; }
+
+    /* Quick reply chips */
+    .quick-replies { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .qr-chip { padding: 5px 11px; border-radius: 16px; border: 1.5px solid #0369A1; background: #fff; font-size: 0.66rem; font-weight: 600; color: #0369A1; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .qr-chip:hover { background: #0369A1; color: #fff; }
+
+    /* Country search */
+    .country-search-wrap { margin-top: 8px; }
+    .country-search { width: 100%; padding: 8px 11px; border: 1.5px solid #CBD5E1; border-radius: 7px; font-size: 0.72rem; font-family: inherit; outline: none; transition: border-color 0.15s; }
+    .country-search:focus { border-color: #0369A1; }
+    .country-results { margin-top: 5px; max-height: 130px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 7px; background: #fff; }
+    .country-result { padding: 7px 11px; font-size: 0.7rem; color: #333; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.1s; border-bottom: 1px solid #F1F5F9; }
+    .country-result:last-child { border-bottom: none; }
+    .country-result:hover { background: #F0F9FF; }
+    .country-result-flag { font-size: 1rem; flex-shrink: 0; }
+
+    /* Input area */
+    .chat-input-row { border-top: 1px solid #E5E7EB; padding: 10px 12px; display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0; background: #fff; }
+    .chat-input { flex: 1; border: 1.5px solid #CBD5E1; border-radius: 20px; padding: 8px 13px; font-size: 0.72rem; font-family: inherit; resize: none; outline: none; transition: border-color 0.15s; max-height: 80px; overflow-y: auto; }
+    .chat-input:focus { border-color: #0369A1; }
+    .chat-send-btn { width: 34px; height: 34px; border-radius: 50%; background: #0369A1; border: none; color: #fff; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+    .chat-send-btn:hover { background: #0C4A6E; }
+
+    /* Typing indicator */
+    .typing-dots { display: flex; gap: 3px; align-items: center; padding: 4px 0; }
+    .typing-dot { width: 5px; height: 5px; border-radius: 50%; background: #94A3B8; animation: typingBounce 1.2s infinite; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+
+    @media (max-width: 600px) {
+      .cs-header { padding: 40px 20px 36px; }
+      .cs-body { padding: 36px 20px 60px; }
+      .contrib-grid { grid-template-columns: 1fr; }
+      .pkg-row { grid-template-columns: 1fr; }
+      .msg-bubble { max-width: 88%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="eyebrow">Re-imagining</p>
+    <h1>Roaming & Long Distance Lookup</h1>
+    <p class="cs-intro">A conversational lookup tool embedded in the carrier's virtual assistant — letting customers check roaming and long distance rates by country, then add a package without leaving the chat.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Customers planning international travel frequently called in to ask what their phone would cost to use abroad — and the self-serve experience wasn't helping. The rate information existed on the website, but it was buried inside a multi-level country lookup table that was difficult to navigate on mobile and gave no guidance on what the charges would actually mean in practice. Customers couldn't easily compare paying per-use rates against buying a roaming package.</p>
+      <p style="margin-top:8px;">The result was high call volume around travel season, long handle times while agents looked up the same rate tables, and frustrated customers who missed the option to pre-purchase a package before their trip started — often ending up with unexpected bill shock on return.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Constraints</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>The virtual assistant couldn't complete account transactions at launch — the add-on purchase had to hand off to a pre-populated checkout flow, not happen inline</li>
+        <li>Rate tables were maintained by a pricing team in a separate system; the chatbot needed to consume a read-only API, not own the data</li>
+        <li>Long distance rates and roaming rates were stored in different systems with different structures — the chatbot needed to normalize them into a single response</li>
+        <li>Customers could be asking about roaming while already abroad — the response needed to surface pay-per-use rates prominently, not just package options</li>
+        <li>The assistant needed to handle ambiguous country names, common abbreviations, and occasional misspellings (e.g. "Mehico", "UK", "UAE")</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Product Ownership</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Intent Design</p>
+          <p class="contrib-item-text">Designed the conversational flow covering direct country queries ("roaming in France"), comparison questions ("is it cheaper to buy a package?"), and mid-trip inquiries. Mapped edge cases: no coverage countries, countries with only data roaming, and requests about specific service types.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Rate Display Logic</p>
+          <p class="contrib-item-text">Defined how rates were displayed — voice per minute, text per message, data per day or per MB — and how package savings were calculated and surfaced relative to estimated pay-per-use costs based on a 7-day average trip assumption.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Package Add-On Flow</p>
+          <p class="contrib-item-text">Designed the handoff from lookup result to package purchase: contextual package recommendations based on the country queried, savings highlight vs. per-use rates, and a pre-populated cart handoff to the transactional flow with the customer's selection pre-loaded.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Cross-Team Alignment</p>
+          <p class="contrib-item-text">Coordinated with the pricing team to define the rate API contract, the bot platform team on intent coverage, and the billing team to confirm which packages could be added mid-cycle versus only at renewal. Managed the scope negotiation when inline purchase was descoped pre-launch.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-card acc-outcome mb40" style="border-color:#BAE6FD;">
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#E0F2FE;">
+      <p class="card-label" style="color:#0369A1;">Outcome</p>
+      <span class="acc-chevron" style="color:#0369A1;">▼</span>
+    </div>
+    <div class="acc-body" style="background:#E0F2FE;">
+      <p style="color:#0C4A6E;">The roaming intent became one of the top-five handled intents in the virtual assistant within 90 days of launch. Call deflection for roaming rate inquiries improved measurably in the first quarter. Package attachment rate during the chatbot flow exceeded the rate seen from the static rate table page, attributed to contextual comparison and the proximity of the purchase option in the same conversation.</p>
+    </div>
+  </div>
+
+  <!-- Prototype -->
+  <div class="proto-wrap">
+    <p class="proto-wrap-label">Interactive prototype — Try the lookup</p>
+
+    <div class="chat-shell">
+      <!-- Top bar -->
+      <div class="chat-topbar">
+        <div class="chat-topbar-avatar">💬</div>
+        <div class="chat-topbar-info">
+          <div class="chat-topbar-name">ClearWave Assistant</div>
+          <div class="chat-topbar-status">Online</div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="chat-msgs" id="chatMsgs"></div>
+
+      <!-- Input -->
+      <div class="chat-input-row">
+        <input class="chat-input" id="chatInput" placeholder="Type a message…" onkeydown="if(event.key==='Enter'){sendMsg();}" />
+        <button class="chat-send-btn" onclick="sendMsg()">➤</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
+<script>
+function toggleAcc(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
+
+/* ── Country data ── */
+const COUNTRIES = [
+  { name:'United States', alias:['us','usa','united states','america','the us'], flag:'🇺🇸', voice:'$0.25/min', text:'$0.10/msg', data:'$10/day', pkg:{ name:'US Day Pass', price:'$10', duration:'24 hrs', detail:'Unlimited talk, text & data — same speeds as home. Perfect for day trips or short stays.' }, ld:'$0.01/min' },
+  { name:'United Kingdom', alias:['uk','united kingdom','england','britain'], flag:'🇬🇧', voice:'$1.50/min', text:'$0.50/msg', data:'$15/day', pkg:{ name:'UK Travel Pack', price:'$45', duration:'7 days', detail:'500 MB data + 100 min talk + unlimited text. Enough for a typical week-long trip.' }, ld:'$0.05/min' },
+  { name:'France', alias:['france','paris'], flag:'🇫🇷', voice:'$1.50/min', text:'$0.50/msg', data:'$15/day', pkg:{ name:'Europe 7-Day Pack', price:'$45', duration:'7 days', detail:'500 MB data + 100 min talk + unlimited text. Valid in 30+ European countries.' }, ld:'$0.05/min' },
+  { name:'Mexico', alias:['mexico','mehico','mx'], flag:'🇲🇽', voice:'$0.35/min', text:'$0.10/msg', data:'$10/day', pkg:{ name:'Mexico Day Pass', price:'$10', duration:'24 hrs', detail:'Unlimited talk, text & data. Auto-renews daily while you\'re in Mexico.' }, ld:'$0.02/min' },
+  { name:'Japan', alias:['japan','tokyo'], flag:'🇯🇵', voice:'$2.50/min', text:'$0.50/msg', data:'$20/day', pkg:{ name:'Asia Travel Pack', price:'$65', duration:'7 days', detail:'300 MB data + 60 min talk + 50 texts. Data speeds reduced after 300 MB.' }, ld:'$0.08/min' },
+  { name:'Australia', alias:['australia','oz','aus'], flag:'🇦🇺', voice:'$2.00/min', text:'$0.50/msg', data:'$20/day', pkg:{ name:'Australia 7-Day Pack', price:'$60', duration:'7 days', detail:'500 MB data + 100 min talk + unlimited text.' }, ld:'$0.08/min' },
+  { name:'Germany', alias:['germany','deutschland'], flag:'🇩🇪', voice:'$1.50/min', text:'$0.50/msg', data:'$15/day', pkg:{ name:'Europe 7-Day Pack', price:'$45', duration:'7 days', detail:'500 MB data + 100 min talk + unlimited text. Valid in 30+ European countries.' }, ld:'$0.05/min' },
+  { name:'Italy', alias:['italy','italia'], flag:'🇮🇹', voice:'$1.50/min', text:'$0.50/msg', data:'$15/day', pkg:{ name:'Europe 7-Day Pack', price:'$45', duration:'7 days', detail:'500 MB data + 100 min talk + unlimited text. Valid in 30+ European countries.' }, ld:'$0.05/min' },
+  { name:'Spain', alias:['spain','espana'], flag:'🇪🇸', voice:'$1.50/min', text:'$0.50/msg', data:'$15/day', pkg:{ name:'Europe 7-Day Pack', price:'$45', duration:'7 days', detail:'500 MB data + 100 min talk + unlimited text. Valid in 30+ European countries.' }, ld:'$0.05/min' },
+  { name:'India', alias:['india'], flag:'🇮🇳', voice:'$2.00/min', text:'$0.50/msg', data:'$20/day', pkg:{ name:'India Travel Pack', price:'$50', duration:'7 days', detail:'300 MB data + 60 min talk + unlimited text.' }, ld:'$0.07/min' },
+  { name:'Cuba', alias:['cuba'], flag:'🇨🇺', voice:'$3.50/min', text:'$0.75/msg', data: null, pkg: null, ld:'$0.12/min', note:'Data roaming not available in Cuba.' },
+  { name:'North Korea', alias:['north korea','dprk'], flag:'🇰🇵', voice:null, text:null, data:null, pkg:null, ld:null, note:'Your plan does not support service in North Korea.' },
+];
+
+function findCountry(q) {
+  const lq = q.toLowerCase().replace(/[^a-z ]/g,'');
+  return COUNTRIES.find(c => c.alias.some(a => lq.includes(a)));
+}
+
+/* ── Chat state ── */
+let stage = 'idle';
+let pendingCountry = null;
+let selectedPkg = false;
+let typingTimeout = null;
+
+const msgs = document.getElementById('chatMsgs');
+const input = document.getElementById('chatInput');
+
+function addMsg(type, content, delay = 0) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const row = document.createElement('div');
+      row.className = `msg-row ${type}`;
+
+      if (type === 'bot') {
+        row.innerHTML = `
+          <div class="msg-avatar bot">✦</div>
+          <div>
+            <div class="msg-bubble bot">${content}</div>
+          </div>`;
+      } else {
+        row.innerHTML = `
+          <div>
+            <div class="msg-bubble user">${escHtml(content)}</div>
+          </div>
+          <div class="msg-avatar user">You</div>`;
+      }
+
+      msgs.appendChild(row);
+      msgs.scrollTop = msgs.scrollHeight;
+      resolve();
+    }, delay);
+  });
+}
+
+function showTyping() {
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  row.id = 'typingRow';
+  row.innerHTML = `
+    <div class="msg-avatar bot">✦</div>
+    <div><div class="msg-bubble bot"><div class="typing-dots">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div></div></div>`;
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideTyping() {
+  const t = document.getElementById('typingRow');
+  if (t) t.remove();
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function buildRateCard(c) {
+  const rows = [
+    c.voice ? `<div class="rate-row"><div class="rate-type"><span class="rate-type-icon">📞</span>Voice calls</div><div><div class="rate-amount">${c.voice}</div></div></div>` : '',
+    c.text ? `<div class="rate-row"><div class="rate-type"><span class="rate-type-icon">💬</span>Text (SMS)</div><div><div class="rate-amount">${c.text}</div></div></div>` : '',
+    c.data ? `<div class="rate-row"><div class="rate-type"><span class="rate-type-icon">📶</span>Data</div><div><div class="rate-amount">${c.data}</div><div class="rate-note">Day pass activates on first use</div></div></div>` : '',
+    c.ld ? `<div class="rate-row"><div class="rate-type"><span class="rate-type-icon">🌐</span>Long distance from Canada</div><div><div class="rate-amount">${c.ld}</div></div></div>` : '',
+  ].filter(Boolean).join('');
+
+  return `<div class="rate-card">
+    <div class="rate-card-header">
+      <span class="rate-card-country">Pay-per-use rates — ${c.name}</span>
+      <span class="rate-card-flag">${c.flag}</span>
+    </div>
+    <div class="rate-card-body">${rows}${c.note ? `<div style="font-size:0.62rem;color:#dc2626;margin-top:7px;font-weight:600;">⚠ ${c.note}</div>` : ''}</div>
+  </div>`;
+}
+
+function buildPkgCards(c) {
+  if (!c.pkg) return '';
+  return `<p style="font-size:0.72rem;margin-top:10px;color:#374151;">Want to avoid per-use charges? Here's a package option:</p>
+  <div class="pkg-row">
+    <div class="pkg-card" id="pkgCard" onclick="selectPkg()">
+      <div class="pkg-name">${c.pkg.name}</div>
+      <div class="pkg-price">${c.pkg.price}<span class="pkg-price-unit">/${c.pkg.duration}</span></div>
+      <div class="pkg-detail">${c.pkg.detail}</div>
+      <span class="pkg-badge">Save vs. pay-per-use</span>
+    </div>
+    <div class="pkg-card" id="payAsCard" onclick="selectPayAs()">
+      <div class="pkg-name">Pay as you go</div>
+      <div class="pkg-price" style="font-size:0.75rem;font-weight:600;color:#64748B;">Per-use rates</div>
+      <div class="pkg-detail">No package needed. You'll be charged the rates above as you use your phone.</div>
+    </div>
+  </div>
+  <button class="confirm-btn" id="confirmBtn" disabled onclick="confirmChoice()">Select an option above</button>`;
+}
+
+let selectedOption = null;
+function selectPkg() {
+  selectedOption = 'pkg';
+  document.getElementById('pkgCard')?.classList.add('selected');
+  document.getElementById('payAsCard')?.classList.remove('selected');
+  const btn = document.getElementById('confirmBtn');
+  if (btn) { btn.textContent = 'Add package →'; btn.disabled = false; }
+}
+function selectPayAs() {
+  selectedOption = 'payAs';
+  document.getElementById('payAsCard')?.classList.add('selected');
+  document.getElementById('pkgCard')?.classList.remove('selected');
+  const btn = document.getElementById('confirmBtn');
+  if (btn) { btn.textContent = 'Continue with pay-per-use →'; btn.disabled = false; }
+}
+function confirmChoice() {
+  const btn = document.getElementById('confirmBtn');
+  if (btn) btn.disabled = true;
+  if (selectedOption === 'pkg') {
+    addUserMsg('Add the package');
+    botReply(`Got it! Your package has been added to your account — you're all set for ${pendingCountry?.name || 'your trip'}. It activates the moment your phone connects to a local network there.\n\nAnything else I can help you with?`);
+  } else {
+    addUserMsg("I'll go with pay-per-use");
+    botReply(`No problem — your existing plan covers ${pendingCountry?.name || 'that country'} at the pay-per-use rates shown. You can always add a package later from My Account if you change your mind.\n\nAnything else?`);
+  }
+  stage = 'done';
+  pendingCountry = null;
+}
+
+function addUserMsg(text) {
+  const row = document.createElement('div');
+  row.className = 'msg-row user';
+  row.innerHTML = `<div><div class="msg-bubble user">${escHtml(text)}</div></div><div class="msg-avatar user">You</div>`;
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function botReply(html, rich = false, delay = 800) {
+  showTyping();
+  await new Promise(r => setTimeout(r, delay));
+  hideTyping();
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  const text = html.replace(/\n/g, '<br>');
+  row.innerHTML = `<div class="msg-avatar bot">✦</div><div><div class="msg-bubble bot">${rich ? html : text}</div></div>`;
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+/* ── Init ── */
+(async () => {
+  await addMsg('bot', 'Hi! I can look up <strong>roaming and long distance rates</strong> for any country, and help you add a package if you need one.<br><br>Where are you headed? 🌍');
+  const qrRow = document.createElement('div');
+  qrRow.className = 'msg-row bot';
+  qrRow.innerHTML = `<div class="msg-avatar bot" style="visibility:hidden;">✦</div><div>
+    <div class="quick-replies">
+      <button class="qr-chip" onclick="quickReply('Roaming in the US')">🇺🇸 United States</button>
+      <button class="qr-chip" onclick="quickReply('Roaming in the UK')">🇬🇧 United Kingdom</button>
+      <button class="qr-chip" onclick="quickReply('Roaming in France')">🇫🇷 France</button>
+      <button class="qr-chip" onclick="quickReply('Roaming in Mexico')">🇲🇽 Mexico</button>
+      <button class="qr-chip" onclick="quickReply('Roaming in Japan')">🇯🇵 Japan</button>
+    </div>
+  </div>`;
+  msgs.appendChild(qrRow);
+  msgs.scrollTop = msgs.scrollHeight;
+  stage = 'waiting';
+})();
+
+function quickReply(text) {
+  document.querySelectorAll('.qr-chip').forEach(c => c.disabled = true);
+  addUserMsg(text);
+  handleInput(text);
+}
+
+async function handleInput(text) {
+  const country = findCountry(text);
+
+  if (!country) {
+    /* Try search */
+    if (/\b(rate|roam|travel|call|long.?distance|ld|going|visiting)\b/i.test(text)) {
+      await botReply(`I didn't catch a specific country there. Which country are you asking about?`, false, 600);
+      showCountrySearch();
+    } else {
+      await botReply(`I can help with roaming and long distance rates. Just tell me which country you're asking about — for example, "roaming in Japan" or "long distance to France."`, false, 600);
+    }
+    stage = 'waiting';
+    return;
+  }
+
+  pendingCountry = country;
+  stage = 'showing_rates';
+
+  if (country.voice === null && country.ld === null) {
+    await botReply(`${country.flag} <strong>${country.name}</strong><br><br>${country.note || 'Service is not available in this country.'}`, true, 900);
+    await botReply(`Is there another country I can look up for you?`, false, 500);
+    stage = 'waiting';
+    return;
+  }
+
+  const rateHtml = buildRateCard(country) + (country.pkg ? buildPkgCards(country) : '');
+  await botReply(`Here are the rates for <strong>${country.name}</strong> ${country.flag}:${rateHtml}`, true, 900);
+}
+
+function showCountrySearch() {
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  const results = COUNTRIES.filter(c => c.voice || c.ld).slice(0, 8);
+  row.innerHTML = `<div class="msg-avatar bot">✦</div><div class="msg-bubble bot">
+    <div class="country-search-wrap">
+      <input class="country-search" placeholder="Search country…" oninput="filterCountries(this.value)" onkeydown="if(event.key==='Enter')pickFirstCountry()" id="csInput" />
+      <div class="country-results" id="csResults">
+        ${results.map(c=>`<div class="country-result" onclick="pickCountry('${c.name}')"><span class="country-result-flag">${c.flag}</span>${c.name}</div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function filterCountries(q) {
+  const lq = q.toLowerCase();
+  const matches = COUNTRIES.filter(c => c.name.toLowerCase().includes(lq) || c.alias.some(a => a.includes(lq))).slice(0, 8);
+  document.getElementById('csResults').innerHTML = matches.length
+    ? matches.map(c=>`<div class="country-result" onclick="pickCountry('${c.name}')"><span class="country-result-flag">${c.flag}</span>${c.name}</div>`).join('')
+    : '<div style="padding:8px 12px;font-size:0.68rem;color:#aaa;">No matches</div>';
+}
+
+function pickFirstCountry() {
+  const first = document.querySelector('.country-result');
+  if (first) first.click();
+}
+
+function pickCountry(name) {
+  addUserMsg(name);
+  handleInput(name);
+}
+
+function sendMsg() {
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addUserMsg(text);
+  handleInput(text);
+}
+</script>
+
+</body>
+</html>
