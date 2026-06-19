@@ -192,6 +192,29 @@
     .go:disabled { background: #c5cae9; cursor: default; }
     .go svg { width: 16px; height: 16px; fill: #fff; }
 
+    /* ── Agent action row ────────────────────────────────────────────── */
+    .agent-action {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 10px; margin: 0 0 0 36px;
+      background: #E8EAF6; border-left: 2px solid #3949AB;
+      border-radius: 6px; font-size: 0.72rem; color: #3949ab;
+      font-weight: 600; animation: fadeIn 0.3s ease;
+    }
+    .agent-action-dot { width: 6px; height: 6px; border-radius: 50%; background: #3949ab; flex-shrink: 0; animation: pulse 1.2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
+
+    /* ── Agent badge in header ────────────────────────────────────────── */
+    .agent-badge { font-size: 0.52rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; background: #3949ab; color: #C5CAE9; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-left: 5px; vertical-align: middle; }
+    .agent-online { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #69F0AE; margin-right: 4px; animation: pulse 2s infinite; }
+
+    /* ── Agent outcome card ───────────────────────────────────────────── */
+    .outcome-card { background: #fff; border: 1.5px solid #c5cae9; border-radius: 12px; padding: 12px 14px; font-size: 0.78rem; line-height: 1.7; color: #1a1a1a; }
+    .outcome-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #7986cb; margin-bottom: 8px; }
+    .outcome-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
+    .outcome-icon { flex-shrink: 0; }
+    .outcome-ticket { display: inline-block; font-family: monospace; font-size: 0.72rem; background: #E8EAF6; color: #3949ab; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+
     /* ── View Data button ─────────────────────────────────────────────── */
     .view-data-btn {
       display: inline-flex; align-items: center; gap: 8px;
@@ -232,8 +255,8 @@
       </svg>
     </div>
     <div class="chat-header-info">
-      <h2>Feedback Assistant</h2>
-      <p>AI-powered · For demo only</p>
+      <h2>Feedback Agent <span class="agent-badge">Agentic AI</span></h2>
+      <p><span class="agent-online"></span>Agent online · Powered by AI</p>
     </div>
   </div>
 
@@ -377,6 +400,15 @@ function botSay(text, delay = 950, isHtml = false) {
     setTimeout(() => { hideTyping(); addBot(text, isHtml); res(); }, delay + Math.random() * 350);
   });
 }
+
+function showAgentAction(text) {
+  const row = document.createElement('div');
+  row.className = 'agent-action';
+  row.innerHTML = `<div class="agent-action-dot"></div>${text}`;
+  msgsEl.appendChild(row); scroll();
+  return row;
+}
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 /* ── Conversation steps ──────────────────────────────────────────── */
 function ratingReaction(r) {
@@ -523,41 +555,95 @@ function reAskStep(s, question, placeholder) {
   botSay(question, 700).then(() => enableInput(placeholder));
 }
 
-/* ── Final summary ───────────────────────────────────────────────── */
+/* ── Final summary (agentic) ─────────────────────────────────────── */
 async function afterReview() {
   const tone = sentiment(d.message);
   d.sentiment = tone; saveData();
 
-  const high = d.rating >= 7 && tone === 'negative';
-  const low  = d.rating <= 3 && tone === 'positive';
-  const toneLabel = { positive: 'positive 😊', negative: 'negative 😟', neutral: 'neutral 😐' }[tone];
-  const loc = d.province ? `${d.city}, ${d.province}` : d.city;
+  // Routing logic
+  const caseNum = 'FB-' + (Math.floor(Math.random() * 9000) + 1000);
+  let team, priority, teamColor;
+  if (d.rating <= 3) { team = 'Support Team'; priority = 'High'; teamColor = '#DC2626'; }
+  else if (d.rating <= 6) { team = 'Customer Success'; priority = 'Normal'; teamColor = '#D97706'; }
+  else if (d.rating <= 8) { team = 'Product Team'; priority = 'Normal'; teamColor = '#2563EB'; }
+  else { team = 'Customer Success'; priority = 'Low'; teamColor = '#059669'; }
+  if (tone === 'negative' && d.rating >= 7) { team = 'Manager Review'; priority = 'High'; teamColor = '#DC2626'; }
 
-  let html = `<div class="summary"><div class="summary-label">Feedback Summary</div>`;
-  html += `<strong>${d.name}</strong> from ${loc}<br>`;
-  html += `Rated their experience <strong>${d.rating}/10</strong><br>`;
-  html += `Left ${toneLabel} feedback`;
-  if (d.message) {
-    const preview = d.message.length > 55 ? d.message.slice(0, 52) + '…' : d.message;
-    html += `<br><em style="color:#555;">"${preview}"</em>`;
+  // Agentic analysis sequence
+  await wait(300);
+  const act1 = showAgentAction('Analyzing sentiment...');
+  await wait(950);
+  act1.remove();
+
+  const act2 = showAgentAction('Extracting key themes from feedback...');
+  await wait(850);
+  act2.remove();
+
+  // Theme extraction
+  const words = (d.message || '').toLowerCase().match(/[a-z']+/g) || [];
+  const negHits = [...new Set(words.filter(w => NEG.some(r => w.startsWith(r))))].slice(0, 2);
+  const posHits = [...new Set(words.filter(w => POS.some(r => w.startsWith(r))))].slice(0, 2);
+  const themes = [...negHits, ...posHits].slice(0, 3);
+  if (!themes.length) themes.push('general experience');
+  const themeTags = themes.map(t => `<span style="background:#E8EAF6;color:#3949ab;border-radius:4px;padding:1px 7px;font-size:0.67rem;font-weight:700;margin-right:3px;">${t}</span>`).join('');
+
+  const toneColor = { positive:'#059669', negative:'#DC2626', neutral:'#6B7280' }[tone];
+  const toneLabel = { positive:'Positive', negative:'Negative', neutral:'Neutral' }[tone];
+  const discordant = tone === 'negative' && d.rating >= 7;
+
+  const analysisHtml = `<div class="outcome-card">
+    <div class="outcome-label">Agent Analysis</div>
+    <div class="outcome-row"><span class="outcome-icon">◈</span><span>Sentiment: <strong style="color:${toneColor}">${toneLabel}</strong></span></div>
+    <div class="outcome-row"><span class="outcome-icon">◈</span><span>Rating: <strong>${d.rating}/10</strong>${d.rating <= 5 ? ' · <span style="color:#DC2626;font-weight:600">Below threshold</span>' : ''}</span></div>
+    <div class="outcome-row"><span class="outcome-icon">◈</span><span>Key themes: ${themeTags}</span></div>
+    ${discordant ? '<div class="outcome-row"><span class="outcome-icon">⚠</span><span style="color:#b45309;font-weight:600;font-size:0.72rem">Discordant signal — high rating with negative tone</span></div>' : ''}
+  </div>`;
+  await botSay(analysisHtml, 200, true);
+
+  const act3 = showAgentAction('Creating case record...');
+  await wait(900);
+  act3.remove();
+
+  const act4 = showAgentAction(`Routing to ${team}...`);
+  await wait(800);
+  act4.remove();
+
+  if (d.email) {
+    const act5 = showAgentAction(`Sending confirmation to ${d.email}...`);
+    await wait(700);
+    act5.remove();
   }
-  if (high) html += `<br><em style="color:#b45309;">⚠️ High rating, negative tone — worth a closer look.</em>`;
-  if (low)  html += `<br><em style="color:#1565c0;">⚠️ Low rating, positive tone — may be worth following up.</em>`;
-  html += `</div>`;
 
-  await botSay(html, 1100, true);
-  await botSay(`That's everything — thanks so much, ${d.name}! Have a great day 😊`, 1000);
+  const loc = d.province ? `${d.city}, ${d.province}` : d.city;
+  const outcomeHtml = `<div class="outcome-card">
+    <div class="outcome-label">Agent Actions Completed</div>
+    <div class="outcome-row"><span class="outcome-icon" style="color:#059669">✓</span><span>Case created: <span class="outcome-ticket">${caseNum}</span></span></div>
+    <div class="outcome-row"><span class="outcome-icon" style="color:#059669">✓</span><span>Routed to: <strong style="color:${teamColor}">${team}</strong></span></div>
+    <div class="outcome-row"><span class="outcome-icon" style="color:#059669">✓</span><span>Priority: <strong>${priority}</strong></span></div>
+    ${d.email ? `<div class="outcome-row"><span class="outcome-icon" style="color:#059669">✓</span><span>Confirmation sent to ${d.email}</span></div>` : ''}
+    <div class="outcome-row"><span class="outcome-icon" style="color:#059669">✓</span><span>Submitter: ${d.name}${loc ? ', ' + loc : ''}</span></div>
+  </div>`;
+  await botSay(outcomeHtml, 400, true);
+
+  await botSay(`All done, ${d.name}! Your feedback is logged and our ${team} will follow up if needed. Thank you! ✨`, 900);
   step = 9;
 }
 
 /* ── Rating picker ───────────────────────────────────────────────── */
-function pickRating(r) {
+async function pickRating(r) {
   document.getElementById('chips').querySelectorAll('.r-chip').forEach((c, i) => {
     c.classList.toggle('picked', i === r); c.disabled = true;
   });
   d.rating = r; saveData(); addUser(`${r} / 10`);
-  if (reviewMode) { step = 8; showReview(); }
-  else { step = 7; afterRating(); }
+  if (reviewMode) { step = 8; showReview(); return; }
+  step = 7;
+  if (r <= 5) {
+    await wait(400);
+    const act = showAgentAction(r <= 3 ? 'Low satisfaction score detected — escalating to priority review' : 'Below-average score — flagging for follow-up');
+    await wait(1400);
+    act.remove();
+  }
+  afterRating();
 }
 
 /* ── Send handler ────────────────────────────────────────────────── */

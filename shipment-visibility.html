@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dispatch — Shipment Visibility Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f5; color: #1a1a1a; min-height: 100vh; }
+
+    .cs-header { background: #4C1D95; padding: 56px 40px 44px; }
+    .cs-header-inner { max-width: 860px; margin: 0 auto; }
+    .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 580px; }
+
+    .cs-body { max-width: 860px; margin: 0 auto; padding: 48px 40px 80px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #6D28D9; margin-bottom: 0; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
+    .acc-body li { margin-bottom: 6px; }
+    .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #6D28D9; margin-bottom: 4px; }
+    .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
+
+    .proto-wrap { background: #EDE9FE; border-radius: 16px; padding: 28px 20px 36px; }
+    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #7C3AED; text-align: center; margin-bottom: 18px; }
+
+    /* ── Dashboard app ── */
+    .dash-app { background: #F3F4F6; border-radius: 12px; overflow: hidden; border: 1px solid #D1D5DB; }
+    .dash-nav { background: #4C1D95; display: flex; align-items: center; padding: 0 18px; height: 50px; gap: 0; }
+    .dash-logo { font-size: 0.9rem; font-weight: 900; color: #fff; letter-spacing: -0.3px; margin-right: 20px; flex-shrink: 0; }
+    .dash-nav-tabs { display: flex; flex: 1; gap: 0; }
+    .d-tab { padding: 0 13px; height: 50px; background: none; border: none; border-bottom: 2px solid transparent; font-family: inherit; font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .d-tab:hover { color: rgba(255,255,255,0.8); }
+    .d-tab.active { color: #fff; border-bottom-color: #A78BFA; }
+    .dash-user { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .user-av { width: 26px; height: 26px; border-radius: 50%; background: #7C3AED; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 800; color: #fff; flex-shrink: 0; }
+    .user-name { font-size: 0.7rem; font-weight: 700; color: #fff; line-height: 1.2; }
+    .user-co { font-size: 0.58rem; color: rgba(255,255,255,0.5); }
+    .user-online { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10B981; margin-right: 3px; }
+
+    .dash-content { padding: 16px 18px; min-height: 480px; }
+    .d-pane { display: none; }
+    .d-pane.active { display: block; }
+
+    /* KPI row */
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+    .kpi-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; padding: 11px 13px; cursor: pointer; transition: all 0.15s; }
+    .kpi-card:hover { border-color: #A78BFA; box-shadow: 0 2px 8px rgba(109,40,217,0.08); }
+    .kpi-lbl { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #bbb; margin-bottom: 5px; }
+    .kpi-val { font-size: 1.55rem; font-weight: 900; letter-spacing: -1px; line-height: 1; color: #111; }
+    .kpi-sub { font-size: 0.6rem; color: #aaa; margin-top: 3px; }
+    .kpi-ex .kpi-val { color: #DC2626; }
+    .kpi-out .kpi-val { color: #D97706; }
+    .kpi-del .kpi-val { color: #059669; }
+
+    /* Charts row */
+    .charts-row { display: grid; grid-template-columns: 200px 1fr; gap: 10px; margin-bottom: 10px; }
+    .chart-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; padding: 13px 15px; }
+    .chart-title { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #aaa; margin-bottom: 11px; }
+
+    /* Donut */
+    .donut-wrap { display: flex; flex-direction: column; align-items: center; }
+    .donut-center-text { text-anchor: middle; }
+    .legend-item { display: flex; align-items: center; gap: 6px; padding: 3px 0; cursor: pointer; border-radius: 5px; font-size: 0.66rem; transition: background 0.12s; }
+    .legend-item:hover { background: #F5F3FF; }
+    .legend-item.hi { background: #EDE9FE; font-weight: 700; }
+    .leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .leg-name { flex: 1; color: #555; }
+    .leg-ct { font-weight: 700; color: #111; margin-left: auto; }
+    .donut-seg { cursor: pointer; transition: opacity 0.15s; }
+    .donut-seg:hover, .donut-seg.hi { opacity: 0.8; stroke-width: 22; }
+
+    /* Bar chart */
+    .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+    .bar-lbl { font-size: 0.62rem; color: #666; width: 120px; flex-shrink: 0; text-align: right; line-height: 1.2; }
+    .bar-track { flex: 1; height: 13px; background: #F3F4F6; border-radius: 7px; overflow: hidden; cursor: pointer; }
+    .bar-fill { height: 100%; border-radius: 7px; width: 0; transition: width 0.7s ease; }
+    .bar-ct { font-size: 0.64rem; font-weight: 700; color: #111; width: 22px; flex-shrink: 0; }
+
+    /* Feature cards */
+    .feat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .feat-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; padding: 13px 14px; }
+    .feat-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .feat-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0; }
+    .feat-title { font-size: 0.76rem; font-weight: 700; color: #111; }
+    .feat-desc { font-size: 0.65rem; color: #777; line-height: 1.5; margin-bottom: 10px; }
+    .feat-btn { padding: 5px 11px; background: #F5F3FF; color: #6D28D9; border: 1px solid #DDD6FE; border-radius: 6px; font-size: 0.66rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+    .feat-btn:hover { background: #EDE9FE; }
+
+    /* Shipments tab */
+    .s-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
+    .s-tab { padding: 5px 10px; border-radius: 20px; border: 1.5px solid #E5E7EB; background: #fff; font-size: 0.65rem; font-weight: 700; font-family: inherit; color: #666; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .s-tab:hover { border-color: #A78BFA; }
+    .s-tab.active { background: #6D28D9; color: #fff; border-color: #6D28D9; }
+    .s-tab-n { display: inline-block; background: rgba(0,0,0,0.1); border-radius: 8px; padding: 0 5px; margin-left: 3px; font-size: 0.58rem; }
+    .s-tab.active .s-tab-n { background: rgba(255,255,255,0.25); }
+
+    .ship-tbl-hdr { display: grid; grid-template-columns: 2fr 1.4fr 65px 90px; gap: 8px; padding: 0 12px 6px; }
+    .tbl-hdr-lbl { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #bbb; }
+    .ship-row { background: #fff; border: 1px solid #E5E7EB; border-radius: 9px; margin-bottom: 5px; overflow: hidden; }
+    .ship-head { display: grid; grid-template-columns: 2fr 1.4fr 65px 90px; gap: 8px; align-items: center; padding: 9px 12px; cursor: pointer; transition: background 0.12s; }
+    .ship-head:hover { background: #FAFAFA; }
+    .ship-id { font-size: 0.7rem; font-family: monospace; font-weight: 700; color: #4C1D95; }
+    .ship-ex-tag { font-size: 0.54rem; background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; border-radius: 4px; padding: 1px 5px; font-weight: 700; display: inline-block; margin-left: 4px; vertical-align: middle; }
+    .ship-route { font-size: 0.65rem; color: #888; }
+    .ship-date { font-size: 0.63rem; color: #aaa; }
+    .s-badge { font-size: 0.58rem; font-weight: 700; padding: 3px 7px; border-radius: 5px; text-align: center; }
+    .ship-detail { display: none; padding: 0 12px 12px; border-top: 1px solid #F5F5F5; }
+    .ship-detail.open { display: block; }
+    .addr-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+    .addr-block { background: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 8px; padding: 9px 11px; }
+    .addr-lbl { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #aaa; margin-bottom: 5px; }
+    .addr-name { font-size: 0.72rem; font-weight: 700; color: #111; }
+    .addr-text { font-size: 0.64rem; color: #666; line-height: 1.5; }
+    .ex-reason-box { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 8px 11px; margin-bottom: 10px; font-size: 0.68rem; color: #991B1B; }
+    .ex-reason-box strong { display: block; font-size: 0.6rem; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 3px; }
+    .tl-mini { }
+    .tl-mini-title { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #aaa; margin-bottom: 8px; }
+    .tl-item { display: flex; gap: 8px; }
+    .tl-l { display: flex; flex-direction: column; align-items: center; width: 14px; flex-shrink: 0; }
+    .tl-dot { width: 9px; height: 9px; border-radius: 50%; background: #6D28D9; flex-shrink: 0; margin-top: 3px; }
+    .tl-dot.empty { background: #E5E7EB; }
+    .tl-dot.err { background: #DC2626; }
+    .tl-line { flex: 1; width: 2px; background: #E5E7EB; min-height: 20px; }
+    .tl-line.done { background: #6D28D9; }
+    .tl-body { padding-bottom: 14px; flex: 1; }
+    .tl-stage { font-size: 0.7rem; font-weight: 700; color: #111; }
+    .tl-stage.empty { color: #bbb; }
+    .tl-stage.err { color: #DC2626; }
+    .tl-sub { font-size: 0.62rem; color: #aaa; margin-top: 1px; }
+
+    /* Reports */
+    .reports-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .rep-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 10px; padding: 14px 15px; }
+    .rep-icon { font-size: 1.4rem; margin-bottom: 7px; }
+    .rep-title { font-size: 0.78rem; font-weight: 700; color: #111; margin-bottom: 3px; }
+    .rep-desc { font-size: 0.64rem; color: #888; line-height: 1.4; margin-bottom: 8px; }
+    .rep-meta { font-size: 0.6rem; color: #bbb; margin-bottom: 9px; }
+    .rep-btns { display: flex; gap: 5px; }
+    .rep-btn { padding: 5px 10px; border-radius: 6px; border: 1.5px solid #E5E7EB; background: #fff; font-size: 0.65rem; font-weight: 700; font-family: inherit; color: #555; cursor: pointer; transition: all 0.15s; }
+    .rep-btn:hover { border-color: #6D28D9; color: #6D28D9; }
+    .rep-btn.dl { background: #6D28D9; color: #fff; border-color: #6D28D9; }
+
+    /* Alerts */
+    .alr-section-lbl { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #aaa; margin: 14px 0 8px; }
+    .alr-section-lbl:first-child { margin-top: 0; }
+    .alr-row { background: #fff; border: 1px solid #E5E7EB; border-radius: 9px; padding: 11px 13px; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
+    .alr-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .alr-text { flex: 1; }
+    .alr-name { font-size: 0.74rem; font-weight: 700; color: #111; }
+    .alr-sub { font-size: 0.62rem; color: #888; margin-top: 1px; }
+    .tog { width: 34px; height: 19px; background: #E5E7EB; border-radius: 10px; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
+    .tog.on { background: #6D28D9; }
+    .tog::after { content: ''; width: 13px; height: 13px; background: #fff; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .tog.on::after { transform: translateX(15px); }
+    .notif-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 9px; padding: 13px 14px; }
+    .notif-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #F5F5F5; }
+    .notif-row:last-child { border-bottom: none; }
+    .notif-lbl { font-size: 0.72rem; color: #333; }
+    .notif-val { font-size: 0.7rem; color: #6D28D9; font-weight: 700; }
+
+    .dash-date-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .dash-section-title { font-size: 0.78rem; font-weight: 700; color: #333; }
+    .dash-date-chip { font-size: 0.65rem; color: #6D28D9; background: #F5F3FF; border: 1px solid #DDD6FE; border-radius: 6px; padding: 3px 9px; font-weight: 700; }
+
+    @media (max-width: 600px) {
+      .cs-header { padding: 40px 20px 36px; }
+      .cs-body { padding: 36px 20px 60px; }
+      .contrib-grid, .charts-row, .feat-row, .reports-grid { grid-template-columns: 1fr; }
+      .kpi-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="eyebrow">Re-imagining</p>
+    <h1>Shipment Visibility Dashboard</h1>
+    <p class="cs-intro">A self-serve dashboard giving medium and high-volume business shippers real-time visibility into their entire shipment portfolio — without waiting for a manually-built Excel report.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Medium and high-volume business shippers had no way to see the health of their full shipment portfolio at once. The carrier portal only supported individual tracking lookups — to get a picture of all in-flight packages, operations teams were manually pulling data and building Excel reports. These reports took several hours each week to produce, were stale the moment they were sent, and gave no ability to react to exceptions in real time.</p>
+      <p style="margin-top:8px;">Exception management was the sharpest pain point: a package could sit stuck at a facility for days before the next weekly report surfaced it, by which point the customer had already called to complain.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Constraints</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Shipment event data was batch-processed every 15 minutes — no real-time event stream existed yet</li>
+        <li>The portal was shared by consumer and business users; the B2B experience had to be additive, not a redesign</li>
+        <li>Data residency requirements meant all shipment data had to remain in Canadian data centres</li>
+        <li>Internal reporting teams needed to remain involved to preserve existing SLA commitments</li>
+        <li>No export pipeline existed — reports had been entirely manual up to this point</li>
+        <li>Session authentication already existed for business accounts, so the authenticated context was a given</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">My Contribution</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Discovery</p>
+          <p class="contrib-item-text">Interviewed six high-volume shippers to understand how they tracked their portfolios. Found that most used a combination of Excel exports, Slack pings to their CSM, and individual lookups — with exception follow-up typically delayed until the next morning's report.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Information Architecture</p>
+          <p class="contrib-item-text">Designed a five-stage status taxonomy (Label Created → Picked Up → In Transit → Out for Delivery → Delivered, plus Exceptions) that aligned the internal scan codes to customer mental models and could power both the chart and the list view.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Prototype & Validation</p>
+          <p class="contrib-item-text">Built and tested a clickable prototype with three shippers in 60-minute sessions. Key finding: exception prioritization by days-since-last-scan was more useful than sorting by tracking number. The "sort by time stuck" pattern came directly from this session.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Report Design</p>
+          <p class="contrib-item-text">Defined four standard reports in collaboration with the internal ops team — Activity Summary, Exception Report, Delivery Performance, and Volume by Destination — reducing manual report generation by approximately six hours per week.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">How It Worked</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>After logging in, authenticated business shippers landed on a dashboard showing the last 30 days of shipment activity. The status distribution donut chart and horizontal bar chart gave an at-a-glance view of portfolio health — how many packages were at each stage, and whether any were in exception.</p>
+      <p style="margin-top:8px;">Clicking any segment in the chart, or any status tab in the Shipments view, filtered the list to that group. Clicking a tracking number expanded full shipment details — including from and to addresses, since the user was already authenticated and permissions were confirmed at session start. The Exceptions tab surfaced stuck packages with a reason code and days since last scan, so teams could prioritize follow-up without waiting for a report.</p>
+      <p style="margin-top:8px;">Two additional features were built alongside the core dashboard: exception alerts (email and SMS notifications when a shipment entered an exception state) and scheduled report delivery (daily or weekly summaries sent automatically to configured recipients).</p>
+    </div>
+  </div>
+
+  <div class="acc-card acc-outcome mb40" style="border-color:#DDD6FE;">
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#EDE9FE;">
+      <p class="card-label">Outcome</p>
+      <span class="acc-chevron" style="color:#7C3AED;">▼</span>
+    </div>
+    <div class="acc-body" style="background:#EDE9FE;">
+      <p style="color:#4C1D95;">Piloted with 12 medium-volume accounts over six weeks. Manual report generation dropped from approximately six hours per week to on-demand and self-serve. Exception response time improved from next-business-day — when the daily Excel report was circulated — to same-session. The dashboard became the most-requested addition to the B2B portal roadmap and was subsequently prioritized for full build.</p>
+    </div>
+  </div>
+
+  <!-- ── Prototype ── -->
+  <div class="proto-wrap">
+    <p class="proto-wrap-label">Interactive prototype</p>
+
+    <div class="dash-app">
+      <!-- Nav -->
+      <div class="dash-nav">
+        <div class="dash-logo">Dispatch</div>
+        <div class="dash-nav-tabs">
+          <button class="d-tab active" onclick="showDTab('pDash',this)">Dashboard</button>
+          <button class="d-tab" onclick="showDTab('pShip',this)">Shipments</button>
+          <button class="d-tab" onclick="showDTab('pRep',this)">Reports</button>
+          <button class="d-tab" onclick="showDTab('pAlerts',this)">Alerts</button>
+        </div>
+        <div class="dash-user">
+          <div class="user-av">SC</div>
+          <div>
+            <div class="user-name"><span class="user-online"></span>Sarah Chen</div>
+            <div class="user-co">Acme Logistics · Acct #A-10042</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="dash-content">
+
+        <!-- ── Dashboard pane ── -->
+        <div class="d-pane active" id="pDash">
+          <div class="dash-date-row">
+            <div class="dash-section-title">Overview</div>
+            <div class="dash-date-chip">Last 30 days</div>
+          </div>
+
+          <div class="kpi-row">
+            <div class="kpi-card" onclick="filterAndGo('all')">
+              <div class="kpi-lbl">Total Active</div>
+              <div class="kpi-val">50</div>
+              <div class="kpi-sub">shipments in-flight</div>
+            </div>
+            <div class="kpi-card kpi-out" onclick="filterAndGo('outdelivery')">
+              <div class="kpi-lbl">Out for Delivery</div>
+              <div class="kpi-val">7</div>
+              <div class="kpi-sub">expected today</div>
+            </div>
+            <div class="kpi-card kpi-del" onclick="filterAndGo('delivered')">
+              <div class="kpi-lbl">Delivered</div>
+              <div class="kpi-val">45</div>
+              <div class="kpi-sub">last 30 days</div>
+            </div>
+            <div class="kpi-card kpi-ex" onclick="filterAndGo('exception')">
+              <div class="kpi-lbl">Exceptions</div>
+              <div class="kpi-val">5</div>
+              <div class="kpi-sub">require attention</div>
+            </div>
+          </div>
+
+          <div class="charts-row">
+            <div class="chart-card">
+              <div class="chart-title">Active by Status</div>
+              <div class="donut-wrap">
+                <svg id="donutSvg" width="130" height="130" viewBox="0 0 140 140" style="cursor:default;">
+                  <g transform="rotate(-90 70 70)">
+                    <circle id="ds-created"     cx="70" cy="70" r="52" fill="none" stroke-width="20" class="donut-seg" onclick="filterAndGo('created')"/>
+                    <circle id="ds-pickup"      cx="70" cy="70" r="52" fill="none" stroke-width="20" class="donut-seg" onclick="filterAndGo('pickup')"/>
+                    <circle id="ds-transit"     cx="70" cy="70" r="52" fill="none" stroke-width="20" class="donut-seg" onclick="filterAndGo('transit')"/>
+                    <circle id="ds-outdelivery" cx="70" cy="70" r="52" fill="none" stroke-width="20" class="donut-seg" onclick="filterAndGo('outdelivery')"/>
+                    <circle id="ds-exception"   cx="70" cy="70" r="52" fill="none" stroke-width="20" class="donut-seg" onclick="filterAndGo('exception')"/>
+                  </g>
+                  <text x="70" y="65" text-anchor="middle" font-size="20" font-weight="900" fill="#111" font-family="-apple-system,sans-serif">50</text>
+                  <text x="70" y="79" text-anchor="middle" font-size="9" fill="#aaa" font-family="-apple-system,sans-serif">active</text>
+                </svg>
+                <div style="width:100%;margin-top:6px;" id="donutLegend"></div>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-title">All Shipments by Status</div>
+              <div id="barChart" style="padding-top:4px;"></div>
+            </div>
+          </div>
+
+          <div class="feat-row">
+            <div class="feat-card">
+              <div class="feat-head">
+                <div class="feat-icon" style="background:#FEF2F2;">🔔</div>
+                <div class="feat-title">Exception Alerts</div>
+              </div>
+              <div class="feat-desc">Get notified the moment a shipment enters an exception state — via email or SMS. Set thresholds by hours since last scan.</div>
+              <button class="feat-btn" onclick="showDTab('pAlerts',document.querySelectorAll('.d-tab')[3])">Configure alerts →</button>
+            </div>
+            <div class="feat-card">
+              <div class="feat-head">
+                <div class="feat-icon" style="background:#EFF6FF;">📅</div>
+                <div class="feat-title">Scheduled Reports</div>
+              </div>
+              <div class="feat-desc">Automatically deliver daily or weekly summary reports to your inbox — no more manual Excel pulls or chasing internal teams.</div>
+              <button class="feat-btn" onclick="showDTab('pRep',document.querySelectorAll('.d-tab')[2])">Set up schedule →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Shipments pane ── -->
+        <div class="d-pane" id="pShip">
+          <div id="sTabs" class="s-tabs"></div>
+          <div class="ship-tbl-hdr">
+            <div class="tbl-hdr-lbl">Tracking / Route</div>
+            <div class="tbl-hdr-lbl">Origin → Destination</div>
+            <div class="tbl-hdr-lbl">Shipped</div>
+            <div class="tbl-hdr-lbl">Status</div>
+          </div>
+          <div id="shipList"></div>
+        </div>
+
+        <!-- ── Reports pane ── -->
+        <div class="d-pane" id="pRep">
+          <div class="dash-date-row" style="margin-bottom:14px;">
+            <div class="dash-section-title">Reports</div>
+            <div class="dash-date-chip">Last 30 days</div>
+          </div>
+          <div class="reports-grid">
+            <div class="rep-card">
+              <div class="rep-icon">📊</div>
+              <div class="rep-title">Shipment Activity Summary</div>
+              <div class="rep-desc">Total volume, status breakdown, and delivered-on-time percentage for the selected period.</div>
+              <div class="rep-meta">Last generated: Jun 19, 2026 · 6:00 AM</div>
+              <div class="rep-btns">
+                <button class="rep-btn" onclick="fakeDownload(this,'PDF')">↓ PDF</button>
+                <button class="rep-btn" onclick="fakeDownload(this,'Excel')">↓ Excel</button>
+              </div>
+            </div>
+            <div class="rep-card">
+              <div class="rep-icon">⚠️</div>
+              <div class="rep-title">Exception Report</div>
+              <div class="rep-desc">All shipments currently in exception, with reason codes and days since last scan update.</div>
+              <div class="rep-meta">Last generated: Jun 19, 2026 · 6:00 AM</div>
+              <div class="rep-btns">
+                <button class="rep-btn" onclick="fakeDownload(this,'PDF')">↓ PDF</button>
+                <button class="rep-btn" onclick="fakeDownload(this,'Excel')">↓ Excel</button>
+              </div>
+            </div>
+            <div class="rep-card">
+              <div class="rep-icon">🚚</div>
+              <div class="rep-title">Delivery Performance</div>
+              <div class="rep-desc">On-time delivery rate, average transit time by origin–destination pair, and carrier SLA compliance.</div>
+              <div class="rep-meta">Last generated: Jun 18, 2026 · 6:00 AM</div>
+              <div class="rep-btns">
+                <button class="rep-btn" onclick="fakeDownload(this,'PDF')">↓ PDF</button>
+                <button class="rep-btn" onclick="fakeDownload(this,'Excel')">↓ Excel</button>
+              </div>
+            </div>
+            <div class="rep-card">
+              <div class="rep-icon">🗺️</div>
+              <div class="rep-title">Volume by Destination</div>
+              <div class="rep-desc">Shipment volume grouped by destination province, with average delivery time and exception rate per region.</div>
+              <div class="rep-meta">Last generated: Jun 18, 2026 · 6:00 AM</div>
+              <div class="rep-btns">
+                <button class="rep-btn" onclick="fakeDownload(this,'PDF')">↓ PDF</button>
+                <button class="rep-btn" onclick="fakeDownload(this,'Excel')">↓ Excel</button>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:16px;padding:14px 16px;background:#fff;border:1px solid #E5E7EB;border-radius:10px;">
+            <div style="font-size:0.7rem;font-weight:700;color:#333;margin-bottom:10px;">📅 Scheduled Delivery</div>
+            <div class="notif-row">
+              <div class="notif-lbl">Activity Summary</div>
+              <div class="notif-val">Daily · 6:00 AM → sarah.chen@acmelogistics.ca</div>
+            </div>
+            <div class="notif-row">
+              <div class="notif-lbl">Exception Report</div>
+              <div class="notif-val">Daily · 6:00 AM → sarah.chen@acmelogistics.ca</div>
+            </div>
+            <div class="notif-row">
+              <div class="notif-lbl">Delivery Performance</div>
+              <div class="notif-val">Weekly · Mon 7:00 AM → ops-team@acmelogistics.ca</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Alerts pane ── -->
+        <div class="d-pane" id="pAlerts">
+          <div class="alr-section-lbl">Notification triggers</div>
+          <div class="alr-row">
+            <div class="alr-icon">🚨</div>
+            <div class="alr-text">
+              <div class="alr-name">Exception alert</div>
+              <div class="alr-sub">Notify when a shipment enters exception status</div>
+            </div>
+            <div class="tog on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="alr-row">
+            <div class="alr-icon">⏱️</div>
+            <div class="alr-text">
+              <div class="alr-name">Stuck package (48h+)</div>
+              <div class="alr-sub">Notify when no scan received for 48 hours or more</div>
+            </div>
+            <div class="tog on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="alr-row">
+            <div class="alr-icon">✅</div>
+            <div class="alr-text">
+              <div class="alr-name">Delivery confirmation</div>
+              <div class="alr-sub">Notify when a shipment is marked delivered</div>
+            </div>
+            <div class="tog" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="alr-row">
+            <div class="alr-icon">🚐</div>
+            <div class="alr-text">
+              <div class="alr-name">Out for delivery</div>
+              <div class="alr-sub">Notify when shipment leaves facility for final delivery</div>
+            </div>
+            <div class="tog" onclick="this.classList.toggle('on')"></div>
+          </div>
+
+          <div class="alr-section-lbl">Notification recipients</div>
+          <div class="notif-card">
+            <div class="notif-row">
+              <div class="notif-lbl">Primary email</div>
+              <div class="notif-val">sarah.chen@acmelogistics.ca</div>
+            </div>
+            <div class="notif-row">
+              <div class="notif-lbl">CC email</div>
+              <div class="notif-val">ops-team@acmelogistics.ca</div>
+            </div>
+            <div class="notif-row">
+              <div class="notif-lbl">SMS</div>
+              <div class="notif-val">(416) 555-0192</div>
+            </div>
+            <div class="notif-row">
+              <div class="notif-lbl">Alert window</div>
+              <div class="notif-val">Weekdays · 7:00 AM – 7:00 PM ET</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /dash-content -->
+    </div><!-- /dash-app -->
+  </div><!-- /proto-wrap -->
+
+</div><!-- /cs-body -->
+
+<a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
+<script>
+/* ── Accordion ── */
+function toggleAcc(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
+
+/* ── Tab switching ── */
+function showDTab(paneId, btn) {
+  document.querySelectorAll('.d-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.d-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(paneId).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+/* ── Status metadata ── */
+const SM = {
+  created:     { label:'Label Created',    color:'#64748B', bg:'#F1F5F9', text:'#475569' },
+  pickup:      { label:'Picked Up',        color:'#2563EB', bg:'#EFF6FF', text:'#1D4ED8' },
+  transit:     { label:'In Transit',       color:'#7C3AED', bg:'#EDE9FE', text:'#5B21B6' },
+  outdelivery: { label:'Out for Delivery', color:'#D97706', bg:'#FFFBEB', text:'#92400E' },
+  delivered:   { label:'Delivered',        color:'#059669', bg:'#ECFDF5', text:'#065F46' },
+  exception:   { label:'Exception',        color:'#DC2626', bg:'#FEF2F2', text:'#991B1B' },
+};
+const STAGES = ['created','pickup','transit','outdelivery','delivered'];
+const STAGE_LABELS = ['Label Created','Picked Up','In Transit','Out for Delivery','Delivered'];
+
+/* ── Seeded random ── */
+let _s = 0x5A3B9C1D;
+function rng() { _s = (Math.imul(_s ^ _s >>> 14, _s * 0x3c6ef372 | 1)) >>> 0; return (_s >>> 0) / 0xFFFFFFFF; }
+function ri(n) { return Math.floor(rng() * n); }
+
+const FIRST = ['James','Emily','Raj','Sophie','Carlos','Anna','Wei','Patrick','Maria','Liu'];
+const LAST  = ['Mitchell','Patel','Nguyen','Kim','Rodriguez','Johnson','Thompson','Williams','Tremblay','Park'];
+const CO    = ['Pacific Supply Co.','Northern Parts Ltd.','East Coast Wholesale','Prairie Commerce','Metro Trade Inc.','Island Distributors','Summit Supply'];
+const STREETS = ['123 King St W','456 Bay St','789 Queen St E','100 Yonge St','200 Granville St','55 Jasper Ave','300 Barrington St','88 Sparks St','650 Centre St S','45 Main St'];
+const CITIES = [
+  {c:'Toronto',p:'ON',pc:'M5V 1A1'},{c:'Vancouver',p:'BC',pc:'V6B 2R8'},
+  {c:'Calgary',p:'AB',pc:'T2P 3C4'},{c:'Montreal',p:'QC',pc:'H3B 1Z5'},
+  {c:'Ottawa',p:'ON',pc:'K1P 5G5'},{c:'Halifax',p:'NS',pc:'B3H 4R2'},
+  {c:'Winnipeg',p:'MB',pc:'R3C 1K5'},{c:'Edmonton',p:'AB',pc:'T5J 2M8'},
+  {c:'Victoria',p:'BC',pc:'V8W 2G1'},{c:'Quebec City',p:'QC',pc:'G1R 4T5'},
+];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun'];
+function randDate(min,max) {
+  const d = new Date(2026,5,19); d.setDate(d.getDate()-min-ri(max-min));
+  return `${MONTHS[d.getMonth()]} ${d.getDate()}`;
+}
+function genId() {
+  const C='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return `DSP-${[...Array(4)].map(()=>C[ri(C.length)]).join('')}-${[...Array(4)].map(()=>C[ri(C.length)]).join('')}-CA`;
+}
+function randCity() { return CITIES[ri(CITIES.length)]; }
+function randDiffCity(avoid) { let c; do{ c=randCity(); }while(c===avoid); return c; }
+
+function makeShipment(status) {
+  const fc = randCity(); const tc = randDiffCity(fc);
+  const daysBack = status==='delivered' ? ri(20)+3 : ri(5)+1;
+  return {
+    id: genId(), status,
+    fromName: CO[ri(CO.length)],
+    fromAddr: STREETS[ri(STREETS.length)],
+    fromCity: `${fc.c}, ${fc.p}  ${fc.pc}`,
+    toName: `${FIRST[ri(FIRST.length)]} ${LAST[ri(LAST.length)]}`,
+    toAddr: STREETS[ri(STREETS.length)],
+    toCity: `${tc.c}, ${tc.p}  ${tc.pc}`,
+    fromShort: fc.c, toShort: tc.c, prov: tc.p,
+    date: randDate(1,daysBack), days: daysBack, exReason: null,
+  };
+}
+
+const EX_REASONS = [
+  'No scan update in 72+ hours — last at Halifax gateway facility',
+  'Delivery address correction required — package held at Richmond Hill depot',
+  'Delivery attempted 3×, no answer — held at facility for pickup',
+  'Customs documentation requested — clearance pending',
+  'Package damaged in transit — under inspection at Calgary facility',
+];
+
+const SHIPMENTS = [];
+[{k:'created',n:8},{k:'pickup',n:12},{k:'transit',n:18},{k:'outdelivery',n:7},{k:'delivered',n:45}]
+  .forEach(({k,n}) => { for(let i=0;i<n;i++) SHIPMENTS.push(makeShipment(k)); });
+EX_REASONS.forEach((reason,i) => {
+  const s = makeShipment('exception'); s.exReason = reason; s.days = 3+i; SHIPMENTS.push(s);
+});
+
+/* ── Donut chart ── */
+function drawDonut() {
+  const r = 52, C = 2*Math.PI*r;
+  const segs = [
+    {k:'created',n:8},{k:'pickup',n:12},{k:'transit',n:18},{k:'outdelivery',n:7},{k:'exception',n:5}
+  ];
+  const total = 50;
+  let offset = 0;
+  segs.forEach(({k,n}) => {
+    const arc = (n/total)*C;
+    const el = document.getElementById(`ds-${k}`);
+    el.setAttribute('stroke', SM[k].color);
+    el.setAttribute('stroke-dasharray', `${arc.toFixed(2)} ${(C-arc).toFixed(2)}`);
+    el.setAttribute('stroke-dashoffset', (-offset).toFixed(2));
+    el.setAttribute('title', SM[k].label);
+    offset += arc;
+  });
+  // legend
+  const leg = document.getElementById('donutLegend');
+  leg.innerHTML = segs.map(({k,n})=>`
+    <div class="legend-item" onclick="filterAndGo('${k}')" id="leg-${k}">
+      <span class="leg-dot" style="background:${SM[k].color}"></span>
+      <span class="leg-name">${SM[k].label}</span>
+      <span class="leg-ct">${n}</span>
+    </div>`).join('');
+}
+
+/* ── Bar chart ── */
+function drawBars() {
+  const bars = [
+    {k:'created',n:8},{k:'pickup',n:12},{k:'transit',n:18},
+    {k:'outdelivery',n:7},{k:'delivered',n:45},{k:'exception',n:5}
+  ];
+  const max = 45;
+  document.getElementById('barChart').innerHTML = bars.map(({k,n})=>`
+    <div class="bar-row" onclick="filterAndGo('${k}')">
+      <div class="bar-lbl">${SM[k].label}</div>
+      <div class="bar-track" title="${SM[k].label}: ${n}">
+        <div class="bar-fill" id="bf-${k}" style="background:${SM[k].color};width:0%"></div>
+      </div>
+      <div class="bar-ct">${n}</div>
+    </div>`).join('');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    bars.forEach(({k,n}) => {
+      document.getElementById(`bf-${k}`).style.width = `${(n/max)*100}%`;
+    });
+  }));
+}
+
+/* ── Shipment list ── */
+let activeFilter = 'all';
+
+function renderTabs() {
+  const counts = { all: SHIPMENTS.length };
+  Object.keys(SM).forEach(k => { counts[k] = SHIPMENTS.filter(s=>s.status===k).length; });
+  const order = ['all','created','pickup','transit','outdelivery','exception','delivered'];
+  const labels = { all:`All`, ...Object.fromEntries(Object.entries(SM).map(([k,v])=>[k,v.label])) };
+  document.getElementById('sTabs').innerHTML = order.map(k=>`
+    <button class="s-tab${k===activeFilter?' active':''}" onclick="filterShipments('${k}')">
+      ${labels[k]}<span class="s-tab-n">${counts[k]}</span>
+    </button>`).join('');
+}
+
+function filterShipments(k) {
+  activeFilter = k;
+  renderTabs();
+  renderList();
+}
+
+function filterAndGo(k) {
+  filterShipments(k);
+  showDTab('pShip', document.querySelectorAll('.d-tab')[1]);
+}
+
+function renderList() {
+  const list = activeFilter==='all' ? SHIPMENTS : SHIPMENTS.filter(s=>s.status===activeFilter);
+  document.getElementById('shipList').innerHTML = list.map((s,i)=>{
+    const m = SM[s.status];
+    const stageIdx = STAGES.indexOf(s.status);
+    return `
+    <div class="ship-row" id="sr-${i}">
+      <div class="ship-head" onclick="toggleDetail(${i})">
+        <div>
+          <span class="ship-id">${s.id}</span>${s.exReason?'<span class="ship-ex-tag">⚠ Exception</span>':''}
+        </div>
+        <div class="ship-route">${s.fromShort} → ${s.toShort}, ${s.prov}</div>
+        <div class="ship-date">${s.date}</div>
+        <div><span class="s-badge" style="background:${m.bg};color:${m.text}">${m.label}</span></div>
+      </div>
+      <div class="ship-detail" id="sd-${i}">
+        ${s.exReason ? `<div class="ex-reason-box"><strong>Exception reason</strong>${s.exReason}</div>` : ''}
+        <div class="addr-row">
+          <div class="addr-block">
+            <div class="addr-lbl">From</div>
+            <div class="addr-name">${s.fromName}</div>
+            <div class="addr-text">${s.fromAddr}<br>${s.fromCity}</div>
+          </div>
+          <div class="addr-block">
+            <div class="addr-lbl">To</div>
+            <div class="addr-name">${s.toName}</div>
+            <div class="addr-text">${s.toAddr}<br>${s.toCity}</div>
+          </div>
+        </div>
+        <div class="tl-mini">
+          <div class="tl-mini-title">Tracking timeline</div>
+          ${buildTimeline(s)}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildTimeline(s) {
+  const idx = s.status==='exception' ? 2 : STAGES.indexOf(s.status);
+  const lines = [];
+  STAGE_LABELS.forEach((lbl,i) => {
+    const done = i <= idx;
+    const isLast = i === STAGE_LABELS.length-1;
+    const dotCls = done ? '' : 'empty';
+    const lineCls = i < idx ? 'done' : '';
+    const stageCls = done ? '' : 'empty';
+    lines.push(`<div class="tl-item">
+      <div class="tl-l">
+        <div class="tl-dot ${dotCls}"></div>
+        ${!isLast ? `<div class="tl-line ${lineCls}"></div>` : ''}
+      </div>
+      <div class="tl-body"><div class="tl-stage ${stageCls}">${lbl}</div></div>
+    </div>`);
+  });
+  if (s.status==='exception') {
+    lines.push(`<div class="tl-item">
+      <div class="tl-l"><div class="tl-dot err"></div></div>
+      <div class="tl-body">
+        <div class="tl-stage err">Exception</div>
+        <div class="tl-sub">${s.exReason||''}</div>
+      </div>
+    </div>`);
+  }
+  return lines.join('');
+}
+
+function toggleDetail(i) {
+  const d = document.getElementById(`sd-${i}`);
+  d.classList.toggle('open');
+}
+
+/* ── Report download ── */
+function fakeDownload(btn, fmt) {
+  btn.textContent = 'Downloading…';
+  btn.classList.add('dl');
+  btn.disabled = true;
+  setTimeout(()=>{
+    btn.textContent = `✓ ${fmt} saved`;
+    setTimeout(()=>{ btn.textContent=`↓ ${fmt}`; btn.classList.remove('dl'); btn.disabled=false; }, 2000);
+  }, 900);
+}
+
+/* ── Init ── */
+drawDonut();
+drawBars();
+renderTabs();
+renderList();
+</script>
+
+</body>
+</html>

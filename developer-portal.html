@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dispatch Developers — API Documentation</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f5; color: #1a1a1a; min-height: 100vh; }
+
+    .cs-header { background: #064E3B; padding: 56px 40px 44px; }
+    .cs-header-inner { max-width: 860px; margin: 0 auto; }
+    .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 580px; }
+
+    .cs-body { max-width: 860px; margin: 0 auto; padding: 48px 40px 80px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #059669; margin-bottom: 0; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
+    .acc-body li { margin-bottom: 6px; }
+    .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #059669; margin-bottom: 4px; }
+    .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
+
+    .proto-wrap { background: #ECFDF5; border-radius: 16px; padding: 28px 20px 36px; }
+    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #059669; text-align: center; margin-bottom: 18px; }
+
+    /* ── Before / After comparison ── */
+    .compare-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #059669; text-align: center; margin-bottom: 14px; }
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .compare-panel { background: #fff; border: 1.5px solid #E5E7EB; border-radius: 12px; overflow: hidden; }
+    .compare-panel.after { border-color: #6EE7B7; }
+    .compare-head { padding: 10px 14px; border-bottom: 1px solid #F5F5F5; display: flex; align-items: center; gap: 8px; }
+    .compare-tag { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
+    .compare-tag.before { background: #FEF2F2; color: #991B1B; }
+    .compare-tag.after  { background: #ECFDF5; color: #065F46; }
+    .compare-head-title { font-size: 0.75rem; font-weight: 700; color: #333; }
+
+    /* ── Dev portal prototype ── */
+    .dev-app { background: #0F172A; border-radius: 10px; overflow: hidden; }
+    .dev-topbar { background: #1E293B; padding: 0 20px; height: 44px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #334155; }
+    .dev-logo { font-size: 0.82rem; font-weight: 800; color: #fff; letter-spacing: -0.2px; }
+    .dev-logo span { color: #34D399; }
+    .dev-nav-links { display: flex; gap: 16px; }
+    .dev-nav-link { font-size: 0.72rem; color: #94A3B8; text-decoration: none; cursor: pointer; transition: color 0.15s; }
+    .dev-nav-link:hover, .dev-nav-link.active { color: #fff; }
+    .dev-nav-actions { display: flex; gap: 8px; }
+    .dev-btn { padding: 5px 12px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.15s; border: 1.5px solid; }
+    .dev-btn-outline { background: transparent; border-color: #475569; color: #94A3B8; }
+    .dev-btn-outline:hover { border-color: #34D399; color: #34D399; }
+    .dev-btn-primary { background: #059669; border-color: #059669; color: #fff; }
+    .dev-btn-primary:hover { background: #047857; }
+    .dev-recaptcha-bar { background: #1E293B; border-bottom: 1px solid #334155; padding: 6px 20px; display: flex; align-items: center; gap: 8px; font-size: 0.65rem; color: #64748B; }
+    .dev-recaptcha-icon { font-size: 0.7rem; }
+
+    .dev-body { display: flex; height: 500px; }
+    .dev-sidebar { width: 200px; background: #1E293B; border-right: 1px solid #334155; overflow-y: auto; flex-shrink: 0; padding: 12px 0; }
+    .dev-sidebar-section { padding: 0 14px 6px; margin-bottom: 2px; }
+    .dev-sidebar-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #475569; padding: 8px 14px 4px; }
+    .dev-sidebar-item { display: flex; align-items: center; gap: 6px; padding: 5px 14px; font-size: 0.7rem; color: #94A3B8; cursor: pointer; border-radius: 4px; margin: 0 6px; transition: all 0.12s; }
+    .dev-sidebar-item:hover { background: #334155; color: #fff; }
+    .dev-sidebar-item.active { background: #064E3B; color: #34D399; }
+    .dev-sidebar-method { font-size: 0.54rem; font-weight: 700; padding: 1px 4px; border-radius: 3px; flex-shrink: 0; }
+    .m-get  { background: #1D4ED8; color: #93C5FD; }
+    .m-post { background: #065F46; color: #6EE7B7; }
+    .m-del  { background: #991B1B; color: #FCA5A5; }
+
+    .dev-main { flex: 1; overflow-y: auto; background: #0F172A; }
+    .doc-section { padding: 20px 24px; border-bottom: 1px solid #1E293B; }
+    .doc-hero { padding: 20px 24px 0; }
+    .doc-eyebrow { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #34D399; margin-bottom: 6px; }
+    .doc-title { font-size: 1.1rem; font-weight: 800; color: #F8FAFC; margin-bottom: 8px; }
+    .doc-desc { font-size: 0.78rem; color: #94A3B8; line-height: 1.6; max-width: 480px; }
+    .doc-pills { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+    .doc-pill { font-size: 0.62rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; border: 1.5px solid; }
+    .pill-rest { border-color: #1D4ED8; color: #93C5FD; }
+    .pill-json { border-color: #7C3AED; color: #C4B5FD; }
+    .pill-sandbox { border-color: #D97706; color: #FCD34D; }
+
+    .doc-endpoint { background: #1E293B; border-radius: 8px; margin: 14px 24px 0; }
+    .doc-ep-head { padding: 10px 14px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #334155; }
+    .ep-method { font-size: 0.62rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; }
+    .ep-method.get { background: #1D4ED8; color: #93C5FD; }
+    .ep-method.post { background: #065F46; color: #6EE7B7; }
+    .ep-path { font-size: 0.76rem; font-family: monospace; color: #E2E8F0; flex: 1; }
+    .ep-desc { font-size: 0.68rem; color: #64748B; }
+    .ep-body { padding: 12px 14px; }
+    .ep-params-title { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #475569; margin-bottom: 8px; }
+    .ep-param-row { display: grid; grid-template-columns: 120px 80px 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid #1E293B; font-size: 0.68rem; }
+    .ep-param-row:last-child { border-bottom: none; }
+    .ep-param-name { font-family: monospace; color: #34D399; }
+    .ep-param-type { color: #F59E0B; }
+    .ep-param-desc { color: #64748B; }
+    .ep-required { font-size: 0.52rem; font-weight: 700; color: #F87171; margin-left: 4px; }
+    .ep-example { background: #0F172A; border-radius: 6px; padding: 10px 12px; margin-top: 10px; }
+    .ep-example-label { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #475569; margin-bottom: 6px; }
+    .ep-code { font-family: monospace; font-size: 0.68rem; color: #E2E8F0; line-height: 1.6; }
+    .code-key { color: #34D399; }
+    .code-str { color: #FCD34D; }
+    .code-num { color: #F59E0B; }
+    .code-cmt { color: #475569; }
+
+    .try-btn { padding: 5px 12px; background: #064E3B; color: #34D399; border: 1px solid #065F46; border-radius: 6px; font-size: 0.66rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.15s; margin-top: 10px; }
+    .try-btn:hover { background: #065F46; }
+    .try-response { display: none; background: #0F172A; border: 1px solid #334155; border-radius: 6px; padding: 10px 12px; margin-top: 8px; font-family: monospace; font-size: 0.66rem; color: #E2E8F0; line-height: 1.6; }
+    .try-response.show { display: block; }
+
+    .gate-overlay { position: absolute; inset: 0; background: rgba(15,23,42,0.92); display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+    .gate-card { background: #1E293B; border: 1px solid #334155; border-radius: 14px; padding: 28px 32px; text-align: center; max-width: 320px; }
+    .gate-icon { font-size: 2rem; margin-bottom: 12px; }
+    .gate-title { font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    .gate-desc { font-size: 0.75rem; color: #94A3B8; line-height: 1.6; margin-bottom: 16px; }
+    .gate-btn { width: 100%; padding: 10px; background: #059669; color: #fff; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 700; font-family: inherit; cursor: pointer; margin-bottom: 8px; }
+    .gate-btn:hover { background: #047857; }
+    .gate-sub { font-size: 0.65rem; color: #64748B; }
+
+    .compare-panel .dev-app { border-radius: 6px; }
+    .compare-panel .dev-topbar { height: 36px; }
+    .compare-panel .dev-logo { font-size: 0.72rem; }
+    .compare-panel .dev-btn { font-size: 0.6rem; padding: 3px 8px; }
+    .compare-panel .dev-recaptcha-bar { font-size: 0.58rem; padding: 4px 14px; }
+    .compare-panel .dev-body { height: 280px; }
+    .compare-panel .dev-sidebar { width: 140px; }
+    .compare-panel .dev-sidebar-label { font-size: 0.5rem; padding: 6px 10px 3px; }
+    .compare-panel .dev-sidebar-item { font-size: 0.62rem; padding: 4px 10px; }
+    .compare-panel .doc-eyebrow { font-size: 0.54rem; }
+    .compare-panel .doc-title { font-size: 0.88rem; }
+    .compare-panel .doc-desc { font-size: 0.68rem; }
+    .compare-panel .doc-hero { padding: 14px 16px 0; }
+    .compare-panel .doc-section { padding: 12px 16px; }
+    .compare-panel .doc-endpoint { margin: 10px 16px 0; }
+    .compare-panel .ep-path { font-size: 0.65rem; }
+    .compare-panel .ep-code { font-size: 0.6rem; }
+    .compare-panel .ep-body { padding: 8px 10px; }
+
+    /* After-panel: interactive full demo */
+    .full-demo { }
+    .full-demo .dev-body { height: 440px; }
+
+    @media (max-width: 650px) {
+      .cs-header { padding: 40px 20px 36px; }
+      .cs-body { padding: 36px 20px 60px; }
+      .contrib-grid, .compare-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="eyebrow">Re-imagining</p>
+    <h1>Developer Portal — API Documentation</h1>
+    <p class="cs-intro">Removed the authentication barrier to API documentation so developers could evaluate shipping integration capabilities — and decide if Dispatch was the right fit — before creating an account.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Developers evaluating the carrier's shipping APIs faced a two-gate authentication process: they had to create and verify an account just to access the API documentation, and then authenticate a second time to activate production API keys. The first gate was the friction point — developers wanted to understand available capabilities, review API specifications, assess integration complexity, and determine whether our APIs fit their use case <em>before</em> committing to account creation.</p>
+      <p style="margin-top:8px;">This is the standard developer expectation: documentation should be publicly discoverable. Requiring sign-up before a developer could read a single endpoint description meant many qualified integration partners were lost before they ever reached the evaluation stage.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Constraints</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Authentication on the documentation portal was an existing security decision — removing it entirely required stakeholder alignment across product, legal, and security</li>
+        <li>Abuse protection still had to be maintained: the concern was that open documentation could be scraped or used by bad actors</li>
+        <li>The second authentication gate (for production API key activation) was intentional and non-negotiable — only the first gate was in scope</li>
+        <li>The "Try it" / sandbox experience had to remain behind authentication to prevent unauthenticated API calls being made against real systems</li>
+        <li>The redesign had to preserve the existing information architecture — this was a friction-reduction project, not a full rebuild</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">My Contribution</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Stakeholder Alignment</p>
+          <p class="contrib-item-text">Led discussions with product, legal, and security to challenge the assumption that documentation access required authentication. The key insight was separating "access to docs" from "access to APIs" — two distinct privileges that had been conflated.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Abuse Protection Design</p>
+          <p class="contrib-item-text">Partnered with engineering to implement reCAPTCHA on the documentation portal as a lightweight, frictionless abuse deterrent. This satisfied the security requirement without requiring sign-in — humans see documentation, bots do not.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Access Tiering</p>
+          <p class="contrib-item-text">Defined a two-tier access model: documentation publicly available with reCAPTCHA protection; sandbox and API key activation behind authentication. The "Try it" button was preserved but surfaced a sign-in prompt only when clicked — not before a developer could read anything.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Developer Journey Mapping</p>
+          <p class="contrib-item-text">Mapped the developer evaluation journey — discovery, assessment, prototype, activate — and identified the first gate as occurring before step 1 was even complete. Removing it aligned the experience with developer expectations and industry norms.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">How It Worked</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>After the redesign, developers landing on the portal could immediately browse all API documentation — endpoints, parameters, response schemas, error codes, and integration guides — without signing in. reCAPTCHA ran invisibly in the background, providing bot protection without visible challenge in most cases.</p>
+      <p style="margin-top:8px;">The "Try it" sandbox feature, and the API key management section, remained behind authentication. When a developer clicked "Try it" on any endpoint, a modal prompted sign-in — at which point they had already assessed fit and had a reason to create an account. The authentication barrier was moved from the discovery stage to the intent stage, where it belongs.</p>
+    </div>
+  </div>
+
+  <div class="acc-card acc-outcome mb40" style="border-color:#A7F3D0;">
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#ECFDF5;">
+      <p class="card-label" style="color:#059669;">Outcome</p>
+      <span class="acc-chevron" style="color:#059669;">▼</span>
+    </div>
+    <div class="acc-body" style="background:#ECFDF5;">
+      <p style="color:#064E3B;">The new experience aligned documentation access with developer expectations and improved self-service discovery of shipping integration capabilities. Removing the first authentication gate reduced drop-off at the top of the developer funnel. Account activations from organic documentation discovery increased, and the integration team reported fewer "we had no idea what your API looked like" conversations in sales-led deals — a signal that developers were arriving at conversations already informed.</p>
+    </div>
+  </div>
+
+  <!-- ── Prototype ── -->
+  <div class="proto-wrap">
+    <p class="proto-wrap-label">Interactive prototype — Before &amp; After</p>
+
+    <!-- Comparison panels -->
+    <p class="compare-label">Before: sign-in required to read any documentation</p>
+    <div class="compare-grid">
+      <!-- BEFORE panel: gate in place -->
+      <div class="compare-panel">
+        <div class="compare-head">
+          <span class="compare-tag before">Before</span>
+          <span class="compare-head-title">Developer must sign in first</span>
+        </div>
+        <div style="position:relative;">
+          <div class="dev-app">
+            <div class="dev-topbar">
+              <div class="dev-logo">Dispatch<span> Developers</span></div>
+              <div class="dev-nav-actions">
+                <button class="dev-btn dev-btn-outline">Sign in</button>
+                <button class="dev-btn dev-btn-primary">Create account</button>
+              </div>
+            </div>
+            <div class="dev-body">
+              <div class="dev-sidebar">
+                <div class="dev-sidebar-label">API Reference</div>
+                <div class="dev-sidebar-item">Shipment</div>
+                <div class="dev-sidebar-item">Tracking</div>
+                <div class="dev-sidebar-item">Rates</div>
+                <div class="dev-sidebar-item">Labels</div>
+                <div class="dev-sidebar-label">Guides</div>
+                <div class="dev-sidebar-item">Quick start</div>
+                <div class="dev-sidebar-item">Authentication</div>
+              </div>
+              <div class="dev-main" style="position:relative;">
+                <div class="doc-hero">
+                  <div class="doc-eyebrow">Dispatch Shipping API</div>
+                  <div class="doc-title">Create Shipment</div>
+                  <div class="doc-desc">Book a shipment and generate a tracking number programmatically...</div>
+                </div>
+                <div style="position:absolute;inset:0;background:rgba(15,23,42,0.88);display:flex;align-items:center;justify-content:center;border-radius:0;">
+                  <div style="background:#1E293B;border:1px solid #334155;border-radius:10px;padding:20px 24px;text-align:center;max-width:240px;">
+                    <div style="font-size:1.6rem;margin-bottom:8px;">🔒</div>
+                    <div style="font-size:0.82rem;font-weight:800;color:#fff;margin-bottom:6px;">Sign in to continue</div>
+                    <div style="font-size:0.65rem;color:#94A3B8;line-height:1.5;margin-bottom:12px;">You must create an account to access API documentation.</div>
+                    <button class="dev-btn dev-btn-primary" style="width:100%;padding:7px;">Sign in / Create account</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AFTER panel: docs visible, Try It requires sign-in -->
+      <div class="compare-panel after">
+        <div class="compare-head">
+          <span class="compare-tag after">After</span>
+          <span class="compare-head-title">Docs open — sign in only to try it</span>
+        </div>
+        <div class="dev-app">
+          <div class="dev-topbar">
+            <div class="dev-logo">Dispatch<span> Developers</span></div>
+            <div class="dev-nav-links">
+              <span class="dev-nav-link active">Docs</span>
+              <span class="dev-nav-link">Guides</span>
+              <span class="dev-nav-link">Changelog</span>
+            </div>
+            <div class="dev-nav-actions">
+              <button class="dev-btn dev-btn-outline">Sign in</button>
+              <button class="dev-btn dev-btn-primary">Get API keys</button>
+            </div>
+          </div>
+          <div class="dev-recaptcha-bar">
+            <span class="dev-recaptcha-icon">🛡️</span>
+            Protected by reCAPTCHA · Documentation is publicly accessible
+          </div>
+          <div class="dev-body">
+            <div class="dev-sidebar">
+              <div class="dev-sidebar-label">API Reference</div>
+              <div class="dev-sidebar-item active">
+                <span class="dev-sidebar-method m-post">POST</span> Shipment
+              </div>
+              <div class="dev-sidebar-item">
+                <span class="dev-sidebar-method m-get">GET</span> Tracking
+              </div>
+              <div class="dev-sidebar-item">
+                <span class="dev-sidebar-method m-get">GET</span> Rates
+              </div>
+              <div class="dev-sidebar-item">
+                <span class="dev-sidebar-method m-post">POST</span> Label
+              </div>
+              <div class="dev-sidebar-label">Guides</div>
+              <div class="dev-sidebar-item">Quick start</div>
+              <div class="dev-sidebar-item">Webhooks</div>
+            </div>
+            <div class="dev-main">
+              <div class="doc-hero">
+                <div class="doc-eyebrow">POST · /v2/shipments</div>
+                <div class="doc-title">Create Shipment</div>
+                <div class="doc-desc">Book a shipment, generate a tracking number, and optionally purchase a label in a single call.</div>
+                <div class="doc-pills">
+                  <span class="doc-pill pill-rest">REST</span>
+                  <span class="doc-pill pill-json">JSON</span>
+                  <span class="doc-pill pill-sandbox">Sandbox available</span>
+                </div>
+              </div>
+              <div class="doc-endpoint">
+                <div class="ep-body">
+                  <div class="ep-params-title">Request body</div>
+                  <div class="ep-param-row">
+                    <div class="ep-param-name">from_address<span class="ep-required">*</span></div>
+                    <div class="ep-param-type">object</div>
+                    <div class="ep-param-desc">Sender address object</div>
+                  </div>
+                  <div class="ep-param-row">
+                    <div class="ep-param-name">to_address<span class="ep-required">*</span></div>
+                    <div class="ep-param-type">object</div>
+                    <div class="ep-param-desc">Recipient address object</div>
+                  </div>
+                  <div class="ep-param-row">
+                    <div class="ep-param-name">parcel</div>
+                    <div class="ep-param-type">object</div>
+                    <div class="ep-param-desc">Weight and dimensions</div>
+                  </div>
+                  <div class="ep-example">
+                    <div class="ep-example-label">Example response</div>
+                    <pre class="ep-code"><span class="code-key">"tracking_id"</span>: <span class="code-str">"DSP-4K7R-9XM2-CA"</span>,
+<span class="code-key">"status"</span>: <span class="code-str">"label_created"</span>,
+<span class="code-key">"est_delivery"</span>: <span class="code-str">"2026-06-23"</span></pre>
+                  </div>
+                  <button class="try-btn" onclick="showTryIt(this)">▶ Try it — sign in required</button>
+                  <div class="try-response" id="tryResp">
+                    <div style="color:#F87171;font-size:0.64rem;margin-bottom:4px;">401 Unauthorized</div>
+                    <pre class="ep-code"><span class="code-key">"error"</span>: <span class="code-str">"Authentication required"</span>,
+<span class="code-key">"message"</span>: <span class="code-str">"Sign in to use the sandbox."</span></pre>
+                    <div style="margin-top:8px;"><button class="dev-btn dev-btn-primary" style="font-size:0.64rem;padding:4px 10px;">Sign in to activate sandbox →</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full interactive after demo -->
+    <p class="compare-label" style="margin-top:4px;">After: explore the full API docs freely</p>
+    <div class="dev-app full-demo">
+      <div class="dev-topbar">
+        <div class="dev-logo">Dispatch<span> Developers</span></div>
+        <div class="dev-nav-links">
+          <span class="dev-nav-link active" onclick="setDocView('shipment',this)">Docs</span>
+          <span class="dev-nav-link" onclick="">Guides</span>
+          <span class="dev-nav-link" onclick="">Changelog</span>
+        </div>
+        <div class="dev-nav-actions">
+          <button class="dev-btn dev-btn-outline">Sign in</button>
+          <button class="dev-btn dev-btn-primary">Get API keys</button>
+        </div>
+      </div>
+      <div class="dev-recaptcha-bar">
+        <span class="dev-recaptcha-icon">🛡️</span>
+        Protected by reCAPTCHA · Documentation is publicly accessible · Sandbox and API keys require sign-in
+      </div>
+      <div class="dev-body">
+        <div class="dev-sidebar">
+          <div class="dev-sidebar-label">API Reference</div>
+          <div class="dev-sidebar-item active" id="sn-shipment" onclick="setDocView('shipment',this)">
+            <span class="dev-sidebar-method m-post">POST</span> Shipments
+          </div>
+          <div class="dev-sidebar-item" id="sn-tracking" onclick="setDocView('tracking',this)">
+            <span class="dev-sidebar-method m-get">GET</span> Tracking
+          </div>
+          <div class="dev-sidebar-item" id="sn-rates" onclick="setDocView('rates',this)">
+            <span class="dev-sidebar-method m-get">GET</span> Rates
+          </div>
+          <div class="dev-sidebar-item" id="sn-label" onclick="setDocView('label',this)">
+            <span class="dev-sidebar-method m-post">POST</span> Labels
+          </div>
+          <div class="dev-sidebar-item" id="sn-webhook" onclick="setDocView('webhook',this)">
+            <span class="dev-sidebar-method m-post">POST</span> Webhooks
+          </div>
+          <div class="dev-sidebar-label">Guides</div>
+          <div class="dev-sidebar-item" id="sn-quickstart" onclick="setDocView('quickstart',this)">Quick start</div>
+          <div class="dev-sidebar-item" id="sn-auth" onclick="setDocView('auth',this)">Authentication</div>
+          <div class="dev-sidebar-item" id="sn-errors" onclick="setDocView('errors',this)">Error codes</div>
+        </div>
+        <div class="dev-main" id="docMain"></div>
+      </div>
+    </div>
+
+  </div><!-- /proto-wrap -->
+
+</div><!-- /cs-body -->
+
+<a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
+<script>
+function toggleAcc(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
+
+function showTryIt(btn) {
+  const r = document.getElementById('tryResp');
+  r.classList.toggle('show');
+  btn.textContent = r.classList.contains('show') ? '▼ Hide response' : '▶ Try it — sign in required';
+}
+
+const DOCS = {
+  shipment: {
+    eyebrow: 'POST · /v2/shipments',
+    title: 'Create Shipment',
+    desc: 'Book a shipment and generate a tracking number. Optionally purchase a label in the same call.',
+    pills: ['REST','JSON','Sandbox available'],
+    params: [
+      { name:'from_address', req:true,  type:'object', desc:'Sender name, street, city, province, postal code' },
+      { name:'to_address',   req:true,  type:'object', desc:'Recipient name, street, city, province, postal code' },
+      { name:'parcel',       req:false, type:'object', desc:'Weight (kg), length, width, height (cm)' },
+      { name:'service',      req:false, type:'string', desc:'Service level: standard · express · overnight' },
+      { name:'purchase_label',req:false,type:'boolean','desc':'If true, returns a label PDF URL' },
+    ],
+    example: `{
+  <span class="code-key">"tracking_id"</span>: <span class="code-str">"DSP-4K7R-9XM2-CA"</span>,
+  <span class="code-key">"status"</span>: <span class="code-str">"label_created"</span>,
+  <span class="code-key">"est_delivery"</span>: <span class="code-str">"2026-06-23"</span>,
+  <span class="code-key">"rate"</span>: { <span class="code-key">"amount"</span>: <span class="code-num">18.45</span>, <span class="code-key">"currency"</span>: <span class="code-str">"CAD"</span> }
+}`,
+  },
+  tracking: {
+    eyebrow: 'GET · /v2/shipments/{tracking_id}/events',
+    title: 'Get Tracking Events',
+    desc: 'Retrieve all scan events for a shipment in chronological order. Returns the corrected, de-duplicated sequence.',
+    pills: ['REST','JSON'],
+    params: [
+      { name:'tracking_id', req:true,  type:'string', desc:'The DSP-XXXX-XXXX-CA tracking number (path param)' },
+      { name:'limit',       req:false, type:'integer',desc:'Max number of events to return (default: 50)' },
+    ],
+    example: `{
+  <span class="code-key">"tracking_id"</span>: <span class="code-str">"DSP-4K7R-9XM2-CA"</span>,
+  <span class="code-key">"events"</span>: [
+    { <span class="code-key">"stage"</span>: <span class="code-str">"label_created"</span>, <span class="code-key">"timestamp"</span>: <span class="code-str">"2026-06-14T09:03:00Z"</span> },
+    { <span class="code-key">"stage"</span>: <span class="code-str">"picked_up"</span>,    <span class="code-key">"timestamp"</span>: <span class="code-str">"2026-06-14T11:42:00Z"</span> },
+    { <span class="code-key">"stage"</span>: <span class="code-str">"in_transit"</span>,   <span class="code-key">"timestamp"</span>: <span class="code-str">"2026-06-17T06:15:00Z"</span> }
+  ]
+}`,
+  },
+  rates: {
+    eyebrow: 'GET · /v2/rates',
+    title: 'Get Rates',
+    desc: 'Calculate shipping rates for a parcel between two Canadian addresses. Returns all available service levels.',
+    pills: ['REST','JSON','Sandbox available'],
+    params: [
+      { name:'from_postal', req:true,  type:'string', desc:'Origin postal code (A1A 1A1 format)' },
+      { name:'to_postal',   req:true,  type:'string', desc:'Destination postal code' },
+      { name:'weight_kg',   req:true,  type:'number', desc:'Parcel weight in kilograms' },
+      { name:'length_cm',   req:false, type:'number', desc:'Parcel length in cm (for dimensional weight)' },
+      { name:'width_cm',    req:false, type:'number', desc:'Parcel width in cm' },
+      { name:'height_cm',   req:false, type:'number', desc:'Parcel height in cm' },
+    ],
+    example: `{
+  <span class="code-key">"rates"</span>: [
+    { <span class="code-key">"service"</span>: <span class="code-str">"standard"</span>,  <span class="code-key">"amount"</span>: <span class="code-num">12.50</span>, <span class="code-key">"est_days"</span>: <span class="code-num">5</span> },
+    { <span class="code-key">"service"</span>: <span class="code-str">"express"</span>,   <span class="code-key">"amount"</span>: <span class="code-num">24.80</span>, <span class="code-key">"est_days"</span>: <span class="code-num">2</span> },
+    { <span class="code-key">"service"</span>: <span class="code-str">"overnight"</span>, <span class="code-key">"amount"</span>: <span class="code-num">48.99</span>, <span class="code-key">"est_days"</span>: <span class="code-num">1</span> }
+  ]
+}`,
+  },
+  label: {
+    eyebrow: 'POST · /v2/shipments/{tracking_id}/label',
+    title: 'Generate Label',
+    desc: 'Purchase and generate a printable shipping label for an existing shipment booking.',
+    pills: ['REST','PDF / PNG','Requires auth'],
+    params: [
+      { name:'tracking_id', req:true,  type:'string', desc:'Existing shipment tracking ID (path param)' },
+      { name:'format',      req:false, type:'string', desc:'Output format: pdf (default) · png · zpl' },
+      { name:'size',        req:false, type:'string', desc:'Label size: 4x6 (default) · letter' },
+    ],
+    example: `{
+  <span class="code-key">"label_url"</span>: <span class="code-str">"https://api.dispatch.ca/labels/..."</span>,
+  <span class="code-key">"format"</span>: <span class="code-str">"pdf"</span>,
+  <span class="code-key">"expires_at"</span>: <span class="code-str">"2026-06-20T00:00:00Z"</span>,
+  <span class="code-key">"charge"</span>: { <span class="code-key">"amount"</span>: <span class="code-num">18.45</span>, <span class="code-key">"currency"</span>: <span class="code-str">"CAD"</span> }
+}`,
+  },
+  webhook: {
+    eyebrow: 'POST · /v2/webhooks',
+    title: 'Register Webhook',
+    desc: 'Subscribe to shipment events and receive real-time push notifications to your endpoint.',
+    pills: ['REST','JSON','Requires auth'],
+    params: [
+      { name:'url',    req:true,  type:'string', desc:'Your HTTPS endpoint to receive event payloads' },
+      { name:'events', req:true,  type:'array',  desc:'Event types: shipment.created · scan.received · delivered · exception' },
+      { name:'secret', req:false, type:'string', desc:'HMAC secret for payload signature verification' },
+    ],
+    example: `<span class="code-cmt">// Dispatch will POST to your URL:</span>
+{
+  <span class="code-key">"event"</span>: <span class="code-str">"scan.received"</span>,
+  <span class="code-key">"tracking_id"</span>: <span class="code-str">"DSP-4K7R-9XM2-CA"</span>,
+  <span class="code-key">"stage"</span>: <span class="code-str">"in_transit"</span>,
+  <span class="code-key">"timestamp"</span>: <span class="code-str">"2026-06-17T06:15:00Z"</span>
+}`,
+  },
+  quickstart: {
+    eyebrow: 'Guide',
+    title: 'Quick Start',
+    desc: 'Get a shipment booked and a tracking number in three API calls.',
+    pills: ['Guide'],
+    params: [
+      { name:'Step 1', req:false, type:'', desc:'Create an account and activate a sandbox API key' },
+      { name:'Step 2', req:false, type:'', desc:'POST /v2/rates to confirm pricing for your parcel' },
+      { name:'Step 3', req:false, type:'', desc:'POST /v2/shipments to book and get your tracking_id' },
+      { name:'Step 4', req:false, type:'', desc:'POST /v2/shipments/{id}/label to purchase and print' },
+    ],
+    example: `<span class="code-cmt"># Base URL</span>
+https://api.dispatch.ca/v2
+
+<span class="code-cmt"># Sandbox base URL</span>
+https://sandbox.api.dispatch.ca/v2
+
+<span class="code-cmt"># Auth header</span>
+Authorization: Bearer <span class="code-str">YOUR_API_KEY</span>`,
+  },
+  auth: {
+    eyebrow: 'Guide',
+    title: 'Authentication',
+    desc: 'The Dispatch API uses API key authentication. Documentation is publicly accessible — API keys are required only to make authenticated calls.',
+    pills: ['Guide'],
+    params: [
+      { name:'API Key',    req:false, type:'header', desc:'Pass as Authorization: Bearer YOUR_API_KEY' },
+      { name:'Sandbox',   req:false, type:'env',    desc:'Sandbox keys are free — no charges, no real shipments' },
+      { name:'Production',req:false, type:'env',    desc:'Activate in your account dashboard after identity verification' },
+    ],
+    example: `<span class="code-cmt"># Documentation access: no key required</span>
+<span class="code-cmt"># This page is publicly accessible</span>
+
+<span class="code-cmt"># Sandbox API calls: sandbox key</span>
+Authorization: Bearer <span class="code-str">sk_sandbox_xxxxxxxx</span>
+
+<span class="code-cmt"># Production API calls: production key</span>
+Authorization: Bearer <span class="code-str">sk_live_xxxxxxxx</span>`,
+  },
+  errors: {
+    eyebrow: 'Reference',
+    title: 'Error Codes',
+    desc: 'All errors return a structured JSON body with a code, message, and optional details field.',
+    pills: ['Reference'],
+    params: [
+      { name:'400',  req:false, type:'Bad Request',    desc:'Missing or invalid request parameters' },
+      { name:'401',  req:false, type:'Unauthorized',   desc:'Missing or invalid API key' },
+      { name:'404',  req:false, type:'Not Found',      desc:'Tracking ID or resource does not exist' },
+      { name:'422',  req:false, type:'Unprocessable',  desc:'Address validation failed or parcel exceeds limits' },
+      { name:'429',  req:false, type:'Rate Limited',   desc:'Too many requests — retry after the indicated delay' },
+      { name:'500',  req:false, type:'Server Error',   desc:'Internal error — contact support if it persists' },
+    ],
+    example: `{
+  <span class="code-key">"error"</span>: {
+    <span class="code-key">"code"</span>: <span class="code-str">"address_validation_failed"</span>,
+    <span class="code-key">"message"</span>: <span class="code-str">"Postal code M5V 1A1 does not match province BC"</span>,
+    <span class="code-key">"field"</span>: <span class="code-str">"to_address.postal_code"</span>
+  }
+}`,
+  },
+};
+
+function setDocView(key, clickedEl) {
+  document.querySelectorAll('.dev-sidebar-item').forEach(el => el.classList.remove('active'));
+  const sn = document.getElementById(`sn-${key}`);
+  if (sn) sn.classList.add('active');
+  const d = DOCS[key];
+  if (!d) return;
+  const pillHTML = d.pills.map(p => {
+    const cls = p==='REST'?'pill-rest':p.includes('JSON')?'pill-json':'pill-sandbox';
+    return `<span class="doc-pill ${cls}">${p}</span>`;
+  }).join('');
+  const paramsHTML = d.params.map(p => `
+    <div class="ep-param-row">
+      <div class="ep-param-name">${p.name}${p.req?'<span class="ep-required">*</span>':''}</div>
+      <div class="ep-param-type">${p.type}</div>
+      <div class="ep-param-desc">${p.desc}</div>
+    </div>`).join('');
+  const needsAuth = d.pills.some(p=>p.includes('auth'));
+  document.getElementById('docMain').innerHTML = `
+    <div class="doc-hero">
+      <div class="doc-eyebrow">${d.eyebrow}</div>
+      <div class="doc-title">${d.title}</div>
+      <div class="doc-desc">${d.desc}</div>
+      <div class="doc-pills">${pillHTML}</div>
+    </div>
+    <div class="doc-endpoint">
+      <div class="ep-body">
+        <div class="ep-params-title">${key==='errors'?'HTTP status codes':key==='quickstart'||key==='auth'?'Steps':'Request parameters'}</div>
+        ${paramsHTML}
+        <div class="ep-example">
+          <div class="ep-example-label">${key==='quickstart'||key==='auth'?'Reference':'Example response'}</div>
+          <pre class="ep-code">${d.example}</pre>
+        </div>
+        ${!needsAuth ? `<button class="try-btn" onclick="toggleTry(this)">▶ Try it — sign in to use sandbox</button>
+        <div class="try-response" style="display:none;">
+          <div style="color:#F87171;font-size:0.64rem;margin-bottom:4px;">401 Unauthorized</div>
+          <pre class="ep-code"><span class="code-key">"error"</span>: <span class="code-str">"sandbox_auth_required"</span>,
+<span class="code-key">"message"</span>: <span class="code-str">"Sign in to make sandbox requests."</span></pre>
+          <div style="margin-top:8px;"><button class="dev-btn dev-btn-primary" style="font-size:0.64rem;padding:4px 10px;">Sign in to activate sandbox →</button></div>
+        </div>` : ''}
+      </div>
+    </div>`;
+}
+
+function toggleTry(btn) {
+  const r = btn.nextElementSibling;
+  const show = r.style.display === 'none';
+  r.style.display = show ? 'block' : 'none';
+  btn.textContent = show ? '▼ Hide response' : '▶ Try it — sign in to use sandbox';
+}
+
+setDocView('shipment');
+</script>
+
+</body>
+</html>
