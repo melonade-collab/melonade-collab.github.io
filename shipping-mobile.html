@@ -605,7 +605,7 @@
               <div class="m-field"><div class="m-label">Card number</div><input class="m-input" id="mCardNum" placeholder="1234  5678  9012  3456" maxlength="19" style="letter-spacing:2px;" oninput="mFmtCard(this)"></div>
               <div class="m-field"><div class="m-label">Expiry</div><input class="m-input" id="mCardExp" placeholder="MM / YY" maxlength="7" oninput="mFmtExp(this)"></div>
               <div class="m-field"><div class="m-label">CVV</div><input class="m-input" id="mCardCvv" placeholder="123" maxlength="4"></div>
-              <div class="m-field"><div class="m-label">Cardholder name</div><input class="m-input" id="mCardName" placeholder="Jane Smith"></div>
+              <div class="m-field"><div class="m-label">Cardholder name</div><input class="m-input" id="mCardName" placeholder="Jane Smith" oninput="applyTitleCase(this)"></div>
             </div>
             <div class="screen-footer"><button class="btn-next" id="btnMPay" onclick="mHandlePay()">Pay <span id="mPayAmt"></span></button></div>
           </div>
@@ -1149,6 +1149,12 @@ function setWtUnit(u) {
 
 function toKg(v)  { return mWtUnit  === 'lb' ? v * 0.453592 : v; }
 function toCm(v)  { return mDimUnit === 'in' ? v * 2.54     : v; }
+
+function applyTitleCase(el) {
+  const pos = el.selectionStart;
+  const titled = el.value.replace(/\b\w/g, c => c.toUpperCase());
+  if (titled !== el.value) { el.value = titled; el.setSelectionRange(pos, pos); }
+}
 
 /* ── Quote ── */
 function mRevealQuote() {
