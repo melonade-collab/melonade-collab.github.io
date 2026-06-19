@@ -36,8 +36,48 @@
     .proto-wrap { background: #E0F2FE; border-radius: 16px; padding: 28px 20px 36px; }
     .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0369A1; text-align: center; margin-bottom: 18px; }
 
+    /* ── Phone frame ── */
+    .phone-wrap { display: flex; justify-content: center; padding: 4px 0 8px; }
+    .phone-body {
+      width: 360px;
+      background: #111;
+      border-radius: 48px;
+      padding: 14px 8px 22px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.07) inset, inset 0 1px 0 rgba(255,255,255,0.13);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .phone-notch {
+      width: 100px; height: 26px;
+      background: #111;
+      border-radius: 0 0 16px 16px;
+      position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+      z-index: 3;
+    }
+    .phone-notch-pill {
+      width: 56px; height: 14px;
+      background: #000;
+      border-radius: 8px;
+      position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+    }
+    .phone-status-bar {
+      height: 36px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      padding: 0 22px 6px;
+      position: relative; z-index: 2;
+      background: #0C4A6E;
+    }
+    .ps-time { font-size: 0.62rem; font-weight: 700; color: #fff; }
+    .ps-icons { font-size: 0.54rem; color: rgba(255,255,255,0.85); letter-spacing: 1px; }
+    .phone-screen { border-radius: 38px; overflow: hidden; border: 2px solid #222; }
+    .phone-home-bar { width: 100px; height: 4px; background: rgba(255,255,255,0.25); border-radius: 2px; margin: 12px auto 0; }
+    .phone-btn-vol { position: absolute; left: -10px; width: 4px; height: 28px; background: #2a2a2a; border-radius: 2px 0 0 2px; }
+    .phone-btn-vol.up  { top: 108px; }
+    .phone-btn-vol.dn  { top: 148px; }
+    .phone-btn-pwr { position: absolute; right: -10px; top: 130px; width: 4px; height: 44px; background: #2a2a2a; border-radius: 0 2px 2px 0; }
+
     /* ── Chat app ── */
-    .chat-shell { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #D1D5DB; display: flex; flex-direction: column; height: 580px; }
+    .chat-shell { background: #fff; display: flex; flex-direction: column; height: 490px; }
 
     /* Top bar */
     .chat-topbar { background: #0C4A6E; padding: 11px 16px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
@@ -208,12 +248,23 @@
   </div>
 
   <!-- Prototype -->
-  <div class="proto-wrap">
+  <div class="proto-wrap" style="display:flex;flex-direction:column;align-items:center;">
     <p class="proto-wrap-label">Interactive prototype — Try the lookup</p>
 
+    <div class="phone-wrap">
+    <div class="phone-body">
+      <div class="phone-notch"><div class="phone-notch-pill"></div></div>
+      <div class="phone-btn-vol up"></div>
+      <div class="phone-btn-vol dn"></div>
+      <div class="phone-btn-pwr"></div>
+      <div class="phone-screen">
+        <div class="phone-status-bar">
+          <span class="ps-time">9:41</span>
+          <span class="ps-icons">▲▲▲ WiFi 🔋</span>
+        </div>
     <div class="chat-shell">
       <!-- Top bar -->
-      <div class="chat-topbar">
+      <div class="chat-topbar" style="border-radius:0;">
         <div class="chat-topbar-avatar">💬</div>
         <div class="chat-topbar-info">
           <div class="chat-topbar-name">ClearWave Assistant</div>
@@ -229,7 +280,11 @@
         <input class="chat-input" id="chatInput" placeholder="Type a message…" onkeydown="if(event.key==='Enter'){sendMsg();}" />
         <button class="chat-send-btn" onclick="sendMsg()">➤</button>
       </div>
-    </div>
+    </div><!-- /chat-shell -->
+      </div><!-- /phone-screen -->
+      <div class="phone-home-bar"></div>
+    </div><!-- /phone-body -->
+    </div><!-- /phone-wrap -->
   </div>
 
 </div>

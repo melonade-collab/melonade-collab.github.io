@@ -107,6 +107,27 @@
     .fix-focus .cw-icon-btn:focus             { outline: 3px solid #7C3AED; outline-offset: 2px; }
     .fix-focus .focus-demo-target.demo-focused { outline: 3px solid #7C3AED; outline-offset: 2px; }
 
+    /* Skip nav */
+    .cw-skip { display: none; background: #4C1D95; color: #fff; font-size: 0.66rem; font-weight: 700; padding: 5px 0; text-align: center; text-decoration: underline; width: 100%; }
+    .fix-skip .cw-skip { display: block; }
+
+    /* Newsletter / form labels */
+    .cw-newsletter { padding: 10px 12px; border-top: 1px solid #E5E7EB; background: #F9FAFB; }
+    .cw-nl-title { font-size: 0.6rem; font-weight: 700; color: #111; margin-bottom: 6px; }
+    .cw-nl-field { margin-bottom: 6px; position: relative; }
+    .cw-form-label { display: none; font-size: 0.58rem; font-weight: 700; color: #374151; margin-bottom: 3px; }
+    .cw-required { color: #DC2626; }
+    .cw-required-note { display: none; font-size: 0.52rem; color: #6B7280; font-style: italic; margin-left: 2px; }
+    .cw-nl-input { width: 100%; padding: 6px 9px; border: 1.5px solid #E5E7EB; border-radius: 5px; font-size: 0.66rem; font-family: inherit; outline: none; }
+    .cw-error-plain { font-size: 0.57rem; color: #DC2626; margin-top: 4px; font-weight: 600; }
+    .cw-error-icon { display: none; font-size: 0.57rem; color: #DC2626; margin-top: 4px; font-weight: 600; }
+    .cw-nl-btn { margin-top: 6px; padding: 5px 12px; background: #4C1D95; color: #fff; border: none; border-radius: 5px; font-size: 0.62rem; font-weight: 700; font-family: inherit; cursor: pointer; }
+    .fix-forms .cw-form-label { display: block; }
+    .fix-forms .cw-required-note { display: inline; }
+    .fix-forms .cw-nl-input { border-color: #EF4444; }
+    .fix-forms .cw-error-plain { display: none; }
+    .fix-forms .cw-error-icon { display: block; }
+
     /* ── Audit panel ── */
     .audit-panel { padding: 13px 12px; background: #F9FAFB; overflow-y: auto; max-height: 500px; }
     .audit-summary-row { font-size: 0.68rem; font-weight: 700; color: #EF4444; margin-bottom: 11px; }
@@ -268,7 +289,7 @@
         <div class="audit-progress-bar">
           <div class="audit-progress-fill" id="auditFill"></div>
         </div>
-        <div class="audit-progress-label" id="auditLabel">0 of 12 resolved</div>
+        <div class="audit-progress-label" id="auditLabel">0 of 18 resolved</div>
         <button class="audit-reset-btn" onclick="resetAudit()">Reset</button>
       </div>
 
@@ -276,6 +297,7 @@
 
         <!-- Simulated carrier website -->
         <div class="carrier-sim" id="sim">
+          <a class="cw-skip" href="#">Skip to main content</a>
 
           <!-- Nav -->
           <div class="cw-nav">
@@ -339,11 +361,23 @@
             </div>
           </div>
 
+          <!-- Newsletter / Form labels demo -->
+          <div class="cw-newsletter">
+            <div class="cw-nl-title">Stay informed — get our latest offers</div>
+            <div class="cw-nl-field">
+              <label class="cw-form-label">Email address <span class="cw-required">*</span><span class="cw-required-note">(required)</span></label>
+              <input class="cw-nl-input" placeholder="Email address" value="" />
+              <div class="cw-error-plain">Please enter a valid email address</div>
+              <div class="cw-error-icon">⚠ Please enter a valid email address</div>
+            </div>
+            <button class="cw-nl-btn">Subscribe</button>
+          </div>
+
         </div><!-- /carrier-sim -->
 
         <!-- Audit findings panel -->
         <div class="audit-panel">
-          <div class="audit-summary-row" id="auditSummary">⚠ 12 violations found</div>
+          <div class="audit-summary-row" id="auditSummary">⚠ 18 violations found</div>
 
           <!-- Contrast -->
           <div class="audit-cat">
@@ -468,10 +502,66 @@
             </div>
           </div>
 
+          <!-- Skip Navigation -->
+          <div class="audit-cat">
+            <div class="audit-cat-hdr" onclick="toggleCat(this)">
+              <span class="audit-cat-icon">🧭</span>
+              <span class="audit-cat-name">Skip Navigation</span>
+              <span class="audit-cat-badge" id="badge-n">3 issues</span>
+              <span class="audit-cat-chev">▼</span>
+            </div>
+            <div class="audit-cat-body">
+              <div class="audit-issue" id="n1">
+                <div class="issue-dot"></div>
+                <div class="issue-text">No "skip to main content" link — keyboard users tab through all nav</div>
+                <span class="issue-wcag">2.4.1</span>
+              </div>
+              <div class="audit-issue" id="n2">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Navigation missing <code>&lt;nav&gt;</code> landmark — not navigable by region</div>
+                <span class="issue-wcag">1.3.6</span>
+              </div>
+              <div class="audit-issue" id="n3">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Main content area missing <code>&lt;main&gt;</code> landmark role</div>
+                <span class="issue-wcag">1.3.6</span>
+              </div>
+              <button class="audit-fix-btn" id="fixBtn-n" onclick="applyFix('n')">Fix navigation landmarks →</button>
+            </div>
+          </div>
+
+          <!-- Form Labels -->
+          <div class="audit-cat">
+            <div class="audit-cat-hdr" onclick="toggleCat(this)">
+              <span class="audit-cat-icon">📋</span>
+              <span class="audit-cat-name">Form Labels & Errors</span>
+              <span class="audit-cat-badge" id="badge-l">3 issues</span>
+              <span class="audit-cat-chev">▼</span>
+            </div>
+            <div class="audit-cat-body">
+              <div class="audit-issue" id="l1">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Email input uses placeholder as label — disappears when typing</div>
+                <span class="issue-wcag">1.3.1</span>
+              </div>
+              <div class="audit-issue" id="l2">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Error message uses color alone — no icon or descriptive text</div>
+                <span class="issue-wcag">3.3.1</span>
+              </div>
+              <div class="audit-issue" id="l3">
+                <div class="issue-dot"></div>
+                <div class="issue-text">Required field marked with asterisk only — no text alternative</div>
+                <span class="issue-wcag">3.3.2</span>
+              </div>
+              <button class="audit-fix-btn" id="fixBtn-l" onclick="applyFix('l')">Fix form labels →</button>
+            </div>
+          </div>
+
           <div class="audit-success" id="auditSuccess">
             <div class="audit-success-icon">✅</div>
             <div class="audit-success-title">WCAG 2.1 AA Compliant</div>
-            <div class="audit-success-sub">All 12 violations resolved. The page now meets AA standards across contrast, ARIA labeling, heading structure, and keyboard navigation.</div>
+            <div class="audit-success-sub">All 18 violations resolved. The page now meets AA standards across contrast, ARIA labeling, heading structure, keyboard navigation, skip links, and form accessibility.</div>
           </div>
         </div><!-- /audit-panel -->
 
@@ -492,6 +582,8 @@ const CATS = {
   a: { issues: ['a1','a2','a3'], cls: 'fix-aria',       label: 'Fix ARIA labels →' },
   h: { issues: ['h1','h2','h3'], cls: 'fix-headings',   label: 'Fix heading structure →' },
   f: { issues: ['f1','f2','f3'], cls: 'fix-focus',      label: 'Fix focus indicators →' },
+  n: { issues: ['n1','n2','n3'], cls: 'fix-skip',       label: 'Fix navigation landmarks →' },
+  l: { issues: ['l1','l2','l3'], cls: 'fix-forms',      label: 'Fix form labels →' },
 };
 const fixed = new Set();
 
@@ -520,7 +612,7 @@ function applyFix(cat) {
 
 function updateProgress() {
   const resolved = fixed.size * 3;
-  const total = 12;
+  const total = 18;
   document.getElementById('auditFill').style.width = `${(resolved / total) * 100}%`;
   document.getElementById('auditLabel').textContent = `${resolved} of ${total} resolved`;
 
@@ -555,9 +647,9 @@ function resetAudit() {
   });
 
   document.getElementById('auditFill').style.width = '0';
-  document.getElementById('auditLabel').textContent = '0 of 12 resolved';
+  document.getElementById('auditLabel').textContent = '0 of 18 resolved';
   const summary = document.getElementById('auditSummary');
-  summary.textContent = '⚠ 12 violations found';
+  summary.textContent = '⚠ 18 violations found';
   summary.classList.remove('all-clear');
   document.getElementById('auditSuccess').classList.remove('show');
 }
