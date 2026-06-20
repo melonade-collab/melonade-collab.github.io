@@ -535,11 +535,6 @@
 
         </div>
 
-        <!-- Weather widget -->
-        <div class="weather-widget" id="weatherWidget">
-          <span class="weather-error">Loading weather…</span>
-        </div>
-
         <!-- Watering widget -->
         <div class="water-widget">
           <svg width="22" height="22" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
@@ -554,6 +549,11 @@
         </div>
         <div class="water-bar-wrap">
           <div class="water-bar-fill good" id="waterBarFill" style="width:0%"></div>
+        </div>
+
+        <!-- Weather widget -->
+        <div class="weather-widget" id="weatherWidget">
+          <span class="weather-error">Loading weather…</span>
         </div>
 
         <div class="ai-insight" id="aiInsight">
@@ -644,7 +644,7 @@
       document.getElementById('greeting').textContent = `Good ${period}, ${userName}.`;
     }
 
-    function generateInsight(weatherCode, temp, humidity, uvIndex) {
+    function generateInsight(weatherCode, temp, humidity, uvIndex, windSpeed) {
       const w = window._waterStatus;
       if (!w || !w.ready) return;
 
@@ -667,10 +667,15 @@
           ? `Outdoor humidity is low${humidStr}. Indoor air can dry out further as doors and windows open and close — a humidifier would help keep your Monstera happy.`
           : '';
 
-      const uvHigh    = uvIndex !== null && uvIndex >= 6;
+      const uvHigh     = uvIndex !== null && uvIndex >= 6;
       const uvVeryHigh = uvIndex !== null && uvIndex >= 8;
       const uvTip = uvHigh
-        ? `UV is ${uvVeryHigh ? 'very high' : 'high'} today (index ${uvIndex}) — if windows or doors are open, intense light reaching your Monstera could scorch the leaves. Keep it back from the glass or use a sheer curtain.`
+        ? `UV is ${uvVeryHigh ? 'very high' : 'high'} today (index ${uvIndex}). If your Monstera isn't used to direct sun, keep it back from the glass — leaves can burn even through a window.`
+        : '';
+
+      const isWindy  = windSpeed !== null && windSpeed >= 30;
+      const windTip  = isWindy
+        ? `It's quite windy out (${windSpeed} km/h) — if any windows are open, cold drafts can stress your Monstera and dry the soil out faster than usual.`
         : '';
 
       let text = '';
@@ -681,24 +686,29 @@
           : 'Tap "Water today" to start tracking. Once you do, this card will keep an eye on things for you.';
         if (humidTip) text += ' ' + humidTip;
         if (uvTip) text += ' ' + uvTip;
+        if (windTip) text += ' ' + windTip;
       } else if (w.wateredToday && driesOut) {
         text = 'Good timing on the water. Sunny conditions will speed up evaporation — worth checking the soil a day or two early next time.';
         if (humidTip) text += ' ' + humidTip;
         if (uvTip) text += ' ' + uvTip;
+        if (windTip) text += ' ' + windTip;
       } else if (w.wateredToday) {
         text = moist
           ? 'Freshly watered with overcast skies ahead — the soil should stay moist longer than usual. No rush on the next one.'
           : 'Freshly watered. Your Monstera should be in good shape for the week.';
         if (humidTip) text += ' ' + humidTip;
         if (uvTip) text += ' ' + uvTip;
+        if (windTip) text += ' ' + windTip;
       } else if (w.days >= w.interval && driesOut) {
         text = 'Watering is overdue and it\'s warm and sunny — the soil\'s likely quite dry. Your Monstera would appreciate a drink today.';
         if (humidTip) text += ' ' + humidTip;
         if (uvTip) text += ' ' + uvTip;
+        if (windTip) text += ' ' + windTip;
       } else if (w.days >= w.interval) {
         text = 'Watering is overdue. Time to give your Monstera a good soak.';
         if (humidTip) text += ' ' + humidTip;
         if (uvTip) text += ' ' + uvTip;
+        if (windTip) text += ' ' + windTip;
       } else {
         const daysLeft = w.interval - w.days;
         const isDueSoon = w.days >= w.interval * 0.75;
@@ -715,6 +725,7 @@
         }
         if (humidTip) text += ' ' + humidTip;
         if (uvTip) text += ' ' + uvTip;
+        if (windTip) text += ' ' + windTip;
       }
 
       if (text) {
@@ -723,13 +734,14 @@
       }
     }
 
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,relative_humidity_2m,uv_index&temperature_unit=celsius&timezone=${encodeURIComponent(tz)}`)
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,relative_humidity_2m,uv_index,wind_speed_10m&temperature_unit=celsius&wind_speed_unit=kmh&timezone=${encodeURIComponent(tz)}`)
       .then(r => r.json())
       .then(data => {
         const temp     = Math.round(data.current.temperature_2m);
         const code     = data.current.weathercode;
         const humidity = data.current.relative_humidity_2m;
-        const uvIndex  = Math.round(data.current.uv_index);
+        const uvIndex   = Math.round(data.current.uv_index);
+        const windSpeed = Math.round(data.current.wind_speed_10m);
         const icon = weatherIcons[code] ?? '🌡️';
         const desc = weatherDescs[code] ?? 'Unknown';
         widget.innerHTML = `
@@ -737,16 +749,16 @@
           <div class="weather-info">
             <div class="weather-temp">${temp}°C</div>
             <div class="weather-desc">${desc}</div>
-            <div class="weather-desc" style="margin-top:2px;">${humidity}% humidity</div>
+            <div class="weather-desc" style="margin-top:2px;">${humidity}% humidity · UV ${uvIndex}</div>
           </div>
           <div class="weather-location">${cityName}, ${prov}</div>
         `;
 
-        generateInsight(code, temp, humidity, uvIndex);
+        generateInsight(code, temp, humidity, uvIndex, windSpeed);
       })
       .catch(() => {
         widget.innerHTML = '<span class="weather-error">Weather unavailable</span>';
-        generateInsight(null, null, null, null);
+        generateInsight(null, null, null, null, null);
       });
   </script>
 
