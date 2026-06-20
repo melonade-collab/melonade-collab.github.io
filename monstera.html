@@ -572,5 +572,23 @@
         widget.innerHTML = '<span class="weather-error">Weather unavailable</span>';
       });
   </script>
+
+  <script>
+    /* ── Perenual plant image ── */
+    const PERENUAL_KEY = 'YOUR_API_KEY_HERE';
+
+    if (PERENUAL_KEY !== 'YOUR_API_KEY_HERE') {
+      fetch(`https://perenual.com/api/species-list?key=${PERENUAL_KEY}&q=Monstera%20deliciosa`)
+        .then(r => r.json())
+        .then(data => {
+          const img = data?.data?.[0]?.default_image?.medium_url;
+          if (img && !img.includes('upgrade')) {
+            const container = document.getElementById('plantImageContainer');
+            container.innerHTML = `<img src="${img}" alt="Monstera deliciosa" style="width:100%;height:100%;object-fit:cover;display:block;">`;
+          }
+        })
+        .catch(() => { /* keep SVG fallback */ });
+    }
+  </script>
 </body>
 </html>
