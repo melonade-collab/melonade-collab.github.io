@@ -317,25 +317,28 @@
     </div>
 
     <div class="app-content">
+      <div id="greeting" style="font-size:0.82rem;font-weight:600;color:#2e7d32;margin-bottom:14px;padding-left:4px;letter-spacing:0.1px;"></div>
       <div class="section-label">Your collection</div>
 
-      <a href="monstera.html" class="plant-card">
-        <div class="plant-thumb">
-          <img src="https://images.unsplash.com/photo-1525498128493-380d1990a112?w=200&auto=format&fit=crop&q=60" alt="Monstera">
-        </div>
-        <div class="plant-card-info">
-          <div class="plant-card-name">Monstera</div>
-          <div class="plant-card-species">Monstera deliciosa</div>
-          <div class="plant-card-status">
-            <span class="status-dot none" id="monsteraStatusDot"></span>
-            <span class="status-text" id="monsteraStatusText">No watering history</span>
+      <div id="monsteraCard">
+        <a href="monstera.html" class="plant-card">
+          <div class="plant-thumb">
+            <img src="https://images.unsplash.com/photo-1525498128493-380d1990a112?w=200&auto=format&fit=crop&q=60" alt="Monstera">
           </div>
-        </div>
-        <svg class="card-chevron" width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 5.5L1 12"/></svg>
-      </a>
+          <div class="plant-card-info">
+            <div class="plant-card-name">Monstera</div>
+            <div class="plant-card-species">Monstera deliciosa</div>
+            <div class="plant-card-status">
+              <span class="status-dot none" id="monsteraStatusDot"></span>
+              <span class="status-text" id="monsteraStatusText">No watering history</span>
+            </div>
+          </div>
+          <svg class="card-chevron" width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 5.5L1 12"/></svg>
+        </a>
+      </div>
 
       <div id="bopCard" style="display:none;">
-        <div class="plant-card" style="cursor:default;">
+        <a href="bop.html" class="plant-card">
           <div class="plant-thumb">
             <img src="https://media.istockphoto.com/id/121351935/photo/bird-of-paradise-flower-isolated-on-white-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=b6qc2K_e5_TgPsU0XQJGe0oR94Hhzeo8pJFHntbdc3o=" alt="Bird of Paradise">
           </div>
@@ -343,12 +346,46 @@
             <div class="plant-card-name">Bird of Paradise</div>
             <div class="plant-card-species">Strelitzia reginae</div>
             <div class="plant-card-status">
-              <span class="status-dot none"></span>
-              <span class="status-text">No care data yet</span>
+              <span class="status-dot none" id="bopStatusDot"></span>
+              <span class="status-text" id="bopStatusText">No care data yet</span>
             </div>
           </div>
-          <svg class="card-chevron" width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="#e0e0e0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 5.5L1 12"/></svg>
-        </div>
+          <svg class="card-chevron" width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 5.5L1 12"/></svg>
+        </a>
+      </div>
+
+      <div id="fiddleCard" style="display:none;">
+        <a href="fiddle.html" class="plant-card">
+          <div class="plant-thumb">
+            <img src="https://images.unsplash.com/photo-1643819131797-46919f3009f7?w=200&auto=format&fit=crop&q=60" alt="Fiddle Leaf Fig">
+          </div>
+          <div class="plant-card-info">
+            <div class="plant-card-name">Fiddle Leaf Fig</div>
+            <div class="plant-card-species">Ficus lyrata</div>
+            <div class="plant-card-status">
+              <span class="status-dot none" id="fiddleStatusDot"></span>
+              <span class="status-text" id="fiddleStatusText">No care data yet</span>
+            </div>
+          </div>
+          <svg class="card-chevron" width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 5.5L1 12"/></svg>
+        </a>
+      </div>
+
+      <div id="lilyCard" style="display:none;">
+        <a href="lily.html" class="plant-card">
+          <div class="plant-thumb">
+            <img src="https://images.unsplash.com/photo-1687858001773-d58b6cec5bdf?w=200&auto=format&fit=crop&q=60" alt="Peace Lily">
+          </div>
+          <div class="plant-card-info">
+            <div class="plant-card-name">Peace Lily</div>
+            <div class="plant-card-species">Spathiphyllum wallisii</div>
+            <div class="plant-card-status">
+              <span class="status-dot none" id="lilyStatusDot"></span>
+              <span class="status-text" id="lilyStatusText">No care data yet</span>
+            </div>
+          </div>
+          <svg class="card-chevron" width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 5.5L1 12"/></svg>
+        </a>
       </div>
 
       <button class="add-plant-btn" onclick="location.href='add-plant.html'">
@@ -371,56 +408,55 @@
       document.getElementById('settingsMenu').style.display = 'none';
     });
 
-    if (localStorage.getItem('plant-bop-added') === '1') {
-      document.getElementById('bopCard').style.display = 'block';
+    const userName = localStorage.getItem('plant-user-name');
+    if (userName) {
+      const hour = new Date().getHours();
+      const period = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
+      document.getElementById('greeting').textContent = `Good ${period}, ${userName}.`;
     }
 
-    // Read watering status from localStorage and populate the card
-    (function() {
-      const HISTORY_KEY  = 'watering-history';
-      const INTERVAL_KEY = 'watering-interval';
+    if (localStorage.getItem('plant-monstera-removed') === '1') document.getElementById('monsteraCard').style.display = 'none';
+    if (localStorage.getItem('plant-bop-added') === '1')    document.getElementById('bopCard').style.display = 'block';
+    if (localStorage.getItem('plant-fiddle-added') === '1') document.getElementById('fiddleCard').style.display = 'block';
+    if (localStorage.getItem('plant-lily-added') === '1')   document.getElementById('lilyCard').style.display = 'block';
 
-      function todayISO() {
-        const d = new Date();
-        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-      }
+    function todayISO() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+    function daysSince(iso) {
+      const then = new Date(iso + 'T00:00:00');
+      const now  = new Date(); now.setHours(0,0,0,0);
+      return Math.floor((now - then) / 86400000);
+    }
 
-      function daysSince(iso) {
-        const then = new Date(iso + 'T00:00:00');
-        const now  = new Date(); now.setHours(0,0,0,0);
-        return Math.floor((now - then) / 86400000);
-      }
-
-      const dot  = document.getElementById('monsteraStatusDot');
-      const text = document.getElementById('monsteraStatusText');
-
+    function setWaterStatus(dotId, textId, historyKey, intervalKey, defaultInterval) {
       try {
-        const history  = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
-        const interval = parseInt(localStorage.getItem(INTERVAL_KEY) || '10', 10);
-
-        if (history.length === 0) return;
-
-        const last     = history[0];
-        const days     = daysSince(last);
+        const history  = JSON.parse(localStorage.getItem(historyKey)) || [];
+        const interval = parseInt(localStorage.getItem(intervalKey) || String(defaultInterval), 10);
+        const dot  = document.getElementById(dotId);
+        const text = document.getElementById(textId);
+        if (!dot || !text || history.length === 0) return;
+        const days     = daysSince(history[0]);
         const daysLeft = interval - days;
-
         if (days === 0) {
-          dot.className  = 'status-dot good';
-          text.textContent = 'Watered today';
+          dot.className = 'status-dot good'; text.textContent = 'Watered today';
         } else if (days < interval * 0.75) {
-          dot.className  = 'status-dot good';
-          text.textContent = `Next water in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`;
+          dot.className = 'status-dot good'; text.textContent = `Next water in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`;
         } else if (days < interval) {
-          dot.className  = 'status-dot soon';
-          text.textContent = `Due in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`;
+          dot.className = 'status-dot soon'; text.textContent = `Due in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`;
         } else {
           const over = days - interval;
-          dot.className       = 'status-dot overdue';
-          text.className      = 'status-text overdue';
-          text.textContent    = over === 0 ? 'Due today' : `${over} day${over !== 1 ? 's' : ''} overdue`;
+          dot.className = 'status-dot overdue'; text.className = 'status-text overdue';
+          text.textContent = over === 0 ? 'Due today' : `${over} day${over !== 1 ? 's' : ''} overdue`;
         }
       } catch(e) {}
-    })();
+    }
+
+    setWaterStatus('monsteraStatusDot', 'monsteraStatusText', 'watering-history', 'watering-interval', 10);
+    setWaterStatus('bopStatusDot',      'bopStatusText',      'bop-watering-history', 'bop-watering-interval', 14);
+    setWaterStatus('fiddleStatusDot',   'fiddleStatusText',   'fiddle-watering-history', 'fiddle-watering-interval', 10);
+    setWaterStatus('lilyStatusDot',     'lilyStatusText',     'lily-watering-history', 'lily-watering-interval', 10);
   </script>
 </body>
 </html>

@@ -3,13 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monstera care card</title>
+  <title>Bird of Paradise care</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -21,7 +17,6 @@
       padding: 40px 20px;
     }
 
-    /* ── Phone frame ── */
     .phone-frame {
       width: 320px;
       height: min(780px, calc(100vh - 60px));
@@ -34,7 +29,6 @@
       flex-direction: column;
     }
 
-    /* Dynamic Island */
     .phone-frame::before {
       content: '';
       position: absolute;
@@ -49,7 +43,6 @@
       pointer-events: none;
     }
 
-    /* ── Status bar ── */
     .status-bar {
       flex-shrink: 0;
       padding: 16px 28px 6px;
@@ -74,7 +67,6 @@
       padding-right: 4px;
     }
 
-    /* ── App nav bar ── */
     .app-nav {
       flex-shrink: 0;
       background: #fff;
@@ -98,7 +90,7 @@
     }
 
     .nav-title {
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 700;
       color: #1c1c1e;
       letter-spacing: -0.2px;
@@ -148,38 +140,32 @@
       border-top: 1px solid #f0f0f0;
     }
 
-    .nav-settings-menu a:first-child {
-      border-top: none;
-    }
+    .nav-settings-menu a:first-child { border-top: none; }
 
-    /* ── Scrollable content ── */
     .app-content {
       flex: 1;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
 
-    /* ── Plant image ── */
     .plant-image {
-      background: #e8f5e9;
-      height: 240px;
+      height: 220px;
+      background: #fffdf5;
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
 
     .plant-image img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      object-position: center;
+      object-fit: contain;
+      padding: 16px;
       display: block;
     }
 
-    /* ── Card body ── */
-    .card-body {
-      padding: 20px 20px 36px;
-    }
+    .card-body { padding: 20px 20px 36px; }
 
     .greeting {
       font-size: 0.82rem;
@@ -190,7 +176,7 @@
     }
 
     .plant-name {
-      font-size: 1.45rem;
+      font-size: 1.35rem;
       font-weight: 700;
       color: #1b5e20;
       letter-spacing: -0.3px;
@@ -217,11 +203,7 @@
       text-align: center;
     }
 
-    .care-icon {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 8px;
-    }
+    .care-icon { display: flex; justify-content: center; margin-bottom: 8px; }
 
     .care-label {
       font-size: 0.65rem;
@@ -249,10 +231,7 @@
       margin-top: 14px;
     }
 
-    .water-widget-info {
-      flex: 1;
-      min-width: 0;
-    }
+    .water-widget-info { flex: 1; min-width: 0; }
 
     .water-widget-text {
       font-size: 0.8rem;
@@ -288,13 +267,7 @@
 
     .water-now-btn:hover  { background: #1b5e20; }
     .water-now-btn:active { transform: scale(0.97); }
-
-    .water-now-btn.done {
-      background: #a5d6a7;
-      color: #2e7d32;
-      cursor: default;
-    }
-
+    .water-now-btn.done   { background: #a5d6a7; color: #2e7d32; cursor: default; }
     .water-now-btn.done:hover { background: #a5d6a7; }
 
     .water-bar-wrap {
@@ -305,46 +278,10 @@
       overflow: hidden;
     }
 
-    .water-bar-fill {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 0.4s ease;
-    }
-
+    .water-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
     .water-bar-fill.good    { background: #66bb6a; }
     .water-bar-fill.soon    { background: #ffb300; }
     .water-bar-fill.overdue { background: #ef6c00; }
-
-    .ai-insight {
-      margin-top: 16px;
-      padding: 12px 14px;
-      background: rgba(46, 125, 50, 0.04);
-      border-radius: 12px;
-      border: 1px solid rgba(46, 125, 50, 0.1);
-      display: none;
-    }
-
-    .ai-insight-header {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-bottom: 5px;
-    }
-
-    .ai-insight-label {
-      font-size: 0.65rem;
-      font-weight: 700;
-      color: #a5d6a7;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
-
-    .ai-insight-text {
-      font-size: 0.78rem;
-      color: #616161;
-      line-height: 1.55;
-      margin: 0;
-    }
 
     .weather-widget {
       background: #f0f4f0;
@@ -356,16 +293,8 @@
       gap: 12px;
     }
 
-    .weather-icon {
-      font-size: 1.6rem;
-      line-height: 1;
-      flex-shrink: 0;
-    }
-
-    .weather-info {
-      flex: 1;
-      min-width: 0;
-    }
+    .weather-icon { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
+    .weather-info { flex: 1; min-width: 0; }
 
     .weather-temp {
       font-size: 1.1rem;
@@ -383,62 +312,56 @@
       text-overflow: ellipsis;
     }
 
-    .weather-location {
-      font-size: 0.68rem;
-      color: #9e9e9e;
-      text-align: right;
-      flex-shrink: 0;
+    .weather-location { font-size: 0.68rem; color: #9e9e9e; text-align: right; flex-shrink: 0; }
+    .weather-error    { font-size: 0.75rem; color: #9e9e9e; }
+
+    .ai-insight {
+      margin-top: 16px;
+      padding: 12px 14px;
+      background: rgba(46, 125, 50, 0.04);
+      border-radius: 12px;
+      border: 1px solid rgba(46, 125, 50, 0.1);
+      display: none;
     }
 
-    .weather-error {
-      font-size: 0.75rem;
-      color: #9e9e9e;
+    .ai-insight-header { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
+
+    .ai-insight-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #a5d6a7;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
     }
 
-    /* ── On actual mobile: full screen ── */
+    .ai-insight-text { font-size: 0.78rem; color: #616161; line-height: 1.55; margin: 0; }
+
     @media (max-width: 440px) {
-      body {
-        padding: 0;
-        align-items: flex-start;
-        background: #fff;
-      }
-      .phone-frame {
-        width: 100%;
-        border-radius: 0;
-        box-shadow: none;
-        max-height: 100dvh;
-      }
-      .phone-frame::before {
-        display: none;
-      }
-      .status-bar {
-        display: none;
-      }
+      body { padding: 0; align-items: flex-start; background: #fff; }
+      .phone-frame { width: 100%; border-radius: 0; box-shadow: none; max-height: 100dvh; }
+      .phone-frame::before { display: none; }
+      .status-bar { display: none; }
     }
   </style>
 </head>
 <body>
   <div class="phone-frame">
 
-    <!-- Status bar -->
     <div class="status-bar">
       <span class="status-time">9:41</span>
       <div class="status-icons">
-        <!-- Signal -->
         <svg width="17" height="12" viewBox="0 0 17 12" fill="#1c1c1e">
           <rect x="0"  y="8" width="3" height="4" rx="0.5"/>
           <rect x="4"  y="5" width="3" height="7" rx="0.5"/>
           <rect x="8"  y="2" width="3" height="10" rx="0.5"/>
           <rect x="12" y="0" width="3" height="12" rx="0.5" opacity="0.3"/>
         </svg>
-        <!-- WiFi -->
         <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#1c1c1e" stroke-linecap="round">
           <path d="M1 4.5 C4 1.5 12 1.5 15 4.5" stroke-width="1.4" opacity="0.3"/>
-          <path d="M3 7 C5 5 11 5 13 7"  stroke-width="1.4"/>
+          <path d="M3 7 C5 5 11 5 13 7" stroke-width="1.4"/>
           <path d="M5.5 9.5 C6.5 8.5 9.5 8.5 10.5 9.5" stroke-width="1.4"/>
           <circle cx="8" cy="11.5" r="0.8" fill="#1c1c1e" stroke="none"/>
         </svg>
-        <!-- Battery -->
         <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
           <rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="#1c1c1e" stroke-width="1" opacity="0.35"/>
           <rect x="1.5" y="1.5" width="16" height="9" rx="2" fill="#1c1c1e"/>
@@ -447,13 +370,12 @@
       </div>
     </div>
 
-    <!-- App nav bar -->
     <div class="app-nav">
       <a href="plants.html" class="nav-back">
         <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1L1 6.5L7 12"/></svg>
         My Plants
       </a>
-      <span class="nav-title">Monstera</span>
+      <span class="nav-title">Bird of Paradise</span>
       <div class="nav-settings-wrap">
         <button class="nav-settings-btn" onclick="toggleSettings(event)" aria-label="Settings">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -478,23 +400,21 @@
       </div>
     </div>
 
-    <!-- Scrollable content -->
     <div class="app-content">
 
-      <div class="plant-image" id="plantImageContainer">
-        <img src="https://images.unsplash.com/photo-1525498128493-380d1990a112?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bW9uc3RlcmF8ZW58MHx8MHx8fDA%3D" alt="Monstera deliciosa" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div class="plant-image">
+        <img src="https://media.istockphoto.com/id/121351935/photo/bird-of-paradise-flower-isolated-on-white-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=b6qc2K_e5_TgPsU0XQJGe0oR94Hhzeo8pJFHntbdc3o=" alt="Bird of Paradise">
       </div>
 
       <div class="card-body">
-        <div class="plant-name">Monstera</div>
-        <div class="plant-species">Monstera deliciosa</div>
+        <div class="plant-name">Bird of Paradise</div>
+        <div class="plant-species">Strelitzia reginae</div>
 
         <div class="care-grid">
 
-          <!-- Light -->
           <div class="care-item">
             <div class="care-icon">
-              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
                 <circle cx="15" cy="15" r="5.5" fill="#FFA726"/>
                 <line x1="15" y1="2"    x2="15" y2="5.5"  stroke="#FFA726" stroke-width="2" stroke-linecap="round"/>
                 <line x1="15" y1="24.5" x2="15" y2="28"   stroke="#FFA726" stroke-width="2" stroke-linecap="round"/>
@@ -507,13 +427,12 @@
               </svg>
             </div>
             <div class="care-label">Light</div>
-            <div class="care-value">Bright indirect</div>
+            <div class="care-value">Bright direct sun</div>
           </div>
 
-          <!-- Water -->
           <div class="care-item">
             <div class="care-icon">
-              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
                 <path d="M15 4 C15 4 7 14 7 19.5 C7 23.6 10.7 27 15 27 C19.3 27 23 23.6 23 19.5 C23 14 15 4 15 4Z" fill="#42A5F5"/>
                 <path d="M19 22 C18 24.2 16 25.2 13.5 24.5" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.65"/>
               </svg>
@@ -522,24 +441,22 @@
             <div class="care-value">Every 1–2 weeks</div>
           </div>
 
-          <!-- Humidity -->
           <div class="care-item">
             <div class="care-icon">
-              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
                 <path d="M9 3 C9 3 5 8.5 5 11.5 C5 14 6.8 16 9 16 C11.2 16 13 14 13 11.5 C13 8.5 9 3 9 3Z" fill="#90CAF9"/>
                 <path d="M21 3 C21 3 17 8.5 17 11.5 C17 14 18.8 16 21 16 C23.2 16 25 14 25 11.5 C25 8.5 21 3 21 3Z" fill="#90CAF9"/>
                 <path d="M15 14 C15 14 11 19.5 11 22.5 C11 25 12.8 27 15 27 C17.2 27 19 25 19 22.5 C19 19.5 15 14 15 14Z" fill="#42A5F5"/>
               </svg>
             </div>
             <div class="care-label">Humidity</div>
-            <div class="care-value">60%+ preferred</div>
+            <div class="care-value">50%+ preferred</div>
           </div>
 
         </div>
 
-        <!-- Watering widget -->
         <div class="water-widget">
-          <svg width="22" height="22" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <svg width="22" height="22" viewBox="0 0 30 30" fill="none" style="flex-shrink:0">
             <path d="M15 4 C15 4 7 14 7 19.5 C7 23.6 10.7 27 15 27 C19.3 27 23 23.6 23 19.5 C23 14 15 4 15 4Z" fill="#42A5F5"/>
             <path d="M19 22 C18 24.2 16 25.2 13.5 24.5" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.65"/>
           </svg>
@@ -553,7 +470,6 @@
           <div class="water-bar-fill good" id="waterBarFill" style="width:0%"></div>
         </div>
 
-        <!-- Weather widget -->
         <div class="weather-widget" id="weatherWidget">
           <span class="weather-error">Loading weather…</span>
         </div>
@@ -573,9 +489,9 @@
         </div>
 
       </div>
-    </div><!-- end app-content -->
+    </div>
 
-  </div><!-- end phone-frame -->
+  </div>
 
   <a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
 
@@ -585,19 +501,19 @@
       const m = document.getElementById('settingsMenu');
       m.style.display = m.style.display === 'none' ? 'block' : 'none';
     }
-    document.addEventListener('click', function() {
+    document.addEventListener('click', () => {
       document.getElementById('settingsMenu').style.display = 'none';
     });
     function clearWatering(e) {
       e.preventDefault();
       document.getElementById('settingsMenu').style.display = 'none';
-      localStorage.removeItem('watering-history');
+      localStorage.removeItem('bop-watering-history');
       location.reload();
     }
     function deletePlant() {
-      localStorage.setItem('plant-monstera-removed', '1');
-      localStorage.removeItem('watering-history');
-      localStorage.removeItem('watering-interval');
+      localStorage.removeItem('plant-bop-added');
+      localStorage.removeItem('bop-watering-history');
+      localStorage.removeItem('bop-watering-interval');
       location.href = 'plants.html';
     }
   </script>
@@ -652,7 +568,7 @@
     };
 
     const cityName = localStorage.getItem('plant-city') || 'Toronto';
-    const city = cities[cityName] || cities['Toronto'];
+    const city     = cities[cityName] || cities['Toronto'];
     const { lat, lon, prov, tz } = city;
 
     function generateInsight(weatherCode, temp, humidity, uvIndex, windSpeed) {
@@ -662,82 +578,71 @@
       const insightEl = document.getElementById('aiInsight');
       const textEl    = document.getElementById('aiInsightText');
 
-      const isSunny   = weatherCode !== null && [0, 1].includes(weatherCode);
-      const isHot     = temp !== null && temp >= 28;
-      const isCloudy  = weatherCode !== null && [2, 3, 45, 48].includes(weatherCode);
-      const isRainy   = weatherCode !== null && [51,53,55,61,63,65,80,81,82,95,96,99].includes(weatherCode);
-      const driesOut  = isSunny || isHot;
-      const moist     = isCloudy || isRainy;
-      const isHighOutdoorHum = humidity !== null && humidity >= 60;
-      const isLowOutdoorHum  = humidity !== null && humidity < 50;
+      const isSunny  = weatherCode !== null && [0, 1].includes(weatherCode);
+      const isHot    = temp !== null && temp >= 28;
+      const isCloudy = weatherCode !== null && [2, 3, 45, 48].includes(weatherCode);
+      const isRainy  = weatherCode !== null && [51,53,55,61,63,65,80,81,82,95,96,99].includes(weatherCode);
+      const driesOut = isSunny || isHot;
+      const moist    = isCloudy || isRainy;
+
+      // BoP-specific thresholds: loves sun, tolerates lower humidity than Monstera
+      const isHighOutdoorHum = humidity !== null && humidity >= 50;
+      const isLowOutdoorHum  = humidity !== null && humidity < 40;
       const humidStr         = humidity !== null ? ` (${humidity}% outside)` : '';
 
       const humidTip = isHighOutdoorHum
-        ? `Outdoor humidity is ${humidity}% — open a window to let your Monstera soak up some of that moisture.`
+        ? `Outdoor humidity is ${humidity}% — crack a window and let your Bird of Paradise soak it up.`
         : isLowOutdoorHum
-          ? `Outdoor humidity is low${humidStr}. Indoor air can dry out further as doors and windows open and close — a humidifier would help keep your Monstera happy.`
+          ? `Outdoor humidity is quite low${humidStr}. Indoor air can drop further as doors and windows open — a humidifier or pebble tray would help.`
           : '';
 
+      // BoP loves bright light — high UV is a good thing, not a warning
       const uvHigh     = uvIndex !== null && uvIndex >= 6;
       const uvVeryHigh = uvIndex !== null && uvIndex >= 8;
       const uvTip = uvHigh
-        ? `UV is ${uvVeryHigh ? 'very high' : 'high'} today (index ${uvIndex}). If your Monstera isn't used to direct sun, keep it back from the glass — leaves can burn even through a window.`
+        ? `UV is ${uvVeryHigh ? 'very high' : 'high'} today (index ${uvIndex}) — perfect for your Bird of Paradise. Make sure it's in its sunniest spot.`
         : '';
 
-      const isWindy  = windSpeed !== null && windSpeed >= 30;
-      const windTip  = isWindy
-        ? `It's quite windy out (${windSpeed} km/h) — if any windows are open, cold drafts can stress your Monstera and dry the soil out faster than usual.`
+      const isWindy = windSpeed !== null && windSpeed >= 30;
+      const windTip = isWindy
+        ? `It's quite windy out (${windSpeed} km/h) — if windows are open, cold drafts can stress your Bird of Paradise and dry the soil faster.`
         : '';
 
       let text = '';
 
       if (w.noHistory) {
         text = driesOut
-          ? 'No watering history yet — and with today\'s conditions drying things out, it\'s worth logging a water now to start tracking.'
+          ? 'No watering history yet. Sunny days dry soil out faster — tap "Water today" to start tracking.'
           : 'Tap "Water today" to start tracking. Once you do, this card will keep an eye on things for you.';
-        if (humidTip) text += ' ' + humidTip;
-        if (uvTip) text += ' ' + uvTip;
-        if (windTip) text += ' ' + windTip;
       } else if (w.wateredToday && driesOut) {
-        text = 'Good timing on the water. Sunny conditions will speed up evaporation — worth checking the soil a day or two early next time.';
-        if (humidTip) text += ' ' + humidTip;
-        if (uvTip) text += ' ' + uvTip;
-        if (windTip) text += ' ' + windTip;
+        text = 'Freshly watered — good timing on a sunny day. Bird of Paradise likes to dry out a bit between waterings, so check the soil before the next one.';
       } else if (w.wateredToday) {
         text = moist
-          ? 'Freshly watered with overcast skies ahead — the soil should stay moist longer than usual. No rush on the next one.'
-          : 'Freshly watered. Your Monstera should be in good shape for the week.';
-        if (humidTip) text += ' ' + humidTip;
-        if (uvTip) text += ' ' + uvTip;
-        if (windTip) text += ' ' + windTip;
+          ? 'Freshly watered and it\'s overcast — the soil will hold moisture longer. Give it more time before the next water.'
+          : 'Freshly watered. Your Bird of Paradise should be happy for a while.';
       } else if (w.days >= w.interval && driesOut) {
-        text = 'Watering is overdue and it\'s warm and sunny — the soil\'s likely quite dry. Your Monstera would appreciate a drink today.';
-        if (humidTip) text += ' ' + humidTip;
-        if (uvTip) text += ' ' + uvTip;
-        if (windTip) text += ' ' + windTip;
+        text = 'Watering is overdue and it\'s sunny — your Bird of Paradise is ready for a drink. Give it a deep soak.';
       } else if (w.days >= w.interval) {
-        text = 'Watering is overdue. Time to give your Monstera a good soak.';
-        if (humidTip) text += ' ' + humidTip;
-        if (uvTip) text += ' ' + uvTip;
-        if (windTip) text += ' ' + windTip;
+        text = 'Watering is overdue. Time to give your Bird of Paradise a deep soak and let it drain well.';
       } else {
-        const daysLeft = w.interval - w.days;
+        const daysLeft  = w.interval - w.days;
         const isDueSoon = w.days >= w.interval * 0.75;
         if (isDueSoon && driesOut) {
-          text = `Coming up on watering and the sunny weather may be speeding things up. Worth checking the soil a day or two early.`;
+          text = `Getting close to watering time, and sunny days may be speeding things up. Check the soil — it may be ready a day or two early.`;
         } else if (isDueSoon) {
-          text = `Getting close to watering time. Check the soil by feel if you're unsure — ${daysLeft} day${daysLeft !== 1 ? 's' : ''} to go.`;
+          text = `Getting close to watering time — ${daysLeft} day${daysLeft !== 1 ? 's' : ''} to go. Check the soil by feel before watering.`;
         } else if (driesOut) {
-          text = `Plenty of time before the next water, but bright sunny days mean faster evaporation. Keep an eye on the soil.`;
+          text = `Plenty of time before the next water. Bird of Paradise likes a good dry-out between waterings, so bright sunny days are ideal right now.`;
         } else if (moist) {
-          text = `Overcast or wet conditions outside slow evaporation indoors too. Your Monstera's soil will hold moisture longer than usual.`;
+          text = `Overcast conditions slow evaporation — your Bird of Paradise's soil will stay moist longer. No rush on the next water.`;
         } else {
-          text = `Everything looks on track. ${daysLeft} day${daysLeft !== 1 ? 's' : ''} until the next watering — stay the course.`;
+          text = `All on track. ${daysLeft} day${daysLeft !== 1 ? 's' : ''} until the next watering.`;
         }
-        if (humidTip) text += ' ' + humidTip;
-        if (uvTip) text += ' ' + uvTip;
-        if (windTip) text += ' ' + windTip;
       }
+
+      if (humidTip) text += ' ' + humidTip;
+      if (uvTip)    text += ' ' + uvTip;
+      if (windTip)  text += ' ' + windTip;
 
       if (text) {
         textEl.textContent = text;
@@ -748,9 +653,9 @@
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,relative_humidity_2m,uv_index,wind_speed_10m&temperature_unit=celsius&wind_speed_unit=kmh&timezone=${encodeURIComponent(tz)}`)
       .then(r => r.json())
       .then(data => {
-        const temp     = Math.round(data.current.temperature_2m);
-        const code     = data.current.weathercode;
-        const humidity = data.current.relative_humidity_2m;
+        const temp      = Math.round(data.current.temperature_2m);
+        const code      = data.current.weathercode;
+        const humidity  = data.current.relative_humidity_2m;
         const uvIndex   = Math.round(data.current.uv_index);
         const windSpeed = Math.round(data.current.wind_speed_10m);
         const icon = weatherIcons[code] ?? '🌡️';
@@ -764,7 +669,6 @@
           </div>
           <div class="weather-location">${cityName}, ${prov}</div>
         `;
-
         window._lastWeatherArgs = [code, temp, humidity, uvIndex, windSpeed];
         generateInsight(code, temp, humidity, uvIndex, windSpeed);
       })
@@ -775,10 +679,10 @@
   </script>
 
   <script>
-    /* ── Watering widget ── */
+    /* ── Watering widget — separate keys from Monstera ── */
     (function() {
-      const HISTORY_KEY  = 'watering-history';
-      const INTERVAL_KEY = 'watering-interval';
+      const HISTORY_KEY  = 'bop-watering-history';
+      const INTERVAL_KEY = 'bop-watering-interval';
 
       function getHistory() {
         try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch { return []; }
@@ -809,7 +713,7 @@
 
       function renderWater() {
         const history  = getHistory();
-        const interval = parseInt(localStorage.getItem(INTERVAL_KEY) || '10', 10);
+        const interval = parseInt(localStorage.getItem(INTERVAL_KEY) || '14', 10);
         const textEl   = document.getElementById('waterWidgetText');
         const subEl    = document.getElementById('waterWidgetSub');
         const btn      = document.getElementById('waterNowBtn');
@@ -861,13 +765,13 @@
           btn.className   = 'water-now-btn';
         }
 
-        window._waterStatus = { ready: true, days: days, interval: interval, noHistory: false, wateredToday: last === todayISO() };
+        window._waterStatus = { ready: true, days, interval, noHistory: false, wateredToday: last === todayISO() };
       }
 
       function renderWaterInit() {
         const history = getHistory();
         if (history.length === 0) {
-          window._waterStatus = { ready: true, days: null, interval: parseInt(localStorage.getItem(INTERVAL_KEY) || '10', 10), noHistory: true, wateredToday: false };
+          window._waterStatus = { ready: true, days: null, interval: parseInt(localStorage.getItem(INTERVAL_KEY) || '14', 10), noHistory: true, wateredToday: false };
         }
         renderWater();
       }

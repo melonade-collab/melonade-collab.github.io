@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peace Lily care</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #b5cdb5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .phone-frame {
+      width: 320px;
+      height: min(780px, calc(100vh - 60px));
+      background: #fff;
+      border-radius: 50px;
+      box-shadow: 0 0 0 10px #1c1c1e, 0 0 0 11px #3a3a3c, 0 40px 100px rgba(0,0,0,0.55);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone-frame::before {
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 34px;
+      background: #1c1c1e;
+      border-radius: 20px;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .status-bar {
+      flex-shrink: 0;
+      padding: 16px 28px 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+    }
+
+    .status-time { font-size: 0.92rem; font-weight: 700; color: #1c1c1e; letter-spacing: -0.3px; padding-left: 4px; }
+    .status-icons { display: flex; align-items: center; gap: 7px; padding-right: 4px; }
+
+    .app-nav {
+      flex-shrink: 0;
+      background: #fff;
+      border-bottom: 1px solid #f0f0f0;
+      padding: 8px 16px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .nav-back {
+      font-size: 0.85rem; font-weight: 500; color: #4caf50;
+      text-decoration: none; display: flex; align-items: center; gap: 3px; min-width: 72px;
+    }
+
+    .nav-title { font-size: 0.9rem; font-weight: 700; color: #1c1c1e; letter-spacing: -0.2px; }
+    .nav-settings-wrap { min-width: 72px; display: flex; justify-content: flex-end; position: relative; }
+
+    .nav-settings-btn { background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; color: #4caf50; }
+
+    .nav-settings-menu {
+      display: none; position: absolute; right: 0; top: calc(100% + 8px);
+      background: #fff; border-radius: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.16);
+      min-width: 188px; overflow: hidden; border: 1px solid rgba(0,0,0,0.07); z-index: 100;
+    }
+    .nav-settings-menu a {
+      display: flex; align-items: center; gap: 10px; padding: 13px 16px;
+      font-size: 0.85rem; font-weight: 500; color: #2e7d32;
+      text-decoration: none; font-family: inherit; border-top: 1px solid #f0f0f0;
+    }
+    .nav-settings-menu a:first-child { border-top: none; }
+
+    .app-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+    .plant-image { height: 220px; background: #e8f5e9; overflow: hidden; }
+    .plant-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .card-body { padding: 20px 20px 36px; }
+    .plant-name { font-size: 1.35rem; font-weight: 700; color: #1b5e20; letter-spacing: -0.3px; }
+    .plant-species { font-size: 0.85rem; color: #9e9e9e; font-style: italic; margin-top: 2px; margin-bottom: 20px; }
+
+    .care-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .care-item { background: #f5f5f5; border-radius: 12px; padding: 14px 8px 12px; text-align: center; }
+    .care-icon { display: flex; justify-content: center; margin-bottom: 8px; }
+    .care-label { font-size: 0.65rem; font-weight: 600; color: #bdbdbd; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 3px; }
+    .care-value { font-size: 0.78rem; font-weight: 600; color: #2e7d32; line-height: 1.3; }
+
+    .water-widget { display: flex; align-items: center; gap: 10px; background: #f5f5f5; border-radius: 12px; padding: 12px 14px; margin-top: 14px; }
+    .water-widget-info { flex: 1; min-width: 0; }
+    .water-widget-text { font-size: 0.8rem; font-weight: 600; color: #424242; line-height: 1.3; }
+    .water-widget-sub { font-size: 0.7rem; margin-top: 2px; font-weight: 600; }
+    .water-widget-sub.good    { color: #2e7d32; }
+    .water-widget-sub.soon    { color: #f57f17; }
+    .water-widget-sub.overdue { color: #e65100; }
+
+    .water-now-btn {
+      padding: 8px 12px; border: none; border-radius: 8px; background: #2e7d32; color: #fff;
+      font-size: 0.78rem; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .water-now-btn:hover  { background: #1b5e20; }
+    .water-now-btn:active { transform: scale(0.97); }
+    .water-now-btn.done   { background: #a5d6a7; color: #2e7d32; cursor: default; }
+    .water-now-btn.done:hover { background: #a5d6a7; }
+
+    .water-bar-wrap { height: 3px; background: #ececec; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+    .water-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+    .water-bar-fill.good    { background: #66bb6a; }
+    .water-bar-fill.soon    { background: #ffb300; }
+    .water-bar-fill.overdue { background: #ef6c00; }
+
+    .weather-widget { background: #f0f4f0; border-radius: 12px; padding: 12px 14px; margin-top: 14px; display: flex; align-items: center; gap: 12px; }
+    .weather-icon { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
+    .weather-info { flex: 1; min-width: 0; }
+    .weather-temp { font-size: 1.1rem; font-weight: 700; color: #1b5e20; line-height: 1.1; }
+    .weather-desc { font-size: 0.72rem; color: #757575; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .weather-location { font-size: 0.68rem; color: #9e9e9e; text-align: right; flex-shrink: 0; }
+    .weather-error { font-size: 0.75rem; color: #9e9e9e; }
+
+    .ai-insight {
+      margin-top: 16px; padding: 12px 14px;
+      background: rgba(46, 125, 50, 0.04);
+      border-radius: 12px; border: 1px solid rgba(46, 125, 50, 0.1); display: none;
+    }
+    .ai-insight-header { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
+    .ai-insight-label { font-size: 0.65rem; font-weight: 700; color: #a5d6a7; text-transform: uppercase; letter-spacing: 0.6px; }
+    .ai-insight-text { font-size: 0.78rem; color: #616161; line-height: 1.55; margin: 0; }
+
+    @media (max-width: 440px) {
+      body { padding: 0; align-items: flex-start; background: #fff; }
+      .phone-frame { width: 100%; border-radius: 0; box-shadow: none; max-height: 100dvh; }
+      .phone-frame::before { display: none; }
+      .status-bar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="#1c1c1e"><rect x="0" y="8" width="3" height="4" rx="0.5"/><rect x="4" y="5" width="3" height="7" rx="0.5"/><rect x="8" y="2" width="3" height="10" rx="0.5"/><rect x="12" y="0" width="3" height="12" rx="0.5" opacity="0.3"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#1c1c1e" stroke-linecap="round"><path d="M1 4.5 C4 1.5 12 1.5 15 4.5" stroke-width="1.4" opacity="0.3"/><path d="M3 7 C5 5 11 5 13 7" stroke-width="1.4"/><path d="M5.5 9.5 C6.5 8.5 9.5 8.5 10.5 9.5" stroke-width="1.4"/><circle cx="8" cy="11.5" r="0.8" fill="#1c1c1e" stroke="none"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="#1c1c1e" stroke-width="1" opacity="0.35"/><rect x="1.5" y="1.5" width="16" height="9" rx="2" fill="#1c1c1e"/><path d="M22.5 4v4a2 2 0 0 0 0-4z" fill="#1c1c1e" opacity="0.4"/></svg>
+      </div>
+    </div>
+
+    <div class="app-nav">
+      <a href="plants.html" class="nav-back">
+        <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1L1 6.5L7 12"/></svg>
+        My Plants
+      </a>
+      <span class="nav-title">Peace Lily</span>
+      <div class="nav-settings-wrap">
+        <button class="nav-settings-btn" onclick="toggleSettings(event)" aria-label="Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <div class="nav-settings-menu" id="settingsMenu">
+          <a href="profile.html">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Change my profile
+          </a>
+          <a href="feedback.html">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Send feedback
+          </a>
+          <a href="#" onclick="clearWatering(event)" style="color:#e53935;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.68"/></svg>
+            Clear watering history
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-content">
+
+      <div class="plant-image">
+        <img src="https://images.unsplash.com/photo-1687858001773-d58b6cec5bdf?w=700&auto=format&fit=crop&q=60" alt="Peace Lily">
+      </div>
+
+      <div class="card-body">
+        <div class="plant-name">Peace Lily</div>
+        <div class="plant-species">Spathiphyllum wallisii</div>
+
+        <div class="care-grid">
+          <div class="care-item">
+            <div class="care-icon">
+              <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+                <circle cx="15" cy="15" r="5.5" fill="#FFA726" opacity="0.45"/>
+                <line x1="15" y1="2" x2="15" y2="5.5" stroke="#FFA726" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                <line x1="15" y1="24.5" x2="15" y2="28" stroke="#FFA726" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                <line x1="2" y1="15" x2="5.5" y2="15" stroke="#FFA726" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                <line x1="24.5" y1="15" x2="28" y2="15" stroke="#FFA726" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                <line x1="5.8" y1="5.8" x2="8.2" y2="8.2" stroke="#FFA726" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                <line x1="21.8" y1="21.8" x2="24.2" y2="24.2" stroke="#FFA726" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                <line x1="24.2" y1="5.8" x2="21.8" y2="8.2" stroke="#FFA726" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                <line x1="8.2" y1="21.8" x2="5.8" y2="24.2" stroke="#FFA726" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+              </svg>
+            </div>
+            <div class="care-label">Light</div>
+            <div class="care-value">Low to medium indirect</div>
+          </div>
+          <div class="care-item">
+            <div class="care-icon">
+              <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+                <path d="M15 4 C15 4 7 14 7 19.5 C7 23.6 10.7 27 15 27 C19.3 27 23 23.6 23 19.5 C23 14 15 4 15 4Z" fill="#42A5F5"/>
+                <path d="M19 22 C18 24.2 16 25.2 13.5 24.5" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.65"/>
+              </svg>
+            </div>
+            <div class="care-label">Water</div>
+            <div class="care-value">Every 1–2 weeks</div>
+          </div>
+          <div class="care-item">
+            <div class="care-icon">
+              <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+                <path d="M9 3 C9 3 5 8.5 5 11.5 C5 14 6.8 16 9 16 C11.2 16 13 14 13 11.5 C13 8.5 9 3 9 3Z" fill="#90CAF9"/>
+                <path d="M21 3 C21 3 17 8.5 17 11.5 C17 14 18.8 16 21 16 C23.2 16 25 14 25 11.5 C25 8.5 21 3 21 3Z" fill="#90CAF9"/>
+                <path d="M15 14 C15 14 11 19.5 11 22.5 C11 25 12.8 27 15 27 C17.2 27 19 25 19 22.5 C19 19.5 15 14 15 14Z" fill="#42A5F5"/>
+              </svg>
+            </div>
+            <div class="care-label">Humidity</div>
+            <div class="care-value">40%+ preferred</div>
+          </div>
+        </div>
+
+        <div class="water-widget">
+          <svg width="22" height="22" viewBox="0 0 30 30" fill="none" style="flex-shrink:0">
+            <path d="M15 4 C15 4 7 14 7 19.5 C7 23.6 10.7 27 15 27 C19.3 27 23 23.6 23 19.5 C23 14 15 4 15 4Z" fill="#42A5F5"/>
+            <path d="M19 22 C18 24.2 16 25.2 13.5 24.5" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.65"/>
+          </svg>
+          <div class="water-widget-info">
+            <div class="water-widget-text" id="waterWidgetText">No waterings logged yet</div>
+            <div class="water-widget-sub" id="waterWidgetSub"></div>
+          </div>
+          <button class="water-now-btn" id="waterNowBtn" onclick="logWatering()">💧 Water today</button>
+        </div>
+        <div class="water-bar-wrap">
+          <div class="water-bar-fill good" id="waterBarFill" style="width:0%"></div>
+        </div>
+
+        <div class="weather-widget" id="weatherWidget">
+          <span class="weather-error">Loading weather…</span>
+        </div>
+
+        <div class="ai-insight" id="aiInsight">
+          <div class="ai-insight-header">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+              <path d="M6 1v2M6 9v2M1 6h2M9 6h2M2.5 2.5l1.4 1.4M8.1 8.1l1.4 1.4M9.5 2.5L8.1 3.9M3.9 8.1L2.5 9.5" stroke="#a5d6a7" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span class="ai-insight-label">Insight</span>
+          </div>
+          <p class="ai-insight-text" id="aiInsightText"></p>
+        </div>
+
+        <div style="text-align:center;margin-top:28px;padding-top:16px;border-top:1px solid #f5f5f5;">
+          <button onclick="deletePlant()" style="background:none;border:none;font-size:0.78rem;font-weight:600;color:#e53935;cursor:pointer;font-family:inherit;padding:6px 8px;letter-spacing:0.1px;">Remove from My Plants</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
+  <script>
+    function toggleSettings(e) {
+      e.stopPropagation();
+      const m = document.getElementById('settingsMenu');
+      m.style.display = m.style.display === 'none' ? 'block' : 'none';
+    }
+    document.addEventListener('click', () => { document.getElementById('settingsMenu').style.display = 'none'; });
+    function clearWatering(e) {
+      e.preventDefault();
+      document.getElementById('settingsMenu').style.display = 'none';
+      localStorage.removeItem('lily-watering-history');
+      location.reload();
+    }
+    function deletePlant() {
+      localStorage.removeItem('plant-lily-added');
+      localStorage.removeItem('lily-watering-history');
+      localStorage.removeItem('lily-watering-interval');
+      location.href = 'plants.html';
+    }
+  </script>
+
+  <script>
+    const widget = document.getElementById('weatherWidget');
+
+    const cities = {
+      'Brampton': { lat:43.7315,lon:-79.7624,prov:'ON',tz:'America/Toronto' }, 'Calgary': { lat:51.0447,lon:-114.0719,prov:'AB',tz:'America/Edmonton' },
+      'Edmonton': { lat:53.5461,lon:-113.4938,prov:'AB',tz:'America/Edmonton' }, 'Halifax': { lat:44.6488,lon:-63.5752,prov:'NS',tz:'America/Halifax' },
+      'Hamilton': { lat:43.2557,lon:-79.8711,prov:'ON',tz:'America/Toronto' }, 'Kelowna': { lat:49.8880,lon:-119.4960,prov:'BC',tz:'America/Vancouver' },
+      'Laval': { lat:45.6066,lon:-73.7124,prov:'QC',tz:'America/Toronto' }, 'London': { lat:42.9849,lon:-81.2453,prov:'ON',tz:'America/Toronto' },
+      'Mississauga': { lat:43.5890,lon:-79.6441,prov:'ON',tz:'America/Toronto' }, 'Moncton': { lat:46.0878,lon:-64.7782,prov:'NB',tz:'America/Halifax' },
+      'Montreal': { lat:45.5017,lon:-73.5673,prov:'QC',tz:'America/Toronto' }, 'Ottawa': { lat:45.4215,lon:-75.6972,prov:'ON',tz:'America/Toronto' },
+      'Quebec City': { lat:46.8139,lon:-71.2080,prov:'QC',tz:'America/Toronto' }, 'Regina': { lat:50.4452,lon:-104.6189,prov:'SK',tz:'America/Regina' },
+      'Saskatoon': { lat:52.1332,lon:-106.6700,prov:'SK',tz:'America/Regina' }, "St. John's": { lat:47.5615,lon:-52.7126,prov:'NL',tz:'America/St_Johns' },
+      'Sudbury': { lat:46.4900,lon:-80.9910,prov:'ON',tz:'America/Toronto' }, 'Thunder Bay': { lat:48.3809,lon:-89.2477,prov:'ON',tz:'America/Toronto' },
+      'Toronto': { lat:43.7001,lon:-79.4163,prov:'ON',tz:'America/Toronto' }, 'Vancouver': { lat:49.2827,lon:-123.1207,prov:'BC',tz:'America/Vancouver' },
+      'Victoria': { lat:48.4284,lon:-123.3656,prov:'BC',tz:'America/Vancouver' }, 'Windsor': { lat:42.3149,lon:-83.0364,prov:'ON',tz:'America/Toronto' },
+      'Winnipeg': { lat:49.8951,lon:-97.1384,prov:'MB',tz:'America/Winnipeg' },
+    };
+
+    const weatherIcons = { 0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️' };
+    const weatherDescs = { 0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',48:'Freezing fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Showers',81:'Rain showers',82:'Violent showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm' };
+
+    const cityName = localStorage.getItem('plant-city') || 'Toronto';
+    const city = cities[cityName] || cities['Toronto'];
+    const { lat, lon, prov, tz } = city;
+
+    function generateInsight(weatherCode, temp, humidity, uvIndex, windSpeed) {
+      const w = window._waterStatus;
+      if (!w || !w.ready) return;
+
+      const insightEl = document.getElementById('aiInsight');
+      const textEl    = document.getElementById('aiInsightText');
+
+      const isSunny  = weatherCode !== null && [0, 1].includes(weatherCode);
+      const isHot    = temp !== null && temp >= 28;
+      const isCloudy = weatherCode !== null && [2, 3, 45, 48].includes(weatherCode);
+      const isRainy  = weatherCode !== null && [51,53,55,61,63,65,80,81,82,95,96,99].includes(weatherCode);
+      const driesOut = isSunny || isHot;
+      const moist    = isCloudy || isRainy;
+
+      // Peace Lily loves humidity — thresholds are more generous
+      const isHighOutdoorHum = humidity !== null && humidity >= 60;
+      const isLowOutdoorHum  = humidity !== null && humidity < 40;
+      const humidTip = isHighOutdoorHum
+        ? `Outdoor humidity is ${humidity}% — crack a window and let your Peace Lily drink it in.`
+        : isLowOutdoorHum
+          ? `Outdoor humidity is low (${humidity}%). Peace Lilies are thirsty plants — a humidifier or pebble tray will keep the leaves healthy.`
+          : '';
+
+      // Peace Lily hates direct sun
+      const uvHigh     = uvIndex !== null && uvIndex >= 5;
+      const uvVeryHigh = uvIndex !== null && uvIndex >= 8;
+      const uvTip = uvHigh
+        ? `UV is ${uvVeryHigh ? 'very high' : 'high'} today (index ${uvIndex}). Keep your Peace Lily away from direct sunlight — even an hour of direct sun can scorch the leaves.`
+        : '';
+
+      // Wind/drafts can cause leaf yellowing
+      const isWindy = windSpeed !== null && windSpeed >= 25;
+      const windTip = isWindy
+        ? `Windy out today (${windSpeed} km/h) — if windows are open, cold drafts can cause leaf yellowing. Peace Lilies prefer still air.`
+        : '';
+
+      let text = '';
+
+      if (w.noHistory) {
+        text = 'Tap "Water today" to start tracking. Peace Lilies are good at signalling thirst — drooping leaves mean it\'s time to water.';
+      } else if (w.wateredToday && driesOut) {
+        text = 'Freshly watered — good timing. Sunny days can increase how fast the soil dries out indoors.';
+      } else if (w.wateredToday) {
+        text = moist
+          ? 'Freshly watered with cloudy skies ahead — the soil will stay moist longer. No rush on the next one.'
+          : 'Freshly watered. Peace Lilies like consistently moist soil — check back in a few days.';
+      } else if (w.days >= w.interval && driesOut) {
+        text = 'Watering is overdue and it\'s sunny — your Peace Lily is likely thirsty. Give it a good soak.';
+      } else if (w.days >= w.interval) {
+        text = 'Watering is overdue. Peace Lilies will droop to signal they need water — give it a thorough soak.';
+      } else {
+        const daysLeft  = w.interval - w.days;
+        const isDueSoon = w.days >= w.interval * 0.75;
+        if (isDueSoon && driesOut) {
+          text = `Coming up on watering time and sunny conditions are speeding things up. Check the soil — may be ready early.`;
+        } else if (isDueSoon) {
+          text = `Getting close to watering time — ${daysLeft} day${daysLeft !== 1 ? 's' : ''} to go. Peace Lilies like to stay evenly moist.`;
+        } else if (moist) {
+          text = `Overcast weather slows indoor evaporation too. Your Peace Lily's soil will hold moisture a bit longer.`;
+        } else {
+          text = `All on track. ${daysLeft} day${daysLeft !== 1 ? 's' : ''} until the next watering.`;
+        }
+      }
+
+      if (humidTip) text += ' ' + humidTip;
+      if (uvTip)    text += ' ' + uvTip;
+      if (windTip)  text += ' ' + windTip;
+
+      if (text) { textEl.textContent = text; insightEl.style.display = 'block'; }
+    }
+
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,relative_humidity_2m,uv_index,wind_speed_10m&temperature_unit=celsius&wind_speed_unit=kmh&timezone=${encodeURIComponent(tz)}`)
+      .then(r => r.json())
+      .then(data => {
+        const temp = Math.round(data.current.temperature_2m);
+        const code = data.current.weathercode;
+        const humidity = data.current.relative_humidity_2m;
+        const uvIndex = Math.round(data.current.uv_index);
+        const windSpeed = Math.round(data.current.wind_speed_10m);
+        const icon = weatherIcons[code] ?? '🌡️';
+        const desc = weatherDescs[code] ?? 'Unknown';
+        widget.innerHTML = `
+          <span class="weather-icon">${icon}</span>
+          <div class="weather-info">
+            <div class="weather-temp">${temp}°C</div>
+            <div class="weather-desc">${desc}</div>
+            <div class="weather-desc" style="margin-top:2px;">${humidity}% humidity · UV ${uvIndex}</div>
+          </div>
+          <div class="weather-location">${cityName}, ${prov}</div>
+        `;
+        window._lastWeatherArgs = [code, temp, humidity, uvIndex, windSpeed];
+        generateInsight(code, temp, humidity, uvIndex, windSpeed);
+      })
+      .catch(() => {
+        widget.innerHTML = '<span class="weather-error">Weather unavailable</span>';
+        generateInsight(null, null, null, null, null);
+      });
+  </script>
+
+  <script>
+    (function() {
+      const HISTORY_KEY  = 'lily-watering-history';
+      const INTERVAL_KEY = 'lily-watering-interval';
+
+      function getHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch { return []; } }
+      function todayISO() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+      function daysSince(iso) { const then = new Date(iso + 'T00:00:00'); const now = new Date(); now.setHours(0,0,0,0); return Math.floor((now - then) / 86400000); }
+
+      window._waterStatus = { ready: false };
+
+      window.logWatering = function() {
+        const today = todayISO(); const h = getHistory();
+        if (h[0] === today) return;
+        h.unshift(today);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
+        renderWater();
+        if (window._lastWeatherArgs) generateInsight(...window._lastWeatherArgs);
+      };
+
+      function renderWater() {
+        const history  = getHistory();
+        const interval = parseInt(localStorage.getItem(INTERVAL_KEY) || '10', 10);
+        const textEl = document.getElementById('waterWidgetText');
+        const subEl  = document.getElementById('waterWidgetSub');
+        const btn    = document.getElementById('waterNowBtn');
+        const fill   = document.getElementById('waterBarFill');
+
+        if (history.length === 0) {
+          textEl.textContent = 'No waterings logged yet'; subEl.textContent = ''; subEl.className = 'water-widget-sub';
+          fill.style.width = '0%'; fill.className = 'water-bar-fill good';
+          btn.textContent = '💧 Water today'; btn.className = 'water-now-btn'; return;
+        }
+
+        const last = history[0]; const days = daysSince(last); const daysLeft = interval - days; const pct = Math.min(days / interval, 1);
+        textEl.textContent = days === 0 ? 'Watered today' : `Watered ${days} day${days !== 1 ? 's' : ''} ago`;
+
+        let cls, sub;
+        if (days < interval * 0.75)  { cls = 'good'; sub = daysLeft > 0 ? `Next in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}` : 'Due today'; }
+        else if (days < interval)     { cls = 'soon'; sub = `Due in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`; }
+        else { cls = 'overdue'; const over = days - interval; sub = over === 0 ? 'Due today' : `${over} day${over !== 1 ? 's' : ''} overdue`; }
+
+        subEl.textContent = sub; subEl.className = `water-widget-sub ${cls}`;
+        fill.style.width = `${Math.round(pct * 100)}%`; fill.className = `water-bar-fill ${cls}`;
+        if (last === todayISO()) { btn.textContent = '✓ Done'; btn.className = 'water-now-btn done'; }
+        else { btn.textContent = '💧 Water today'; btn.className = 'water-now-btn'; }
+
+        window._waterStatus = { ready: true, days, interval, noHistory: false, wateredToday: last === todayISO() };
+      }
+
+      function init() {
+        const history = getHistory();
+        if (history.length === 0) window._waterStatus = { ready: true, days: null, interval: parseInt(localStorage.getItem(INTERVAL_KEY) || '10', 10), noHistory: true, wateredToday: false };
+        renderWater();
+      }
+
+      init();
+    })();
+  </script>
+
+</body>
+</html>

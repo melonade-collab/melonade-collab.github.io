@@ -52,20 +52,8 @@
       background: #fff;
     }
 
-    .status-time {
-      font-size: 0.92rem;
-      font-weight: 700;
-      color: #1c1c1e;
-      letter-spacing: -0.3px;
-      padding-left: 4px;
-    }
-
-    .status-icons {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding-right: 4px;
-    }
+    .status-time { font-size: 0.92rem; font-weight: 700; color: #1c1c1e; letter-spacing: -0.3px; padding-left: 4px; }
+    .status-icons { display: flex; align-items: center; gap: 7px; padding-right: 4px; }
 
     .app-nav {
       flex-shrink: 0;
@@ -88,12 +76,7 @@
       min-width: 72px;
     }
 
-    .nav-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #1c1c1e;
-      letter-spacing: -0.2px;
-    }
+    .nav-title { font-size: 1rem; font-weight: 700; color: #1c1c1e; letter-spacing: -0.2px; }
 
     .app-content {
       flex: 1;
@@ -102,19 +85,11 @@
       padding: 14px 14px 32px;
     }
 
-    /* Search bar */
-    .search-wrap {
-      position: relative;
-      margin-bottom: 18px;
-    }
+    .search-wrap { position: relative; margin-bottom: 18px; }
 
     .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #bdbdbd;
-      pointer-events: none;
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: #bdbdbd; pointer-events: none;
     }
 
     .search-input {
@@ -129,10 +104,8 @@
       outline: none;
       box-shadow: 0 1px 6px rgba(0,0,0,0.07);
     }
-
     .search-input::placeholder { color: #bdbdbd; }
 
-    /* Section label */
     .section-label {
       font-size: 0.65rem;
       font-weight: 700;
@@ -143,14 +116,8 @@
       padding-left: 2px;
     }
 
-    .section-sub {
-      font-size: 0.72rem;
-      color: #bdbdbd;
-      margin-bottom: 10px;
-      padding-left: 2px;
-    }
+    .section-sub { font-size: 0.72rem; color: #bdbdbd; margin-bottom: 10px; padding-left: 2px; }
 
-    /* Plant catalog card */
     .catalog-card {
       display: flex;
       align-items: center;
@@ -163,21 +130,24 @@
       cursor: pointer;
       border: 2px solid transparent;
       transition: border-color 0.15s, transform 0.1s, box-shadow 0.15s;
-      text-decoration: none;
+      position: relative;
     }
 
-    .catalog-card.available:active {
-      transform: scale(0.98);
-      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-    }
+    .catalog-card:hover  { border-color: #a5d6a7; }
+    .catalog-card:active { transform: scale(0.98); box-shadow: 0 1px 6px rgba(0,0,0,0.08); }
 
-    .catalog-card.available:hover {
-      border-color: #a5d6a7;
-    }
-
-    .catalog-card.locked {
-      opacity: 0.45;
-      cursor: default;
+    .top-pick-badge {
+      position: absolute;
+      top: -1px;
+      right: 12px;
+      background: #2e7d32;
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 0 0 8px 8px;
     }
 
     .catalog-thumb {
@@ -187,53 +157,17 @@
       overflow: hidden;
       flex-shrink: 0;
       background: #f5f5f5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    .catalog-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .catalog-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .catalog-thumb.white-bg img { object-fit: contain; padding: 4px; }
 
-    .catalog-info {
-      flex: 1;
-      min-width: 0;
-    }
+    .catalog-info { flex: 1; min-width: 0; }
+    .catalog-name { font-size: 0.95rem; font-weight: 700; color: #1b5e20; letter-spacing: -0.2px; }
+    .catalog-species { font-size: 0.7rem; color: #9e9e9e; font-style: italic; margin-top: 1px; margin-bottom: 5px; }
+    .catalog-match { font-size: 0.7rem; font-weight: 600; color: #66bb6a; }
 
-    .catalog-name {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #1b5e20;
-      letter-spacing: -0.2px;
-    }
-
-    .catalog-species {
-      font-size: 0.7rem;
-      color: #9e9e9e;
-      font-style: italic;
-      margin-top: 1px;
-      margin-bottom: 5px;
-    }
-
-    .catalog-match {
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: #66bb6a;
-    }
-
-    .catalog-locked-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: #bdbdbd;
-    }
-
-    .catalog-action {
-      flex-shrink: 0;
-    }
+    .catalog-action { flex-shrink: 0; }
 
     .add-btn {
       padding: 6px 14px;
@@ -248,21 +182,11 @@
       transition: background 0.15s, transform 0.1s;
       white-space: nowrap;
     }
-
     .add-btn:hover  { background: #1b5e20; }
     .add-btn:active { transform: scale(0.95); }
+    .add-btn.added  { background: #a5d6a7; color: #2e7d32; cursor: default; }
+    .add-btn.added:hover { background: #a5d6a7; }
 
-    .add-btn.added {
-      background: #a5d6a7;
-      color: #2e7d32;
-      cursor: default;
-    }
-
-    .lock-icon {
-      color: #bdbdbd;
-    }
-
-    /* Added confirmation overlay */
     .confirm-overlay {
       display: none;
       position: absolute;
@@ -275,31 +199,16 @@
       gap: 12px;
       border-radius: 50px;
     }
-
-    .confirm-overlay.show {
-      display: flex;
-    }
+    .confirm-overlay.show { display: flex; }
 
     .confirm-check {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
+      width: 64px; height: 64px; border-radius: 50%;
       background: #e8f5e9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    .confirm-title {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: #1b5e20;
-    }
-
-    .confirm-sub {
-      font-size: 0.82rem;
-      color: #81c784;
-    }
+    .confirm-title { font-size: 1.1rem; font-weight: 800; color: #1b5e20; }
+    .confirm-sub   { font-size: 0.82rem; color: #81c784; }
 
     @media (max-width: 440px) {
       body { padding: 0; align-items: flex-start; background: #fff; }
@@ -353,62 +262,61 @@
       </div>
 
       <div class="section-label" id="sectionLabel">Suggested for your area</div>
-      <div class="section-sub" id="sectionSub">Based on your local climate and conditions</div>
+      <div class="section-sub">Based on your local climate and conditions</div>
 
-      <!-- Bird of Paradise — available -->
-      <div class="catalog-card available" onclick="addPlant()">
-        <div class="catalog-thumb">
-          <img src="https://media.istockphoto.com/id/121351935/photo/bird-of-paradise-flower-isolated-on-white-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=b6qc2K_e5_TgPsU0XQJGe0oR94Hhzeo8pJFHntbdc3o=" alt="Bird of Paradise">
+      <div id="catalogContainer">
+
+        <div id="bopCatalog" class="catalog-card" onclick="addPlant('bop')">
+          <div class="catalog-thumb white-bg">
+            <img src="https://media.istockphoto.com/id/121351935/photo/bird-of-paradise-flower-isolated-on-white-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=b6qc2K_e5_TgPsU0XQJGe0oR94Hhzeo8pJFHntbdc3o=" alt="Bird of Paradise">
+          </div>
+          <div class="catalog-info">
+            <div class="catalog-name">Bird of Paradise</div>
+            <div class="catalog-species">Strelitzia reginae</div>
+            <div class="catalog-match" id="bopMatchText">Great match for your conditions</div>
+          </div>
+          <div class="catalog-action">
+            <button class="add-btn" id="bopAddBtn" onclick="event.stopPropagation(); addPlant('bop')">+ Add</button>
+          </div>
         </div>
-        <div class="catalog-info">
-          <div class="catalog-name">Bird of Paradise</div>
-          <div class="catalog-species">Strelitzia reginae</div>
-          <div class="catalog-match" id="matchText">Great match for your conditions</div>
+
+        <div id="fiddleCatalog" class="catalog-card" onclick="addPlant('fiddle')">
+          <div class="catalog-thumb">
+            <img src="https://images.unsplash.com/photo-1643819131797-46919f3009f7?w=200&auto=format&fit=crop&q=60" alt="Fiddle Leaf Fig">
+          </div>
+          <div class="catalog-info">
+            <div class="catalog-name">Fiddle Leaf Fig</div>
+            <div class="catalog-species">Ficus lyrata</div>
+            <div class="catalog-match" id="fiddleMatchText">Great match for your conditions</div>
+          </div>
+          <div class="catalog-action">
+            <button class="add-btn" id="fiddleAddBtn" onclick="event.stopPropagation(); addPlant('fiddle')">+ Add</button>
+          </div>
         </div>
-        <div class="catalog-action">
-          <button class="add-btn" id="addBtn" onclick="event.stopPropagation(); addPlant()">+ Add</button>
+
+        <div id="lilyCatalog" class="catalog-card" onclick="addPlant('lily')">
+          <div class="catalog-thumb">
+            <img src="https://images.unsplash.com/photo-1687858001773-d58b6cec5bdf?w=200&auto=format&fit=crop&q=60" alt="Peace Lily">
+          </div>
+          <div class="catalog-info">
+            <div class="catalog-name">Peace Lily</div>
+            <div class="catalog-species">Spathiphyllum wallisii</div>
+            <div class="catalog-match" id="lilyMatchText">Great match for your conditions</div>
+          </div>
+          <div class="catalog-action">
+            <button class="add-btn" id="lilyAddBtn" onclick="event.stopPropagation(); addPlant('lily')">+ Add</button>
+          </div>
         </div>
+
       </div>
-
-      <!-- Fiddle Leaf Fig — coming soon -->
-      <div class="catalog-card locked">
-        <div class="catalog-thumb" style="background:#fafafa;">
-          <img src="https://images.unsplash.com/photo-1643819131797-46919f3009f7?w=200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZmlkZGxlJTIwbGVhZiUyMGZpZ3xlbnwwfHwwfHx8MA%3D%3D" alt="Fiddle Leaf Fig">
-        </div>
-        <div class="catalog-info">
-          <div class="catalog-name" style="color:#9e9e9e;">Fiddle Leaf Fig</div>
-          <div class="catalog-species">Ficus lyrata</div>
-          <div class="catalog-locked-label">Coming soon</div>
-        </div>
-        <div class="catalog-action">
-          <svg class="lock-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </div>
-      </div>
-
-      <!-- Peace Lily — coming soon -->
-      <div class="catalog-card locked">
-        <div class="catalog-thumb" style="background:#fafafa;">
-          <img src="https://images.unsplash.com/photo-1687858001773-d58b6cec5bdf?w=200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cGVhY2UlMjBsaWx5fGVufDB8fDB8fHww" alt="Peace Lily">
-        </div>
-        <div class="catalog-info">
-          <div class="catalog-name" style="color:#9e9e9e;">Peace Lily</div>
-          <div class="catalog-species">Spathiphyllum wallisii</div>
-          <div class="catalog-locked-label">Coming soon</div>
-        </div>
-        <div class="catalog-action">
-          <svg class="lock-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </div>
-      </div>
-
     </div>
 
-    <!-- Added confirmation overlay -->
     <div class="confirm-overlay" id="confirmOverlay">
       <div class="confirm-check">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <div class="confirm-title">Added to My Plants!</div>
-      <div class="confirm-sub">Bird of Paradise is in your collection.</div>
+      <div class="confirm-sub" id="confirmSub">It's in your collection.</div>
     </div>
 
   </div>
@@ -416,24 +324,76 @@
   <a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
 
   <script>
-    const city = localStorage.getItem('plant-city') || 'your area';
-
-    const warmCities = ['Vancouver', 'Victoria', 'Windsor', 'Kelowna'];
-    const isWarm = warmCities.includes(city);
-
+    const city = localStorage.getItem('plant-city') || 'Toronto';
     document.getElementById('sectionLabel').textContent = `Suggested for ${city}`;
-    document.getElementById('matchText').textContent = isWarm
-      ? `Thrives in ${city}'s mild climate — bright light, happy plant`
-      : `A great indoor pick for ${city} — loves bright indirect light`;
 
-    function addPlant() {
-      localStorage.setItem('plant-bop-added', '1');
-      const overlay = document.getElementById('confirmOverlay');
-      const btn = document.getElementById('addBtn');
-      btn.textContent = '✓ Added';
-      btn.className = 'add-btn added';
-      overlay.classList.add('show');
-      setTimeout(() => { location.href = 'plants.html'; }, 1800);
+    const sunnyCities  = ['Vancouver', 'Victoria', 'Windsor', 'Kelowna', 'Hamilton', 'London'];
+    const cloudyCities = ['Halifax', "St. John's", 'Moncton', 'Sudbury', 'Thunder Bay', 'Winnipeg'];
+
+    const isSunny  = sunnyCities.includes(city);
+    const isCloudy = cloudyCities.includes(city);
+
+    // Match text per plant per climate type
+    const matchText = {
+      bop: isSunny
+        ? `Thrives in ${city}'s bright conditions — loves a south-facing window`
+        : isCloudy
+          ? `Needs a lot of direct sun — best in ${city}'s brightest spot`
+          : `Loves bright direct light — perfect near a south window`,
+      fiddle: isSunny
+        ? `Bright indirect light is ideal — keep it back from direct sun in ${city}`
+        : isCloudy
+          ? `Sensitive to drafts — find it a stable bright corner`
+          : `A popular pick for most Canadian homes — bright indirect light`,
+      lily: isSunny
+        ? `Tolerates lower light — great for a north or east-facing room in ${city}`
+        : isCloudy
+          ? `Low-light friendly — a natural fit for ${city}'s overcast winters`
+          : `Forgiving and low-light tolerant — a solid all-around pick`,
+    };
+
+    document.getElementById('bopMatchText').textContent    = matchText.bop;
+    document.getElementById('fiddleMatchText').textContent = matchText.fiddle;
+    document.getElementById('lilyMatchText').textContent   = matchText.lily;
+
+    // Ordering: sunny → BOP first; cloudy → Peace Lily first; moderate → Fiddle first
+    const order = isSunny  ? ['bop', 'fiddle', 'lily']
+                : isCloudy ? ['lily', 'fiddle', 'bop']
+                :             ['fiddle', 'bop', 'lily'];
+
+    const container = document.getElementById('catalogContainer');
+    const cardEls   = { bop: document.getElementById('bopCatalog'), fiddle: document.getElementById('fiddleCatalog'), lily: document.getElementById('lilyCatalog') };
+
+    order.forEach((key, i) => {
+      container.appendChild(cardEls[key]);
+      // Badge on top pick
+      if (i === 0) {
+        const badge = document.createElement('div');
+        badge.className = 'top-pick-badge';
+        badge.textContent = '✦ Top pick';
+        cardEls[key].appendChild(badge);
+      }
+    });
+
+    // Hide already-added plants
+    const alreadyAdded = { bop: 'plant-bop-added', fiddle: 'plant-fiddle-added', lily: 'plant-lily-added' };
+    Object.entries(alreadyAdded).forEach(([key, lsKey]) => {
+      if (localStorage.getItem(lsKey) === '1') cardEls[key].style.display = 'none';
+    });
+
+    const names = { bop: 'Bird of Paradise', fiddle: 'Fiddle Leaf Fig', lily: 'Peace Lily' };
+    const lsKeys = { bop: 'plant-bop-added', fiddle: 'plant-fiddle-added', lily: 'plant-lily-added' };
+    const redirects = { bop: 'plants.html', fiddle: 'plants.html', lily: 'plants.html' };
+
+    function addPlant(type) {
+      const btn = document.getElementById(type + 'AddBtn');
+      if (btn.classList.contains('added')) return;
+      localStorage.setItem(lsKeys[type], '1');
+      btn.textContent = '✓ Added'; btn.className = 'add-btn added';
+      cardEls[type].onclick = null;
+      document.getElementById('confirmSub').textContent = `${names[type]} is in your collection.`;
+      document.getElementById('confirmOverlay').classList.add('show');
+      setTimeout(() => { location.href = redirects[type]; }, 1800);
     }
   </script>
 </body>
