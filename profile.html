@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile — Monstera</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f0f5f0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 56px 24px 48px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 390px;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 900;
+      color: #1b5e20;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+
+    .sub {
+      font-size: 0.85rem;
+      color: #81c784;
+      margin-bottom: 28px;
+    }
+
+    .form-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      color: #81c784;
+      margin-bottom: 8px;
+    }
+
+    .form-field input,
+    .form-field select {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid #a5d6a7;
+      border-radius: 12px;
+      font-size: 0.97rem;
+      font-family: inherit;
+      color: #1b5e20;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
+      appearance: none;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus {
+      border-color: #2e7d32;
+      box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
+    }
+
+    .form-field input::placeholder { color: #c8e6c9; }
+
+    .select-wrap { position: relative; }
+
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px; height: 8px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%232e7d32' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: contain;
+      pointer-events: none;
+    }
+
+    .select-wrap select { padding-right: 38px; cursor: pointer; }
+
+    .btn {
+      width: 100%;
+      padding: 17px;
+      border-radius: 18px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.1px;
+      background: #2e7d32;
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(46,125,50,0.4);
+      margin-top: 28px;
+      transition: background 0.15s, transform 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover { background: #1b5e20; }
+    .btn:active { transform: scale(0.97); }
+
+    .back-link {
+      display: inline-block;
+      font-size: 0.8rem;
+      color: #81c784;
+      text-decoration: none;
+      margin-top: 16px;
+    }
+
+    .back-link:hover { color: #2e7d32; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <h1>My profile.</h1>
+  <p class="sub">Update your details anytime.</p>
+
+  <div class="form-fields">
+
+    <div class="form-field">
+      <label for="userName">Your name</label>
+      <input type="text" id="userName" placeholder="e.g. Alex" autocomplete="given-name" maxlength="40">
+    </div>
+
+    <div class="form-field">
+      <label for="plantLove">How much do you love plants?</label>
+      <div class="select-wrap">
+        <select id="plantLove">
+          <option value="" disabled>Choose one...</option>
+          <option value="obsessed">Completely obsessed 🌿</option>
+          <option value="alot">A whole lot</option>
+          <option value="growing">Still growing on me</option>
+          <option value="melanie">I don't really care but Melanie talks about them all the time, so....</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="userCity">Your city</label>
+      <div class="select-wrap">
+        <select id="userCity">
+          <option value="" disabled>Select your city</option>
+          <option>Brampton</option>
+          <option>Calgary</option>
+          <option>Edmonton</option>
+          <option>Halifax</option>
+          <option>Hamilton</option>
+          <option>Kelowna</option>
+          <option>Laval</option>
+          <option>London</option>
+          <option>Mississauga</option>
+          <option>Moncton</option>
+          <option>Montreal</option>
+          <option>Ottawa</option>
+          <option>Quebec City</option>
+          <option>Regina</option>
+          <option>Saskatoon</option>
+          <option>St. John's</option>
+          <option>Sudbury</option>
+          <option>Thunder Bay</option>
+          <option>Toronto</option>
+          <option>Vancouver</option>
+          <option>Victoria</option>
+          <option>Windsor</option>
+          <option>Winnipeg</option>
+        </select>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="btn" onclick="save()">Save profile <span>→</span></button>
+  <a href="monstera.html" class="back-link">← Back to plant</a>
+</div>
+
+<script>
+  const nameEl = document.getElementById('userName');
+  const loveEl = document.getElementById('plantLove');
+  const cityEl = document.getElementById('userCity');
+
+  const savedName = localStorage.getItem('plant-user-name');
+  const savedLove = localStorage.getItem('plant-love');
+  const savedCity = localStorage.getItem('plant-city');
+
+  if (savedName && savedName !== 'Plant parent') nameEl.value = savedName;
+  if (savedLove) loveEl.value = savedLove;
+  cityEl.value = savedCity || 'Toronto';
+
+  function save() {
+    const name = nameEl.value.trim() || 'Plant parent';
+    const city = cityEl.value || 'Toronto';
+    const love = loveEl.value;
+    localStorage.setItem('plant-user-name', name);
+    localStorage.setItem('plant-city', city);
+    if (love) localStorage.setItem('plant-love', love);
+    location.href = 'monstera.html';
+  }
+</script>
+</body>
+</html>
