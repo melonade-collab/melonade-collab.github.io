@@ -8,7 +8,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f5; color: #1a1a1a; min-height: 100vh; }
 
-    .cs-header { background: #064E3B; padding: 56px 40px 44px; }
+    .cs-header { background: #4C1D95; padding: 56px 40px 44px; }
     .cs-header-inner { max-width: 860px; margin: 0 auto; }
     .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
     h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
@@ -21,7 +21,7 @@
     .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
     .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
     .acc-header:hover { background: #fafafa; }
-    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #059669; margin-bottom: 0; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #6D28D9; margin-bottom: 0; }
     .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
     .acc-header.open .acc-chevron { transform: rotate(180deg); }
     .acc-body { display: none; padding: 0 22px 20px; }
@@ -30,37 +30,37 @@
     .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
     .acc-body li { margin-bottom: 6px; }
     .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
-    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #059669; margin-bottom: 4px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #6D28D9; margin-bottom: 4px; }
     .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
 
-    .proto-wrap { background: #ECFDF5; border-radius: 16px; padding: 28px 20px 36px; }
-    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #059669; text-align: center; margin-bottom: 18px; }
+    .proto-wrap { background: #EDE9FE; border-radius: 16px; padding: 28px 20px 36px; }
+    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #6D28D9; text-align: center; margin-bottom: 18px; }
 
     /* ── Before / After comparison ── */
-    .compare-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #059669; text-align: center; margin-bottom: 14px; }
+    .compare-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #6D28D9; text-align: center; margin-bottom: 14px; }
     .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
     .compare-panel { background: #fff; border: 1.5px solid #E5E7EB; border-radius: 12px; overflow: hidden; }
-    .compare-panel.after { border-color: #6EE7B7; }
+    .compare-panel.after { border-color: #C4B5FD; }
     .compare-head { padding: 10px 14px; border-bottom: 1px solid #F5F5F5; display: flex; align-items: center; gap: 8px; }
     .compare-tag { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
     .compare-tag.before { background: #FEF2F2; color: #991B1B; }
-    .compare-tag.after  { background: #ECFDF5; color: #065F46; }
+    .compare-tag.after  { background: #EDE9FE; color: #5B21B6; }
     .compare-head-title { font-size: 0.75rem; font-weight: 700; color: #333; }
 
     /* ── Dev portal prototype ── */
     .dev-app { background: #0F172A; border-radius: 10px; overflow: hidden; }
     .dev-topbar { background: #1E293B; padding: 0 20px; height: 44px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #334155; }
     .dev-logo { font-size: 0.82rem; font-weight: 800; color: #fff; letter-spacing: -0.2px; }
-    .dev-logo span { color: #34D399; }
+    .dev-logo span { color: #A78BFA; }
     .dev-nav-links { display: flex; gap: 16px; }
     .dev-nav-link { font-size: 0.72rem; color: #94A3B8; text-decoration: none; cursor: pointer; transition: color 0.15s; }
     .dev-nav-link:hover, .dev-nav-link.active { color: #fff; }
     .dev-nav-actions { display: flex; gap: 8px; }
     .dev-btn { padding: 5px 12px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.15s; border: 1.5px solid; }
     .dev-btn-outline { background: transparent; border-color: #475569; color: #94A3B8; }
-    .dev-btn-outline:hover { border-color: #34D399; color: #34D399; }
-    .dev-btn-primary { background: #059669; border-color: #059669; color: #fff; }
-    .dev-btn-primary:hover { background: #047857; }
+    .dev-btn-outline:hover { border-color: #A78BFA; color: #A78BFA; }
+    .dev-btn-primary { background: #6D28D9; border-color: #6D28D9; color: #fff; }
+    .dev-btn-primary:hover { background: #5B21B6; }
     .dev-recaptcha-bar { background: #1E293B; border-bottom: 1px solid #334155; padding: 6px 20px; display: flex; align-items: center; gap: 8px; font-size: 0.65rem; color: #64748B; }
     .dev-recaptcha-icon { font-size: 0.7rem; }
 
@@ -70,16 +70,16 @@
     .dev-sidebar-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #475569; padding: 8px 14px 4px; }
     .dev-sidebar-item { display: flex; align-items: center; gap: 6px; padding: 5px 14px; font-size: 0.7rem; color: #94A3B8; cursor: pointer; border-radius: 4px; margin: 0 6px; transition: all 0.12s; }
     .dev-sidebar-item:hover { background: #334155; color: #fff; }
-    .dev-sidebar-item.active { background: #064E3B; color: #34D399; }
+    .dev-sidebar-item.active { background: #4C1D95; color: #A78BFA; }
     .dev-sidebar-method { font-size: 0.54rem; font-weight: 700; padding: 1px 4px; border-radius: 3px; flex-shrink: 0; }
     .m-get  { background: #1D4ED8; color: #93C5FD; }
-    .m-post { background: #065F46; color: #6EE7B7; }
+    .m-post { background: #5B21B6; color: #C4B5FD; }
     .m-del  { background: #991B1B; color: #FCA5A5; }
 
     .dev-main { flex: 1; overflow-y: auto; background: #0F172A; }
     .doc-section { padding: 20px 24px; border-bottom: 1px solid #1E293B; }
     .doc-hero { padding: 20px 24px 0; }
-    .doc-eyebrow { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #34D399; margin-bottom: 6px; }
+    .doc-eyebrow { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #A78BFA; margin-bottom: 6px; }
     .doc-title { font-size: 1.1rem; font-weight: 800; color: #F8FAFC; margin-bottom: 8px; }
     .doc-desc { font-size: 0.78rem; color: #94A3B8; line-height: 1.6; max-width: 480px; }
     .doc-pills { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
@@ -92,27 +92,27 @@
     .doc-ep-head { padding: 10px 14px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #334155; }
     .ep-method { font-size: 0.62rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; }
     .ep-method.get { background: #1D4ED8; color: #93C5FD; }
-    .ep-method.post { background: #065F46; color: #6EE7B7; }
+    .ep-method.post { background: #5B21B6; color: #C4B5FD; }
     .ep-path { font-size: 0.76rem; font-family: monospace; color: #E2E8F0; flex: 1; }
     .ep-desc { font-size: 0.68rem; color: #64748B; }
     .ep-body { padding: 12px 14px; }
     .ep-params-title { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #475569; margin-bottom: 8px; }
     .ep-param-row { display: grid; grid-template-columns: 120px 80px 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid #1E293B; font-size: 0.68rem; }
     .ep-param-row:last-child { border-bottom: none; }
-    .ep-param-name { font-family: monospace; color: #34D399; }
+    .ep-param-name { font-family: monospace; color: #A78BFA; }
     .ep-param-type { color: #F59E0B; }
     .ep-param-desc { color: #64748B; }
     .ep-required { font-size: 0.52rem; font-weight: 700; color: #F87171; margin-left: 4px; }
     .ep-example { background: #0F172A; border-radius: 6px; padding: 10px 12px; margin-top: 10px; }
     .ep-example-label { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #475569; margin-bottom: 6px; }
     .ep-code { font-family: monospace; font-size: 0.68rem; color: #E2E8F0; line-height: 1.6; }
-    .code-key { color: #34D399; }
+    .code-key { color: #A78BFA; }
     .code-str { color: #FCD34D; }
     .code-num { color: #F59E0B; }
     .code-cmt { color: #475569; }
 
-    .try-btn { padding: 5px 12px; background: #064E3B; color: #34D399; border: 1px solid #065F46; border-radius: 6px; font-size: 0.66rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.15s; margin-top: 10px; }
-    .try-btn:hover { background: #065F46; }
+    .try-btn { padding: 5px 12px; background: #4C1D95; color: #A78BFA; border: 1px solid #5B21B6; border-radius: 6px; font-size: 0.66rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.15s; margin-top: 10px; }
+    .try-btn:hover { background: #5B21B6; }
     .try-response { display: none; background: #0F172A; border: 1px solid #334155; border-radius: 6px; padding: 10px 12px; margin-top: 8px; font-family: monospace; font-size: 0.66rem; color: #E2E8F0; line-height: 1.6; }
     .try-response.show { display: block; }
 
@@ -121,8 +121,8 @@
     .gate-icon { font-size: 2rem; margin-bottom: 12px; }
     .gate-title { font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
     .gate-desc { font-size: 0.75rem; color: #94A3B8; line-height: 1.6; margin-bottom: 16px; }
-    .gate-btn { width: 100%; padding: 10px; background: #059669; color: #fff; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 700; font-family: inherit; cursor: pointer; margin-bottom: 8px; }
-    .gate-btn:hover { background: #047857; }
+    .gate-btn { width: 100%; padding: 10px; background: #6D28D9; color: #fff; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 700; font-family: inherit; cursor: pointer; margin-bottom: 8px; }
+    .gate-btn:hover { background: #5B21B6; }
     .gate-sub { font-size: 0.65rem; color: #64748B; }
 
     .compare-panel .dev-app { border-radius: 6px; }
@@ -233,12 +233,12 @@
   </div>
 
   <div class="acc-card acc-outcome mb40" style="border-color:#A7F3D0;">
-    <div class="acc-header" onclick="toggleAcc(this)" style="background:#ECFDF5;">
-      <p class="card-label" style="color:#059669;">Outcome</p>
-      <span class="acc-chevron" style="color:#059669;">▼</span>
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#EDE9FE;">
+      <p class="card-label" style="color:#6D28D9;">Outcome</p>
+      <span class="acc-chevron" style="color:#6D28D9;">▼</span>
     </div>
-    <div class="acc-body" style="background:#ECFDF5;">
-      <p style="color:#064E3B;">The new experience aligned documentation access with developer expectations and improved self-service discovery of shipping integration capabilities. Removing the first authentication gate reduced drop-off at the top of the developer funnel. Account activations from organic documentation discovery increased, and the integration team reported fewer "we had no idea what your API looked like" conversations in sales-led deals — a signal that developers were arriving at conversations already informed.</p>
+    <div class="acc-body" style="background:#EDE9FE;">
+      <p style="color:#4C1D95;">The new experience aligned documentation access with developer expectations and improved self-service discovery of shipping integration capabilities. Removing the first authentication gate reduced drop-off at the top of the developer funnel. Account activations from organic documentation discovery increased, and the integration team reported fewer "we had no idea what your API looked like" conversations in sales-led deals — a signal that developers were arriving at conversations already informed.</p>
     </div>
   </div>
 
