@@ -334,6 +334,23 @@
         <svg class="card-chevron" width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 5.5L1 12"/></svg>
       </a>
 
+      <div id="bopCard" style="display:none;">
+        <div class="plant-card" style="cursor:default;">
+          <div class="plant-thumb">
+            <img src="https://media.istockphoto.com/id/121351935/photo/bird-of-paradise-flower-isolated-on-white-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=b6qc2K_e5_TgPsU0XQJGe0oR94Hhzeo8pJFHntbdc3o=" alt="Bird of Paradise">
+          </div>
+          <div class="plant-card-info">
+            <div class="plant-card-name">Bird of Paradise</div>
+            <div class="plant-card-species">Strelitzia reginae</div>
+            <div class="plant-card-status">
+              <span class="status-dot none"></span>
+              <span class="status-text">No care data yet</span>
+            </div>
+          </div>
+          <svg class="card-chevron" width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="#e0e0e0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 5.5L1 12"/></svg>
+        </div>
+      </div>
+
       <button class="add-plant-btn" onclick="location.href='add-plant.html'">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add a plant
@@ -353,6 +370,10 @@
     document.addEventListener('click', () => {
       document.getElementById('settingsMenu').style.display = 'none';
     });
+
+    if (localStorage.getItem('plant-bop-added') === '1') {
+      document.getElementById('bopCard').style.display = 'block';
+    }
 
     // Read watering status from localStorage and populate the card
     (function() {

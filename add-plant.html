@@ -427,6 +427,7 @@
       : `A great indoor pick for ${city} — loves bright indirect light`;
 
     function addPlant() {
+      localStorage.setItem('plant-bop-added', '1');
       const overlay = document.getElementById('confirmOverlay');
       const btn = document.getElementById('addBtn');
       btn.textContent = '✓ Added';
