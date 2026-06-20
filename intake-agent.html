@@ -175,6 +175,26 @@
     }
     .view-data-btn:hover { background: #FEF3C7; border-color: #D97706; color: #92400E; }
     .view-data-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+    .gear-mobile {
+      display: none;
+      margin-left: auto;
+      padding: 6px;
+      border-radius: 8px;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .gear-mobile:hover { color: #fff; }
+    .gear-mobile svg { display: block; }
+
+    @media (max-width: 600px) {
+      body { padding: 0; }
+      .phone { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; }
+      .status-bar { display: none; }
+      .view-data-btn { display: none; }
+      .gear-mobile { display: flex; align-items: center; }
+    }
   </style>
 </head>
 <body>
@@ -203,6 +223,12 @@
       <h2>Intake Agent <span class="agent-badge">Agentic AI</span></h2>
       <p><span class="agent-online"></span>Agent online · Powered by AI</p>
     </div>
+    <a href="intake-data.html" class="gear-mobile" title="View collected data" aria-label="View collected data">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </a>
   </div>
 
   <div class="messages" id="msgs"></div>
