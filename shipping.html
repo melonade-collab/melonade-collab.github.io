@@ -810,13 +810,13 @@
           <div class="pay-form-card">
             <p class="pay-card-label">Card details</p>
             <p class="pay-demo-note">For demo purposes only — please do not enter real card details. No information is captured or stored.</p>
-            <div class="form-row full">
+            <div class="form-row full" style="max-width:282px;">
               <div class="form-group">
                 <label>Card number</label>
                 <input type="text" id="cardNum" placeholder="1234  5678  9012  3456" maxlength="19" class="card-num" oninput="formatCard(this)">
               </div>
             </div>
-            <div class="form-row" style="grid-template-columns: minmax(0,160px) minmax(0,110px);">
+            <div class="form-row" style="grid-template-columns: minmax(0,160px) minmax(0,110px); max-width:282px;">
               <div class="form-group">
                 <label>Expiry</label>
                 <input type="text" id="cardExp" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)">
@@ -826,7 +826,7 @@
                 <input type="text" id="cardCvv" placeholder="123" maxlength="4">
               </div>
             </div>
-            <div class="form-row full">
+            <div class="form-row full" style="max-width:282px;">
               <div class="form-group">
                 <label>Cardholder name</label>
                 <input type="text" id="cardName" placeholder="Jane Smith" oninput="applyTitleCase(this);checkPay()">

@@ -40,7 +40,8 @@
     .dash-app { background: #F3F4F6; border-radius: 12px; overflow: hidden; border: 1px solid #D1D5DB; }
     .dash-nav { background: #4C1D95; display: flex; align-items: center; padding: 0 18px; height: 50px; gap: 0; }
     .dash-logo { font-size: 0.9rem; font-weight: 900; color: #fff; letter-spacing: -0.3px; margin-right: 20px; flex-shrink: 0; }
-    .dash-nav-tabs { display: flex; flex: 1; gap: 0; }
+    .dash-nav-tabs { display: flex; flex: 1; gap: 0; overflow-x: auto; scrollbar-width: none; }
+    .dash-nav-tabs::-webkit-scrollbar { display: none; }
     .d-tab { padding: 0 13px; height: 50px; background: none; border: none; border-bottom: 2px solid transparent; font-family: inherit; font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
     .d-tab:hover { color: rgba(255,255,255,0.8); }
     .d-tab.active { color: #fff; border-bottom-color: #A78BFA; }
@@ -180,6 +181,11 @@
       .cs-body { padding: 36px 20px 60px; }
       .contrib-grid, .charts-row, .feat-row, .reports-grid { grid-template-columns: 1fr; }
       .kpi-row { grid-template-columns: 1fr 1fr; }
+      .dash-nav { flex-wrap: wrap; height: auto; padding: 0; }
+      .dash-logo { order: 1; flex: 1; padding: 0 14px; height: 40px; display: flex; align-items: center; margin-right: 0; }
+      .dash-user { order: 2; padding-right: 14px; height: 40px; display: flex; align-items: center; }
+      .dash-nav-tabs { order: 3; flex-basis: 100%; border-top: 1px solid rgba(255,255,255,0.15); }
+      .d-tab { height: 40px; }
     }
   </style>
 </head>
@@ -189,7 +195,7 @@
   <div class="cs-header-inner">
     <p class="eyebrow">Re-imagining</p>
     <h1>Shipment Visibility Web App</h1>
-    <p class="cs-intro">A self-serve web app giving medium and high-volume business shippers real-time visibility into their entire shipment portfolio — without waiting for a manually-built Excel report.</p>
+    <p class="cs-intro">A self-serve SaaS web app giving medium and high-volume business shippers real-time visibility into their entire shipment portfolio — without waiting for a manually-built Excel report.</p>
   </div>
 </div>
 
