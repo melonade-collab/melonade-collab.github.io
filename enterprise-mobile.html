@@ -246,7 +246,7 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>The carrier offered a mobile app for retail consumers, but enterprise employees on corporate plans had no equivalent. If an employee wanted to check their data usage, listen to voicemail, or change their voicemail PIN, their only options were to call IT support, call the carrier directly, or guess their way through an IVR — none of which scaled.</p>
+      <p>The carrier offered a mobile app for retail consumers, but enterprise employees on corporate plans had no equivalent. If an employee wanted to check their data usage or change their voicemail PIN, their only options were to call the carrier's B2B support line or navigate an IVR — neither of which scaled, and both generated significant inbound volume to our business support team.</p>
       <p>The core blocker: employees on corporate-liable plans are enrolled under the company's master account, not their own. They don't have personal account numbers. The existing registration flows required one. Standard authentication was a dead end.</p>
     </div>
   </div>
@@ -281,7 +281,7 @@
         </div>
         <div>
           <p class="contrib-item-label">Feature Scoping</p>
-          <p class="contrib-item-text">Identified the four tasks that drove the most IT support tickets — usage checks, voicemail, voicemail PIN changes, and plan details — and scoped the MVP around those rather than trying to port the full consumer feature set to an enterprise context where it didn't belong.</p>
+          <p class="contrib-item-text">Identified the three tasks that drove the most inbound calls to B2B support — usage checks, voicemail PIN changes, and plan details — and scoped the MVP around those rather than trying to port the full consumer feature set to an enterprise context where it didn't belong.</p>
         </div>
         <div>
           <p class="contrib-item-label">Voicemail UX</p>
@@ -302,7 +302,7 @@
     </div>
     <div class="acc-body">
       <p>On first launch, the app silently read the SIM identifiers from the device — no input required from the employee. A quick API call matched the SIM to the subscriber record in the carrier's system. If a match was found, the employee landed directly on their dashboard: name, number, plan, and current usage cycle.</p>
-      <p>The voicemail inbox displayed messages with caller information and an AI-generated transcription so employees could skim messages without listening. Tapping a message expanded an inline player with skip controls and a callback button. Changing the voicemail PIN was a three-field flow: current PIN, new PIN, confirm. All of this replaced calls to IT or a carrier IVR.</p>
+      <p>The voicemail inbox displayed messages with caller information and an AI-generated transcription so employees could skim messages without listening. Tapping a message expanded an inline player with skip controls and a callback button. Changing the voicemail PIN was a three-field flow: current PIN, new PIN, confirm. All of this replaced calls to B2B support or a carrier IVR.</p>
       <p>The Plan tab surfaced the features included in their corporate plan alongside device details pulled from the SIM — IMEI, SIM number — which were frequently requested for IT troubleshooting but previously required the employee to dig into phone settings.</p>
     </div>
   </div>
@@ -313,7 +313,7 @@
       <span class="acc-chevron" style="color:#0EA5E9;">▼</span>
     </div>
     <div class="acc-body" style="background:#F0F9FF;">
-      <p style="color:#0C4A6E;">Measurably reduced IT support ticket volume for plan-related inquiries. The SIM-as-identity model became the baseline assumption for the enterprise product line — no login flow was ever designed because it was never needed. The visual voicemail feature resolved one of the most common carrier IVR complaints: employees didn't have to listen to messages in sequence to find out what they contained.</p>
+      <p style="color:#0C4A6E;">Measurably reduced inbound call volume to B2B support for plan-related inquiries. The SIM-as-identity model became the baseline assumption for the enterprise product line — no login flow was ever designed because it was never needed. Voicemail PIN management — previously a call to IT or a carrier IVR — became a self-serve three-step flow inside the app.</p>
     </div>
   </div>
 
