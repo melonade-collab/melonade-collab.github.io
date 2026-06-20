@@ -173,14 +173,22 @@
     .audit-success-title { font-size: 0.74rem; font-weight: 700; color: #065F46; margin-bottom: 4px; }
     .audit-success-sub { font-size: 0.62rem; color: #047857; line-height: 1.5; }
 
+    .audit-mobile-tabs { display: none; background: #1F2937; }
+    .amt { flex: 1; padding: 9px; font-size: 0.68rem; font-weight: 700; font-family: inherit; border: none; cursor: pointer; color: rgba(255,255,255,0.5); background: none; border-bottom: 2px solid transparent; transition: all 0.15s; }
+    .amt.active { color: #fff; border-bottom-color: #10B981; }
+    .amt-flash { color: #10B981 !important; border-bottom-color: #10B981 !important; }
+
     @media (max-width: 680px) {
       .cs-header { padding: 40px 20px 36px; }
       .cs-body { padding: 36px 20px 60px; }
       .contrib-grid { grid-template-columns: 1fr; }
       .audit-cols { grid-template-columns: 1fr; }
-      .carrier-sim { border-right: none; border-bottom: 1px solid #E5E7EB; }
       .cw-plan-grid { grid-template-columns: 1fr; }
       .audit-panel { max-height: none; }
+      .audit-mobile-tabs { display: flex; }
+      .carrier-sim { display: none; border-right: none; }
+      .audit-cols.show-sim .carrier-sim { display: block; }
+      .audit-cols.show-sim .audit-panel { display: none; }
     }
   </style>
 </head>
@@ -190,7 +198,7 @@
   <div class="cs-header-inner">
     <p class="eyebrow">Re-imagining</p>
     <h1>Web Accessibility Remediation</h1>
-    <p class="cs-intro">A 4–6 month effort to bring a wireless carrier's website to WCAG 2.1 AA compliance — coordinating fixes across independent product teams who each owned their own corner of the site.</p>
+    <p class="cs-intro">A 6-month effort to bring a wireless carrier's website to WCAG 2.1 AA compliance — coordinating fixes across independent product teams who each owned their own corner of the site.</p>
   </div>
 </div>
 
@@ -273,7 +281,7 @@
       <span class="acc-chevron" style="color:#0EA5E9;">▼</span>
     </div>
     <div class="acc-body" style="background:#F0F9FF;">
-      <p style="color:#0C4A6E;">Brought the site to WCAG 2.1 AA compliance across all primary user flows over a 4–6 month remediation cycle. Subsequent quarterly audits found zero critical violations. Product and design teams began self-reporting accessibility checks as part of sprint reviews. The training program was absorbed into onboarding for new design and product hires — making prevention, not just remediation, part of the culture.</p>
+      <p style="color:#0C4A6E;">Brought the site to WCAG 2.1 AA compliance across all primary user flows over a 6-month remediation cycle. Subsequent quarterly audits found zero critical violations. Product and design teams began self-reporting accessibility checks as part of sprint reviews. The training program was absorbed into onboarding for new design and product hires — making prevention, not just remediation, part of the culture.</p>
     </div>
   </div>
 
@@ -282,6 +290,12 @@
     <p class="proto-wrap-label">Interactive prototype — Accessibility audit simulator</p>
 
     <div class="audit-app">
+      <!-- Mobile tab toggle (hidden on desktop) -->
+      <div class="audit-mobile-tabs" id="auditMobileTabs">
+        <button class="amt" id="tabSim" onclick="showTab('sim')">Website Preview</button>
+        <button class="amt active" id="tabAudit" onclick="showTab('audit')">Audit Fixes</button>
+      </div>
+
       <!-- Header bar -->
       <div class="audit-hdr">
         <div class="audit-hdr-title">🔍 ClearWave Wireless — WCAG 2.1 AA Audit</div>
@@ -576,6 +590,15 @@
 function toggleAcc(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
 function toggleCat(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
 
+let tabFlashTimer = null;
+function showTab(which) {
+  const cols = document.querySelector('.audit-cols');
+  const isSim = which === 'sim';
+  cols.classList.toggle('show-sim', isSim);
+  document.getElementById('tabSim').classList.toggle('active', isSim);
+  document.getElementById('tabAudit').classList.toggle('active', !isSim);
+}
+
 const CATS = {
   c: { issues: ['c1','c2','c3'], cls: 'fix-contrast',  label: 'Fix contrast →' },
   a: { issues: ['a1','a2','a3'], cls: 'fix-aria',       label: 'Fix ARIA labels →' },
@@ -590,23 +613,33 @@ function applyFix(cat) {
   if (fixed.has(cat)) return;
   fixed.add(cat);
   const sim = document.getElementById('sim');
-  sim.classList.add(CATS[cat].cls);
 
-  CATS[cat].issues.forEach(id => {
-    const row = document.getElementById(id);
-    row.querySelector('.issue-dot').classList.add('fixed');
-    row.querySelector('.issue-text').classList.add('fixed');
-  });
+  function doApply() {
+    sim.classList.add(CATS[cat].cls);
+    CATS[cat].issues.forEach(id => {
+      const row = document.getElementById(id);
+      row.querySelector('.issue-dot').classList.add('fixed');
+      row.querySelector('.issue-text').classList.add('fixed');
+    });
+    const btn = document.getElementById(`fixBtn-${cat}`);
+    btn.textContent = '✓ Fixed';
+    btn.disabled = true;
+    const badge = document.getElementById(`badge-${cat}`);
+    badge.textContent = '✓ Fixed';
+    badge.classList.add('done');
+    updateProgress();
+  }
 
-  const btn = document.getElementById(`fixBtn-${cat}`);
-  btn.textContent = '✓ Fixed';
-  btn.disabled = true;
-
-  const badge = document.getElementById(`badge-${cat}`);
-  badge.textContent = '✓ Fixed';
-  badge.classList.add('done');
-
-  updateProgress();
+  if (window.innerWidth <= 680) {
+    if (tabFlashTimer) clearTimeout(tabFlashTimer);
+    showTab('sim');                          // show BEFORE state
+    tabFlashTimer = setTimeout(() => {
+      doApply();                             // apply fix — user sees AFTER state
+      tabFlashTimer = setTimeout(() => showTab('audit'), 1200);
+    }, 800);
+  } else {
+    doApply();
+  }
 }
 
 function updateProgress() {
@@ -651,6 +684,8 @@ function resetAudit() {
   summary.textContent = '⚠ 18 violations found';
   summary.classList.remove('all-clear');
   document.getElementById('auditSuccess').classList.remove('show');
+  if (tabFlashTimer) clearTimeout(tabFlashTimer);
+  showTab('audit');
 }
 
 /* Tab demo */
