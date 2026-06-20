@@ -23,8 +23,8 @@
 
     /* ── Phone frame ── */
     .phone-frame {
-      width: 390px;
-      max-height: 844px;
+      width: 320px;
+      height: min(780px, calc(100vh - 60px));
       background: #fff;
       border-radius: 50px;
       box-shadow: 0 0 0 10px #1c1c1e, 0 0 0 11px #3a3a3c, 0 40px 100px rgba(0,0,0,0.55);
@@ -449,10 +449,7 @@
 
     <!-- App nav bar -->
     <div class="app-nav">
-      <a href="index.html" class="nav-back">
-        <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1L1 6.5L7 12"/></svg>
-        Portfolio
-      </a>
+      <div style="min-width:72px;"></div>
       <span class="nav-title">My Plants</span>
       <div class="nav-settings-wrap">
         <button class="nav-settings-btn" onclick="toggleSettings(event)" aria-label="Settings">
@@ -574,6 +571,8 @@
 
   </div><!-- end phone-frame -->
 
+  <a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
   <script>
     function toggleSettings(e) {
       e.stopPropagation();
@@ -645,7 +644,7 @@
       document.getElementById('greeting').textContent = `Good ${period}, ${userName}.`;
     }
 
-    function generateInsight(weatherCode, temp, humidity) {
+    function generateInsight(weatherCode, temp, humidity, uvIndex) {
       const w = window._waterStatus;
       if (!w || !w.ready) return;
 
@@ -668,6 +667,12 @@
           ? `Outdoor humidity is low${humidStr}. Indoor air can dry out further as doors and windows open and close — a humidifier would help keep your Monstera happy.`
           : '';
 
+      const uvHigh    = uvIndex !== null && uvIndex >= 6;
+      const uvVeryHigh = uvIndex !== null && uvIndex >= 8;
+      const uvTip = uvHigh
+        ? `UV is ${uvVeryHigh ? 'very high' : 'high'} today (index ${uvIndex}) — if windows or doors are open, intense light reaching your Monstera could scorch the leaves. Keep it back from the glass or use a sheer curtain.`
+        : '';
+
       let text = '';
 
       if (w.noHistory) {
@@ -675,20 +680,25 @@
           ? 'No watering history yet — and with today\'s conditions drying things out, it\'s worth logging a water now to start tracking.'
           : 'Tap "Water today" to start tracking. Once you do, this card will keep an eye on things for you.';
         if (humidTip) text += ' ' + humidTip;
+        if (uvTip) text += ' ' + uvTip;
       } else if (w.wateredToday && driesOut) {
         text = 'Good timing on the water. Sunny conditions will speed up evaporation — worth checking the soil a day or two early next time.';
         if (humidTip) text += ' ' + humidTip;
+        if (uvTip) text += ' ' + uvTip;
       } else if (w.wateredToday) {
         text = moist
           ? 'Freshly watered with overcast skies ahead — the soil should stay moist longer than usual. No rush on the next one.'
           : 'Freshly watered. Your Monstera should be in good shape for the week.';
         if (humidTip) text += ' ' + humidTip;
+        if (uvTip) text += ' ' + uvTip;
       } else if (w.days >= w.interval && driesOut) {
         text = 'Watering is overdue and it\'s warm and sunny — the soil\'s likely quite dry. Your Monstera would appreciate a drink today.';
         if (humidTip) text += ' ' + humidTip;
+        if (uvTip) text += ' ' + uvTip;
       } else if (w.days >= w.interval) {
         text = 'Watering is overdue. Time to give your Monstera a good soak.';
         if (humidTip) text += ' ' + humidTip;
+        if (uvTip) text += ' ' + uvTip;
       } else {
         const daysLeft = w.interval - w.days;
         const isDueSoon = w.days >= w.interval * 0.75;
@@ -704,6 +714,7 @@
           text = `Everything looks on track. ${daysLeft} day${daysLeft !== 1 ? 's' : ''} until the next watering — stay the course.`;
         }
         if (humidTip) text += ' ' + humidTip;
+        if (uvTip) text += ' ' + uvTip;
       }
 
       if (text) {
@@ -712,12 +723,13 @@
       }
     }
 
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,relative_humidity_2m&temperature_unit=celsius&timezone=${encodeURIComponent(tz)}`)
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,relative_humidity_2m,uv_index&temperature_unit=celsius&timezone=${encodeURIComponent(tz)}`)
       .then(r => r.json())
       .then(data => {
         const temp     = Math.round(data.current.temperature_2m);
         const code     = data.current.weathercode;
         const humidity = data.current.relative_humidity_2m;
+        const uvIndex  = Math.round(data.current.uv_index);
         const icon = weatherIcons[code] ?? '🌡️';
         const desc = weatherDescs[code] ?? 'Unknown';
         widget.innerHTML = `
@@ -730,11 +742,11 @@
           <div class="weather-location">${cityName}, ${prov}</div>
         `;
 
-        generateInsight(code, temp, humidity);
+        generateInsight(code, temp, humidity, uvIndex);
       })
       .catch(() => {
         widget.innerHTML = '<span class="weather-error">Weather unavailable</span>';
-        generateInsight(null, null, null);
+        generateInsight(null, null, null, null);
       });
   </script>
 
