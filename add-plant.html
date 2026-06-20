@@ -210,6 +210,11 @@
     .confirm-title { font-size: 1.1rem; font-weight: 800; color: #1b5e20; }
     .confirm-sub   { font-size: 0.82rem; color: #81c784; }
 
+    .nav-settings-wrap { min-width: 72px; display: flex; justify-content: flex-end; position: relative; }
+    .nav-settings-btn { background: none; border: none; cursor: pointer; padding: 4px; align-items: center; color: #4caf50; display: none; }
+    .nav-settings-menu { display: none; position: absolute; right: 0; top: calc(100% + 8px); background: #fff; border-radius: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.16); min-width: 160px; overflow: hidden; border: 1px solid rgba(0,0,0,0.07); z-index: 100; }
+    .nav-settings-menu a { display: flex; align-items: center; gap: 10px; padding: 13px 16px; font-size: 0.85rem; font-weight: 500; color: #2e7d32; text-decoration: none; font-family: inherit; }
+
     @media (max-width: 440px) {
       body { padding: 0; align-items: flex-start; background: #fff; }
       .phone-frame { width: 100%; border-radius: 0; box-shadow: none; max-height: 100dvh; background: #f5f5f5; }
@@ -217,6 +222,7 @@
       .status-bar { display: none; }
       .confirm-overlay { border-radius: 0; }
       .portfolio-back-link { display: none; }
+      .nav-settings-btn { display: flex; }
     }
   </style>
 </head>
@@ -252,7 +258,17 @@
         My Plants
       </a>
       <span class="nav-title">Add a Plant</span>
-      <div style="min-width:72px;"></div>
+      <div class="nav-settings-wrap">
+        <button class="nav-settings-btn" id="settingsBtn" onclick="toggleMenu(event)" aria-label="Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+        <div class="nav-settings-menu" id="settingsMenu">
+          <a href="index.html">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to portfolio
+          </a>
+        </div>
+      </div>
     </div>
 
     <div class="app-content">
@@ -416,6 +432,16 @@
       document.getElementById('confirmOverlay').classList.add('show');
       setTimeout(() => { location.href = 'plants.html'; }, 1800);
     }
+
+    function toggleMenu(e) {
+      e.stopPropagation();
+      const m = document.getElementById('settingsMenu');
+      m.style.display = m.style.display === 'block' ? 'none' : 'block';
+    }
+    document.addEventListener('click', () => {
+      const m = document.getElementById('settingsMenu');
+      if (m) m.style.display = 'none';
+    });
   </script>
 </body>
 </html>
