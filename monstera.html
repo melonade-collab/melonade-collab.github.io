@@ -343,7 +343,8 @@
   <div class="card">
 
     <div class="plant-image" id="plantImageContainer">
-      <svg id="plantSvg" viewBox="0 0 200 252" xmlns="http://www.w3.org/2000/svg">
+      <img src="https://images.unsplash.com/photo-1525498128493-380d1990a112?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bW9uc3RlcmF8ZW58MHx8MHx8fDA%3D" alt="Monstera deliciosa" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <svg id="plantSvg" viewBox="0 0 200 252" xmlns="http://www.w3.org/2000/svg" style="display:none">
         <defs>
           <linearGradient id="lg" x1="25%" y1="0%" x2="75%" y2="100%">
             <stop offset="0%"   stop-color="#a5d6a7"/>
@@ -357,83 +358,71 @@
           </linearGradient>
         </defs>
 
-        <!-- Petiole (stem) -->
-        <path d="M100,236 C99,242 100,248 100,252"
-              stroke="#5d4037" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <!-- Petiole -->
+        <path d="M100,238 C100,243 100,248 100,252" stroke="#5d4037" stroke-width="6" stroke-linecap="round" fill="none"/>
 
-        <!--
-          Leaf outline: proper monstera deliciosa shape.
-          3 main lobes per side + heart-shaped basal lobes.
-          Deep sinuses cut close to midrib.
-          Path traces clockwise from tip.
-        -->
+        <!-- Leaf: 3 lobes per side, sinuses ~65% toward midrib, heart-shaped base -->
         <path fill="url(#lg)" d="
           M 100,15
-          C 118,15 158,35 165,52
-          C 170,62 130,68 112,72
-          C 112,82 175,88 182,105
-          C 186,120 128,126 110,128
-          C 112,138 158,148 165,162
-          C 172,173 125,180 108,180
-          C 112,192 140,200 142,214
-          C 144,224 118,230 110,230
-          C 108,233 104,236 100,236
-          C 96,236 92,233 90,230
-          C 82,230 56,224 58,214
-          C 60,200 88,192 92,180
-          C 75,180 28,173 35,162
-          C 42,148 88,138 90,128
-          C 72,126 14,120 18,105
-          C 25,88 88,82 88,72
-          C 70,68 30,62 35,52
-          C 42,35 82,15 100,15
-          Z
+          C 130,15 164,44 165,64
+          C 166,76 140,84 120,90
+          C 124,97 176,109 176,124
+          C 176,138 138,148 118,153
+          C 122,160 162,172 160,185
+          C 158,196 126,200 110,204
+          C 116,214 140,226 136,238
+          C 134,244 110,248 100,248
+          C 90,248 66,244 64,238
+          C 60,226 84,214 90,204
+          C 74,200 42,196 40,185
+          C 38,172 78,160 82,153
+          C 62,148 24,138 24,124
+          C 24,109 76,97 80,90
+          C 60,84 34,76 35,64
+          C 36,44 70,15 100,15 Z
         "/>
 
-        <!-- Gloss sheen overlay -->
+        <!-- Sheen -->
         <path fill="url(#lgSheen)" d="
           M 100,15
-          C 118,15 158,35 165,52
-          C 170,62 130,68 112,72
-          C 112,82 175,88 182,105
-          C 186,120 128,126 110,128
-          C 112,138 158,148 165,162
-          C 172,173 125,180 108,180
-          C 112,192 140,200 142,214
-          C 144,224 118,230 110,230
-          C 108,233 104,236 100,236
-          C 96,236 92,233 90,230
-          C 82,230 56,224 58,214
-          C 60,200 88,192 92,180
-          C 75,180 28,173 35,162
-          C 42,148 88,138 90,128
-          C 72,126 14,120 18,105
-          C 25,88 88,82 88,72
-          C 70,68 30,62 35,52
-          C 42,35 82,15 100,15 Z
+          C 130,15 164,44 165,64
+          C 166,76 140,84 120,90
+          C 124,97 176,109 176,124
+          C 176,138 138,148 118,153
+          C 122,160 162,172 160,185
+          C 158,196 126,200 110,204
+          C 116,214 140,226 136,238
+          C 134,244 110,248 100,248
+          C 90,248 66,244 64,238
+          C 60,226 84,214 90,204
+          C 74,200 42,196 40,185
+          C 38,172 78,160 82,153
+          C 62,148 24,138 24,124
+          C 24,109 76,97 80,90
+          C 60,84 34,76 35,64
+          C 36,44 70,15 100,15 Z
         "/>
 
         <!-- Midrib -->
-        <line x1="100" y1="15" x2="100" y2="236"
-              stroke="#1a5c1e" stroke-width="1.8" opacity="0.4"/>
+        <line x1="100" y1="15" x2="100" y2="238" stroke="#1a5c1e" stroke-width="1.8" opacity="0.4"/>
 
-        <!-- Right lateral veins (one per lobe) -->
-        <path d="M100,40  C118,38 148,44 164,52"  stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
-        <path d="M100,86  C125,83 162,92 180,105"  stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
-        <path d="M100,132 C120,130 150,142 163,162" stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
-        <path d="M100,180 C112,178 130,194 140,212" stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
+        <!-- Right lateral veins -->
+        <path d="M100,46  C122,43 150,54 166,64"  stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
+        <path d="M100,100 C126,97 158,110 176,124" stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
+        <path d="M100,154 C120,152 148,165 160,178" stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
+        <path d="M100,206 C114,204 130,218 136,230" stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
 
-        <!-- Left lateral veins (mirror) -->
-        <path d="M100,40  C82,38 52,44 36,52"    stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
-        <path d="M100,86  C75,83 38,92 20,105"    stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
-        <path d="M100,132 C80,130 50,142 37,162"  stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
-        <path d="M100,180 C88,178 70,194 60,212"  stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
+        <!-- Left lateral veins -->
+        <path d="M100,46  C78,43 50,54 34,64"    stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
+        <path d="M100,100 C74,97 42,110 24,124"   stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
+        <path d="M100,154 C80,152 52,165 40,178"  stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
+        <path d="M100,206 C86,204 70,218 64,230"  stroke="#1a5c1e" stroke-width="1" fill="none" opacity="0.28"/>
 
-        <!-- Fenestrations: ovals near midrib between lobes. Fill matches image bg #e8f5e9 -->
-        <ellipse cx="146" cy="90"  rx="16" ry="10" fill="#e8f5e9"/>
-        <ellipse cx="54"  cy="90"  rx="16" ry="10" fill="#e8f5e9"/>
-        <ellipse cx="140" cy="142" rx="14" ry="9"  fill="#e8f5e9"/>
-        <ellipse cx="60"  cy="142" rx="14" ry="9"  fill="#e8f5e9"/>
+        <!-- Fenestrations: between lobe 1–2 and lobe 2–3, near midrib -->
+        <ellipse cx="148" cy="118" rx="18" ry="11" fill="#e8f5e9"/>
+        <ellipse cx="52"  cy="118" rx="18" ry="11" fill="#e8f5e9"/>
+        <ellipse cx="140" cy="170" rx="14" ry="9"  fill="#e8f5e9"/>
+        <ellipse cx="60"  cy="170" rx="14" ry="9"  fill="#e8f5e9"/>
       </svg>
     </div>
 
@@ -746,22 +735,5 @@
     })();
   </script>
 
-  <script>
-    /* ── Perenual plant image ── */
-    const PERENUAL_KEY = 'YOUR_API_KEY_HERE';
-
-    if (PERENUAL_KEY !== 'YOUR_API_KEY_HERE') {
-      fetch(`https://perenual.com/api/species-list?key=${PERENUAL_KEY}&q=Monstera%20deliciosa`)
-        .then(r => r.json())
-        .then(data => {
-          const img = data?.data?.[0]?.default_image?.medium_url;
-          if (img && !img.includes('upgrade')) {
-            const container = document.getElementById('plantImageContainer');
-            container.innerHTML = `<img src="${img}" alt="Monstera deliciosa" style="width:100%;height:100%;object-fit:cover;display:block;">`;
-          }
-        })
-        .catch(() => { /* keep SVG fallback */ });
-    }
-  </script>
 </body>
 </html>
