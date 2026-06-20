@@ -666,9 +666,15 @@
       const isRainy   = weatherCode !== null && [51,53,55,61,63,65,80,81,82,95,96,99].includes(weatherCode);
       const driesOut  = isSunny || isHot;
       const moist     = isCloudy || isRainy;
-      const isDry     = humidity !== null && humidity < 45;
-      const isLowHum  = humidity !== null && humidity < 60;
-      const humidStr  = humidity !== null ? ` (${humidity}% right now)` : '';
+      const isHighOutdoorHum = humidity !== null && humidity >= 60;
+      const isLowOutdoorHum  = humidity !== null && humidity < 50;
+      const humidStr         = humidity !== null ? ` (${humidity}% outside)` : '';
+
+      const humidTip = isHighOutdoorHum
+        ? `Outdoor humidity is ${humidity}% — open a window to let your Monstera soak up some of that moisture.`
+        : isLowOutdoorHum
+          ? `Outdoor humidity is low${humidStr}. Indoor air can dry out further as doors and windows open and close — a humidifier would help keep your Monstera happy.`
+          : '';
 
       let text = '';
 
@@ -676,23 +682,21 @@
         text = driesOut
           ? 'No watering history yet — and with today\'s conditions drying things out, it\'s worth logging a water now to start tracking.'
           : 'Tap "Water today" to start tracking. Once you do, this card will keep an eye on things for you.';
-        if (isDry) text += ` The air is also quite dry${humidStr} — Monstera prefers 60%+.`;
+        if (humidTip) text += ' ' + humidTip;
       } else if (w.wateredToday && driesOut) {
         text = 'Good timing on the water. Sunny conditions will speed up evaporation — worth checking the soil a day or two early next time.';
-        if (isDry) text += ` Air humidity is low${humidStr} too — consider misting.`;
+        if (humidTip) text += ' ' + humidTip;
       } else if (w.wateredToday) {
         text = moist
           ? 'Freshly watered with overcast skies ahead — the soil should stay moist longer than usual. No rush on the next one.'
           : 'Freshly watered. Your Monstera should be in good shape for the week.';
-        if (isDry) text += ` One thing: the air is quite dry${humidStr}. Monstera prefers 60%+.`;
-      } else if (w.days >= w.interval && (driesOut || isDry)) {
-        text = isDry && driesOut
-          ? `Watering is overdue, it's warm and sunny, and the air is dry${humidStr} — a tough combo for your Monstera. Time to water and consider misting.`
-          : isDry
-            ? `Watering is overdue and the air is quite dry${humidStr}. Your Monstera is thirsty on two fronts.`
-            : 'Watering is overdue, and it\'s warm and sunny out — the soil\'s likely quite dry. Your Monstera would appreciate a drink today.';
+        if (humidTip) text += ' ' + humidTip;
+      } else if (w.days >= w.interval && driesOut) {
+        text = 'Watering is overdue and it\'s warm and sunny — the soil\'s likely quite dry. Your Monstera would appreciate a drink today.';
+        if (humidTip) text += ' ' + humidTip;
       } else if (w.days >= w.interval) {
         text = 'Watering is overdue. Time to give your Monstera a good soak.';
+        if (humidTip) text += ' ' + humidTip;
       } else {
         const daysLeft = w.interval - w.days;
         const isDueSoon = w.days >= w.interval * 0.75;
@@ -704,13 +708,10 @@
           text = `Plenty of time before the next water, but bright sunny days mean faster evaporation. Keep an eye on the soil.`;
         } else if (moist) {
           text = `Overcast or wet conditions outside slow evaporation indoors too. Your Monstera's soil will hold moisture longer than usual.`;
-        } else if (isDry) {
-          text = `Watering looks fine, but the air is quite dry${humidStr} — below the 60% your Monstera prefers. A pebble tray or occasional mist would help.`;
-        } else if (isLowHum) {
-          text = `All on track. Humidity is a touch low${humidStr} — Monstera is happiest above 60%, so keep that in mind.`;
         } else {
           text = `Everything looks on track. ${daysLeft} day${daysLeft !== 1 ? 's' : ''} until the next watering — stay the course.`;
         }
+        if (humidTip) text += ' ' + humidTip;
       }
 
       if (text) {
