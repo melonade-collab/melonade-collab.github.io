@@ -320,35 +320,88 @@
   <a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
 
   <script>
-    const climateBlurbs = {
-      'Brampton':     'Humid continental — cold winters, warm humid summers. Great for tropical houseplants that need seasonal rest.',
-      'Calgary':      'Semi-arid with cold winters and dry air year-round. Indoor plants benefit from a humidifier in winter.',
-      'Edmonton':     'Cold continental with very dry winters. Extra humidity indoors will keep tropical plants happy.',
-      'Halifax':      'Humid with mild, moist summers. Good natural humidity for most houseplants.',
-      'Hamilton':     'Humid continental — warm summers with decent humidity. Most tropicals do well indoors.',
-      'Kelowna':      'Semi-arid with hot dry summers and cold winters. Watch humidity levels indoors year-round.',
-      'Laval':        'Humid continental — warm summers, cold winters. Indoor plants love the summer warmth.',
-      'London':       'Humid continental with mild summers. Consistent indoor temps make it easy to care for tropicals.',
-      'Mississauga':  'Humid continental near the lake — natural humidity buffers are a bonus for houseplants.',
-      'Moncton':      'Humid continental with variable weather. Moderate conditions suit a wide range of indoor plants.',
-      'Montreal':     'Humid continental — cold dry winters mean indoor humidity matters most in January and February.',
-      'Ottawa':       'Humid continental with cold, dry winters. A humidifier goes a long way for moisture-loving plants.',
-      'Quebec City':  'Cold humid continental — one of the harshest winters in Canada. Indoor humidity is key.',
-      'Regina':       'Semi-arid and very cold in winter. The driest indoor air in the country — humidifier essential.',
-      'Saskatoon':    'Cold semi-arid — dry year-round. Humidity support indoors will make a big difference.',
-      "St. John's":   'Oceanic and foggy — naturally high humidity is great for tropical houseplants.',
-      'Sudbury':      'Cold continental with snowy winters. Indoor air dries out fast — watch your humidity.',
-      'Thunder Bay':  'Cold continental with long winters. Tropical plants appreciate added humidity in the colder months.',
-      'Toronto':      'Humid continental with warm summers. Lake Ontario keeps things relatively humid — good for most plants.',
-      'Vancouver':    'Oceanic and mild year-round. One of the best climates in Canada for houseplants — naturally humid.',
-      'Victoria':     'Canada\'s mildest climate — mild, wet winters and warm dry summers. Ideal for most indoor plants.',
-      'Windsor':      'The warmest city in Canada — humid summers and mild winters. Tropical plants thrive here.',
-      'Winnipeg':     'Very cold and dry continental winters. Indoor humidity will drop fast — a humidifier helps a lot.',
+    const cities = {
+      'Brampton':      { lat: 43.7315, lon: -79.7624  },
+      'Calgary':       { lat: 51.0447, lon: -114.0719 },
+      'Edmonton':      { lat: 53.5461, lon: -113.4938 },
+      'Halifax':       { lat: 44.6488, lon: -63.5752  },
+      'Hamilton':      { lat: 43.2557, lon: -79.8711  },
+      'Kelowna':       { lat: 49.8880, lon: -119.4960 },
+      'Laval':         { lat: 45.6066, lon: -73.7124  },
+      'London':        { lat: 42.9849, lon: -81.2453  },
+      'Mississauga':   { lat: 43.5890, lon: -79.6441  },
+      'Moncton':       { lat: 46.0878, lon: -64.7782  },
+      'Montreal':      { lat: 45.5017, lon: -73.5673  },
+      'Ottawa':        { lat: 45.4215, lon: -75.6972  },
+      'Quebec City':   { lat: 46.8139, lon: -71.2080  },
+      'Regina':        { lat: 50.4452, lon: -104.6189 },
+      'Saskatoon':     { lat: 52.1332, lon: -106.6700 },
+      "St. John's":    { lat: 47.5615, lon: -52.7126  },
+      'Sudbury':       { lat: 46.4900, lon: -80.9910  },
+      'Thunder Bay':   { lat: 48.3809, lon: -89.2477  },
+      'Toronto':       { lat: 43.7001, lon: -79.4163  },
+      'Vancouver':     { lat: 49.2827, lon: -123.1207 },
+      'Victoria':      { lat: 48.4284, lon: -123.3656 },
+      'Windsor':       { lat: 42.3149, lon: -83.0364  },
+      'Winnipeg':      { lat: 49.8951, lon: -97.1384  },
     };
 
-    function updateCityClimate() {
-      const city = document.getElementById('userCity').value;
-      document.getElementById('cityClimate').textContent = climateBlurbs[city] || '';
+    const climateCache = {};
+
+    function dateRange() {
+      const end   = new Date(); end.setDate(end.getDate() - 1);
+      const start = new Date(end); start.setFullYear(start.getFullYear() - 1);
+      const fmt   = d => d.toISOString().slice(0, 10);
+      return { start: fmt(start), end: fmt(end) };
+    }
+
+    function buildBlurb(city, avgTemp, totalPrecip) {
+      const t = avgTemp.toFixed(1);
+      const p = Math.round(totalPrecip);
+
+      let tempLine =
+        avgTemp < 3  ? 'very cold annual average' :
+        avgTemp < 7  ? 'cold annual average' :
+        avgTemp < 11 ? 'cool annual average' :
+        avgTemp < 15 ? 'mild annual average' :
+                       'warm annual average';
+
+      let precipLine =
+        totalPrecip < 350 ? 'very dry — indoor humidity will need active support year-round' :
+        totalPrecip < 550 ? 'on the dry side — a humidifier helps tropical plants in winter' :
+        totalPrecip < 750 ? 'moderate rainfall — most houseplants do well with minimal intervention' :
+        totalPrecip < 950 ? 'fairly wet — natural outdoor humidity is a plus for indoor plants' :
+                            'very wet — indoor conditions tend to stay comfortable for tropicals';
+
+      return `${t}°C avg · ${p}mm annual precipitation. ${city} has a ${tempLine} and is ${precipLine}.`;
+    }
+
+    async function updateCityClimate() {
+      const city    = document.getElementById('userCity').value;
+      const el      = document.getElementById('cityClimate');
+      const coords  = cities[city];
+      if (!coords) { el.textContent = ''; return; }
+
+      if (climateCache[city]) { el.textContent = climateCache[city]; return; }
+
+      el.textContent = 'Loading climate data…';
+
+      const { start, end } = dateRange();
+      try {
+        const res  = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${coords.lat}&longitude=${coords.lon}&start_date=${start}&end_date=${end}&daily=temperature_2m_mean,precipitation_sum&timezone=auto`);
+        const data = await res.json();
+
+        const temps   = data.daily.temperature_2m_mean.filter(v => v !== null);
+        const precips = data.daily.precipitation_sum.filter(v => v !== null);
+        const avgTemp = temps.reduce((a, b) => a + b, 0) / temps.length;
+        const totalP  = precips.reduce((a, b) => a + b, 0);
+
+        const blurb = buildBlurb(city, avgTemp, totalP);
+        climateCache[city] = blurb;
+        el.textContent = blurb;
+      } catch {
+        el.textContent = 'Climate data unavailable.';
+      }
     }
 
     const nameEl = document.getElementById('userName');
