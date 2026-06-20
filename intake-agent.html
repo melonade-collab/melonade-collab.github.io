@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intake &amp; Triage Agent</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #dde1e7;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 24px 40px;
+      gap: 20px;
+    }
+
+    .phone {
+      width: min(292px, calc(100vw - 48px));
+      height: min(624px, calc(100vh - 120px));
+      background: #fff;
+      border-radius: 44px;
+      box-shadow:
+        0 0 0 8px #111,
+        0 0 0 11px #2a2a2a,
+        0 28px 64px rgba(0,0,0,0.35);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .status-bar {
+      background: #1a237e;
+      padding: 10px 22px 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .status-time { color: #fff; font-size: 0.78rem; font-weight: 700; }
+    .status-icons { color: rgba(255,255,255,0.7); font-size: 0.7rem; letter-spacing: 2px; }
+
+    .chat-header {
+      background: #1a237e;
+      padding: 8px 16px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .bot-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #92400E;
+      border: 2px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .bot-avatar svg { width: 22px; height: 22px; }
+    .chat-header-info h2 { color: #fff; font-size: 0.9rem; font-weight: 600; line-height: 1.3; }
+    .chat-header-info p  { color: rgba(255,255,255,0.5); font-size: 0.7rem; }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #f2f3f7;
+    }
+
+    .msg { display: flex; gap: 8px; align-items: flex-end; }
+    .msg.bot  { align-self: flex-start; max-width: 88%; }
+    .msg.user { align-self: flex-end; flex-direction: row-reverse; max-width: 88%; }
+
+    .msg-av {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #92400E; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .msg-av svg { width: 16px; height: 16px; }
+
+    .bubble {
+      padding: 10px 14px;
+      font-size: 0.875rem;
+      line-height: 1.55;
+    }
+    .msg.bot .bubble {
+      background: #fff;
+      color: #1a1a1a;
+      border-radius: 18px 18px 18px 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    }
+    .msg.user .bubble {
+      background: #1a237e;
+      color: #fff;
+      border-radius: 18px 18px 4px 18px;
+    }
+
+    .typing .bubble { padding: 14px 14px 10px; }
+    .dots { display: flex; gap: 4px; align-items: center; height: 10px; }
+    .dots span {
+      width: 7px; height: 7px; border-radius: 50%; background: #bbb;
+      animation: bop 1.2s infinite ease-in-out;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bop {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    .input-area {
+      padding: 10px 12px 14px;
+      background: #fff;
+      border-top: 1px solid #e8e8e4;
+      display: flex; gap: 8px; align-items: center;
+      flex-shrink: 0;
+    }
+    .txt {
+      flex: 1;
+      border: 1.5px solid #e0e0e0; border-radius: 22px;
+      padding: 9px 14px; font-size: 0.875rem;
+      outline: none; font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    .txt:focus    { border-color: #3949ab; }
+    .txt:disabled { background: #f6f6f6; color: #aaa; }
+
+    .go {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: #1a237e; border: none; cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .go:hover    { background: #3949ab; }
+    .go:disabled { background: #c5cae9; cursor: default; }
+    .go svg { width: 16px; height: 16px; fill: #fff; }
+
+    .agent-action {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 10px; margin: 0 0 0 36px;
+      background: #E8EAF6; border-left: 2px solid #3949AB;
+      border-radius: 6px; font-size: 0.72rem; color: #3949ab;
+      font-weight: 600; animation: fadeIn 0.3s ease;
+    }
+    .agent-action-dot { width: 6px; height: 6px; border-radius: 50%; background: #3949ab; flex-shrink: 0; animation: pulse 1.2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
+
+    .agent-badge { font-size: 0.52rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; background: #3949ab; color: #C5CAE9; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-left: 5px; vertical-align: middle; }
+    .agent-online { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #69F0AE; margin-right: 4px; animation: pulse 2s infinite; }
+
+    .outcome-card { background: #fff; border: 1.5px solid #c5cae9; border-radius: 12px; padding: 12px 14px; font-size: 0.78rem; line-height: 1.7; color: #1a1a1a; }
+    .outcome-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #7986cb; margin-bottom: 8px; }
+    .outcome-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
+    .outcome-icon { flex-shrink: 0; }
+    .outcome-ticket { display: inline-block; font-family: monospace; font-size: 0.72rem; background: #E8EAF6; color: #3949ab; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+
+    .intent-tag { display: inline-block; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .view-data-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 22px; border-radius: 10px;
+      background: #fff; border: 1.5px solid #e5e7eb;
+      color: #374151; font-size: 0.85rem; font-weight: 600;
+      font-family: inherit; cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .view-data-btn:hover { background: #FEF3C7; border-color: #D97706; color: #92400E; }
+    .view-data-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+  </style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="status-bar">
+    <span class="status-time" id="clock">9:41</span>
+    <span class="status-icons">▲ ▮▮▮ ▓</span>
+  </div>
+
+  <div class="chat-header">
+    <div class="bot-avatar">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="3" width="32" height="10" rx="3" fill="#F59E0B"/>
+        <rect x="7" y="6" width="14" height="1.5" rx="0.75" fill="#fff" opacity="0.9"/>
+        <rect x="7" y="9.5" width="9" height="1.5" rx="0.75" fill="#fff" opacity="0.6"/>
+        <path d="M20 13 L20 17 M20 17 L12 21 M20 17 L28 21" stroke="#D97706" stroke-width="1.8" stroke-linecap="round"/>
+        <rect x="4" y="21" width="14" height="10" rx="2.5" fill="#FBBF24"/>
+        <rect x="22" y="21" width="14" height="10" rx="2.5" fill="#F59E0B"/>
+        <path d="M8 26 L10 28 L14 23" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M26 26 L28 28 L32 23" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="chat-header-info">
+      <h2>Intake Agent <span class="agent-badge">Agentic AI</span></h2>
+      <p><span class="agent-online"></span>Agent online · Powered by AI</p>
+    </div>
+  </div>
+
+  <div class="messages" id="msgs"></div>
+
+  <div class="input-area">
+    <input class="txt" id="inp" placeholder="Describe your issue…" disabled
+           onkeydown="if(event.key==='Enter')send()">
+    <button class="go" id="goBtn" disabled onclick="send()">
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+    </button>
+  </div>
+
+</div>
+
+<a href="intake-data.html" class="view-data-btn">
+  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+  View collected data
+</a>
+
+<a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
+<script>
+/* ── State ── */
+let state = 'intake'; // intake → followup → email → done
+let detectedIntent = null;
+let intakeText = '';
+let followupText = '';
+let userEmail = '';
+
+/* ── Intent definitions ── */
+const INTENTS = {
+  complaint: {
+    keywords: ['broken','frustrated','terrible','horrible','awful','worst','useless','angry','upset','disappointed','ridiculous','unacceptable','hate','furious','outraged','not working','doesnt work',"doesn't work",'never again','waste of'],
+    team: 'Support Team', priority: 'High', priorityColor: '#DC2626', intentColor: '#FEE2E2', intentText: '#DC2626',
+    followUp: "Can you tell me roughly when this started and what you were trying to do at the time?",
+    ph: 'When it happened and what you were doing…',
+    ack: ["That sounds really frustrating — I want to make sure this gets to the right person.", "I'm sorry to hear that. Let me pull up the right team for you.", "Thanks for flagging this. I want to get it in front of someone who can help."]
+  },
+  billing: {
+    keywords: ['charge','charged','bill','billing','payment','refund','invoice','overcharged','credit card','fee','subscription','cancel','money back','double charged','wrong amount'],
+    team: 'Billing Team', priority: 'High', priorityColor: '#D97706', intentColor: '#FEF3C7', intentText: '#D97706',
+    followUp: "Do you have the charge amount or the date it appeared, if you have it handy?",
+    ph: 'Amount or date…',
+    ack: ["Got it — billing issues need to be sorted fast.", "I'll get this to our billing team right away.", "Understood. Let me make sure this lands in the right hands."]
+  },
+  technical: {
+    keywords: ['error','crash','bug','glitch','not loading','slow','freeze','frozen','stuck','login','password','sign in','cant access',"can't access",'cannot access','timeout','404','not responding','keeps crashing','app crash'],
+    team: 'Tech Support', priority: 'High', priorityColor: '#7C3AED', intentColor: '#F5F3FF', intentText: '#7C3AED',
+    followUp: "Which device or platform were you on when this happened?",
+    ph: 'Device or platform…',
+    ack: ["That sounds like a technical issue — good that you flagged it.", "Let me get the details I need to route this to our tech team.", "Technical issues are a priority for us. Let me get some context."]
+  },
+  shipping: {
+    keywords: ['delivery','package','order','shipped','tracking','arrived','missing','lost','late','delay','shipping','courier','parcel','not delivered','where is my'],
+    team: 'Fulfillment Team', priority: 'High', priorityColor: '#D97706', intentColor: '#FEF3C7', intentText: '#D97706',
+    followUp: "Do you have an order number or tracking number I can include with the case?",
+    ph: 'Order or tracking number…',
+    ack: ["I'll make sure your order issue gets flagged immediately.", "Shipping issues need fast attention — let me grab a bit more info.", "Got it — let me get this to our fulfillment team."]
+  },
+  feature: {
+    keywords: ['would be nice','could you add','suggestion','suggest','idea','feature request','wish','should have','would love','missing feature','could include','improvement','please add','consider adding','it would help'],
+    team: 'Product Team', priority: 'Normal', priorityColor: '#2563EB', intentColor: '#EFF6FF', intentText: '#2563EB',
+    followUp: "What were you trying to accomplish that led to this idea?",
+    ph: 'What you were trying to do…',
+    ack: ["Love that you're sharing this — product feedback is always useful.", "That's a great thought. Let me capture this properly for the product team.", "Good suggestion. Let me make sure this gets logged in the right place."]
+  },
+  compliment: {
+    keywords: ['love','great','amazing','excellent','fantastic','wonderful','thank you','thanks','appreciate','helpful','awesome','perfect','brilliant','outstanding','impressed','really happy','very happy','so good'],
+    team: 'Customer Success', priority: 'Low', priorityColor: '#059669', intentColor: '#ECFDF5', intentText: '#059669',
+    followUp: "Is there anything specific — or anyone — you'd like to highlight?",
+    ph: 'Anything else to add…',
+    ack: ["That's really great to hear — thank you!", "We love getting feedback like this. 😊", "This genuinely makes a difference for the team. Thank you!"]
+  },
+};
+
+const URGENCY_WORDS = ['urgent','urgently','immediately','asap','emergency','critical','right now','today','desperate','as soon as possible','please help'];
+
+/* ── Classify ── */
+function classify(text) {
+  const lower = text.toLowerCase();
+  const urgent = URGENCY_WORDS.some(w => lower.includes(w));
+  let best = null, bestScore = 0;
+  for (const [key, data] of Object.entries(INTENTS)) {
+    const score = data.keywords.filter(kw => lower.includes(kw)).length;
+    if (score > bestScore) { bestScore = score; best = key; }
+  }
+  if (!best) {
+    const neg = ['bad','poor','problem','issue','trouble','concern','wrong','not great','unhappy'].some(w => lower.includes(w));
+    best = neg ? 'complaint' : 'general';
+  }
+  return { intent: best, urgent };
+}
+
+/* ── DOM helpers ── */
+const AVG = `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="4" y="3" width="32" height="10" rx="3" fill="#F59E0B"/>
+  <rect x="7" y="6" width="14" height="1.5" rx="0.75" fill="#fff" opacity="0.9"/>
+  <rect x="7" y="9.5" width="9" height="1.5" rx="0.75" fill="#fff" opacity="0.6"/>
+  <path d="M20 13 L20 17 M20 17 L12 21 M20 17 L28 21" stroke="#D97706" stroke-width="1.8" stroke-linecap="round"/>
+  <rect x="4" y="21" width="14" height="10" rx="2.5" fill="#FBBF24"/>
+  <rect x="22" y="21" width="14" height="10" rx="2.5" fill="#F59E0B"/>
+  <path d="M8 26 L10 28 L14 23" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M26 26 L28 28 L32 23" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>`;
+
+const msgsEl = document.getElementById('msgs');
+function scroll() { msgsEl.scrollTop = msgsEl.scrollHeight; }
+
+function addBot(content, isHtml = false) {
+  const row = document.createElement('div'); row.className = 'msg bot';
+  const av = document.createElement('div'); av.className = 'msg-av'; av.innerHTML = AVG;
+  const bub = document.createElement('div'); bub.className = 'bubble';
+  if (isHtml) bub.innerHTML = content; else bub.textContent = content;
+  row.append(av, bub); msgsEl.appendChild(row); scroll();
+}
+
+function addUser(text) {
+  const row = document.createElement('div'); row.className = 'msg user';
+  const bub = document.createElement('div'); bub.className = 'bubble'; bub.textContent = text;
+  row.appendChild(bub); msgsEl.appendChild(row); scroll();
+}
+
+let typingEl = null;
+function showTyping() {
+  const row = document.createElement('div'); row.className = 'msg bot typing';
+  const av = document.createElement('div'); av.className = 'msg-av'; av.innerHTML = AVG;
+  const bub = document.createElement('div'); bub.className = 'bubble';
+  bub.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+  row.append(av, bub); msgsEl.appendChild(row); scroll(); typingEl = row;
+}
+function hideTyping() { typingEl?.remove(); typingEl = null; }
+
+function botSay(text, delay = 950, isHtml = false) {
+  return new Promise(res => {
+    showTyping();
+    setTimeout(() => { hideTyping(); addBot(text, isHtml); res(); }, delay + Math.random() * 300);
+  });
+}
+
+function showAgentAction(text) {
+  const row = document.createElement('div');
+  row.className = 'agent-action';
+  row.innerHTML = `<div class="agent-action-dot"></div>${text}`;
+  msgsEl.appendChild(row); scroll();
+  return row;
+}
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function enableInput(ph = 'Type a message…') {
+  const i = document.getElementById('inp'), b = document.getElementById('goBtn');
+  i.placeholder = ph; i.disabled = false; b.disabled = false; setTimeout(() => i.focus(), 50);
+}
+function disableInput() {
+  const i = document.getElementById('inp'), b = document.getElementById('goBtn');
+  i.disabled = true; b.disabled = true; i.value = '';
+}
+
+function randPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+/* ── Clock ── */
+(function tick() {
+  const n = new Date(), h = n.getHours() % 12 || 12, m = String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').textContent = `${h}:${m}`;
+  setTimeout(tick, (60 - n.getSeconds()) * 1000);
+})();
+
+/* ── Agentic analysis sequence ── */
+async function analyzeAndRoute() {
+  disableInput();
+
+  // Step 1: intent detection
+  const act1 = showAgentAction('Reading your message...');
+  await wait(800);
+  act1.remove();
+
+  const act2 = showAgentAction('Detecting intent and category...');
+  await wait(900);
+  act2.remove();
+
+  const result = classify(intakeText + ' ' + followupText);
+  detectedIntent = result.intent;
+  const def = INTENTS[detectedIntent] || INTENTS.complaint;
+  const isUrgent = result.urgent;
+  const finalPriority = (isUrgent && def.priority !== 'Low') ? 'Urgent' : def.priority;
+  const priorityColor = isUrgent ? '#DC2626' : def.priorityColor;
+
+  const act3 = showAgentAction('Assessing urgency and priority...');
+  await wait(850);
+  act3.remove();
+
+  // Show analysis card
+  const label = detectedIntent.charAt(0).toUpperCase() + detectedIntent.slice(1);
+  const intentTagHtml = `<span class="intent-tag" style="background:${def.intentColor};color:${def.intentText};">${label}</span>`;
+  const analysisHtml = `<div class="outcome-card">
+    <div class="outcome-label">Agent Analysis</div>
+    <div class="outcome-row"><span class="outcome-icon">◈</span><span>Category: ${intentTagHtml}</span></div>
+    <div class="outcome-row"><span class="outcome-icon">◈</span><span>Priority: <strong style="color:${priorityColor}">${finalPriority}</strong>${isUrgent ? ' <span style="font-size:0.65rem;color:#DC2626;">(urgency detected)</span>' : ''}</span></div>
+    <div class="outcome-row"><span class="outcome-icon">◈</span><span>Routing to: <strong>${def.team}</strong></span></div>
+  </div>`;
+  await botSay(analysisHtml, 300, true);
+
+  // Step 2: ask for email
+  await botSay("Last thing — what's the best email to reach you if we need to follow up? (Type 'skip' to skip)", 800);
+  state = 'email';
+  enableInput('Your email…');
+}
+
+async function completeRouting() {
+  disableInput();
+
+  const def = INTENTS[detectedIntent] || INTENTS.complaint;
+  const result = classify(intakeText + ' ' + followupText);
+  const isUrgent = result.urgent;
+  const finalPriority = (isUrgent && def.priority !== 'Low') ? 'Urgent' : def.priority;
+  const priorityColor = isUrgent ? '#DC2626' : def.priorityColor;
+  const caseNum = 'IT-' + (Math.floor(Math.random() * 9000) + 1000);
+
+  const act4 = showAgentAction('Creating case record...');
+  await wait(900);
+  act4.remove();
+
+  const act5 = showAgentAction(`Routing to ${def.team}...`);
+  await wait(800);
+  act5.remove();
+
+  if (userEmail) {
+    const act6 = showAgentAction(`Sending confirmation to ${userEmail}...`);
+    await wait(700);
+    act6.remove();
+  }
+
+  const label = detectedIntent.charAt(0).toUpperCase() + detectedIntent.slice(1);
+  const outcomeHtml = `<div class="outcome-card">
+    <div class="outcome-label">Agent Actions Completed</div>
+    <div class="outcome-row"><span class="outcome-icon" style="color:#059669">✓</span><span>Case created: <span class="outcome-ticket">${caseNum}</span></span></div>
+    <div class="outcome-row"><span class="outcome-icon" style="color:#059669">✓</span><span>Category: <strong>${label}</strong></span></div>
+    <div class="outcome-row"><span class="outcome-icon" style="color:#059669">✓</span><span>Routed to: <strong style="color:${priorityColor}">${def.team}</strong></span></div>
+    <div class="outcome-row"><span class="outcome-icon" style="color:#059669">✓</span><span>Priority: <strong>${finalPriority}</strong></span></div>
+    ${userEmail ? `<div class="outcome-row"><span class="outcome-icon" style="color:#059669">✓</span><span>Confirmation sent to ${userEmail}</span></div>` : ''}
+  </div>`;
+  await botSay(outcomeHtml, 400, true);
+
+  await botSay("You're all set — your case is logged and the right team will take it from here. Thanks for reaching out! ✨", 900);
+  state = 'done';
+
+  sessionStorage.setItem('intake_data', JSON.stringify({
+    userInput: { intake: intakeText, followup: followupText, email: userEmail || null },
+    agentDecisions: {
+      detectedIntent: detectedIntent,
+      priority: finalPriority,
+      urgencyDetected: isUrgent,
+      routedTo: def.team,
+      caseNumber: caseNum
+    },
+    timestamp: new Date().toISOString()
+  }));
+}
+
+/* ── Send handler ── */
+function send() {
+  const inp = document.getElementById('inp');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  disableInput();
+  addUser(txt);
+  const lower = txt.toLowerCase();
+
+  if (state === 'intake') {
+    intakeText = txt;
+    const { intent } = classify(txt);
+    const def = INTENTS[intent];
+    const ack = def ? randPick(def.ack) : "Got it, thanks for sharing.";
+    const followUp = def ? def.followUp : "Can you give me a bit more context about what happened?";
+    const ph = def ? def.ph : 'More context…';
+
+    botSay(ack, 800).then(() =>
+      botSay(followUp, 900).then(() => {
+        state = 'followup';
+        enableInput(ph);
+      })
+    );
+
+  } else if (state === 'followup') {
+    followupText = txt;
+    analyzeAndRoute();
+
+  } else if (state === 'email') {
+    const SKIP = /^(skip|n\/a|no|nope|nah|none|not now|rather not|pass)[\s.!]*$/i;
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(txt.trim());
+
+    if (SKIP.test(lower)) {
+      userEmail = '';
+      completeRouting();
+    } else if (!isValidEmail) {
+      botSay("That doesn't look like a valid email — try again, or type 'skip' to leave it blank.", 700)
+        .then(() => enableInput('Your email…'));
+    } else {
+      userEmail = txt.trim();
+      completeRouting();
+    }
+  }
+}
+
+/* ── Boot ── */
+setTimeout(() => {
+  botSay("Hi! 👋 Describe your issue or feedback in your own words — however you'd like. I'll take it from there.", 600)
+    .then(() => enableInput('Describe your issue or feedback…'));
+}, 500);
+</script>
+
+</body>
+</html>

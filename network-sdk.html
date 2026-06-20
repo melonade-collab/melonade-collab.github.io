@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NetPulse — Network Status SDK</title>
+  <title>NetPulse — Network Status</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f5; color: #1a1a1a; min-height: 100vh; }
@@ -252,8 +252,8 @@
 <div class="cs-header">
   <div class="cs-header-inner">
     <p class="eyebrow">Re-imagining</p>
-    <h1>Network Status SDK</h1>
-    <p class="cs-intro">A consumer-facing SDK and mobile experience for checking network signal quality, reporting coverage issues, and surfacing crowdsourced outage data — turning every device into a passive coverage sensor.</p>
+    <h1>Network Status</h1>
+    <p class="cs-intro">A mobile experience for checking network signal quality, reporting coverage issues, and surfacing crowdsourced outage data.</p>
   </div>
 </div>
 
@@ -265,8 +265,7 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>Customers experiencing network issues had no self-serve way to know whether the problem was with their device, their local environment, or an actual network outage. The only options were calling support — which was expensive and slow — or simply waiting and hoping. Meanwhile, the carrier's own network monitoring tools detected outages reactively, after enough calls came in to hit a threshold.</p>
-      <p>The problem had two sides: customers lacked visibility into what was happening, and the carrier was collecting coverage intelligence the hard way — through support interactions rather than from the devices actually on the network.</p>
+      <p>Customers experiencing network issues had no self-serve way to know whether the problem was with their device, their local environment, or an actual network outage.</p>
     </div>
   </div>
 
@@ -277,12 +276,8 @@
     </div>
     <div class="acc-body">
       <ul>
-        <li>SDK had to be embedded in the carrier's existing consumer app — it wasn't a standalone app</li>
-        <li>Network diagnostics had to use only on-device APIs (signal strength, network type, latency) — no deep carrier-side data pipe for individual customers</li>
+        <li>Had to be embedded in the carrier's existing consumer app — not a standalone product</li>
         <li>Reports had to be anonymous enough to protect individual location privacy, while still being geographically precise enough to be actionable</li>
-        <li>The crowdsourcing threshold needed careful tuning: too low and noise becomes outages; too high and real outages don't surface quickly enough</li>
-        <li>Known outage data came from the carrier's NOC — the SDK had to consume that via API without exposing internal infrastructure</li>
-        <li>Speed test traffic had to be metered carefully to avoid consuming customer data allowances unintentionally</li>
       </ul>
     </div>
   </div>
@@ -293,36 +288,7 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <div class="contrib-grid">
-        <div>
-          <p class="contrib-item-label">Crowdsource Model</p>
-          <p class="contrib-item-text">Designed the threshold logic: user-submitted reports within a defined geographic cell above a volume + time-window threshold automatically elevated to "known outage" status and triggered NOC review. Gave customers a visible counter so they could see whether their issue was isolated or shared.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">SDK Feature Set</p>
-          <p class="contrib-item-text">Scoped the SDK around the four most-searched support topics: signal quality, outage status, issue reporting, and speed testing. Kept the API surface small so embedding teams could integrate quickly without becoming experts in telecom diagnostics.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Outage UX</p>
-          <p class="contrib-item-text">Designed a map + list view for known outages, surfacing estimated resolution times from the NOC and allowing customers to subscribe to resolution notifications — converting a frustrating wait into a managed expectation.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Report-to-Outage Feedback Loop</p>
-          <p class="contrib-item-text">Built a status lifecycle into the reporting flow: submitted → under investigation → added to known outage → resolved. Customers who submitted reports received push notifications at each state change, turning a one-way report into a two-way conversation with the network.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="acc-card mb16">
-    <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">How It Worked</p>
-      <span class="acc-chevron">▼</span>
-    </div>
-    <div class="acc-body">
-      <p>On the Status tab, the SDK read signal strength and network type from the device's telephony API and displayed them alongside a latency measurement from a lightweight ping to the carrier's nearest edge node. A rolling sparkline showed signal quality over the current session.</p>
-      <p>When a customer submitted a report, the SDK attached anonymized GPS coordinates rounded to a ~500m grid cell and the current network diagnostic snapshot. If that grid cell accumulated reports above the threshold within a rolling time window, the system automatically created a candidate outage event and surfaced it in the known outages list — usually before a single customer had called support.</p>
-      <p>The Speed Test ran a series of short bursts to minimize data usage while still producing a meaningful download and upload estimate. Results were stored locally for trend comparison across sessions. Customers could also see whether their measured speed matched what their plan promised — a gentle but clear signal when throttling was happening.</p>
+      <p>Owned the product roadmap for the network status feature set — defining scope, prioritizing what got built, and keeping the experience current as network technology evolved. Worked cross-functionally with engineering and partner teams to maintain and ship updates on a regular cadence.</p>
     </div>
   </div>
 
@@ -332,7 +298,7 @@
       <span class="acc-chevron" style="color:#06B6D4;">▼</span>
     </div>
     <div class="acc-body" style="background:#F0FDFE;">
-      <p style="color:#164E63;">Reduced support call volume for coverage complaints by giving customers a self-serve answer before they reached for the phone. The crowdsourced outage detection consistently surfaced issues 8–12 minutes faster than traditional NOC monitoring, improving both mean time to detect and the customer experience of being heard. The report-to-notification loop became one of the highest-rated features in post-interaction surveys — customers didn't mind a problem nearly as much when they knew the carrier already knew about it.</p>
+      <p style="color:#164E63;">Gave customers a self-serve way to understand network issues without calling support, and generated crowdsourced coverage intelligence as a byproduct of normal usage.</p>
     </div>
   </div>
 

@@ -21,8 +21,8 @@
 
     /* ── Phone shell ──────────────────────────────────────────────────── */
     .phone {
-      width: min(290px, calc(100vw - 48px));
-      height: min(620px, calc(100vh - 120px));
+      width: min(340px, calc(100vw - 48px));
+      height: min(727px, calc(100vh - 120px));
       background: #fff;
       border-radius: 44px;
       box-shadow:
@@ -256,7 +256,8 @@
 const d = { name:'', city:'', province:'', email:'', phone:'', postalCode:'', rating:null, message:'' };
 let step = 0;
 let reviewMode = false;
-let pendingConfirm = null; // { type: 'city'|'province'|'mismatch'|'review'|'changeField'|'quit', data:{} }
+let pendingConfirm = null; // { type: 'city'|'province'|'mismatch'|'review'|'changeField'|'quit'|'formOffer' }
+let retryCount = 0;
 // 0=name 1=city 2=province 3=email 4=phone 5=postal 6=rating 7=message 8=review 9=done
 
 function saveData() { sessionStorage.setItem('assistant_data', JSON.stringify(d)); }
@@ -281,23 +282,89 @@ const NO_COMMENT = /^(no|nope|nah|nothing|no thanks|all good|n\/a|none|nothing e
 
 /* ── City → province lookup ──────────────────────────────────────── */
 const CITY_PROVINCE = {
+  // Ontario
   toronto:'Ontario', mississauga:'Ontario', brampton:'Ontario',
   hamilton:'Ontario', ottawa:'Ontario', london:'Ontario',
   markham:'Ontario', vaughan:'Ontario', kitchener:'Ontario',
   windsor:'Ontario', oakville:'Ontario', burlington:'Ontario',
   oshawa:'Ontario', barrie:'Ontario', 'richmond hill':'Ontario',
   'north york':'Ontario', etobicoke:'Ontario', scarborough:'Ontario',
+  guelph:'Ontario', sudbury:'Ontario', 'greater sudbury':'Ontario',
+  'thunder bay':'Ontario', brantford:'Ontario', cambridge:'Ontario',
+  whitby:'Ontario', ajax:'Ontario', pickering:'Ontario',
+  'niagara falls':'Ontario', 'st. catharines':'Ontario', 'st catharines':'Ontario',
+  peterborough:'Ontario', kingston:'Ontario',
+  'sault ste. marie':'Ontario', 'sault ste marie':'Ontario', 'sault sainte marie':'Ontario',
+  timmins:'Ontario', sarnia:'Ontario', 'north bay':'Ontario',
+  belleville:'Ontario', cornwall:'Ontario', welland:'Ontario',
+  chatham:'Ontario', 'st. thomas':'Ontario', 'st thomas':'Ontario',
+  woodstock:'Ontario', newmarket:'Ontario', aurora:'Ontario', milton:'Ontario',
+  // Quebec
   montreal:'Quebec', laval:'Quebec', longueuil:'Quebec',
-  gatineau:'Quebec', sherbrooke:'Quebec', 'québec city':'Quebec',
+  gatineau:'Quebec', sherbrooke:'Quebec', 'québec city':'Quebec', 'quebec city':'Quebec',
+  saguenay:'Quebec', chicoutimi:'Quebec',
+  'trois-rivières':'Quebec', 'trois rivieres':'Quebec', 'trois-rivieres':'Quebec',
+  lévis:'Quebec', levis:'Quebec', terrebonne:'Quebec',
+  brossard:'Quebec', repentigny:'Quebec',
+  'saint-jean-sur-richelieu':'Quebec', 'saint jean sur richelieu':'Quebec',
+  drummondville:'Quebec', granby:'Quebec', rimouski:'Quebec',
+  'rouyn-noranda':'Quebec', 'rouyn noranda':'Quebec',
+  'saint-jérôme':'Quebec', 'saint jerome':'Quebec', 'saint-jerome':'Quebec',
+  'saint-hyacinthe':'Quebec', 'saint hyacinthe':'Quebec',
+  blainville:'Quebec', shawinigan:'Quebec', mascouche:'Quebec',
+  'dollard-des-ormeaux':'Quebec', 'dollard des ormeaux':'Quebec',
+  'saint-eustache':'Quebec', 'saint eustache':'Quebec',
+  // British Columbia
   vancouver:'British Columbia', surrey:'British Columbia',
   burnaby:'British Columbia', richmond:'British Columbia',
   kelowna:'British Columbia', abbotsford:'British Columbia',
   victoria:'British Columbia', coquitlam:'British Columbia',
-  calgary:'Alberta', edmonton:'Alberta', 'red deer':'Alberta', lethbridge:'Alberta',
-  winnipeg:'Manitoba', brandon:'Manitoba',
+  chilliwack:'British Columbia', 'maple ridge':'British Columbia',
+  langley:'British Columbia', 'prince george':'British Columbia',
+  nanaimo:'British Columbia', kamloops:'British Columbia',
+  penticton:'British Columbia', vernon:'British Columbia',
+  'port coquitlam':'British Columbia', 'new westminster':'British Columbia',
+  'north vancouver':'British Columbia', 'west vancouver':'British Columbia',
+  'port moody':'British Columbia', delta:'British Columbia',
+  mission:'British Columbia', terrace:'British Columbia',
+  'prince rupert':'British Columbia', 'fort st. john':'British Columbia',
+  'fort st john':'British Columbia', nelson:'British Columbia', cranbrook:'British Columbia',
+  'williams lake':'British Columbia',
+  // Alberta
+  calgary:'Alberta', edmonton:'Alberta', 'red deer':'Alberta',
+  lethbridge:'Alberta', airdrie:'Alberta', 'spruce grove':'Alberta',
+  leduc:'Alberta', 'medicine hat':'Alberta', 'fort mcmurray':'Alberta',
+  'grande prairie':'Alberta', 'st. albert':'Alberta', 'st albert':'Alberta',
+  'sherwood park':'Alberta', beaumont:'Alberta', cochrane:'Alberta',
+  okotoks:'Alberta', chestermere:'Alberta', lloydminster:'Alberta', camrose:'Alberta',
+  // Manitoba
+  winnipeg:'Manitoba', brandon:'Manitoba', steinbach:'Manitoba',
+  thompson:'Manitoba', 'portage la prairie':'Manitoba',
+  winkler:'Manitoba', morden:'Manitoba', selkirk:'Manitoba',
+  // Saskatchewan
   saskatoon:'Saskatchewan', regina:'Saskatchewan',
+  'prince albert':'Saskatchewan', 'moose jaw':'Saskatchewan',
+  'swift current':'Saskatchewan', yorkton:'Saskatchewan',
+  'north battleford':'Saskatchewan', estevan:'Saskatchewan', weyburn:'Saskatchewan',
+  // Nova Scotia
   halifax:'Nova Scotia', dartmouth:'Nova Scotia',
+  sydney:'Nova Scotia', truro:'Nova Scotia', 'new glasgow':'Nova Scotia',
+  amherst:'Nova Scotia', kentville:'Nova Scotia', bridgewater:'Nova Scotia',
+  // New Brunswick
   fredericton:'New Brunswick', moncton:'New Brunswick', 'saint john':'New Brunswick',
+  dieppe:'New Brunswick', bathurst:'New Brunswick', miramichi:'New Brunswick',
+  edmundston:'New Brunswick', riverview:'New Brunswick',
+  // Prince Edward Island
+  charlottetown:'Prince Edward Island', summerside:'Prince Edward Island',
+  // Newfoundland and Labrador
+  "st. john's":'Newfoundland and Labrador', 'st johns':'Newfoundland and Labrador',
+  "st. johns":'Newfoundland and Labrador',
+  'corner brook':'Newfoundland and Labrador', 'mount pearl':'Newfoundland and Labrador',
+  paradise:'Newfoundland and Labrador', 'grand falls-windsor':'Newfoundland and Labrador',
+  // Territories
+  yellowknife:'Northwest Territories',
+  whitehorse:'Yukon',
+  iqaluit:'Nunavut',
 };
 
 /* ── Clock ──────────────────────────────────────────────────────── */
@@ -385,6 +452,41 @@ function showAgentAction(text) {
   return row;
 }
 function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ── Retry / form fallback ───────────────────────────────────────── */
+function reAskCurrentStep() {
+  const qs = [
+    "What should I call you?",
+    "What city are you in?",
+    "Which province or state is that in?",
+    "What's your email address? (or type 'skip')",
+    "What's your phone number? (or type 'skip')",
+    "What's your postal or zip code? (or type 'skip')",
+    "Type a number from 0 to 10 for your rating.",
+    "Feel free to share any thoughts — or just type 'skip' if you're done."
+  ];
+  const phs = ['Your name…','Your city…','Province or state…','Your email…','Your phone…','Postal/zip code…','Type a number from 0 to 10…','Your feedback…'];
+  const s = Math.min(step, 7);
+  botSay(qs[s], 700).then(() => enableInput(phs[s]));
+}
+
+function offerForm() {
+  botSay("No worries — sometimes it's just easier to fill out a form. Would you like a link to our feedback form instead?", 700)
+    .then(() => {
+      pendingConfirm = { type: 'formOffer' };
+      enableInput("Type 'yes' for the form, or 'continue' to keep going…");
+    });
+}
+
+function bumpRetry() {
+  retryCount++;
+  if (retryCount >= 4) {
+    retryCount = 0;
+    offerForm();
+    return true;
+  }
+  return false;
+}
 
 /* ── Conversation steps ──────────────────────────────────────────── */
 function ratingReaction(r) {
@@ -671,7 +773,20 @@ function send() {
     }
     if (pc.type === 'quit') {
       if (/restart|start over|fresh|new|reset/i.test(lower)) { location.reload(); }
-      else { reAskCurrent(''); }
+      else { reAskCurrentStep(); }
+      return;
+    }
+    if (pc.type === 'formOffer') {
+      if (isYes) {
+        // Replace placeholder URL with your actual form link
+        botSay('Here\'s the link — take your time! <a href="https://forms.gle/placeholder" target="_blank" style="color:#3949ab;font-weight:600;">Open Feedback Form →</a>', 700, true)
+          .then(() => botSay('Thanks for chatting — hope to hear from you! 😊', 700));
+        disableInput();
+        step = 9;
+      } else {
+        retryCount = 0;
+        reAskCurrentStep();
+      }
       return;
     }
   }
@@ -681,18 +796,20 @@ function send() {
     const extracted = NAME_FROM.exec(txt);
     const name = extracted ? toTitleCase(extracted[1].trim()) : toTitleCase(txt.replace(/^(hi|hello|hey)[,\s]*/i, '').trim());
     if (!name || name.replace(/\s/g,'').length < 2) {
+      if (bumpRetry()) return;
       botSay(randPick(["I just need your name to get started — even a first name works! What should I call you?", "Could you share your name? Just a first name is totally fine.", "Let's start with your name — what should I call you?"]), 700).then(() => enableInput('Your name…'));
       return;
     }
-    d.name = name; saveData();
+    d.name = name; retryCount = 0; saveData();
     if (reviewMode) { step = 8; showReview(); } else { step = 1; afterName(); }
 
   } else if (step === 1) {
     if (SKIP_ALTS.test(lower) || NO_COMMENT.test(lower)) {
+      if (bumpRetry()) return;
       botSay("City is something I do need — even a rough one like the metro area works! What city are you in?", 700).then(() => enableInput('Your city…'));
       return;
     }
-    d.city = toTitleCase(txt); saveData();
+    d.city = toTitleCase(txt); retryCount = 0; saveData();
     if (!CITY_PROVINCE[d.city.toLowerCase()]) {
       botSay(randPick([
         `I don't have "${d.city}" in my city list — does that look right?`,
@@ -720,13 +837,14 @@ function send() {
       return;
     }
     if (!isValidEmail(txt)) {
+      if (bumpRetry()) return;
       botSay(randPick([
         "That doesn't quite look like an email address — something like name@example.com. Want to try again? (or type 'skip')",
         "Hmm, I'm not reading that as a valid email. Double-check the format? Or type 'skip' to move on.",
         "I need an email in the format name@example.com. Give it another try, or type 'skip' to leave it blank."
       ]), 700).then(() => enableInput('Your email…'));
     } else {
-      d.email = txt; saveData();
+      d.email = txt; retryCount = 0; saveData();
       if (reviewMode) { step = 8; showReview(); } else { step = 4; afterEmail(); }
     }
 
@@ -737,13 +855,14 @@ function send() {
       return;
     }
     if (!isValidPhone(txt)) {
+      if (bumpRetry()) return;
       botSay(randPick([
         "I need at least 10 digits for a phone number. Try again, or type 'skip' to leave it blank.",
         "That doesn't look like a complete number — needs 10 digits. Give it another shot, or 'skip' to move on.",
         "Phone numbers need at least 10 digits. Want to try again? (or type 'skip')"
       ]), 700).then(() => enableInput('Your phone…'));
     } else {
-      d.phone = txt; saveData();
+      d.phone = txt; retryCount = 0; saveData();
       if (reviewMode) { step = 8; showReview(); } else { step = 5; afterPhone(); }
     }
 
@@ -754,24 +873,26 @@ function send() {
       return;
     }
     if (!isValidPostal(txt)) {
+      if (bumpRetry()) return;
       botSay(randPick([
         "That postal code doesn't look right — Canadian format is like M5V 1A1, US is like 90210. Try again, or type 'skip'.",
         "I'm not recognizing that as a valid postal or zip. Canadian: M5V 1A1 · US: 90210. Or just type 'skip'.",
         "Hmm, I can't validate that code. Try the format M5V 1A1 (Canada) or 90210 (US), or type 'skip'."
       ]), 700).then(() => enableInput('Postal/zip code…'));
     } else {
-      d.postalCode = txt.toUpperCase(); saveData();
+      d.postalCode = txt.toUpperCase(); retryCount = 0; saveData();
       if (reviewMode) { step = 8; showReview(); } else { step = 6; afterPostal(); }
     }
 
   } else if (step === 6) {
     const num = parseInt(txt, 10);
     if (!isNaN(num) && num >= 0 && num <= 10) {
-      d.rating = num; saveData();
+      d.rating = num; retryCount = 0; saveData();
       if (reviewMode) { step = 8; showReview(); return; }
       step = 7;
       if (num <= 5) { await_rating_action(num); } else { afterRating(); }
     } else {
+      if (bumpRetry()) return;
       botSay(randPick([
         "Just type any number from 0 to 10 — which one fits your experience?",
         "I need a number between 0 and 10. Which would you give it?",
@@ -783,6 +904,7 @@ function send() {
     // Accept "no comment" / "nothing" as valid empty feedback
     const finalMsg = NO_COMMENT.test(lower) ? '' : txt;
     if (txt.replace(/\s/g,'').length < 3 && !NO_COMMENT.test(lower)) {
+      if (bumpRetry()) return;
       botSay(randPick([
         "Even a word or two is helpful! Anything specific about your experience? (or type 'skip' to wrap up)",
         "If there's anything on your mind — even briefly — I'd love to capture it. Or type 'skip' to finish.",
@@ -791,9 +913,9 @@ function send() {
       return;
     }
     if (lower === 'skip' || NO_COMMENT.test(lower)) {
-      d.message = ''; saveData();
+      d.message = ''; retryCount = 0; saveData();
     } else {
-      d.message = txt; saveData();
+      d.message = txt; retryCount = 0; saveData();
     }
     showReview();
   }

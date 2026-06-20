@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intake Agent — Collected Data</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f5; color: #1a1a1a; min-height: 100vh; padding: 40px 24px 80px; }
+    .wrap { max-width: 640px; margin: 0 auto; }
+    h1 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 6px; }
+    .sub { font-size: 0.85rem; color: #888; margin-bottom: 32px; }
+
+    .section-label {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: #aaa; margin-bottom: 10px; margin-top: 28px;
+    }
+
+    .card {
+      background: #fff; border: 1px solid #e8e8e4; border-radius: 14px;
+      padding: 20px 22px; margin-bottom: 12px;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #bbb; }
+    .field-value { font-size: 0.9rem; color: #1a1a1a; line-height: 1.55; }
+    .field-value.empty { color: #ccc; font-style: italic; }
+
+    .decision-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 0; border-bottom: 1px solid #f0f0ee; font-size: 0.875rem;
+    }
+    .decision-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .decision-key { color: #888; }
+    .decision-val { font-weight: 700; color: #1a1a1a; }
+    .badge { display: inline-block; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge-high    { background: #FEE2E2; color: #DC2626; }
+    .badge-urgent  { background: #FEE2E2; color: #DC2626; }
+    .badge-normal  { background: #EFF6FF; color: #2563EB; }
+    .badge-low     { background: #ECFDF5; color: #059669; }
+    .badge-intent  { background: #FEF3C7; color: #D97706; }
+    .badge-bool-yes { background: #FEE2E2; color: #DC2626; }
+    .badge-bool-no  { background: #F3F4F6; color: #6B7280; }
+
+    .json-block {
+      background: #0F172A; border-radius: 12px; padding: 18px 20px;
+      font-family: "SF Mono", "Fira Code", monospace; font-size: 0.78rem;
+      line-height: 1.7; color: #E2E8F0; overflow-x: auto; white-space: pre;
+    }
+    .json-key   { color: #7DD3FC; }
+    .json-str   { color: #86EFAC; }
+    .json-null  { color: #94A3B8; }
+    .json-bool  { color: #FCA5A5; }
+    .json-num   { color: #FCD34D; }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.8rem; color: #aaa; text-decoration: none;
+      margin-bottom: 28px; transition: color 0.15s;
+    }
+    .back-link:hover { color: #333; }
+
+    .empty-state { text-align: center; padding: 80px 20px; color: #bbb; }
+    .empty-state p { font-size: 0.9rem; margin-top: 8px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <a href="intake-agent.html" class="back-link">← Back to agent</a>
+  <h1>Collected Data</h1>
+  <p class="sub">What the intake agent captured and decided during the session.</p>
+
+  <div id="content">
+    <div class="empty-state">
+      <div style="font-size:2rem;">📭</div>
+      <p>No session data found — complete a conversation first.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const raw = sessionStorage.getItem('intake_data');
+
+if (raw) {
+  const d = JSON.parse(raw);
+  const { userInput, agentDecisions, timestamp } = d;
+
+  const priorityBadge = p => {
+    const cls = { High:'badge-high', Urgent:'badge-urgent', Normal:'badge-normal', Low:'badge-low' }[p] || 'badge-normal';
+    return `<span class="badge ${cls}">${p}</span>`;
+  };
+
+  const intentBadge = i => `<span class="badge badge-intent">${i}</span>`;
+  const boolBadge = b => b
+    ? `<span class="badge badge-bool-yes">Yes</span>`
+    : `<span class="badge badge-bool-no">No</span>`;
+
+  const ts = timestamp ? new Date(timestamp).toLocaleString() : '—';
+
+  document.getElementById('content').innerHTML = `
+    <p class="section-label">User input</p>
+    <div class="card">
+      <div class="field">
+        <div class="field-label">Initial description</div>
+        <div class="field-value">${userInput.intake || '<span class="empty">Not provided</span>'}</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Follow-up answer</div>
+        <div class="field-value">${userInput.followup || '<span class="empty">Not provided</span>'}</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Contact email</div>
+        <div class="field-value">${userInput.email || '<span class="empty">Not provided</span>'}</div>
+      </div>
+    </div>
+
+    <p class="section-label">Agent decisions</p>
+    <div class="card">
+      <div class="decision-row">
+        <span class="decision-key">Detected intent</span>
+        <span>${intentBadge(agentDecisions.detectedIntent)}</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Priority assigned</span>
+        <span>${priorityBadge(agentDecisions.priority)}</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Urgency detected</span>
+        <span>${boolBadge(agentDecisions.urgencyDetected)}</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Routed to</span>
+        <span class="decision-val">${agentDecisions.routedTo}</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Case number</span>
+        <span class="decision-val" style="font-family:monospace;">${agentDecisions.caseNumber}</span>
+      </div>
+      <div class="decision-row">
+        <span class="decision-key">Submitted</span>
+        <span class="decision-val" style="font-weight:400;color:#888;font-size:0.82rem;">${ts}</span>
+      </div>
+    </div>
+
+    <p class="section-label">JSON payload</p>
+    <div class="json-block" id="jsonBlock"></div>
+  `;
+
+  // Syntax-highlighted JSON
+  function highlight(obj) {
+    return JSON.stringify(obj, null, 2)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
+      .replace(/: "([^"]*)"/g, ': <span class="json-str">"$1"</span>')
+      .replace(/: (true|false)/g, ': <span class="json-bool">$1</span>')
+      .replace(/: (null)/g, ': <span class="json-null">$1</span>')
+      .replace(/: (\d+)/g, ': <span class="json-num">$1</span>');
+  }
+
+  document.getElementById('jsonBlock').innerHTML = highlight(d);
+}
+</script>
+</body>
+</html>
