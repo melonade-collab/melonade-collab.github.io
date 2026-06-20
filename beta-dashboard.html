@@ -8,7 +8,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f5; color: #1a1a1a; min-height: 100vh; }
 
-    .cs-header { background: #1E1B4B; padding: 56px 40px 44px; }
+    .cs-header { background: #0C2340; padding: 56px 40px 44px; }
     .cs-header-inner { max-width: 860px; margin: 0 auto; }
     .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
     h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
@@ -21,7 +21,7 @@
     .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
     .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
     .acc-header:hover { background: #fafafa; }
-    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #4F46E5; margin-bottom: 0; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #1D4ED8; margin-bottom: 0; }
     .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
     .acc-header.open .acc-chevron { transform: rotate(180deg); }
     .acc-body { display: none; padding: 0 22px 20px; }
@@ -30,21 +30,21 @@
     .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
     .acc-body li { margin-bottom: 6px; }
     .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
-    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #4F46E5; margin-bottom: 4px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #1D4ED8; margin-bottom: 4px; }
     .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
 
-    .proto-wrap { background: #EEF2FF; border-radius: 16px; padding: 28px 20px 36px; }
-    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #4338CA; text-align: center; margin-bottom: 18px; }
+    .proto-wrap { background: #DBEAFE; border-radius: 16px; padding: 28px 20px 36px; }
+    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #1D4ED8; text-align: center; margin-bottom: 18px; }
 
     /* ── Dashboard ── */
     .dash { background: #F1F5F9; border-radius: 12px; overflow: hidden; border: 1px solid #D1D5DB; }
-    .dash-nav { background: #1E1B4B; display: flex; align-items: center; padding: 0 14px; height: 46px; }
+    .dash-nav { background: #0C2340; display: flex; align-items: center; padding: 0 14px; height: 46px; }
     .dash-logo { font-size: 0.84rem; font-weight: 900; color: #fff; letter-spacing: -0.3px; margin-right: 14px; flex-shrink: 0; }
     .dash-tabs { display: flex; flex: 1; overflow-x: auto; scrollbar-width: none; }
     .dash-tabs::-webkit-scrollbar { display: none; }
     .dash-tab { height: 46px; padding: 0 9px; background: none; border: none; border-bottom: 2px solid transparent; font-family: inherit; font-size: 0.66rem; font-weight: 600; color: rgba(255,255,255,0.5); cursor: pointer; white-space: nowrap; transition: all 0.15s; }
     .dash-tab:hover { color: rgba(255,255,255,0.8); }
-    .dash-tab.active { color: #fff; border-bottom-color: #818CF8; }
+    .dash-tab.active { color: #fff; border-bottom-color: #60A5FA; }
     .dash-cycle { font-size: 0.6rem; color: rgba(255,255,255,0.4); padding: 3px 8px; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; font-family: inherit; cursor: pointer; flex-shrink: 0; background: none; transition: all 0.15s; margin-left: 6px; }
     .dash-cycle:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
 
@@ -53,8 +53,8 @@
     .d-pane.active { display: block; }
 
     .pane-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; flex-wrap: wrap; gap: 6px; }
-    .pane-title { font-size: 0.76rem; font-weight: 700; color: #1E1B4B; }
-    .pane-chip { font-size: 0.58rem; font-weight: 700; background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE; border-radius: 5px; padding: 3px 7px; }
+    .pane-title { font-size: 0.76rem; font-weight: 700; color: #0C2340; }
+    .pane-chip { font-size: 0.58rem; font-weight: 700; background: #DBEAFE; color: #1D4ED8; border: 1px solid #BFDBFE; border-radius: 5px; padding: 3px 7px; }
     .pane-chips { display: flex; gap: 5px; flex-wrap: wrap; }
 
     /* KPIs */
@@ -88,18 +88,18 @@
     .sev-p3 { background: #E0F2FE; color: #0369A1; }
 
     /* Move insights */
-    .move-card { background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 9px; padding: 11px 13px; }
-    .move-title { font-size: 0.6rem; font-weight: 700; color: #3730A3; margin-bottom: 8px; }
+    .move-card { background: #DBEAFE; border: 1px solid #BFDBFE; border-radius: 9px; padding: 11px 13px; }
+    .move-title { font-size: 0.6rem; font-weight: 700; color: #1E3A5F; margin-bottom: 8px; }
     .move-row { display: flex; align-items: flex-start; gap: 7px; margin-bottom: 6px; }
     .move-row:last-child { margin-bottom: 0; }
     .move-icon { font-size: 0.72rem; flex-shrink: 0; margin-top: 1px; }
     .move-text { font-size: 0.61rem; color: #374151; line-height: 1.45; }
-    .move-text strong { color: #1E1B4B; }
+    .move-text strong { color: #0C2340; }
 
     /* Version selector */
     .ver-tabs { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
     .ver-tab { padding: 3px 9px; border-radius: 12px; border: 1.5px solid #E5E7EB; background: #fff; font-size: 0.59rem; font-weight: 700; font-family: inherit; color: #666; cursor: pointer; transition: all 0.15s; }
-    .ver-tab.active { background: #4F46E5; color: #fff; border-color: #4F46E5; }
+    .ver-tab.active { background: #1D4ED8; color: #fff; border-color: #1D4ED8; }
 
     /* Verbatims */
     .verb-themes { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px; }
@@ -110,7 +110,7 @@
     .vt-n { font-size: 0.54rem; font-weight: 700; color: #374151; width: 20px; text-align: right; flex-shrink: 0; }
     .vt-pct { font-size: 0.48rem; color: #DC2626; font-weight: 600; width: 52px; flex-shrink: 0; }
 
-    .verbatim { background: #F8FAFC; border-left: 3px solid #818CF8; border-radius: 0 6px 6px 0; padding: 8px 10px; margin-bottom: 6px; }
+    .verbatim { background: #F8FAFC; border-left: 3px solid #60A5FA; border-radius: 0 6px 6px 0; padding: 8px 10px; margin-bottom: 6px; }
     .verbatim:last-child { margin-bottom: 0; }
     .verbatim.src-fg { border-left-color: #7C3AED; }
     .verbatim.src-store { border-left-color: #2563EB; }
@@ -118,7 +118,7 @@
     .verbatim-text { font-size: 0.65rem; color: #374151; line-height: 1.5; font-style: italic; }
     .verbatim-meta { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
     .verb-source { font-size: 0.49rem; font-weight: 700; padding: 1px 5px; border-radius: 4px; }
-    .src-inapp  { background: #EEF2FF; color: #4338CA; }
+    .src-inapp  { background: #DBEAFE; color: #1D4ED8; }
     .src-fg-tag { background: #F5F3FF; color: #6D28D9; }
     .src-store-tag { background: #EFF6FF; color: #1D4ED8; }
     .src-wr-tag { background: #FEF2F2; color: #B91C1C; }
@@ -130,7 +130,7 @@
     /* Soak */
     .soak-row { display: flex; align-items: center; padding: 5px 0; border-bottom: 1px solid #F1F5F9; gap: 8px; }
     .soak-row:last-child { border-bottom: none; }
-    .soak-ver { font-size: 0.63rem; font-weight: 700; color: #1E1B4B; font-family: monospace; width: 52px; flex-shrink: 0; }
+    .soak-ver { font-size: 0.63rem; font-weight: 700; color: #0C2340; font-family: monospace; width: 52px; flex-shrink: 0; }
     .soak-bar-wrap { flex: 1; }
     .soak-bar { height: 8px; border-radius: 4px; transition: width 0.6s ease; }
     .soak-days { font-size: 0.6rem; color: #475569; width: 42px; flex-shrink: 0; }
@@ -141,10 +141,10 @@
     /* Focus Groups */
     .fg-session { background: #fff; border: 1px solid #E5E7EB; border-radius: 9px; overflow: hidden; margin-bottom: 9px; }
     .fg-session:last-child { margin-bottom: 0; }
-    .fg-session-hdr { background: #F5F3FF; border-bottom: 1px solid #E5E7EB; padding: 9px 13px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-    .fg-session-title { font-size: 0.68rem; font-weight: 700; color: #1E1B4B; }
+    .fg-session-hdr { background: #EFF6FF; border-bottom: 1px solid #E5E7EB; padding: 9px 13px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .fg-session-title { font-size: 0.68rem; font-weight: 700; color: #0C2340; }
     .fg-session-meta { font-size: 0.58rem; color: #6B7280; margin-top: 2px; }
-    .fg-session-cohort { font-size: 0.52rem; font-weight: 700; background: #EDE9FE; color: #6D28D9; padding: 2px 7px; border-radius: 8px; white-space: nowrap; }
+    .fg-session-cohort { font-size: 0.52rem; font-weight: 700; background: #DBEAFE; color: #1D4ED8; padding: 2px 7px; border-radius: 8px; white-space: nowrap; }
     .fg-body { padding: 11px 13px; }
     .fg-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .fg-section-lbl { font-size: 0.52rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #94A3B8; margin-bottom: 7px; }
@@ -194,7 +194,7 @@
     .wr-actions-title { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #94A3B8; padding: 9px 12px 6px; border-bottom: 1px solid #F5F5F5; }
     .wr-action-row { display: grid; grid-template-columns: 70px 1fr 40px; gap: 6px; padding: 6px 12px; border-bottom: 1px solid #F9FAFB; align-items: start; }
     .wr-action-row:last-child { border-bottom: none; }
-    .wr-action-owner { font-size: 0.55rem; font-weight: 700; color: #6D28D9; }
+    .wr-action-owner { font-size: 0.55rem; font-weight: 700; color: #1D4ED8; }
     .wr-action-item { font-size: 0.6rem; color: #374151; line-height: 1.35; }
     .wr-action-due { font-size: 0.54rem; color: #94A3B8; text-align: right; }
 
@@ -258,13 +258,13 @@
     </div>
   </div>
 
-  <div class="acc-card acc-outcome mb40" style="border-color:#C7D2FE;">
-    <div class="acc-header" onclick="toggleAcc(this)" style="background:#EEF2FF;">
-      <p class="card-label" style="color:#4338CA;">Outcome</p>
-      <span class="acc-chevron" style="color:#4338CA;">▼</span>
+  <div class="acc-card acc-outcome mb40" style="border-color:#BFDBFE;">
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#DBEAFE;">
+      <p class="card-label" style="color:#1D4ED8;">Outcome</p>
+      <span class="acc-chevron" style="color:#1D4ED8;">▼</span>
     </div>
-    <div class="acc-body" style="background:#EEF2FF;">
-      <p style="color:#1E1B4B;">Beta reports became a standing agenda item in sprint reviews across all five apps. The score movement framing became the standard way product managers prioritized bug fixes against feature work each cycle. War room decisions were formalized and traceable for the first time. Soak time recommendations were adopted as the gate criteria for promoting builds, measurably reducing critical bugs reaching external beta.</p>
+    <div class="acc-body" style="background:#DBEAFE;">
+      <p style="color:#0C2340;">Beta reports became a standing agenda item in sprint reviews across all five apps. The score movement framing became the standard way product managers prioritized bug fixes against feature work each cycle. War room decisions were formalized and traceable for the first time. Soak time recommendations were adopted as the gate criteria for promoting builds, measurably reducing critical bugs reaching external beta.</p>
     </div>
   </div>
 
@@ -457,7 +457,7 @@ const APPS = [
       { theme:'Performance / Speed', mentions:24, negPct:88, color:'#DC2626' },
       { theme:'Stability / Crashes', mentions:18, negPct:100, color:'#DC2626' },
       { theme:'Notifications', mentions:14, negPct:64, color:'#D97706' },
-      { theme:'Missing Features', mentions:11, negPct:0, color:'#6366F1' },
+      { theme:'Missing Features', mentions:11, negPct:0, color:'#3B82F6' },
       { theme:'UI & Navigation', mentions:8, negPct:25, color:'#059669' },
       { theme:'Onboarding', mentions:5, negPct:0, color:'#059669' },
     ],
@@ -563,7 +563,7 @@ const APPS = [
     verbThemes:[
       { theme:'Dark mode rendering', mentions:28, negPct:100, color:'#DC2626' },
       { theme:'Load performance', mentions:19, negPct:79, color:'#D97706' },
-      { theme:'Content discovery', mentions:16, negPct:0, color:'#6366F1' },
+      { theme:'Content discovery', mentions:16, negPct:0, color:'#3B82F6' },
       { theme:'Bookmarks / Sync', mentions:12, negPct:67, color:'#D97706' },
       { theme:'Personalization', mentions:10, negPct:0, color:'#059669' },
       { theme:'Sharing', mentions:7, negPct:57, color:'#D97706' },
@@ -670,7 +670,7 @@ const APPS = [
       { theme:'Group creation (Android)', mentions:22, negPct:100, color:'#DC2626' },
       { theme:'RSVP / Events', mentions:18, negPct:89, color:'#DC2626' },
       { theme:'Notifications', mentions:14, negPct:71, color:'#D97706' },
-      { theme:'Member management', mentions:11, negPct:0, color:'#6366F1' },
+      { theme:'Member management', mentions:11, negPct:0, color:'#3B82F6' },
       { theme:'App concept / Value', mentions:9, negPct:0, color:'#059669' },
       { theme:'Performance', mentions:6, negPct:50, color:'#D97706' },
     ],
@@ -791,7 +791,7 @@ function refreshAll() {
   document.getElementById('wrAppLabel').textContent = a.name;
   document.getElementById('wrDateChip').textContent = a.warRoom.date;
 
-  drawTrend('npsChart', a.npsTrend, '#4F46E5');
+  drawTrend('npsChart', a.npsTrend, '#1D4ED8');
   drawTrend('csatChart', a.csatTrend, '#0EA5E9');
   drawInsights(a.moveInsights);
   drawBugs(a.topBugs);
@@ -849,7 +849,7 @@ function drawReqs(reqs) {
     <div class="bar-item">
       <div class="bar-rank">${i+1}</div>
       <div class="bar-label" title="${r.label}">${r.label}</div>
-      <div class="bar-track"><div class="bar-fill" style="background:#6366F1;width:0%" data-w="${Math.round((r.n/r.max)*100)}"></div></div>
+      <div class="bar-track"><div class="bar-fill" style="background:#3B82F6;width:0%" data-w="${Math.round((r.n/r.max)*100)}"></div></div>
       <div class="bar-n">${r.n}</div>
     </div>`).join('');
   animateBars(el);
