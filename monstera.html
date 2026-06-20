@@ -693,6 +693,13 @@
         ? `It's raining — a great time to set out a container and collect some rainwater. Plants prefer it over tap water, which often contains chlorine that can build up in the soil.`
         : '';
 
+      const month = new Date().getMonth(); // 0=Jan … 11=Dec
+      const isHeatingMonth   = [9, 10, 11, 0, 1, 2, 3].includes(month); // Oct–Apr
+      const isHeatingLikely  = isHeatingMonth && (temp === null || temp < 15);
+      const heatingTip = isHeatingLikely
+        ? `Indoor heating this time of year dries out the air quickly. Keep your Monstera away from vents and consider a pebble tray or occasional misting to maintain humidity.`
+        : '';
+
       let text = '';
 
       if (w.noHistory) {
@@ -728,7 +735,8 @@
       if (humidTip) text += ' ' + humidTip;
       if (uvTip)    text += ' ' + uvTip;
       if (windTip)  text += ' ' + windTip;
-      if (rainTip)  text += ' ' + rainTip;
+      if (rainTip)    text += ' ' + rainTip;
+      if (heatingTip) text += ' ' + heatingTip;
 
       if (text) {
         textEl.textContent = text;

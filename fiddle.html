@@ -403,6 +403,13 @@
         ? `It's raining — a great time to collect some rainwater for your next watering. Plants prefer it over tap water, which often contains chlorine that can build up in the soil.`
         : '';
 
+      const month = new Date().getMonth();
+      const isHeatingMonth  = [9, 10, 11, 0, 1, 2, 3].includes(month);
+      const isHeatingLikely = isHeatingMonth && (temp === null || temp < 15);
+      const heatingTip = isHeatingLikely
+        ? `Indoor heating dries out the air significantly in these months. Fiddle Leaf Figs are sensitive to low humidity — keep it away from vents and avoid cold drafts near windows.`
+        : '';
+
       let text = '';
 
       if (w.noHistory) {
@@ -434,7 +441,8 @@
       if (humidTip) text += ' ' + humidTip;
       if (uvTip)    text += ' ' + uvTip;
       if (windTip)  text += ' ' + windTip;
-      if (rainTip)  text += ' ' + rainTip;
+      if (rainTip)    text += ' ' + rainTip;
+      if (heatingTip) text += ' ' + heatingTip;
 
       if (text) { textEl.textContent = text; insightEl.style.display = 'block'; }
     }
