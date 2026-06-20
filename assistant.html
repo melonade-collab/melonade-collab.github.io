@@ -199,24 +199,21 @@
     .view-data-btn:hover { background: #e8eaf6; border-color: #3949ab; }
     .view-data-btn svg { width: 16px; height: 16px; fill: none; stroke: #3949ab; stroke-width: 2; stroke-linecap: round; }
 
-    .gear-mobile {
-      display: none;
-      margin-left: auto;
-      padding: 6px;
-      border-radius: 8px;
-      color: rgba(255,255,255,0.6);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
+    .gear-mobile-wrap { position: relative; margin-left: auto; display: none; }
+    .gear-mobile { background: none; border: none; cursor: pointer; padding: 6px; border-radius: 8px; color: rgba(255,255,255,0.6); display: flex; align-items: center; transition: color 0.15s; }
     .gear-mobile:hover { color: #fff; }
     .gear-mobile svg { display: block; }
+    .gear-menu { display: none; position: absolute; right: 0; top: calc(100% + 6px); background: #fff; border-radius: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.16); min-width: 176px; overflow: hidden; border: 1px solid rgba(0,0,0,0.07); z-index: 100; }
+    .gear-menu a { display: flex; align-items: center; gap: 10px; padding: 13px 16px; font-size: 0.85rem; font-weight: 500; color: #1a1a1a; text-decoration: none; font-family: inherit; border-top: 1px solid #f0f0f0; }
+    .gear-menu a:first-child { border-top: none; }
 
     @media (max-width: 600px) {
       body { padding: 0; }
       .phone { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; }
       .status-bar { display: none; }
       .view-data-btn { display: none; }
-      .gear-mobile { display: flex; align-items: center; }
+      .gear-mobile-wrap { display: flex; }
+      .portfolio-back-link { display: none; }
     }
   </style>
 </head>
@@ -247,12 +244,24 @@
       <h2>Feedback Agent <span class="agent-badge">Agentic AI</span></h2>
       <p><span class="agent-online"></span>Agent online · Powered by AI</p>
     </div>
-    <a href="assistant-data.html" class="gear-mobile" title="View collected data" aria-label="View collected data">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-      </svg>
-    </a>
+    <div class="gear-mobile-wrap">
+      <button class="gear-mobile" onclick="toggleGearMenu(event)" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+      <div class="gear-menu" id="gearMenu">
+        <a href="assistant-data.html">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          View collected data
+        </a>
+        <a href="index.html">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Back to portfolio
+        </a>
+      </div>
+    </div>
   </div>
 
   <!-- Messages -->
@@ -275,7 +284,7 @@
   View collected data
 </a>
 
-<a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+<a href="index.html" class="portfolio-back-link" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
 
 <script>
 /* ── State ──────────────────────────────────────────────────────── */
@@ -958,6 +967,16 @@ async function await_rating_action(r) {
 /* ── Boot ────────────────────────────────────────────────────────── */
 saveData();
 setTimeout(start, 500);
+
+function toggleGearMenu(e) {
+  e.stopPropagation();
+  const m = document.getElementById('gearMenu');
+  m.style.display = m.style.display === 'block' ? 'none' : 'block';
+}
+document.addEventListener('click', () => {
+  const m = document.getElementById('gearMenu');
+  if (m) m.style.display = 'none';
+});
 </script>
 
 </body>
