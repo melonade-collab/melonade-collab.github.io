@@ -312,6 +312,10 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             Send feedback
           </a>
+          <a href="#" onclick="restartPrototype(event)" style="color:#e53935;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.68"/></svg>
+            Restart prototype
+          </a>
         </div>
       </div>
     </div>
@@ -403,6 +407,19 @@
       e.stopPropagation();
       const m = document.getElementById('settingsMenu');
       m.style.display = m.style.display === 'none' ? 'block' : 'none';
+    }
+    function restartPrototype(e) {
+      e.preventDefault();
+      const keys = [
+        'plant-bop-added','plant-fiddle-added','plant-lily-added','plant-monstera-removed',
+        'watering-history','watering-interval',
+        'bop-watering-history','bop-watering-interval',
+        'fiddle-watering-history','fiddle-watering-interval',
+        'lily-watering-history','lily-watering-interval',
+        'plant-city','plant-user-name','plant-love'
+      ];
+      keys.forEach(k => localStorage.removeItem(k));
+      location.reload();
     }
     document.addEventListener('click', () => {
       document.getElementById('settingsMenu').style.display = 'none';
