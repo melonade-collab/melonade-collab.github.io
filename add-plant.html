@@ -216,6 +216,7 @@
       .phone-frame::before { display: none; }
       .status-bar { display: none; }
       .confirm-overlay { border-radius: 0; }
+      .portfolio-back-link { display: none; }
     }
   </style>
 </head>
@@ -265,6 +266,20 @@
       <div class="section-sub">Based on your local climate and conditions</div>
 
       <div id="catalogContainer">
+
+        <div id="monsteraCatalog" class="catalog-card" style="display:none;" onclick="addPlant('monstera')">
+          <div class="catalog-thumb">
+            <img src="https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=200&auto=format&fit=crop&q=60" alt="Monstera">
+          </div>
+          <div class="catalog-info">
+            <div class="catalog-name">Monstera</div>
+            <div class="catalog-species">Monstera deliciosa</div>
+            <div class="catalog-match">Your original plant — add it back anytime</div>
+          </div>
+          <div class="catalog-action">
+            <button class="add-btn" id="monsteraAddBtn" onclick="event.stopPropagation(); addPlant('monstera')">+ Add</button>
+          </div>
+        </div>
 
         <div id="bopCatalog" class="catalog-card" onclick="addPlant('bop')">
           <div class="catalog-thumb white-bg">
@@ -321,11 +336,11 @@
 
   </div>
 
-  <a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+  <a href="index.html" class="portfolio-back-link" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
 
   <script>
     const city = localStorage.getItem('plant-city') || 'Toronto';
-    document.getElementById('sectionLabel').textContent = `Suggested for ${city}`;
+    document.getElementById('sectionLabel').innerHTML = `Suggested for <a href="profile.html" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">${city}</a>`;
 
     const sunnyCities  = ['Vancouver', 'Victoria', 'Windsor', 'Kelowna', 'Hamilton', 'London'];
     const cloudyCities = ['Halifax', "St. John's", 'Moncton', 'Sudbury', 'Thunder Bay', 'Winnipeg'];
@@ -362,7 +377,7 @@
                 :             ['fiddle', 'bop', 'lily'];
 
     const container = document.getElementById('catalogContainer');
-    const cardEls   = { bop: document.getElementById('bopCatalog'), fiddle: document.getElementById('fiddleCatalog'), lily: document.getElementById('lilyCatalog') };
+    const cardEls   = { monstera: document.getElementById('monsteraCatalog'), bop: document.getElementById('bopCatalog'), fiddle: document.getElementById('fiddleCatalog'), lily: document.getElementById('lilyCatalog') };
 
     order.forEach((key, i) => {
       container.appendChild(cardEls[key]);
@@ -375,25 +390,31 @@
       }
     });
 
+    // Show monstera card only if it was previously removed
+    if (localStorage.getItem('plant-monstera-removed') === '1') cardEls.monstera.style.display = '';
+
     // Hide already-added plants
     const alreadyAdded = { bop: 'plant-bop-added', fiddle: 'plant-fiddle-added', lily: 'plant-lily-added' };
     Object.entries(alreadyAdded).forEach(([key, lsKey]) => {
       if (localStorage.getItem(lsKey) === '1') cardEls[key].style.display = 'none';
     });
 
-    const names = { bop: 'Bird of Paradise', fiddle: 'Fiddle Leaf Fig', lily: 'Peace Lily' };
+    const names = { monstera: 'Monstera', bop: 'Bird of Paradise', fiddle: 'Fiddle Leaf Fig', lily: 'Peace Lily' };
     const lsKeys = { bop: 'plant-bop-added', fiddle: 'plant-fiddle-added', lily: 'plant-lily-added' };
-    const redirects = { bop: 'plants.html', fiddle: 'plants.html', lily: 'plants.html' };
 
     function addPlant(type) {
       const btn = document.getElementById(type + 'AddBtn');
       if (btn.classList.contains('added')) return;
-      localStorage.setItem(lsKeys[type], '1');
+      if (type === 'monstera') {
+        localStorage.removeItem('plant-monstera-removed');
+      } else {
+        localStorage.setItem(lsKeys[type], '1');
+      }
       btn.textContent = '✓ Added'; btn.className = 'add-btn added';
       cardEls[type].onclick = null;
       document.getElementById('confirmSub').textContent = `${names[type]} is in your collection.`;
       document.getElementById('confirmOverlay').classList.add('show');
-      setTimeout(() => { location.href = redirects[type]; }, 1800);
+      setTimeout(() => { location.href = 'plants.html'; }, 1800);
     }
   </script>
 </body>
