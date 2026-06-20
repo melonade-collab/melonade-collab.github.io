@@ -39,10 +39,10 @@
     /* ── Phone frame ── */
     .phone-wrap { display: flex; justify-content: center; padding: 4px 0 8px; }
     .phone-body {
-      width: 360px;
+      width: 310px;
       background: #111;
-      border-radius: 48px;
-      padding: 14px 8px 22px;
+      border-radius: 44px;
+      padding: 14px 6px 20px;
       box-shadow: 0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.07) inset, inset 0 1px 0 rgba(255,255,255,0.13);
       position: relative;
       flex-shrink: 0;
@@ -69,7 +69,7 @@
     }
     .ps-time { font-size: 0.62rem; font-weight: 700; color: #fff; }
     .ps-icons { font-size: 0.54rem; color: rgba(255,255,255,0.85); letter-spacing: 1px; }
-    .phone-screen { border-radius: 38px; overflow: hidden; border: 2px solid #222; }
+    .phone-screen { border-radius: 34px; overflow: hidden; border: 2px solid #222; }
     .phone-home-bar { width: 100px; height: 4px; background: rgba(255,255,255,0.25); border-radius: 2px; margin: 12px auto 0; }
     .phone-btn-vol { position: absolute; left: -10px; width: 4px; height: 28px; background: #2a2a2a; border-radius: 2px 0 0 2px; }
     .phone-btn-vol.up  { top: 108px; }
@@ -318,11 +318,21 @@ function findCountry(q) {
 /* ── Chat state ── */
 let stage = 'idle';
 let pendingCountry = null;
-let selectedPkg = false;
-let typingTimeout = null;
+let selectedOption = null;
 
 const msgs = document.getElementById('chatMsgs');
 const input = document.getElementById('chatInput');
+
+/* ── Intent helpers ── */
+function isYes(t) { return /\b(yes|yeah|yep|yup|sure|ok|okay|sounds good|let'?s do it|add it|go for it|do it|definitely|please|great|perfect|add the package|i'?ll take it|sign me up)\b/i.test(t); }
+function isNo(t)  { return /\b(no|nah|nope|not now|skip|pass|maybe later|i'?ll pass|don'?t|no thanks|no thank you|not interested|maybe next time)\b/i.test(t); }
+function isThanks(t) { return /\b(thanks|thank you|thx|that'?s (all|great)|i'?m good|all good|no more|nothing else|bye|goodbye|done|that'?s it|all set)\b/i.test(t); }
+function isRecommend(t) { return /\b(recommend|suggest|better|worth it|should i|which one|what do you think|advice|help me decide|best|which is|what would you)\b/i.test(t); }
+function isHowMuch(t) { return /\b(how much|cost me|how expensive|what'?s the (cost|price|charge)|will i be charged|how (much|pricey))\b/i.test(t); }
+function isDataQ(t)  { return /\b(data|internet|browse|streaming|stream|online|mb|gb)\b/i.test(t); }
+function isCallQ(t)  { return /\b(call|calling|calls|voice|phone|minutes)\b/i.test(t); }
+function isTextQ(t)  { return /\b(text|sms|message|messaging)\b/i.test(t); }
+function isDuration(t) { return /(\d+)\s*(day|days|week|weeks|night|nights)/i.exec(t); }
 
 function addMsg(type, content, delay = 0) {
   return new Promise(resolve => {
@@ -411,7 +421,6 @@ function buildPkgCards(c) {
   <button class="confirm-btn" id="confirmBtn" disabled onclick="confirmChoice()">Select an option above</button>`;
 }
 
-let selectedOption = null;
 function selectPkg() {
   selectedOption = 'pkg';
   document.getElementById('pkgCard')?.classList.add('selected');
@@ -431,13 +440,12 @@ function confirmChoice() {
   if (btn) btn.disabled = true;
   if (selectedOption === 'pkg') {
     addUserMsg('Add the package');
-    botReply(`Got it! Your package has been added to your account — you're all set for ${pendingCountry?.name || 'your trip'}. It activates the moment your phone connects to a local network there.\n\nAnything else I can help you with?`);
+    botReply(`Done! Your package has been added — it activates the moment your phone connects to a network in ${pendingCountry?.name || 'your destination'}.<br><br>Anything else before you go?`, true);
   } else {
     addUserMsg("I'll go with pay-per-use");
-    botReply(`No problem — your existing plan covers ${pendingCountry?.name || 'that country'} at the pay-per-use rates shown. You can always add a package later from My Account if you change your mind.\n\nAnything else?`);
+    botReply(`Got it — you'll be charged the pay-per-use rates as you go. You can always add a package from My Account if you change your mind.<br><br>Anything else I can help with?`, true);
   }
   stage = 'done';
-  pendingCountry = null;
 }
 
 function addUserMsg(text) {
@@ -486,32 +494,127 @@ function quickReply(text) {
 }
 
 async function handleInput(text) {
-  const country = findCountry(text);
+  const t = text.trim();
 
-  if (!country) {
-    /* Try search */
-    if (/\b(rate|roam|travel|call|long.?distance|ld|going|visiting)\b/i.test(text)) {
-      await botReply(`I didn't catch a specific country there. Which country are you asking about?`, false, 600);
-      showCountrySearch();
-    } else {
-      await botReply(`I can help with roaming and long distance rates. Just tell me which country you're asking about — for example, "roaming in Japan" or "long distance to France."`, false, 600);
+  /* ── Always handle wrap-up ── */
+  if (isThanks(t)) {
+    await botReply(pendingCountry
+      ? `You're all set! Have a great trip to ${pendingCountry.name} 🌍`
+      : `Happy to help! Let me know if you have any other questions.`, false, 600);
+    stage = 'idle';
+    return;
+  }
+
+  /* ── Stage: after rates are showing ── */
+  if (stage === 'showing_rates' && pendingCountry) {
+    const c = pendingCountry;
+
+    /* Yes → add package */
+    if (isYes(t) && c.pkg) {
+      selectPkg();
+      confirmChoice();
+      return;
     }
-    stage = 'waiting';
+    /* No → pay-per-use */
+    if (isNo(t)) {
+      if (c.pkg) { selectPayAs(); confirmChoice(); }
+      else { await botReply(`No problem! You'll just pay the standard rates as you use your phone. Anything else?`, false, 600); stage = 'done'; }
+      return;
+    }
+    /* Ask for recommendation */
+    if (isRecommend(t) && c.pkg) {
+      const pkgDays = parseInt(c.pkg.duration) || 7;
+      const dailyCost = c.data ? parseFloat(c.data.replace(/[^0-9.]/g,'')) : 0;
+      const pkgCost  = parseFloat(c.pkg.price.replace(/[^0-9.]/g,''));
+      const breakEven = dailyCost ? Math.ceil(pkgCost / dailyCost) : null;
+      const rec = breakEven
+        ? `The package pays off after just ${breakEven} day${breakEven > 1 ? 's' : ''} of data use — if you're there for more than that, it's the better deal.`
+        : `If you're making calls, the package is usually better value than paying per minute.`;
+      await botReply(`For ${c.name} I'd go with the <strong>${c.pkg.name}</strong> (${c.pkg.price}). ${rec}`, true, 800);
+      return;
+    }
+    /* How much will it cost? */
+    if (isHowMuch(t)) {
+      if (c.data && c.pkg) {
+        const dailyCost = parseFloat(c.data.replace(/[^0-9.]/g,''));
+        const pkgCost   = parseFloat(c.pkg.price.replace(/[^0-9.]/g,''));
+        await botReply(`At pay-per-use, data alone would be ${c.data}. A 7-day trip would cost around $${(dailyCost * 7).toFixed(0)} — vs. ${c.pkg.price} for the package. The package saves you $${((dailyCost * 7) - pkgCost).toFixed(0)} on data alone.`, false, 800);
+      } else {
+        await botReply(`Voice is ${c.voice || 'not available'}, texts are ${c.text || 'not available'}${c.data ? `, data is ${c.data}` : ''}.`, false, 700);
+      }
+      return;
+    }
+    /* Trip duration question */
+    const dur = isDuration(t);
+    if (dur && c.pkg && c.data) {
+      const days = /week/i.test(dur[2]) ? parseInt(dur[1]) * 7 : parseInt(dur[1]);
+      const dailyCost = parseFloat(c.data.replace(/[^0-9.]/g,''));
+      const pkgCost   = parseFloat(c.pkg.price.replace(/[^0-9.]/g,''));
+      const dataTotal = (dailyCost * days).toFixed(0);
+      if (dailyCost * days > pkgCost) {
+        await botReply(`For ${days} days in ${c.name}, the package is definitely worth it — ${days} days of data at pay-per-use would be $${dataTotal}, vs. ${c.pkg.price} for the package.`, false, 800);
+      } else {
+        await botReply(`For ${days} days, it's closer — data would be $${dataTotal} at pay-per-use vs. ${c.pkg.price} for the package. If you're making calls too, the package still edges ahead.`, false, 800);
+      }
+      return;
+    }
+    /* Specific service questions */
+    if (isDataQ(t))  { await botReply(`Data in ${c.name} is <strong>${c.data || 'not available'}</strong> on a pay-per-use basis — the day pass activates on first use.${c.pkg ? ` The ${c.pkg.name} (${c.pkg.price}) includes a data allowance if you'd rather not pay per day.` : ''}`, true, 700); return; }
+    if (isCallQ(t))  { await botReply(`Voice calls in ${c.name} are <strong>${c.voice || 'not available'}</strong> per minute at pay-per-use rates.${c.pkg ? ` The package includes ${c.pkg.detail.match(/\d+ min/)?.[0] || 'talk time'}.` : ''}`, true, 700); return; }
+    if (isTextQ(t))  { await botReply(`Texts in ${c.name} are <strong>${c.text || 'not available'}</strong> per message.${c.pkg ? ` The package includes unlimited texting.` : ''}`, true, 700); return; }
+
+    /* Unclear follow-up while showing rates */
+    const newCountry = findCountry(t);
+    if (newCountry && newCountry.name !== c.name) {
+      /* They're asking about a different country */
+      pendingCountry = newCountry;
+      if (newCountry.voice === null && newCountry.ld === null) {
+        await botReply(`${newCountry.flag} <strong>${newCountry.name}</strong> — ${newCountry.note || 'Service not available.'}`, true, 800);
+        await botReply(`Any other country I can look up?`, false, 400);
+        stage = 'waiting';
+        return;
+      }
+      const rateHtml = buildRateCard(newCountry) + (newCountry.pkg ? buildPkgCards(newCountry) : '');
+      await botReply(`Here are the rates for <strong>${newCountry.name}</strong> ${newCountry.flag}:${rateHtml}`, true, 900);
+      return;
+    }
+
+    await botReply(`Want to add the ${c.pkg ? c.pkg.name : 'package'}, or stick with pay-per-use? You can also ask me anything about the rates.`, false, 600);
     return;
   }
 
-  pendingCountry = country;
-  stage = 'showing_rates';
+  /* ── Stage: done / follow-up ── */
+  if (stage === 'done') {
+    if (isNo(t)) { await botReply(`No problem! Have a great trip 🌍`, false, 500); stage = 'idle'; return; }
+    if (isYes(t)) { await botReply(`Of course! Which country are you asking about?`, false, 600); stage = 'waiting'; return; }
+    /* Fall through — maybe they named a new country */
+  }
 
-  if (country.voice === null && country.ld === null) {
-    await botReply(`${country.flag} <strong>${country.name}</strong><br><br>${country.note || 'Service is not available in this country.'}`, true, 900);
-    await botReply(`Is there another country I can look up for you?`, false, 500);
-    stage = 'waiting';
+  /* ── Find a country in any stage ── */
+  const country = findCountry(t);
+  if (country) {
+    pendingCountry = country;
+    stage = 'showing_rates';
+    if (country.voice === null && country.ld === null) {
+      await botReply(`${country.flag} <strong>${country.name}</strong><br><br>${country.note || 'Service is not available here.'}`, true, 900);
+      await botReply(`Any other country I can look up?`, false, 400);
+      stage = 'waiting';
+      return;
+    }
+    const rateHtml = buildRateCard(country) + (country.pkg ? buildPkgCards(country) : '');
+    await botReply(`Here are the rates for <strong>${country.name}</strong> ${country.flag}:${rateHtml}`, true, 900);
     return;
   }
 
-  const rateHtml = buildRateCard(country) + (country.pkg ? buildPkgCards(country) : '');
-  await botReply(`Here are the rates for <strong>${country.name}</strong> ${country.flag}:${rateHtml}`, true, 900);
+  /* ── Fallback ── */
+  if (/\b(rate|roam|travel|call|long.?distance|going|visiting|trip|abroad|international|phone|work there)\b/i.test(t)) {
+    await botReply(`Which country are you heading to? I'll pull up the rates and any package options.`, false, 600);
+    showCountrySearch();
+    stage = 'waiting';
+  } else {
+    await botReply(`I can look up roaming and long distance rates for any country. Just tell me where you're headed!`, false, 600);
+    stage = 'waiting';
+  }
 }
 
 function showCountrySearch() {
