@@ -689,37 +689,26 @@
         ? `It's quite windy out (${windSpeed} km/h) — if any windows are open, cold drafts can stress your Monstera and dry the soil out faster than usual.`
         : '';
 
+      const rainTip = isRainy
+        ? `It's raining — a great time to set out a container and collect some rainwater. Plants prefer it over tap water, which often contains chlorine that can build up in the soil.`
+        : '';
+
       let text = '';
 
       if (w.noHistory) {
         text = driesOut
           ? 'No watering history yet — and with today\'s conditions drying things out, it\'s worth logging a water now to start tracking.'
           : 'Tap "Water today" to start tracking. Once you do, this card will keep an eye on things for you.';
-        if (humidTip) text += ' ' + humidTip;
-        if (uvTip) text += ' ' + uvTip;
-        if (windTip) text += ' ' + windTip;
       } else if (w.wateredToday && driesOut) {
         text = 'Good timing on the water. Sunny conditions will speed up evaporation — worth checking the soil a day or two early next time.';
-        if (humidTip) text += ' ' + humidTip;
-        if (uvTip) text += ' ' + uvTip;
-        if (windTip) text += ' ' + windTip;
       } else if (w.wateredToday) {
         text = moist
           ? 'Freshly watered with overcast skies ahead — the soil should stay moist longer than usual. No rush on the next one.'
           : 'Freshly watered. Your Monstera should be in good shape for the week.';
-        if (humidTip) text += ' ' + humidTip;
-        if (uvTip) text += ' ' + uvTip;
-        if (windTip) text += ' ' + windTip;
       } else if (w.days >= w.interval && driesOut) {
         text = 'Watering is overdue and it\'s warm and sunny — the soil\'s likely quite dry. Your Monstera would appreciate a drink today.';
-        if (humidTip) text += ' ' + humidTip;
-        if (uvTip) text += ' ' + uvTip;
-        if (windTip) text += ' ' + windTip;
       } else if (w.days >= w.interval) {
         text = 'Watering is overdue. Time to give your Monstera a good soak.';
-        if (humidTip) text += ' ' + humidTip;
-        if (uvTip) text += ' ' + uvTip;
-        if (windTip) text += ' ' + windTip;
       } else {
         const daysLeft = w.interval - w.days;
         const isDueSoon = w.days >= w.interval * 0.75;
@@ -734,10 +723,12 @@
         } else {
           text = `Everything looks on track. ${daysLeft} day${daysLeft !== 1 ? 's' : ''} until the next watering — stay the course.`;
         }
-        if (humidTip) text += ' ' + humidTip;
-        if (uvTip) text += ' ' + uvTip;
-        if (windTip) text += ' ' + windTip;
       }
+
+      if (humidTip) text += ' ' + humidTip;
+      if (uvTip)    text += ' ' + uvTip;
+      if (windTip)  text += ' ' + windTip;
+      if (rainTip)  text += ' ' + rainTip;
 
       if (text) {
         textEl.textContent = text;

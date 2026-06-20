@@ -608,6 +608,10 @@
         ? `It's quite windy out (${windSpeed} km/h) — if windows are open, cold drafts can stress your Bird of Paradise and dry the soil faster.`
         : '';
 
+      const rainTip = isRainy
+        ? `It's raining — a great time to collect some rainwater for your next watering. Plants prefer it over tap water, which often contains chlorine that can build up in the soil.`
+        : '';
+
       let text = '';
 
       if (w.noHistory) {
@@ -643,6 +647,7 @@
       if (humidTip) text += ' ' + humidTip;
       if (uvTip)    text += ' ' + uvTip;
       if (windTip)  text += ' ' + windTip;
+      if (rainTip)  text += ' ' + rainTip;
 
       if (text) {
         textEl.textContent = text;

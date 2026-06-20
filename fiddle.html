@@ -399,6 +399,10 @@
         ? `It's windy out (${windSpeed} km/h) — Fiddle Leaf Figs are extremely sensitive to drafts. Close windows near the plant to avoid leaf drop.`
         : '';
 
+      const rainTip = isRainy
+        ? `It's raining — a great time to collect some rainwater for your next watering. Plants prefer it over tap water, which often contains chlorine that can build up in the soil.`
+        : '';
+
       let text = '';
 
       if (w.noHistory) {
@@ -430,6 +434,7 @@
       if (humidTip) text += ' ' + humidTip;
       if (uvTip)    text += ' ' + uvTip;
       if (windTip)  text += ' ' + windTip;
+      if (rainTip)  text += ' ' + rainTip;
 
       if (text) { textEl.textContent = text; insightEl.style.display = 'block'; }
     }
