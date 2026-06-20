@@ -119,22 +119,6 @@
       30% { transform: translateY(-5px); opacity: 1; }
     }
 
-    /* ── Rating chips ─────────────────────────────────────────────────── */
-    .rating-row {
-      display: flex; flex-wrap: wrap; gap: 7px;
-      padding: 4px 0 4px 36px;
-    }
-    .r-chip {
-      width: 34px; height: 34px; border-radius: 50%;
-      border: 2px solid #c5cae9; background: #fff;
-      font-size: 0.8rem; font-weight: 600; color: #3949ab;
-      cursor: pointer; transition: all 0.12s;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .r-chip:hover    { background: #e8eaf6; border-color: #3949ab; }
-    .r-chip.picked   { background: #1a237e; color: #fff; border-color: #1a237e; }
-    .r-chip:disabled { opacity: 0.5; cursor: default; }
-
     /* ── Summary card ─────────────────────────────────────────────────── */
     .summary {
       background: #e8eaf6;
@@ -149,20 +133,6 @@
       text-transform: uppercase; color: #7986cb; margin-bottom: 6px;
     }
     .summary em { font-style: normal; font-size: 0.78rem; }
-
-    /* ── Yes / No chips ──────────────────────────────────────────────── */
-    .choice-row {
-      display: flex; gap: 8px; flex-wrap: wrap;
-      padding: 4px 0 4px 36px;
-    }
-    .choice-chip {
-      padding: 8px 16px; border-radius: 20px;
-      border: 2px solid #c5cae9; background: #fff;
-      font-size: 0.82rem; font-weight: 600; color: #3949ab;
-      cursor: pointer; transition: all 0.12s; font-family: inherit;
-    }
-    .choice-chip:hover    { background: #e8eaf6; border-color: #3949ab; }
-    .choice-chip:disabled { opacity: 0.5; cursor: default; }
 
     /* ── Input area ───────────────────────────────────────────────────── */
     .input-area {
@@ -286,6 +256,7 @@
 const d = { name:'', city:'', province:'', email:'', phone:'', postalCode:'', rating:null, message:'' };
 let step = 0;
 let reviewMode = false;
+let pendingConfirm = null; // { type: 'city'|'province'|'mismatch'|'review'|'changeField'|'quit', data:{} }
 // 0=name 1=city 2=province 3=email 4=phone 5=postal 6=rating 7=message 8=review 9=done
 
 function saveData() { sessionStorage.setItem('assistant_data', JSON.stringify(d)); }
@@ -387,12 +358,7 @@ function showTyping() {
 function hideTyping() { typingEl?.remove(); typingEl = null; }
 
 function showChips() {
-  const row = document.createElement('div'); row.className = 'rating-row'; row.id = 'chips';
-  for (let i = 0; i <= 10; i++) {
-    const b = document.createElement('button'); b.className = 'r-chip'; b.textContent = i;
-    b.onclick = () => pickRating(i); row.appendChild(b);
-  }
-  msgsEl.appendChild(row); scroll();
+  enableInput('Type a number from 0 to 10…');
 }
 
 function enableInput(ph = 'Type a message…') {
@@ -440,18 +406,8 @@ async function afterName() {
 }
 
 function showCityConfirmChips() {
-  const row = document.createElement('div'); row.className = 'choice-row';
-  [["Yes, that's right", true], ['Let me retype', false]].forEach(([label, ok]) => {
-    const b = document.createElement('button'); b.className = 'choice-chip'; b.textContent = label;
-    b.onclick = () => {
-      row.querySelectorAll('.choice-chip').forEach(c => c.disabled = true);
-      addUser(label);
-      if (ok) { askProvince(); }
-      else { botSay('What city are you in?', 500).then(() => enableInput('Your city…')); }
-    };
-    row.appendChild(b);
-  });
-  msgsEl.appendChild(row); scroll();
+  pendingConfirm = { type: 'city' };
+  enableInput("Type 'yes' to confirm or retype the city…");
 }
 
 function askProvince() {
@@ -462,40 +418,13 @@ function askProvince() {
 }
 
 function showYesNo(guess) {
-  const row = document.createElement('div'); row.className = 'choice-row'; row.id = 'yesno';
-  [['Yes ✓', true], ['Different province', false]].forEach(([label, isYes]) => {
-    const b = document.createElement('button'); b.className = 'choice-chip'; b.textContent = label;
-    b.onclick = () => {
-      row.querySelectorAll('.choice-chip').forEach(c => c.disabled = true);
-      if (isYes) {
-        addUser('Yes');
-        d.province = guess; saveData();
-        if (reviewMode) { step = 8; showReview(); }
-        else { step = 3; afterProvince(); }
-      } else {
-        addUser('Different province');
-        botSay(`Which province or state is ${d.city} in?`, 600).then(() => enableInput('Province or state…'));
-      }
-    };
-    row.appendChild(b);
-  });
-  msgsEl.appendChild(row); scroll();
+  pendingConfirm = { type: 'province', guess };
+  enableInput("Type 'yes' to confirm or type the correct province…");
 }
 
 function showMismatchChips(expected, entered) {
-  const row = document.createElement('div'); row.className = 'choice-row';
-  [[`Keep ${entered}`, false], [`Use ${expected}`, true]].forEach(([label, useExpected]) => {
-    const b = document.createElement('button'); b.className = 'choice-chip'; b.textContent = label;
-    b.onclick = () => {
-      row.querySelectorAll('.choice-chip').forEach(c => c.disabled = true);
-      addUser(label);
-      if (useExpected) { d.province = expected; saveData(); }
-      if (reviewMode) { step = 8; showReview(); }
-      else { step = 3; afterProvince(); }
-    };
-    row.appendChild(b);
-  });
-  msgsEl.appendChild(row); scroll();
+  pendingConfirm = { type: 'mismatch', expected, entered };
+  enableInput(`Type 'yes' for ${expected} or 'keep' to keep ${entered}…`);
 }
 
 async function afterProvince() {
@@ -526,43 +455,33 @@ function buildReviewHTML() {
 async function showReview() {
   step = 8; reviewMode = true;
   await botSay(buildReviewHTML(), 1000, true);
-  await botSay("Does everything look correct, or is there anything you'd like to change?", 800);
-  const row = document.createElement('div'); row.className = 'choice-row';
-  [['All correct ✓', true], ['Change something', false]].forEach(([label, ok]) => {
-    const b = document.createElement('button'); b.className = 'choice-chip'; b.textContent = label;
-    b.onclick = () => {
-      row.querySelectorAll('.choice-chip').forEach(c => c.disabled = true);
-      addUser(label);
-      if (ok) { reviewMode = false; afterReview(); }
-      else { showChangeFieldChips(); }
-    };
-    row.appendChild(b);
-  });
-  msgsEl.appendChild(row); scroll();
+  await botSay("Does everything look correct? Type 'yes' to submit, or tell me which field to change (name, city, email, phone, postal, or rating).", 800);
+  pendingConfirm = { type: 'review' };
+  enableInput("Type 'yes' or a field to change…");
 }
 
 function showChangeFieldChips() {
-  botSay('Which would you like to update?', 700).then(() => {
-    const row = document.createElement('div'); row.className = 'choice-row';
-    [
-      ['Name',     () => reAskStep(0, 'What name should I use?', 'Your name…')],
-      ['Location', () => reAskStep(1, 'What city are you in?', 'Your city…')],
-      ['Email',    () => reAskStep(3, "What's your email? (Type 'skip' to remove)", 'Your email…')],
-      ['Phone',    () => reAskStep(4, "What's your phone? (Type 'skip' to remove)", 'Your phone…')],
-      ['Postal',   () => reAskStep(5, "What's your postal or zip? (Type 'skip' to remove)", 'Postal/zip code…')],
-      ['Rating',   () => { step = 6; botSay('Pick a new rating:', 700).then(showChips); }],
-    ].forEach(([label, action]) => {
-      const b = document.createElement('button'); b.className = 'choice-chip'; b.textContent = label;
-      b.onclick = () => { row.querySelectorAll('.choice-chip').forEach(c => c.disabled = true); addUser(label); action(); };
-      row.appendChild(b);
-    });
-    msgsEl.appendChild(row); scroll();
-  });
+  pendingConfirm = { type: 'changeField' };
+  botSay('Which would you like to update? (name, city, email, phone, postal, or rating)', 700)
+    .then(() => enableInput('Field to change…'));
 }
 
 function reAskStep(s, question, placeholder) {
   step = s;
   botSay(question, 700).then(() => enableInput(placeholder));
+}
+
+function handleChangeField(lower) {
+  if (/name/.test(lower))               reAskStep(0, 'What name should I use?', 'Your name…');
+  else if (/city|location/.test(lower)) reAskStep(1, 'What city are you in?', 'Your city…');
+  else if (/email/.test(lower))         reAskStep(3, "What's your email? (or 'skip' to remove)", 'Your email…');
+  else if (/phone/.test(lower))         reAskStep(4, "What's your phone? (or 'skip' to remove)", 'Your phone…');
+  else if (/postal|zip/.test(lower))    reAskStep(5, "What's your postal or zip? (or 'skip' to remove)", 'Postal/zip code…');
+  else if (/rating|score|number/.test(lower)) { step = 6; botSay('Type a new rating from 0 to 10:', 700).then(() => enableInput('0–10…')); }
+  else {
+    botSay("Which field? Say name, city, email, phone, postal, or rating.", 600)
+      .then(() => { pendingConfirm = { type: 'changeField' }; enableInput('Field to change…'); });
+  }
 }
 
 /* ── Final summary (agentic) ─────────────────────────────────────── */
@@ -639,21 +558,6 @@ async function afterReview() {
   step = 9;
 }
 
-/* ── Rating picker ───────────────────────────────────────────────── */
-async function pickRating(r) {
-  document.getElementById('chips').querySelectorAll('.r-chip').forEach((c, i) => {
-    c.classList.toggle('picked', i === r); c.disabled = true;
-  });
-  d.rating = r; saveData(); addUser(`${r} / 10`);
-  if (reviewMode) { step = 8; showReview(); return; }
-  step = 7;
-  if (r <= 5) {
-    await_rating_action(r);
-  } else {
-    afterRating();
-  }
-}
-
 /* ── Natural language intercept ──────────────────────────────────── */
 function naturalLanguageIntercept(txt, lower) {
   const stepQuestions = [
@@ -663,7 +567,7 @@ function naturalLanguageIntercept(txt, lower) {
     "What's your email address? (or type 'skip')",
     "What's your phone number? (or type 'skip')",
     "What's your postal or zip code? (or type 'skip')",
-    "Use the buttons above to pick a rating from 0 to 10.",
+    "Type a number from 0 to 10 for your rating.",
     "Feel free to share any thoughts — or just type 'skip' if you're done."
   ];
   const stepPlaceholders = ['Your name…','Your city…','Province or state…','Your email…','Your phone…','Postal/zip code…','','Your feedback…'];
@@ -694,18 +598,8 @@ function naturalLanguageIntercept(txt, lower) {
       "Okay! I don't want to keep you. Want to pick up where we left off, or start fresh?"
     ];
     botSay(randPick(replies), 700).then(() => {
-      const row = document.createElement('div'); row.className = 'choice-row';
-      [["Let's continue", false], ['Start over', true]].forEach(([label, reset]) => {
-        const b = document.createElement('button'); b.className = 'choice-chip'; b.textContent = label;
-        b.onclick = () => {
-          row.querySelectorAll('.choice-chip').forEach(c => c.disabled = true);
-          addUser(label);
-          if (reset) { location.reload(); }
-          else { reAskCurrent(''); }
-        };
-        row.appendChild(b);
-      });
-      msgsEl.appendChild(row); scroll();
+      pendingConfirm = { type: 'quit' };
+      enableInput("Type 'continue' or 'start over'…");
     });
     return true;
   }
@@ -736,6 +630,51 @@ function send() {
 
   // Natural language intercept (privacy, quit, confusion, greetings)
   if (naturalLanguageIntercept(txt, lower)) return;
+
+  /* ── Pending confirmation handlers ── */
+  if (pendingConfirm) {
+    const pc = pendingConfirm; pendingConfirm = null;
+    const isYes = /^(yes|yeah|yep|yup|correct|right|that'?s right|confirmed|confirm|looks good|good|ok|okay)[\s!.]*$/i.test(lower);
+
+    if (pc.type === 'city') {
+      if (isYes) { askProvince(); }
+      else { d.city = ''; saveData(); botSay('No problem — what city are you in?', 500).then(() => enableInput('Your city…')); }
+      return;
+    }
+    if (pc.type === 'province') {
+      if (isYes) {
+        d.province = pc.guess; saveData();
+        if (reviewMode) { step = 8; showReview(); } else { step = 3; afterProvince(); }
+      } else {
+        d.province = toTitleCase(txt); saveData();
+        if (reviewMode) { step = 8; showReview(); } else { step = 3; afterProvince(); }
+      }
+      return;
+    }
+    if (pc.type === 'mismatch') {
+      if (isYes || lower.includes(pc.expected.toLowerCase())) { d.province = pc.expected; saveData(); }
+      if (reviewMode) { step = 8; showReview(); } else { step = 3; afterProvince(); }
+      return;
+    }
+    if (pc.type === 'review') {
+      if (isYes) { reviewMode = false; afterReview(); }
+      else {
+        // treat what they typed as the field name directly
+        pendingConfirm = { type: 'changeField' };
+        handleChangeField(lower);
+      }
+      return;
+    }
+    if (pc.type === 'changeField') {
+      handleChangeField(lower);
+      return;
+    }
+    if (pc.type === 'quit') {
+      if (/restart|start over|fresh|new|reset/i.test(lower)) { location.reload(); }
+      else { reAskCurrent(''); }
+      return;
+    }
+  }
 
   if (step === 0) {
     // Try to extract name from "my name is..." patterns
@@ -826,25 +765,18 @@ function send() {
     }
 
   } else if (step === 6) {
-    // Someone typed a number instead of clicking the chips
     const num = parseInt(txt, 10);
     if (!isNaN(num) && num >= 0 && num <= 10) {
-      const chips = document.getElementById('chips');
-      if (chips) chips.querySelectorAll('.r-chip').forEach((c, i) => { c.classList.toggle('picked', i === num); c.disabled = true; });
       d.rating = num; saveData();
       if (reviewMode) { step = 8; showReview(); return; }
       step = 7;
-      if (num <= 5) {
-        await_rating_action(num);
-      } else {
-        afterRating();
-      }
+      if (num <= 5) { await_rating_action(num); } else { afterRating(); }
     } else {
       botSay(randPick([
-        "Use the buttons above to pick a rating! Just tap the number that feels right, from 0 to 10.",
-        "Tap any number from 0 to 10 on the rating buttons — which one matches your experience?",
-        "I see you typed something — but I need you to tap one of the rating buttons above. Which number fits?"
-      ]), 700).then(() => enableInput());
+        "Just type any number from 0 to 10 — which one fits your experience?",
+        "I need a number between 0 and 10. Which would you give it?",
+        "Type a number from 0 (worst) to 10 (best)!"
+      ]), 700).then(() => enableInput('Type a number from 0 to 10…'));
     }
 
   } else if (step === 7) {
