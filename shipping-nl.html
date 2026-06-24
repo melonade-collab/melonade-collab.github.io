@@ -202,6 +202,15 @@
     .chk.ai-on          { border-color: #FDE68A; background: #FFFBEB; }
     .chk.ai-on .chk-lbl { color: #92400E; font-weight: 600; }
 
+    .parcel-tip {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px 16px; margin-bottom: 20px;
+      background: #EFF6FF; border: 1.5px solid #BFDBFE; border-radius: 10px;
+    }
+    .parcel-tip-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+    .parcel-tip-title { font-size: 0.82rem; font-weight: 700; color: #1D4ED8; margin-bottom: 3px; }
+    .parcel-tip-text  { font-size: 0.78rem; color: #3B82F6; line-height: 1.55; }
+
     .quote-btn {
       width: 100%; margin-top: 24px; padding: 15px;
       background: #059669; color: #fff; border: none; border-radius: 10px;
@@ -284,12 +293,15 @@
       <button class="chip" onclick="loadExample('overnight')">⚡ Overnight docs</button>
     </div>
 
-    <button class="fill-btn" id="fillBtn" onclick="startParsing()">
+    <div style="display:flex;gap:10px;margin-top:16px">
+    <button class="fill-btn" id="fillBtn" onclick="startParsing()" style="margin-top:0;flex:1">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
       </svg>
       Fill form with AI
     </button>
+    <button onclick="clearForm()" style="padding:14px 18px;background:#fff;border:1.5px solid #E2E8F0;border-radius:10px;font-size:0.88rem;font-weight:600;color:#64748B;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all 0.15s" onmouseover="this.style.borderColor='#CBD5E1';this.style.color='#374151'" onmouseout="this.style.borderColor='#E2E8F0';this.style.color='#64748B'">Clear</button>
+    </div>
 
     <div class="proc-steps" id="procSteps">
       <div class="proc-step" id="s1"><div class="proc-dot"></div>Reading your description…</div>
@@ -303,6 +315,14 @@
   <div class="card form-card" id="formCard">
 
     <div class="ai-summary" id="aiSummary"></div>
+
+    <div class="parcel-tip" id="parcelTip" style="display:none">
+      <div class="parcel-tip-icon">📄</div>
+      <div>
+        <div class="parcel-tip-title" id="parcelTipTitle"></div>
+        <div class="parcel-tip-text" id="parcelTipText"></div>
+      </div>
+    </div>
 
     <div class="sec">Route</div>
     <div class="g2">
@@ -416,6 +436,7 @@ function loadExample(k) {
 
 /* ── City lookup (longest-match first) ── */
 const CITIES = [
+  // Multi-word names first (longest-match priority)
   ['greater toronto area','Toronto, ON'],['greater vancouver','Vancouver, BC'],
   ['saint john','Saint John, NB'],["st. john's",'St. John\'s, NL'],['st johns','St. John\'s, NL'],
   ['quebec city','Quebec City, QC'],['trois-rivieres','Trois-Rivières, QC'],['trois rivieres','Trois-Rivières, QC'],
@@ -424,7 +445,14 @@ const CITIES = [
   ['fort mcmurray','Fort McMurray, AB'],['grande prairie','Grande Prairie, AB'],
   ['niagara falls','Niagara Falls, ON'],['north bay','North Bay, ON'],
   ['cape breton','Cape Breton, NS'],['new westminster','New Westminster, BC'],
-  ['prince albert','Prince Albert, SK'],
+  ['prince albert','Prince Albert, SK'],['north york','North York, ON'],
+  ['west vancouver','West Vancouver, BC'],['north vancouver','North Vancouver, BC'],
+  ['port moody','Port Moody, BC'],['maple ridge','Maple Ridge, BC'],
+  ['white rock','White Rock, BC'],['richmond hill','Richmond Hill, ON'],
+  ['st. albert','St. Albert, AB'],['sherwood park','Sherwood Park, AB'],
+  ['spruce grove','Spruce Grove, AB'],['east york','East York, ON'],
+  ['port coquitlam','Port Coquitlam, BC'],
+  // Single-word cities
   ['toronto','Toronto, ON'],['montreal','Montreal, QC'],['vancouver','Vancouver, BC'],
   ['calgary','Calgary, AB'],['edmonton','Edmonton, AB'],['ottawa','Ottawa, ON'],
   ['winnipeg','Winnipeg, MB'],['hamilton','Hamilton, ON'],['kitchener','Kitchener, ON'],
@@ -439,7 +467,15 @@ const CITIES = [
   ['nanaimo','Nanaimo, BC'],['kamloops','Kamloops, BC'],['lethbridge','Lethbridge, AB'],
   ['fredericton','Fredericton, NB'],['charlottetown','Charlottetown, PE'],
   ['whitehorse','Whitehorse, YT'],['yellowknife','Yellowknife, NT'],
-  ['iqaluit','Iqaluit, NU'],
+  ['iqaluit','Iqaluit, NU'],['scarborough','Scarborough, ON'],
+  ['etobicoke','Etobicoke, ON'],['pickering','Pickering, ON'],
+  ['ajax','Ajax, ON'],['whitby','Whitby, ON'],['aurora','Aurora, ON'],
+  ['newmarket','Newmarket, ON'],['oakville','Oakville, ON'],['burlington','Burlington, ON'],
+  ['milton','Milton, ON'],['thornhill','Thornhill, ON'],
+  ['richmond','Richmond, BC'],['coquitlam','Coquitlam, BC'],
+  ['langley','Langley, BC'],['delta','Delta, BC'],
+  ['airdrie','Airdrie, AB'],['cochrane','Cochrane, AB'],['leduc','Leduc, AB'],
+  ['chestermere','Chestermere, AB'],['okotoks','Okotoks, AB'],
 ].sort((a,b) => b[0].length - a[0].length);
 
 /* ── Parser ── */
@@ -536,9 +572,31 @@ function parse(text) {
 
   // Special handling
   r.fragile = /\b(fragile|breakable|delicate|glass|handle with care)\b/i.test(text);
-  r.sig     = /\b(signature|sign for|adult signature)\b/i.test(text);
+  r.sig     = /\b(signature|sign for|adult signature|legal|important|confidential|sensitive|urgent|valuable)\b/i.test(text);
   r.hazmat  = /\b(hazmat|hazardous|dangerous goods|flammable|explosive)\b/i.test(text);
   r.cold    = /\b(refrigerat|cold chain|frozen|freeze|temperature.controlled|perishable)\b/i.test(text);
+
+  // Parcel type recommendation
+  r.parcelType = null;
+  const isLegal = /\blegal\b/i.test(text) && /\b(document|paper|form|contract|file|letter)\b/i.test(text);
+  const isDocs  = /\b(document|documents|paperwork|forms|contract|contracts|papers|correspondence|file|files)\b/i.test(text);
+  const isLetter = /\bletter\b/i.test(text) && !isLegal;
+  if (isLegal) {
+    r.parcelType = 'legal-envelope';
+    if (!r.diml) { r.diml = '9'; r.dimw = '14.5'; r.dimh = '0.5'; }
+    if (!r.weight) r.weight = '< 0.5 lbs';
+    if (!r.contents) r.contents = 'Legal documents';
+  } else if (isDocs) {
+    r.parcelType = 'envelope';
+    if (!r.diml) { r.diml = '8.5'; r.dimw = '11'; r.dimh = '0.5'; }
+    if (!r.weight) r.weight = '< 0.5 lbs';
+    if (!r.contents) r.contents = 'Documents';
+  } else if (isLetter) {
+    r.parcelType = 'envelope';
+    if (!r.diml) { r.diml = '8.5'; r.dimw = '11'; r.dimh = '0.5'; }
+    if (!r.weight) r.weight = '< 0.5 lbs';
+    if (!r.contents) r.contents = 'Letter / correspondence';
+  }
 
   // Contents
   const cp = [
@@ -552,6 +610,30 @@ function parse(text) {
   }
 
   return r;
+}
+
+/* ── Parcel tip ── */
+const PARCEL_TIPS = {
+  'legal-envelope': {
+    title: 'Legal Envelope recommended',
+    text: 'Legal-size documents fit in a standard legal shipping envelope (9″ × 14.5″). Standard legal envelopes are available free at any retail shipping location — just pick one up when you arrive to drop off your parcel.'
+  },
+  'envelope': {
+    title: 'Standard Envelope recommended',
+    text: 'Documents fit in a standard shipping envelope (8.5″ × 11″). Standard envelopes are available free at any retail shipping location — just pick one up when you arrive to drop off your parcel.'
+  }
+};
+
+function showParcelTip(parcelType) {
+  const tip = PARCEL_TIPS[parcelType];
+  const el = document.getElementById('parcelTip');
+  if (tip) {
+    document.getElementById('parcelTipTitle').textContent = tip.title;
+    document.getElementById('parcelTipText').textContent = tip.text;
+    el.style.display = 'flex';
+  } else {
+    el.style.display = 'none';
+  }
 }
 
 /* ── Fill form ── */
@@ -612,6 +694,9 @@ function fillForm(p) {
       sumEl.innerHTML = `<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="#F59E0B"/><path d="M8 5v3.5M8 10.5v.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg> AI filled ${filled} of ${fieldIds.length} fields <span class="ai-summary-right">${missing} field${missing!==1?'s':''} need your input (dashed border)</span>`;
     }
   }, CHK_DELAY + 200);
+
+  // Show parcel tip if applicable
+  showParcelTip(p.parcelType);
 }
 
 /* ── Processing ── */
@@ -656,6 +741,20 @@ async function startParsing() {
 
   btn.disabled = false;
   btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.31"/></svg> Re-parse description`;
+}
+
+/* ── Clear ── */
+function clearForm() {
+  document.getElementById('nlInput').value = '';
+  const fc = document.getElementById('formCard');
+  fc.classList.remove('in');
+  setTimeout(() => { fc.style.display = 'none'; }, 350);
+  document.getElementById('rates').classList.remove('show');
+  document.getElementById('parcelTip').style.display = 'none';
+  const btn = document.getElementById('fillBtn');
+  btn.disabled = false;
+  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Fill form with AI`;
+  document.getElementById('nlInput').focus();
 }
 
 /* ── Checkboxes ── */
