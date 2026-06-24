@@ -154,8 +154,6 @@
     .sentiment.angry  { background: #fdecea; color: #c0392b; }
     .sentiment.neutral { background: #f5f5f5; color: #777; }
 
-    .sentiment-emoji { font-size: 1rem; }
-
     .rating-scale {
       display: flex;
       gap: 5px;
@@ -211,6 +209,21 @@
       display: none;
     }
 
+    .routing-card {
+      margin-top: 20px;
+      padding: 14px 16px;
+      background: #eff0fb;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #3949ab;
+      line-height: 1.6;
+    }
+    .routing-card p { margin: 0 0 6px; }
+    .routing-card p:last-child { margin-bottom: 0; }
+    .routing-highlight {
+      font-weight: 700;
+    }
+
     .data-view { margin-top: 28px; text-align: left; }
     .data-view-label { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.9px; text-transform: uppercase; color: #7986cb; margin-bottom: 12px; }
     .data-field-row { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid #e8eaf6; font-size: 0.82rem; }
@@ -263,7 +276,7 @@
       </div>
 
       <div class="field">
-        <label for="phone">Phone number</label>
+        <label for="phone">Phone number <span class="optional-hint">(optional)</span></label>
         <input type="tel" id="phone" name="phone" placeholder="(416) 555-1234" maxlength="14">
         <span class="field-error" id="phoneError">Please enter a valid 10-digit phone number.</span>
       </div>
@@ -323,6 +336,17 @@
       </div>
 
       <div class="field">
+        <label for="prompted">What prompted this feedback? <span class="optional-hint">(optional)</span></label>
+        <select id="prompted" name="prompted">
+          <option value="" disabled selected>Select a reason</option>
+          <option value="purchase">A recent purchase</option>
+          <option value="support">A customer support interaction</option>
+          <option value="issue">A product issue</option>
+          <option value="general">My general experience</option>
+        </select>
+      </div>
+
+      <div class="field">
         <label style="display:flex;justify-content:space-between;align-items:center;">
           <span>Overall rating <span class="optional-hint">(optional)</span></span>
           <span id="ratingDesc" style="font-size:0.78rem;font-weight:600;color:#5c6bc0;"></span>
@@ -340,20 +364,19 @@
           <button type="button" class="rating-btn" onclick="selectRating(9)">9</button>
           <button type="button" class="rating-btn" onclick="selectRating(10)">10</button>
         </div>
-        <div class="rating-labels"><span>Not great</span><span>Excellent</span></div>
+        <div class="rating-labels"><span>Poor</span><span>Excellent</span></div>
       </div>
 
       <div class="field">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
           <label for="message" style="margin-bottom: 0;">Message</label>
           <div class="sentiment" id="sentiment" style="margin-bottom: 0;">
-            <span class="sentiment-emoji" id="sentimentEmoji"></span>
             <span id="sentimentText"></span>
           </div>
         </div>
         <textarea id="message" name="message" placeholder="Tell us what you think..." required></textarea>
         <div id="messageSummary" style="display: none; margin-top: 8px; padding: 10px 14px; background: #f5f5f5; border-radius: 6px; font-size: 0.8rem; color: #666; line-height: 1.5;">
-          <span style="font-weight: 600; color: #444; display: block; margin-bottom: 2px;">Summary</span>
+          <span style="font-weight: 600; color: #444; display: block; margin-bottom: 2px;">What you're submitting</span>
           <span id="messageSummaryText"></span>
         </div>
       </div>
@@ -363,7 +386,8 @@
 
     <div class="success" id="success">
       <h1>Thanks for your feedback!</h1>
-      <p class="subtitle">We'll get back to you at the email you provided.</p>
+      <p class="subtitle">Your message has been received.</p>
+      <div class="routing-card" id="routingCard" style="display:none;"></div>
       <p style="font-size: 0.78rem; color: #bbb; margin-top: 6px;">(Demo purposes only)</p>
       <div class="data-view" id="dataView" style="display:none;">
         <div class="data-view-label">What was collected</div>
@@ -379,12 +403,15 @@
     const positiveRoots = ['love','like','great','excellent','amaz','wonder','fantast','good','happy','happi','pleas','satisf','help','awesom','brilliant','perfect','thank','appreciat','enjoy','impress','recommend','easy','easi','useful','nice','best','friend','clear','smooth','delight','glad','excit','top','outstand','superb','incredibl','stellar','thrill','valued','brilliant','seamless','intuitive'];
     const negativeRoots = ['hate','hating','garbage','crap','trash','junk','rubbish','suck','terrible','awful','bad','horribl','worst','angr','frustrat','disappoint','useless','broken','wrong','problem','complaint','waste','poor','pathetic','disgust','annoy','confus','difficult','hard','fail','slow','crash','unhappy','upset','ridicul','unacceptable','worse','dreadful','nightmare','disaster','mess','worthless','pointless','stupid','ugly','buggy','glitch','awful','painful','terrible','horrif','dreadful'];
 
+    const negationWords = new Set(['not','no','never','nor','don','didn','doesn','wasn','isn','aren','won','can','couldn','shouldn','wouldn','hardly','barely','neither','without']);
+
     function analyseSentiment(text) {
       const words = text.toLowerCase().match(/\b\w+\b/g) || [];
       let score = 0;
-      words.forEach(w => {
-        if (positiveRoots.some(r => w.startsWith(r))) score++;
-        if (negativeRoots.some(r => w.startsWith(r))) score--;
+      words.forEach((w, i) => {
+        const negated = [words[i-1], words[i-2], words[i-3]].some(p => p && negationWords.has(p));
+        if (positiveRoots.some(r => w.startsWith(r))) score += negated ? -1 : 1;
+        if (negativeRoots.some(r => w.startsWith(r))) score += negated ? 1 : -1;
       });
       if (score > 0) return 'happy';
       if (score < 0) return 'angry';
@@ -392,12 +419,11 @@
     }
 
     const sentimentEl = document.getElementById('sentiment');
-    const sentimentEmoji = document.getElementById('sentimentEmoji');
     const sentimentText = document.getElementById('sentimentText');
     const sentimentLabels = {
-      happy:   { emoji: '😊', text: 'This message sounds positive' },
-      angry:   { emoji: '😠', text: 'This message sounds negative' },
-      neutral: { emoji: '😐', text: 'This message sounds neutral' }
+      happy:   'This message sounds positive',
+      angry:   'This message sounds negative',
+      neutral: 'This message sounds neutral',
     };
 
     const stopWords = new Set(['i','a','an','the','and','or','but','in','on','at','to','for','of','with','is','it','this','that','was','be','are','have','has','my','me','we','you','your','they','so','as','do','did','not','no','its','about','just','had','from','by','up','what','all','out','if','he','she','his','her','their','our','there','been','get','got','can','will','would','could','should','very','more','also','than','then','when','which','who','how','were','re','ve','ll','don','t','s']);
@@ -419,17 +445,17 @@
     let selectedRating = null;
 
     const RATING_LABELS = [
-      'Not a great experience',  // 0
-      'Very poor',               // 1
-      'Poor',                    // 2
-      'Below average',           // 3
-      'Fair',                    // 4
-      'Okay',                    // 5
-      'Decent',                  // 6
-      'Good',                    // 7
-      'Very good',               // 8
-      'Great',                   // 9
-      'Excellent experience',    // 10
+      'My experience was poor',            // 0
+      'My experience was very disappointing', // 1
+      'My experience was disappointing',   // 2
+      'My experience was below average',   // 3
+      'My experience was fair',            // 4
+      'My experience was okay',            // 5
+      'My experience was decent',          // 6
+      'My experience was good',            // 7
+      'My experience was very good',       // 8
+      'My experience was great',           // 9
+      'My experience was excellent',       // 10
     ];
 
     function selectRating(r) {
@@ -439,7 +465,10 @@
       });
       const descEl = document.getElementById('ratingDesc');
       descEl.textContent = RATING_LABELS[r];
-      descEl.style.color = r <= 3 ? '#b71c1c' : r <= 6 ? '#e65100' : '#1b5e20';
+      descEl.style.color      = r <= 3 ? '#b71c1c' : r <= 6 ? '#e65100' : '#1b5e20';
+      descEl.style.background = r <= 3 ? '#ffebee' : r <= 6 ? '#fff3e0' : '#e8f5e9';
+      descEl.style.padding    = '3px 10px';
+      descEl.style.borderRadius = '4px';
       buildFormSummary();
     }
 
@@ -451,6 +480,18 @@
       if (titled !== this.value) { this.value = titled; this.setSelectionRange(pos, pos); }
     });
 
+    const promptedLabels = {
+      purchase: 'a recent purchase',
+      support:  'a customer support interaction',
+      issue:    'a product issue',
+      general:  'your general experience',
+    };
+    const messagePhrases = {
+      happy:   'Your message about what we got right',
+      angry:   'Your message about how we didn\'t meet your expectations',
+      neutral: 'Your feedback',
+    };
+
     function buildFormSummary() {
       const name     = toTitleCase(document.getElementById('name').value.trim());
       const email    = document.getElementById('email').value.trim();
@@ -458,38 +499,34 @@
       const city     = document.getElementById('city').value;
       const province = document.getElementById('province').value;
       const postal   = document.getElementById('postal').value.trim();
+      const prompted = document.getElementById('prompted').value;
       const message  = document.getElementById('message').value.trim();
 
-      if (!name && !city && !message && selectedRating === null) {
+      if (!name && !city && !message && selectedRating === null && !prompted) {
         document.getElementById('messageSummary').style.display = 'none';
         return;
       }
 
-      const parts = [];
-      parts.push(name || 'Someone');
-      if (city && province) parts.push(`from ${city}, ${province}`);
-      else if (city) parts.push(`from ${city}`);
+      let line = name ? `Thanks, ${name}! ` : '';
+      line += 'Here\'s a summary of what you\'re about to send.';
 
-      let line = parts.join(' ');
+      if (prompted) line += ` You're submitting feedback about ${promptedLabels[prompted]}.`;
+
+      if (city && province) line += ` You're writing in from ${city}, ${province}.`;
+      else if (city) line += ` You're writing in from ${city}.`;
+
+      if (selectedRating !== null) line += ` You rated your experience ${selectedRating}/10.`;
+
       if (message) {
-        const tone = { happy: 'positive', angry: 'negative', neutral: 'neutral' }[analyseSentiment(message)];
-        line += ` left the following ${tone} feedback: "${summarise(message)}"`;
-      } else line += ' started filling out the form but left no message.';
-
-      if (selectedRating !== null) {
-        line += ` They rated their experience ${selectedRating} out of 10.`;
-        if (message) {
-          const sentiment = analyseSentiment(message);
-          const highRatingNegative = selectedRating >= 7 && sentiment === 'angry';
-          const lowRatingPositive  = selectedRating <= 3 && sentiment === 'happy';
-          if (highRatingNegative) line += ' ⚠️ Their rating is high but their message sounds negative — worth a closer look.';
-          else if (lowRatingPositive) line += ' ⚠️ Their rating is low but their message sounds positive — may be worth following up.';
-        }
+        const sentiment = analyseSentiment(message);
+        line += ` ${messagePhrases[sentiment]}: "${summarise(message)}"`;
+      } else {
+        line += ' You haven\'t added a message yet.';
       }
 
-      if (email && phone) line += ` They can be reached at ${email} or ${phone}.`;
-      else if (email) line += ` They can be reached at ${email}.`;
-      else if (phone) line += ` They can be reached at ${phone}.`;
+      if (email && phone) line += ` We'll follow up at ${email} or ${phone}.`;
+      else if (email) line += ` We'll follow up at ${email}.`;
+      else if (phone) line += ` We'll follow up at ${phone}.`;
 
       document.getElementById('messageSummaryText').textContent = line;
       document.getElementById('messageSummary').style.display = 'block';
@@ -501,15 +538,13 @@
         sentimentEl.className = 'sentiment';
       } else {
         const result = analyseSentiment(val);
-        const label = sentimentLabels[result];
-        sentimentEmoji.textContent = label.emoji;
-        sentimentText.textContent = label.text;
+        sentimentText.textContent = sentimentLabels[result];
         sentimentEl.className = 'sentiment visible ' + result;
       }
       buildFormSummary();
     });
 
-    ['name', 'email', 'phone', 'city', 'province', 'postal'].forEach(id => {
+    ['name', 'email', 'phone', 'city', 'province', 'postal', 'prompted'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', buildFormSummary);
     });
@@ -643,6 +678,7 @@
         { key: 'phone',     val: d.phone },
         { key: 'city',      val: d.city ? (d.province ? `${d.city}, ${d.province}` : d.city) : null },
         { key: 'postal',    val: d.postal },
+        { key: 'prompted',  val: d.prompted ? promptedLabels[d.prompted] : null },
         { key: 'rating',    val: d.rating !== null ? `${d.rating} / 10` : null },
         { key: 'sentiment', val: d.sentiment },
         { key: 'message',   val: d.message },
@@ -656,11 +692,35 @@
       const payload = {
         name: d.name || null, email: d.email || null, phone: d.phone || null,
         city: d.city || null, province: d.province || null,
-        postalCode: d.postal || null, rating: d.rating,
-        sentiment: d.sentiment || null, message: d.message || null,
+        postalCode: d.postal || null, prompted: d.prompted || null,
+        rating: d.rating, sentiment: d.sentiment || null, message: d.message || null,
       };
       document.getElementById('dataJson').textContent = JSON.stringify(payload, null, 2);
       document.getElementById('dataView').style.display = 'block';
+    }
+
+    const routingMap = {
+      purchase: { team: 'Customer Success',     sla: 3 },
+      support:  { team: 'Support',              sla: 1 },
+      issue:    { team: 'Product',              sla: 2 },
+      general:  { team: 'Customer Experience', sla: 5 },
+    };
+
+    function showRouting(prompted, email, phone) {
+      const card = document.getElementById('routingCard');
+      const { team, sla } = routingMap[prompted] || routingMap.general;
+      const slaText = sla === 1 ? '1 business day' : `${sla} business days`;
+      let contact = '';
+      if (email && phone) contact = `at ${email} or ${phone}`;
+      else if (email)     contact = `at ${email}`;
+      else if (phone)     contact = `at ${phone}`;
+
+      card.innerHTML = `
+        <p>Based on your feedback, your message has been routed to the <span class="routing-highlight">${team}</span> team.</p>
+        <p>You should hear back from us within <span class="routing-highlight">${slaText}</span>.</p>
+        ${contact ? `<p>We'll reach you ${contact}.</p>` : ''}
+      `;
+      card.style.display = 'block';
     }
 
     // Submit
@@ -693,16 +753,20 @@
         return;
       }
 
+      const phone    = document.getElementById('phone').value.trim();
+      const prompted = document.getElementById('prompted').value || null;
+
       this.style.display = 'none';
       document.querySelector('h1').style.display = 'none';
       document.querySelector('.subtitle').style.display = 'none';
       document.getElementById('success').style.display = 'block';
+      showRouting(prompted, email, phone);
       populateDataView({
-        name, email, message,
-        phone:     document.getElementById('phone').value.trim(),
+        name, email, message, phone,
         city:      document.getElementById('city').value,
         province:  document.getElementById('province').value,
         postal:    document.getElementById('postal').value.trim(),
+        prompted,
         rating:    selectedRating,
         sentiment: message ? { happy: 'positive', angry: 'negative', neutral: 'neutral' }[analyseSentiment(message)] : null,
       });
