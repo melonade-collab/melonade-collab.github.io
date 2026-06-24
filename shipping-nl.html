@@ -570,6 +570,24 @@ function parse(text) {
   }
   if (!r.date && /\btoday\b/i.test(lo)) r.date=today.toISOString().split('T')[0];
 
+  // Infer service from delivery date if no service keyword was found
+  if (!r.service && r.date) {
+    const target = new Date(r.date);
+    const cursor = new Date(today);
+    cursor.setHours(0,0,0,0);
+    cursor.setDate(cursor.getDate() + 1); // start counting from tomorrow
+    let bizDays = 0;
+    while (cursor <= target) {
+      const dow = cursor.getDay();
+      if (dow !== 0 && dow !== 6) bizDays++;
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    if      (bizDays <= 1) r.service = 'overnight';
+    else if (bizDays <= 2) r.service = 'express';
+    else if (bizDays <= 7) r.service = 'ground';
+    // 8+ days: leave unset, no strong recommendation
+  }
+
   // Special handling
   r.fragile = /\b(fragile|breakable|delicate|glass|handle with care)\b/i.test(text);
   r.sig     = /\b(signature|sign for|adult signature|legal|important|confidential|sensitive|urgent|valuable)\b/i.test(text);
@@ -578,9 +596,9 @@ function parse(text) {
 
   // Parcel type recommendation
   r.parcelType = null;
-  const isLegal = /\blegal\b/i.test(text) && /\b(document|paper|form|contract|file|letter)\b/i.test(text);
-  const isDocs  = /\b(document|documents|paperwork|forms|contract|contracts|papers|correspondence|file|files)\b/i.test(text);
-  const isLetter = /\bletter\b/i.test(text) && !isLegal;
+  const isLegal  = /\blegal\b/i.test(text) && /\b(documents?|papers?|forms?|contracts?|files?|letters?)\b/i.test(text);
+  const isDocs   = /\b(documents?|paperwork|forms?|contracts?|papers?|correspondence|files?)\b/i.test(text);
+  const isLetter = /\bletters?\b/i.test(text) && !isLegal;
   if (isLegal) {
     r.parcelType = 'legal-envelope';
     if (!r.diml) { r.diml = '9'; r.dimw = '14.5'; r.dimh = '0.5'; }
@@ -601,7 +619,7 @@ function parse(text) {
   // Contents
   const cp = [
     /\b(?:box|shipment|package|crate|pallet)\s+of\s+([a-z][a-z\s]{2,40}?)(?:\s*[,.]|\s+from|\s+weigh|\s+dimen|\s*$)/i,
-    /\b(?:shipping|sending|delivering)\s+(?:a\s+)?(?:fragile\s+)?([a-z][a-z\s]{2,40}?)(?:\s+from|\s+to|\s*[,.]|\s*$)/i,
+    /\b(?:ship|shipping|send|sending|deliver|delivering)\s+(?:a\s+)?(?:fragile\s+)?([a-z][a-z\s]{2,40}?)(?:\s+from|\s+to|\s*[,.]|\s*$)/i,
     /\bcontains?\s+([a-z][a-z\s]{2,40}?)(?:\s*[,.]|\s*$)/i,
   ];
   for (const re of cp) {
