@@ -265,7 +265,7 @@
     <div class="card-sub">Tell us what you need to ship in plain language — AI will fill in the form.</div>
 
     <textarea class="nl-input" id="nlInput"
-      placeholder="e.g., I need to ship a fragile box of electronics from Chicago to Miami, about 14×10×8 inches, 10 lbs, worth $600. Needs to arrive by Thursday."
+      placeholder="e.g., I need to ship a fragile box of electronics from Toronto to Vancouver, about 14×10×8 inches, 10 lbs, worth $600. Needs to arrive by Thursday."
       rows="4"></textarea>
 
     <div class="hint">
@@ -308,11 +308,11 @@
     <div class="g2">
       <div class="field" id="f-origin">
         <div class="field-lbl">From (Origin) <span class="field-ai">AI</span></div>
-        <input type="text" class="fi" id="i-origin" placeholder="City, State or ZIP">
+        <input type="text" class="fi" id="i-origin" placeholder="City, Province or Postal Code">
       </div>
       <div class="field" id="f-dest">
         <div class="field-lbl">To (Destination) <span class="field-ai">AI</span></div>
-        <input type="text" class="fi" id="i-dest" placeholder="City, State or ZIP">
+        <input type="text" class="fi" id="i-dest" placeholder="City, Province or Postal Code">
       </div>
     </div>
 
@@ -404,9 +404,9 @@
 <script>
 /* ── Examples ── */
 const EXAMPLES = {
-  electronics: "I need to ship a fragile box of electronics from Chicago to Miami — dimensions are about 14×10×8 inches, weighs 10 lbs, value is $600. Please handle with care and get it there by Thursday.",
-  freight: "We have 2 pallets of auto parts going out of Detroit to Dallas. Each pallet is roughly 48×40×54 inches, 580 lbs each. LTL freight is fine, no specific deadline but the sooner the better.",
-  overnight: "Urgent — need to overnight important legal documents from our New York office to a client in San Francisco. Small envelope, less than 1 lb, worth $50. Must arrive by tomorrow morning, signature required on delivery."
+  electronics: "I need to ship a fragile box of electronics from Toronto to Vancouver — dimensions are about 14×10×8 inches, weighs 10 lbs, value is $600. Please handle with care and get it there by Thursday.",
+  freight: "We have 2 pallets of auto parts going out of Calgary to Toronto. Each pallet is roughly 48×40×54 inches, 580 lbs each. LTL freight is fine, no specific deadline but the sooner the better.",
+  overnight: "Urgent — need to overnight important legal documents from our Ottawa office to a client in Vancouver. Small envelope, less than 1 lb, worth $50. Must arrive by tomorrow morning, signature required on delivery."
 };
 
 function loadExample(k) {
@@ -416,34 +416,30 @@ function loadExample(k) {
 
 /* ── City lookup (longest-match first) ── */
 const CITIES = [
-  ['new york city','New York, NY'],['new york','New York, NY'],['nyc','New York, NY'],
-  ['los angeles','Los Angeles, CA'],['san francisco','San Francisco, CA'],
-  ['san antonio','San Antonio, TX'],['san diego','San Diego, CA'],['san jose','San Jose, CA'],
-  ['new orleans','New Orleans, LA'],['las vegas','Las Vegas, NV'],
-  ['kansas city','Kansas City, MO'],['fort worth','Fort Worth, TX'],['el paso','El Paso, TX'],
-  ['long beach','Long Beach, CA'],['virginia beach','Virginia Beach, VA'],
-  ['colorado springs','Colorado Springs, CO'],['salt lake city','Salt Lake City, UT'],
-  ['oklahoma city','Oklahoma City, OK'],['des moines','Des Moines, IA'],
-  ['washington dc','Washington, DC'],['washington','Washington, DC'],
-  ['chicago','Chicago, IL'],['houston','Houston, TX'],['phoenix','Phoenix, AZ'],
-  ['philadelphia','Philadelphia, PA'],['philly','Philadelphia, PA'],
-  ['jacksonville','Jacksonville, FL'],['columbus','Columbus, OH'],
-  ['charlotte','Charlotte, NC'],['indianapolis','Indianapolis, IN'],
-  ['seattle','Seattle, WA'],['denver','Denver, CO'],['nashville','Nashville, TN'],
-  ['boston','Boston, MA'],['memphis','Memphis, TN'],['louisville','Louisville, KY'],
-  ['portland','Portland, OR'],['baltimore','Baltimore, MD'],['milwaukee','Milwaukee, WI'],
-  ['albuquerque','Albuquerque, NM'],['tucson','Tucson, AZ'],['fresno','Fresno, CA'],
-  ['sacramento','Sacramento, CA'],['atlanta','Atlanta, GA'],['omaha','Omaha, NE'],
-  ['raleigh','Raleigh, NC'],['miami','Miami, FL'],['oakland','Oakland, CA'],
-  ['minneapolis','Minneapolis, MN'],['tulsa','Tulsa, OK'],['tampa','Tampa, FL'],
-  ['arlington','Arlington, TX'],['wichita','Wichita, KS'],['cleveland','Cleveland, OH'],
-  ['pittsburgh','Pittsburgh, PA'],['cincinnati','Cincinnati, OH'],['detroit','Detroit, MI'],
-  ['richmond','Richmond, VA'],['boise','Boise, ID'],['spokane','Spokane, WA'],
-  ['madison','Madison, WI'],['fargo','Fargo, ND'],['anchorage','Anchorage, AK'],
-  ['honolulu','Honolulu, HI'],['hartford','Hartford, CT'],['albany','Albany, NY'],
-  ['austin','Austin, TX'],['dallas','Dallas, TX'],['mesa','Mesa, AZ'],
-  ['dc','Washington, DC'],['sf','San Francisco, CA'],['la','Los Angeles, CA'],
-  ['slc','Salt Lake City, UT'],
+  ['greater toronto area','Toronto, ON'],['greater vancouver','Vancouver, BC'],
+  ['saint john','Saint John, NB'],["st. john's",'St. John\'s, NL'],['st johns','St. John\'s, NL'],
+  ['quebec city','Quebec City, QC'],['trois-rivieres','Trois-Rivières, QC'],['trois rivieres','Trois-Rivières, QC'],
+  ['thunder bay','Thunder Bay, ON'],['prince george','Prince George, BC'],
+  ['red deer','Red Deer, AB'],['medicine hat','Medicine Hat, AB'],
+  ['fort mcmurray','Fort McMurray, AB'],['grande prairie','Grande Prairie, AB'],
+  ['niagara falls','Niagara Falls, ON'],['north bay','North Bay, ON'],
+  ['cape breton','Cape Breton, NS'],['new westminster','New Westminster, BC'],
+  ['prince albert','Prince Albert, SK'],
+  ['toronto','Toronto, ON'],['montreal','Montreal, QC'],['vancouver','Vancouver, BC'],
+  ['calgary','Calgary, AB'],['edmonton','Edmonton, AB'],['ottawa','Ottawa, ON'],
+  ['winnipeg','Winnipeg, MB'],['hamilton','Hamilton, ON'],['kitchener','Kitchener, ON'],
+  ['london','London, ON'],['victoria','Victoria, BC'],['halifax','Halifax, NS'],
+  ['oshawa','Oshawa, ON'],['windsor','Windsor, ON'],['saskatoon','Saskatoon, SK'],
+  ['regina','Regina, SK'],['kelowna','Kelowna, BC'],['barrie','Barrie, ON'],
+  ['abbotsford','Abbotsford, BC'],['sherbrooke','Sherbrooke, QC'],
+  ['guelph','Guelph, ON'],['moncton','Moncton, NB'],['sudbury','Sudbury, ON'],
+  ['burnaby','Burnaby, BC'],['surrey','Surrey, BC'],['brampton','Brampton, ON'],
+  ['mississauga','Mississauga, ON'],['markham','Markham, ON'],['vaughan','Vaughan, ON'],
+  ['laval','Laval, QC'],['longueuil','Longueuil, QC'],['gatineau','Gatineau, QC'],
+  ['nanaimo','Nanaimo, BC'],['kamloops','Kamloops, BC'],['lethbridge','Lethbridge, AB'],
+  ['fredericton','Fredericton, NB'],['charlottetown','Charlottetown, PE'],
+  ['whitehorse','Whitehorse, YT'],['yellowknife','Yellowknife, NT'],
+  ['iqaluit','Iqaluit, NU'],
 ].sort((a,b) => b[0].length - a[0].length);
 
 /* ── Parser ── */
