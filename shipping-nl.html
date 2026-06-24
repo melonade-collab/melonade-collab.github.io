@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Shipping Form</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #EDF2F7;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: #1A3C5E;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .topbar-logo {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .topbar-logo svg { width: 22px; height: 22px; }
+    .topbar-text h1 { color: #fff; font-size: 1rem; font-weight: 700; line-height: 1.2; }
+    .topbar-text p  { color: rgba(255,255,255,0.45); font-size: 0.72rem; }
+    .ai-badge {
+      margin-left: auto;
+      font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+      background: rgba(245,158,11,0.18); color: #F59E0B;
+      border: 1px solid rgba(245,158,11,0.3);
+      padding: 4px 10px; border-radius: 6px; white-space: nowrap;
+    }
+
+    .page {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      margin-bottom: 20px;
+    }
+
+    .card-eyebrow {
+      font-size: 0.65rem; font-weight: 800; letter-spacing: 1px;
+      text-transform: uppercase; color: #94A3B8; margin-bottom: 6px;
+    }
+    .card-title { font-size: 1.05rem; font-weight: 700; color: #1E293B; margin-bottom: 4px; }
+    .card-sub   { font-size: 0.82rem; color: #64748B; margin-bottom: 16px; line-height: 1.5; }
+
+    .nl-input {
+      width: 100%; min-height: 96px;
+      padding: 14px 16px;
+      border: 1.5px solid #E2E8F0; border-radius: 10px;
+      font-size: 0.9rem; font-family: inherit; color: #1E293B;
+      line-height: 1.6; outline: none; resize: vertical;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .nl-input:focus { border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+    .nl-input::placeholder { color: #B0BAC9; }
+
+    .hint {
+      display: flex; gap: 7px; align-items: flex-start;
+      margin-top: 10px; font-size: 0.75rem; color: #94A3B8; line-height: 1.5;
+    }
+    .hint svg { flex-shrink: 0; margin-top: 1px; }
+
+    .chips-label { font-size: 0.7rem; color: #94A3B8; font-weight: 600; margin: 14px 0 8px; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip {
+      padding: 6px 13px; border-radius: 20px;
+      border: 1.5px solid #BFDBFE; background: #EFF6FF;
+      color: #2563EB; font-size: 0.77rem; font-weight: 600;
+      cursor: pointer; transition: all 0.15s; font-family: inherit;
+    }
+    .chip:hover { background: #DBEAFE; border-color: #93C5FD; }
+
+    .fill-btn {
+      width: 100%; margin-top: 16px; padding: 14px;
+      background: #1A3C5E; color: #fff; border: none; border-radius: 10px;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer; letter-spacing: 0.2px;
+      transition: background 0.15s; font-family: inherit;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .fill-btn:hover:not(:disabled) { background: #2563EB; }
+    .fill-btn:disabled { background: #94A3B8; cursor: default; }
+
+    .proc-steps { display: none; flex-direction: column; gap: 6px; margin-top: 12px; }
+    .proc-steps.active { display: flex; }
+    .proc-step {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.79rem; color: #94A3B8;
+      padding: 8px 12px; border-radius: 8px; background: #F8FAFC;
+      transition: color 0.2s, background 0.2s;
+    }
+    .proc-step.active { color: #1D4ED8; background: #EFF6FF; }
+    .proc-step.done  { color: #059669; background: #F0FDF4; }
+    .proc-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #CBD5E1;
+      flex-shrink: 0; transition: background 0.2s;
+    }
+    .proc-step.active .proc-dot { background: #3B82F6; animation: pulse 0.8s infinite alternate; }
+    .proc-step.done  .proc-dot { background: #059669; animation: none; }
+    @keyframes pulse { from { opacity: 0.3; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+
+    /* Form card */
+    .form-card {
+      opacity: 0; transform: translateY(10px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      pointer-events: none;
+    }
+    .form-card.in { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+    .ai-summary {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 15px; border-radius: 10px; margin-bottom: 20px;
+      font-size: 0.82rem; font-weight: 600;
+    }
+    .ai-summary.good    { background: #F0FDF4; border: 1.5px solid #86EFAC; color: #166534; }
+    .ai-summary.partial { background: #FFFBEB; border: 1.5px solid #FDE68A; color: #92400E; }
+    .ai-summary svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .ai-summary-right { margin-left: auto; font-size: 0.71rem; font-weight: 400; opacity: 0.7; }
+
+    .sec { font-size: 0.64rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8; margin: 20px 0 12px; }
+    .sec:first-of-type { margin-top: 0; }
+
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field-lbl {
+      font-size: 0.67rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.7px; color: #64748B;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .field-ai {
+      font-size: 0.52rem; font-weight: 800; letter-spacing: 0.8px;
+      background: #F59E0B; color: #fff;
+      padding: 1px 5px; border-radius: 3px;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .field.filled .field-ai { opacity: 1; }
+
+    .fi, .fs {
+      padding: 10px 12px; border: 1.5px solid #E2E8F0; border-radius: 8px;
+      font-size: 0.875rem; font-family: inherit; color: #1E293B;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s; background: #fff;
+    }
+    .fs {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
+    }
+    .fi:focus, .fs:focus { border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+
+    .field.missing .fi,
+    .field.missing .fs { border-style: dashed; border-color: #CBD5E1; background: #FAFBFC; }
+
+    @keyframes glow {
+      0%   { border-color: #F59E0B; box-shadow: 0 0 0 3px rgba(245,158,11,0.2); }
+      65%  { border-color: #F59E0B; box-shadow: 0 0 0 3px rgba(245,158,11,0.15); }
+      100% { border-color: #E2E8F0; box-shadow: none; }
+    }
+    .field.filled .fi,
+    .field.filled .fs { animation: glow 1.8s ease forwards; }
+
+    .dim-row { display: flex; align-items: center; gap: 6px; }
+    .dim-sep { color: #CBD5E1; font-size: 1rem; }
+    .dim-unit { font-size: 0.72rem; color: #94A3B8; white-space: nowrap; }
+    .dim-row .fi { text-align: center; }
+
+    .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .chk {
+      display: flex; align-items: center; gap: 9px;
+      padding: 10px 12px; border: 1.5px solid #E2E8F0; border-radius: 8px;
+      cursor: pointer; transition: all 0.15s; user-select: none;
+    }
+    .chk:hover { background: #F8FAFC; }
+    .chk-box {
+      width: 16px; height: 16px; border: 2px solid #CBD5E1; border-radius: 4px;
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .chk-box svg { display: none; }
+    .chk.on     .chk-box { background: #1A3C5E; border-color: #1A3C5E; }
+    .chk.on     .chk-box svg { display: block; }
+    .chk.ai-on  .chk-box { background: #F59E0B; border-color: #F59E0B; }
+    .chk.ai-on  .chk-box svg { display: block; }
+    .chk-lbl { font-size: 0.82rem; color: #475569; }
+    .chk.on .chk-lbl    { color: #1E293B; font-weight: 600; }
+    .chk.ai-on          { border-color: #FDE68A; background: #FFFBEB; }
+    .chk.ai-on .chk-lbl { color: #92400E; font-weight: 600; }
+
+    .quote-btn {
+      width: 100%; margin-top: 24px; padding: 15px;
+      background: #059669; color: #fff; border: none; border-radius: 10px;
+      font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit;
+      transition: background 0.15s; letter-spacing: 0.2px;
+    }
+    .quote-btn:hover { background: #047857; }
+
+    .rates { display: none; margin-top: 20px; }
+    .rates.show { display: block; }
+    .rates-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+    .rate {
+      padding: 16px 12px; border: 1.5px solid #E2E8F0; border-radius: 12px;
+      text-align: center; cursor: pointer; transition: all 0.15s;
+    }
+    .rate:hover   { border-color: #93C5FD; background: #EFF6FF; }
+    .rate.sel     { border-color: #1A3C5E; background: #EFF6FF; }
+    .rate-svc     { font-size: 0.68rem; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .rate-price   { font-size: 1.4rem; font-weight: 800; color: #1E293B; }
+    .rate-eta     { font-size: 0.71rem; color: #94A3B8; margin-top: 4px; }
+
+    .book-btn {
+      width: 100%; margin-top: 14px; padding: 13px;
+      background: #1A3C5E; color: #fff; border: none; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: inherit;
+      transition: background 0.15s;
+    }
+    .book-btn:hover { background: #2563EB; }
+
+    @media (max-width: 520px) {
+      .g2, .g3 { grid-template-columns: 1fr; }
+      .checks { grid-template-columns: 1fr 1fr; }
+      .rates-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="1" y="3" width="15" height="13" rx="1"/>
+      <path d="M16 8h4l3 5v3h-7V8z"/>
+      <circle cx="5.5" cy="18.5" r="2.5"/>
+      <circle cx="18.5" cy="18.5" r="2.5"/>
+    </svg>
+  </div>
+  <div class="topbar-text">
+    <h1>FreightAI</h1>
+    <p>Intelligent shipping platform</p>
+  </div>
+  <div class="ai-badge">✦ AI-Powered</div>
+</div>
+
+<div class="page">
+
+  <!-- NL input card -->
+  <div class="card">
+    <div class="card-eyebrow">New Shipment</div>
+    <div class="card-title">Describe your shipment</div>
+    <div class="card-sub">Tell us what you need to ship in plain language — AI will fill in the form.</div>
+
+    <textarea class="nl-input" id="nlInput"
+      placeholder="e.g., I need to ship a fragile box of electronics from Chicago to Miami, about 14×10×8 inches, 10 lbs, worth $600. Needs to arrive by Thursday."
+      rows="4"></textarea>
+
+    <div class="hint">
+      <svg viewBox="0 0 16 16" fill="none" width="14" height="14" stroke="#CBD5E1" stroke-width="1.5">
+        <circle cx="8" cy="8" r="7"/>
+        <path d="M8 7v4" stroke-linecap="round"/>
+        <circle cx="8" cy="5" r="0.5" fill="#CBD5E1"/>
+      </svg>
+      <span>Include: pickup &amp; delivery cities, weight, dimensions, service speed, declared value, and any special handling (fragile, signature required, hazmat, refrigerated).</span>
+    </div>
+
+    <div class="chips-label">Try an example:</div>
+    <div class="chips">
+      <button class="chip" onclick="loadExample('electronics')">📦 Fragile electronics</button>
+      <button class="chip" onclick="loadExample('freight')">🏭 Palletized freight</button>
+      <button class="chip" onclick="loadExample('overnight')">⚡ Overnight docs</button>
+    </div>
+
+    <button class="fill-btn" id="fillBtn" onclick="startParsing()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+      Fill form with AI
+    </button>
+
+    <div class="proc-steps" id="procSteps">
+      <div class="proc-step" id="s1"><div class="proc-dot"></div>Reading your description…</div>
+      <div class="proc-step" id="s2"><div class="proc-dot"></div>Identifying origin and destination…</div>
+      <div class="proc-step" id="s3"><div class="proc-dot"></div>Extracting weight, dimensions and service…</div>
+      <div class="proc-step" id="s4"><div class="proc-dot"></div>Checking for special requirements…</div>
+    </div>
+  </div>
+
+  <!-- Form card -->
+  <div class="card form-card" id="formCard">
+
+    <div class="ai-summary" id="aiSummary"></div>
+
+    <div class="sec">Route</div>
+    <div class="g2">
+      <div class="field" id="f-origin">
+        <div class="field-lbl">From (Origin) <span class="field-ai">AI</span></div>
+        <input type="text" class="fi" id="i-origin" placeholder="City, State or ZIP">
+      </div>
+      <div class="field" id="f-dest">
+        <div class="field-lbl">To (Destination) <span class="field-ai">AI</span></div>
+        <input type="text" class="fi" id="i-dest" placeholder="City, State or ZIP">
+      </div>
+    </div>
+
+    <div class="sec">Package</div>
+    <div class="g3">
+      <div class="field" id="f-weight">
+        <div class="field-lbl">Weight <span class="field-ai">AI</span></div>
+        <input type="text" class="fi" id="i-weight" placeholder="e.g. 10 lbs">
+      </div>
+      <div class="field" id="f-pieces">
+        <div class="field-lbl">Pieces <span class="field-ai">AI</span></div>
+        <input type="number" class="fi" id="i-pieces" placeholder="1" min="1">
+      </div>
+      <div class="field" id="f-value">
+        <div class="field-lbl">Declared Value <span class="field-ai">AI</span></div>
+        <input type="text" class="fi" id="i-value" placeholder="$0.00">
+      </div>
+    </div>
+
+    <div style="margin-top:14px">
+      <div class="field" id="f-dims">
+        <div class="field-lbl">Dimensions (L × W × H) <span class="field-ai">AI</span></div>
+        <div class="dim-row">
+          <input type="text" class="fi" id="i-diml" placeholder="L" style="width:68px">
+          <span class="dim-sep">×</span>
+          <input type="text" class="fi" id="i-dimw" placeholder="W" style="width:68px">
+          <span class="dim-sep">×</span>
+          <input type="text" class="fi" id="i-dimh" placeholder="H" style="width:68px">
+          <span class="dim-unit">inches</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">Service</div>
+    <div class="g2">
+      <div class="field" id="f-service">
+        <div class="field-lbl">Service Type <span class="field-ai">AI</span></div>
+        <select class="fs" id="i-service">
+          <option value="">Select service…</option>
+          <option value="ground">Ground (3–7 business days)</option>
+          <option value="express">Express 2-Day</option>
+          <option value="overnight">Overnight</option>
+          <option value="ltl">LTL Freight</option>
+        </select>
+      </div>
+      <div class="field" id="f-date">
+        <div class="field-lbl">Deliver By <span class="field-ai">AI</span></div>
+        <input type="date" class="fi" id="i-date">
+      </div>
+    </div>
+
+    <div class="sec">Contents</div>
+    <div class="field" id="f-contents">
+      <div class="field-lbl">Description of Contents <span class="field-ai">AI</span></div>
+      <input type="text" class="fi" id="i-contents" placeholder="e.g. Electronics, clothing, auto parts…">
+    </div>
+
+    <div class="sec">Special Handling</div>
+    <div class="checks">
+      <div class="chk" id="chk-fragile" onclick="toggleChk(this)">
+        <div class="chk-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" width="10" height="10"><polyline points="1,5 4,8 9,2"/></svg></div>
+        <span class="chk-lbl">🫙 Fragile</span>
+      </div>
+      <div class="chk" id="chk-sig" onclick="toggleChk(this)">
+        <div class="chk-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" width="10" height="10"><polyline points="1,5 4,8 9,2"/></svg></div>
+        <span class="chk-lbl">✍️ Signature Required</span>
+      </div>
+      <div class="chk" id="chk-hazmat" onclick="toggleChk(this)">
+        <div class="chk-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" width="10" height="10"><polyline points="1,5 4,8 9,2"/></svg></div>
+        <span class="chk-lbl">⚠️ Hazmat</span>
+      </div>
+      <div class="chk" id="chk-cold" onclick="toggleChk(this)">
+        <div class="chk-box"><svg viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" width="10" height="10"><polyline points="1,5 4,8 9,2"/></svg></div>
+        <span class="chk-lbl">❄️ Refrigerated</span>
+      </div>
+    </div>
+
+    <button class="quote-btn" onclick="getQuote()">Get Shipping Quote →</button>
+
+    <div class="rates" id="rates">
+      <div class="sec" style="margin-top:20px">Available Rates</div>
+      <div class="rates-grid" id="ratesGrid"></div>
+      <button class="book-btn" onclick="book()">Book Selected Rate →</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ── Examples ── */
+const EXAMPLES = {
+  electronics: "I need to ship a fragile box of electronics from Chicago to Miami — dimensions are about 14×10×8 inches, weighs 10 lbs, value is $600. Please handle with care and get it there by Thursday.",
+  freight: "We have 2 pallets of auto parts going out of Detroit to Dallas. Each pallet is roughly 48×40×54 inches, 580 lbs each. LTL freight is fine, no specific deadline but the sooner the better.",
+  overnight: "Urgent — need to overnight important legal documents from our New York office to a client in San Francisco. Small envelope, less than 1 lb, worth $50. Must arrive by tomorrow morning, signature required on delivery."
+};
+
+function loadExample(k) {
+  document.getElementById('nlInput').value = EXAMPLES[k];
+  document.getElementById('nlInput').focus();
+}
+
+/* ── City lookup (longest-match first) ── */
+const CITIES = [
+  ['new york city','New York, NY'],['new york','New York, NY'],['nyc','New York, NY'],
+  ['los angeles','Los Angeles, CA'],['san francisco','San Francisco, CA'],
+  ['san antonio','San Antonio, TX'],['san diego','San Diego, CA'],['san jose','San Jose, CA'],
+  ['new orleans','New Orleans, LA'],['las vegas','Las Vegas, NV'],
+  ['kansas city','Kansas City, MO'],['fort worth','Fort Worth, TX'],['el paso','El Paso, TX'],
+  ['long beach','Long Beach, CA'],['virginia beach','Virginia Beach, VA'],
+  ['colorado springs','Colorado Springs, CO'],['salt lake city','Salt Lake City, UT'],
+  ['oklahoma city','Oklahoma City, OK'],['des moines','Des Moines, IA'],
+  ['washington dc','Washington, DC'],['washington','Washington, DC'],
+  ['chicago','Chicago, IL'],['houston','Houston, TX'],['phoenix','Phoenix, AZ'],
+  ['philadelphia','Philadelphia, PA'],['philly','Philadelphia, PA'],
+  ['jacksonville','Jacksonville, FL'],['columbus','Columbus, OH'],
+  ['charlotte','Charlotte, NC'],['indianapolis','Indianapolis, IN'],
+  ['seattle','Seattle, WA'],['denver','Denver, CO'],['nashville','Nashville, TN'],
+  ['boston','Boston, MA'],['memphis','Memphis, TN'],['louisville','Louisville, KY'],
+  ['portland','Portland, OR'],['baltimore','Baltimore, MD'],['milwaukee','Milwaukee, WI'],
+  ['albuquerque','Albuquerque, NM'],['tucson','Tucson, AZ'],['fresno','Fresno, CA'],
+  ['sacramento','Sacramento, CA'],['atlanta','Atlanta, GA'],['omaha','Omaha, NE'],
+  ['raleigh','Raleigh, NC'],['miami','Miami, FL'],['oakland','Oakland, CA'],
+  ['minneapolis','Minneapolis, MN'],['tulsa','Tulsa, OK'],['tampa','Tampa, FL'],
+  ['arlington','Arlington, TX'],['wichita','Wichita, KS'],['cleveland','Cleveland, OH'],
+  ['pittsburgh','Pittsburgh, PA'],['cincinnati','Cincinnati, OH'],['detroit','Detroit, MI'],
+  ['richmond','Richmond, VA'],['boise','Boise, ID'],['spokane','Spokane, WA'],
+  ['madison','Madison, WI'],['fargo','Fargo, ND'],['anchorage','Anchorage, AK'],
+  ['honolulu','Honolulu, HI'],['hartford','Hartford, CT'],['albany','Albany, NY'],
+  ['austin','Austin, TX'],['dallas','Dallas, TX'],['mesa','Mesa, AZ'],
+  ['dc','Washington, DC'],['sf','San Francisco, CA'],['la','Los Angeles, CA'],
+  ['slc','Salt Lake City, UT'],
+].sort((a,b) => b[0].length - a[0].length);
+
+/* ── Parser ── */
+function parse(text) {
+  const lo = text.toLowerCase();
+  const r = { origin:null, dest:null, weight:null, diml:null, dimw:null, dimh:null,
+               pieces:null, value:null, service:null, date:null, contents:null,
+               fragile:false, sig:false, hazmat:false, cold:false };
+
+  // Find city mentions with positions
+  const mentions = [];
+  for (const [name, fmt] of CITIES) {
+    let i = 0;
+    while ((i = lo.indexOf(name, i)) !== -1) {
+      const pre  = i === 0 || /[\s,.(]/.test(lo[i-1]);
+      const post = i+name.length >= lo.length || /[\s,.)!?]/.test(lo[i+name.length]);
+      if (pre && post && !mentions.some(m => i < m.e && i+name.length > m.s)) {
+        mentions.push({ fmt, s:i, e:i+name.length });
+      }
+      i++;
+    }
+  }
+  // ZIPs
+  for (const m of lo.matchAll(/\b(\d{5})\b/g)) {
+    if (!mentions.some(c => m.index < c.e && m.index+5 > c.s))
+      mentions.push({ fmt:m[1], s:m.index, e:m.index+5 });
+  }
+  mentions.sort((a,b) => a.s - b.s);
+
+  // Assign origin/dest
+  const FROM = /\b(from|out of|ship from|pickup in|pick up in|originating in|leaving)\s*$/;
+  const TO   = /\b(to|deliver to|delivery to|going to|headed to|arriving in|drop.?off in)\s*$/;
+  let asgn = { o:null, d:null };
+  for (const m of mentions) {
+    const before = lo.slice(Math.max(0, m.s-50), m.s);
+    if (FROM.test(before) && !asgn.o) asgn.o = m.fmt;
+    else if (TO.test(before) && !asgn.d) asgn.d = m.fmt;
+  }
+  if (!asgn.o && !asgn.d && mentions.length >= 2) { asgn.o = mentions[0].fmt; asgn.d = mentions[1].fmt; }
+  else if (!asgn.o && !asgn.d && mentions.length === 1) { asgn.o = mentions[0].fmt; }
+  else if (asgn.o && !asgn.d) { const other = mentions.find(m => m.fmt !== asgn.o); if (other) asgn.d = other.fmt; }
+  else if (!asgn.o && asgn.d) { const other = mentions.find(m => m.fmt !== asgn.d); if (other) asgn.o = other.fmt; }
+  r.origin = asgn.o; r.dest = asgn.d;
+
+  // Weight
+  let wm = lo.match(/(\d+\.?\d*)\s*(lb|lbs|pound|pounds)/i)
+         || lo.match(/(\d+\.?\d*)\s*(kg|kilogram)/i);
+  if (wm) {
+    const v = parseFloat(wm[1]);
+    r.weight = /kg|kilo/i.test(wm[2]) ? `${(v*2.205).toFixed(1)} lbs` : `${v} lbs`;
+  }
+  const lw = lo.match(/less than (\d+\.?\d*)\s*(lb|lbs|pound)/i);
+  if (lw && !r.weight) r.weight = `< ${lw[1]} lbs`;
+
+  // Dimensions
+  const dm = lo.match(/(\d+\.?\d*)\s*[x×*]\s*(\d+\.?\d*)\s*[x×*]\s*(\d+\.?\d*)/i)
+          || lo.match(/(\d+\.?\d*)\s+by\s+(\d+\.?\d*)\s+by\s+(\d+\.?\d*)/i);
+  if (dm) { r.diml=dm[1]; r.dimw=dm[2]; r.dimh=dm[3]; }
+
+  // Pieces
+  const pm = lo.match(/(\d+)\s*(pallet|pallets|box|boxes|piece|pieces|item|items|package|packages|skid|crate)/i);
+  if (pm) r.pieces = pm[1];
+
+  // Declared value
+  const vm = lo.match(/\$\s*(\d[\d,]*(?:\.\d{2})?)/)
+          || lo.match(/(?:worth|valued? at|value of|insured for)\s+\$?\s*(\d[\d,]*)/i);
+  if (vm) r.value = '$' + vm[1].replace(/,/g,'');
+
+  // Service
+  if      (/\b(overnight|next.?day air|next.?day)\b/i.test(text))       r.service = 'overnight';
+  else if (/\b(2.?day|two.?day|second.?day)\b/i.test(text))             r.service = 'express';
+  else if (/\b(ltl|less.than.?truckload|pallet|freight)\b/i.test(text)) r.service = 'ltl';
+  else if (/\b(ground|standard|economy)\b/i.test(text))                 r.service = 'ground';
+  else if (/\b(express|priority)\b/i.test(text))                        r.service = 'express';
+  else if (/\b(urgent|asap|rush|immediately)\b/i.test(text))            r.service = 'overnight';
+
+  // Delivery date
+  const today = new Date();
+  const days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  const dm2 = lo.match(/\b(?:by|on|this|next)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i);
+  if (dm2) {
+    const tgt = days.indexOf(dm2[1].toLowerCase());
+    const d = new Date(today); let diff = tgt - d.getDay(); if (diff <= 0) diff += 7;
+    d.setDate(d.getDate() + diff); r.date = d.toISOString().split('T')[0];
+  }
+  if (!r.date) {
+    const id = lo.match(/in\s+(\d+)\s+days?/i);
+    if (id) { const d=new Date(today); d.setDate(d.getDate()+parseInt(id[1])); r.date=d.toISOString().split('T')[0]; }
+  }
+  if (!r.date && /\btomorrow\b/i.test(lo)) {
+    const d=new Date(today); d.setDate(d.getDate()+1); r.date=d.toISOString().split('T')[0];
+  }
+  if (!r.date && /\btoday\b/i.test(lo)) r.date=today.toISOString().split('T')[0];
+
+  // Special handling
+  r.fragile = /\b(fragile|breakable|delicate|glass|handle with care)\b/i.test(text);
+  r.sig     = /\b(signature|sign for|adult signature)\b/i.test(text);
+  r.hazmat  = /\b(hazmat|hazardous|dangerous goods|flammable|explosive)\b/i.test(text);
+  r.cold    = /\b(refrigerat|cold chain|frozen|freeze|temperature.controlled|perishable)\b/i.test(text);
+
+  // Contents
+  const cp = [
+    /\b(?:box|shipment|package|crate|pallet)\s+of\s+([a-z][a-z\s]{2,40}?)(?:\s*[,.]|\s+from|\s+weigh|\s+dimen|\s*$)/i,
+    /\b(?:shipping|sending|delivering)\s+(?:a\s+)?(?:fragile\s+)?([a-z][a-z\s]{2,40}?)(?:\s+from|\s+to|\s*[,.]|\s*$)/i,
+    /\bcontains?\s+([a-z][a-z\s]{2,40}?)(?:\s*[,.]|\s*$)/i,
+  ];
+  for (const re of cp) {
+    const m = text.match(re);
+    if (m) { r.contents = m[1].trim().replace(/\s+/g,' '); r.contents = r.contents[0].toUpperCase()+r.contents.slice(1); break; }
+  }
+
+  return r;
+}
+
+/* ── Fill form ── */
+function fillForm(p) {
+  const FIELDS = [
+    { fid:'f-origin',   iid:'i-origin',   val:p.origin },
+    { fid:'f-dest',     iid:'i-dest',     val:p.dest },
+    { fid:'f-weight',   iid:'i-weight',   val:p.weight },
+    { fid:'f-pieces',   iid:'i-pieces',   val:p.pieces },
+    { fid:'f-value',    iid:'i-value',    val:p.value },
+    { fid:'f-service',  iid:'i-service',  val:p.service },
+    { fid:'f-date',     iid:'i-date',     val:p.date },
+    { fid:'f-contents', iid:'i-contents', val:p.contents },
+  ];
+
+  FIELDS.forEach(({ fid, iid, val }, i) => {
+    setTimeout(() => {
+      const fe = document.getElementById(fid), ie = document.getElementById(iid);
+      if (!fe || !ie) return;
+      if (val) { ie.value = val; fe.classList.add('filled'); fe.classList.remove('missing'); }
+      else      { fe.classList.add('missing'); fe.classList.remove('filled'); }
+    }, i * 140);
+  });
+
+  // Dims
+  setTimeout(() => {
+    const fe = document.getElementById('f-dims');
+    if (p.diml) {
+      document.getElementById('i-diml').value = p.diml;
+      document.getElementById('i-dimw').value = p.dimw;
+      document.getElementById('i-dimh').value = p.dimh;
+      fe.classList.add('filled'); fe.classList.remove('missing');
+    } else { fe.classList.add('missing'); fe.classList.remove('filled'); }
+  }, FIELDS.length * 140);
+
+  // Checkboxes
+  const CHK_DELAY = (FIELDS.length + 1) * 140;
+  setTimeout(() => {
+    [['chk-fragile', p.fragile], ['chk-sig', p.sig], ['chk-hazmat', p.hazmat], ['chk-cold', p.cold]]
+      .forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        el.classList.remove('on','ai-on');
+        if (val) el.classList.add('ai-on');
+      });
+  }, CHK_DELAY);
+
+  // Summary banner
+  setTimeout(() => {
+    const fieldIds = ['f-origin','f-dest','f-weight','f-pieces','f-value','f-service','f-date','f-contents','f-dims'];
+    const missing = fieldIds.filter(id => document.getElementById(id)?.classList.contains('missing')).length;
+    const filled  = fieldIds.length - missing;
+    const sumEl   = document.getElementById('aiSummary');
+    if (missing === 0) {
+      sumEl.className = 'ai-summary good';
+      sumEl.innerHTML = `<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="#059669"/><path d="M5 8.5l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> AI filled all fields from your description <span class="ai-summary-right">Review and confirm below</span>`;
+    } else {
+      sumEl.className = 'ai-summary partial';
+      sumEl.innerHTML = `<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="#F59E0B"/><path d="M8 5v3.5M8 10.5v.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg> AI filled ${filled} of ${fieldIds.length} fields <span class="ai-summary-right">${missing} field${missing!==1?'s':''} need your input (dashed border)</span>`;
+    }
+  }, CHK_DELAY + 200);
+}
+
+/* ── Processing ── */
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+async function runSteps() {
+  const steps = ['s1','s2','s3','s4'], delays = [450,700,650,600];
+  for (let i = 0; i < steps.length; i++) {
+    await wait(delays[i]);
+    if (i > 0) { document.getElementById(steps[i-1]).classList.remove('active'); document.getElementById(steps[i-1]).classList.add('done'); }
+    document.getElementById(steps[i]).classList.add('active');
+  }
+  await wait(delays[3]);
+  document.getElementById('s4').classList.remove('active'); document.getElementById('s4').classList.add('done');
+}
+
+async function startParsing() {
+  const text = document.getElementById('nlInput').value.trim();
+  if (!text) { document.getElementById('nlInput').focus(); return; }
+
+  const btn = document.getElementById('fillBtn');
+  btn.disabled = true;
+  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2" stroke-linecap="round"/></svg> Analyzing…`;
+
+  const proc = document.getElementById('procSteps');
+  proc.classList.add('active');
+  ['s1','s2','s3','s4'].forEach(id => { document.getElementById(id).className = 'proc-step'; });
+
+  await runSteps();
+  await wait(250);
+  proc.classList.remove('active');
+
+  const parsed = parse(text);
+
+  const fc = document.getElementById('formCard');
+  fc.style.display !== 'none' ? null : (fc.style.cssText = '');
+  fc.style.display = 'block';
+  requestAnimationFrame(() => requestAnimationFrame(() => fc.classList.add('in')));
+
+  fillForm(parsed);
+
+  setTimeout(() => fc.scrollIntoView({ behavior:'smooth', block:'start' }), 200);
+
+  btn.disabled = false;
+  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.31"/></svg> Re-parse description`;
+}
+
+/* ── Checkboxes ── */
+function toggleChk(el) {
+  if (el.classList.contains('ai-on')) { el.classList.remove('ai-on'); el.classList.add('on'); }
+  else el.classList.toggle('on');
+}
+
+/* ── Quote ── */
+function getQuote() {
+  const wRaw = document.getElementById('i-weight').value;
+  const wNum = parseFloat(wRaw) || 10;
+  const base  = 8 + wNum * 1.6 + Math.random() * 5;
+  const rates = [
+    { svc:'Ground',       eta:'3–7 business days', mult:1    },
+    { svc:'Express 2-Day', eta:'2 business days',  mult:2.6  },
+    { svc:'Overnight',    eta:'Next business day',  mult:4.2  },
+  ];
+  const selSvc = document.getElementById('i-service').value;
+  const svcMap = { ground:0, express:1, overnight:2, ltl:0 };
+  const selIdx = svcMap[selSvc] ?? -1;
+
+  document.getElementById('ratesGrid').innerHTML = rates.map((r,i) => `
+    <div class="rate${i===selIdx?' sel':''}" onclick="selectRate(this)">
+      <div class="rate-svc">${r.svc}</div>
+      <div class="rate-price">$${(base*r.mult).toFixed(2)}</div>
+      <div class="rate-eta">${r.eta}</div>
+    </div>`).join('');
+
+  const ratesEl = document.getElementById('rates');
+  ratesEl.classList.add('show');
+  setTimeout(() => ratesEl.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+}
+
+function selectRate(el) {
+  document.querySelectorAll('.rate').forEach(r => r.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function book() {
+  const sel = document.querySelector('.rate.sel');
+  const svc = sel ? sel.querySelector('.rate-svc').textContent : 'selected service';
+  const price = sel ? sel.querySelector('.rate-price').textContent : '';
+  alert(`Booking confirmed!\n\n${svc} — ${price}\n\nThis is a prototype — no actual booking was made.`);
+}
+
+/* ── Hide form card initially ── */
+document.getElementById('formCard').style.display = 'none';
+</script>
+</body>
+</html>
