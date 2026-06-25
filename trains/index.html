@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rail Car Match</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #1a1a2e;
+      color: #e8e0d0;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      letter-spacing: 0.05em;
+      color: #f0c060;
+      text-transform: uppercase;
+    }
+
+    header p {
+      margin-top: 6px;
+      color: #a09880;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+    }
+
+    #scoreboard {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 28px;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #a09880;
+    }
+
+    #scoreboard span { color: #f0c060; font-size: 1.1rem; font-weight: bold; }
+
+    #game {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .column-header {
+      text-align: center;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #a09880;
+      margin-bottom: 8px;
+    }
+
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: #16213e;
+      border: 2px solid #2a2a4a;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.1s, opacity 0.3s;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .card:hover:not(.matched):not(.disabled) {
+      border-color: #f0c060;
+      transform: translateY(-2px);
+    }
+
+    .card.selected {
+      border-color: #f0c060;
+      box-shadow: 0 0 0 2px #f0c06060;
+    }
+
+    .card.correct {
+      border-color: #4caf7d;
+      box-shadow: 0 0 0 2px #4caf7d60;
+      animation: popCorrect 0.35s ease;
+    }
+
+    .card.wrong {
+      border-color: #e05555;
+      box-shadow: 0 0 0 2px #e0555560;
+      animation: shakeWrong 0.35s ease;
+    }
+
+    .card.matched {
+      opacity: 0.35;
+      cursor: default;
+      border-color: #4caf7d;
+    }
+
+    .card.disabled { cursor: default; pointer-events: none; }
+
+    .card-img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      display: block;
+      background: #0d1b2a;
+    }
+
+    /* Placeholder shown when image is missing */
+    .card-img-placeholder {
+      width: 100%;
+      aspect-ratio: 16/9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0d1b2a;
+      color: #3a3a5a;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      gap: 6px;
+    }
+
+    .card-img-placeholder svg {
+      opacity: 0.4;
+    }
+
+    .card-label {
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      color: #c8c0b0;
+      text-align: center;
+    }
+
+    @keyframes popCorrect {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shakeWrong {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    #win-banner {
+      display: none;
+      text-align: center;
+      margin-top: 40px;
+      animation: fadeIn 0.6s ease;
+    }
+
+    #win-banner h2 {
+      font-size: 1.8rem;
+      color: #f0c060;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #win-banner p {
+      margin-top: 8px;
+      color: #a09880;
+      font-size: 0.9rem;
+    }
+
+    #restart-btn {
+      margin-top: 20px;
+      padding: 10px 28px;
+      background: #f0c060;
+      color: #1a1a2e;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+
+    #restart-btn:hover { background: #ffd070; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 540px) {
+      header h1 { font-size: 1.4rem; }
+      #game { gap: 12px; }
+      .card-label { font-size: 0.75rem; padding: 6px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Rail Car Match</h1>
+  <p>Match each rail car to its cargo</p>
+</header>
+
+<div id="scoreboard">
+  <div>Matched <span id="score">0</span> / <span id="total">0</span></div>
+  <div>Attempts <span id="attempts">0</span></div>
+</div>
+
+<div id="game">
+  <div>
+    <div class="column-header">Rail Cars</div>
+    <div class="card-list" id="cars-col"></div>
+  </div>
+  <div>
+    <div class="column-header">Cargo</div>
+    <div class="card-list" id="cargo-col"></div>
+  </div>
+</div>
+
+<div id="win-banner">
+  <h2>All Matched!</h2>
+  <p id="win-msg"></p>
+  <button id="restart-btn" onclick="init()">Play Again</button>
+</div>
+
+<script>
+  /*
+    IMAGE GUIDE
+    -----------
+    Drop your images into:
+      images/cars/   — one per rail car (see car.image filenames below)
+      images/cargo/  — one per cargo type (see cargo.image filenames below)
+
+    Supported formats: jpg, jpeg, png, webp
+    Recommended size: at least 480×270px (16:9 ratio works best)
+
+    If an image file is missing, a labeled placeholder is shown automatically.
+  */
+
+  const PAIRS = [
+    {
+      id: 'boxcar',
+      car:   { label: 'Boxcar',           image: 'images/cars/boxcar.jpg' },
+      cargo: { label: 'Packaged Goods',   image: 'images/cargo/packaged-goods.jpg' }
+    },
+    {
+      id: 'tank',
+      car:   { label: 'Tank Car',         image: 'images/cars/tank-car.jpg' },
+      cargo: { label: 'Liquid Chemicals / Oil', image: 'images/cargo/liquid-chemicals.jpg' }
+    },
+    {
+      id: 'hopper',
+      car:   { label: 'Open-Top Hopper',  image: 'images/cars/hopper.jpg' },
+      cargo: { label: 'Coal',             image: 'images/cargo/coal.jpg' }
+    },
+    {
+      id: 'covered-hopper',
+      car:   { label: 'Covered Hopper',   image: 'images/cars/covered-hopper.jpg' },
+      cargo: { label: 'Grain / Cement',   image: 'images/cargo/grain.jpg' }
+    },
+    {
+      id: 'gondola',
+      car:   { label: 'Gondola',          image: 'images/cars/gondola.jpg' },
+      cargo: { label: 'Scrap Metal',      image: 'images/cargo/scrap-metal.jpg' }
+    },
+    {
+      id: 'flatcar',
+      car:   { label: 'Flatcar',          image: 'images/cars/flatcar.jpg' },
+      cargo: { label: 'Heavy Machinery',  image: 'images/cargo/heavy-machinery.jpg' }
+    },
+    {
+      id: 'auto-rack',
+      car:   { label: 'Auto Rack',        image: 'images/cars/auto-rack.jpg' },
+      cargo: { label: 'Automobiles',      image: 'images/cargo/automobiles.jpg' }
+    },
+    {
+      id: 'reefer',
+      car:   { label: 'Refrigerator Car', image: 'images/cars/reefer.jpg' },
+      cargo: { label: 'Perishable Produce', image: 'images/cargo/produce.jpg' }
+    }
+  ];
+
+  let selectedCar = null;
+  let selectedCargo = null;
+  let matched = 0;
+  let attempts = 0;
+  let locked = false;
+
+  function shuffle(arr) {
+    return [...arr].sort(() => Math.random() - 0.5);
+  }
+
+  function placeholderSVG() {
+    return `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+      <polyline points="21 15 16 10 5 21"/>
+    </svg>`;
+  }
+
+  function makeCard(item, type, pairId) {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.dataset.pairId = pairId;
+    div.dataset.type = type;
+
+    // Try image; fall back to placeholder if missing
+    const img = new Image();
+    img.className = 'card-img';
+    img.alt = item.label;
+
+    const placeholder = document.createElement('div');
+    placeholder.className = 'card-img-placeholder';
+    placeholder.innerHTML = `${placeholderSVG()}<span>${item.label}</span>`;
+
+    img.onload = () => {
+      placeholder.replaceWith(img);
+    };
+    img.onerror = () => { /* placeholder stays */ };
+    img.src = item.image;
+
+    const label = document.createElement('div');
+    label.className = 'card-label';
+    label.textContent = item.label;
+
+    div.appendChild(placeholder);
+    div.appendChild(label);
+
+    div.addEventListener('click', () => onCardClick(div));
+    return div;
+  }
+
+  function onCardClick(card) {
+    if (locked) return;
+    if (card.classList.contains('matched') || card.classList.contains('disabled')) return;
+
+    const type = card.dataset.type;
+
+    if (type === 'car') {
+      if (selectedCar) selectedCar.classList.remove('selected');
+      selectedCar = card;
+      card.classList.add('selected');
+    } else {
+      if (selectedCargo) selectedCargo.classList.remove('selected');
+      selectedCargo = card;
+      card.classList.add('selected');
+    }
+
+    if (selectedCar && selectedCargo) {
+      checkMatch();
+    }
+  }
+
+  function checkMatch() {
+    locked = true;
+    attempts++;
+    document.getElementById('attempts').textContent = attempts;
+
+    const isMatch = selectedCar.dataset.pairId === selectedCargo.dataset.pairId;
+
+    if (isMatch) {
+      selectedCar.classList.remove('selected');
+      selectedCargo.classList.remove('selected');
+      selectedCar.classList.add('correct', 'matched');
+      selectedCargo.classList.add('correct', 'matched');
+      matched++;
+      document.getElementById('score').textContent = matched;
+
+      setTimeout(() => {
+        selectedCar = null;
+        selectedCargo = null;
+        locked = false;
+        if (matched === PAIRS.length) showWin();
+      }, 400);
+    } else {
+      selectedCar.classList.add('wrong');
+      selectedCargo.classList.add('wrong');
+
+      setTimeout(() => {
+        selectedCar.classList.remove('selected', 'wrong');
+        selectedCargo.classList.remove('selected', 'wrong');
+        selectedCar = null;
+        selectedCargo = null;
+        locked = false;
+      }, 600);
+    }
+  }
+
+  function showWin() {
+    const banner = document.getElementById('win-banner');
+    const accuracy = Math.round((PAIRS.length / attempts) * 100);
+    document.getElementById('win-msg').textContent =
+      `${attempts} attempt${attempts !== 1 ? 's' : ''} — ${accuracy}% accuracy`;
+    banner.style.display = 'block';
+  }
+
+  function init() {
+    selectedCar = null;
+    selectedCargo = null;
+    matched = 0;
+    attempts = 0;
+    locked = false;
+
+    document.getElementById('score').textContent = 0;
+    document.getElementById('total').textContent = PAIRS.length;
+    document.getElementById('attempts').textContent = 0;
+    document.getElementById('win-banner').style.display = 'none';
+
+    const carsCol = document.getElementById('cars-col');
+    const cargoCol = document.getElementById('cargo-col');
+    carsCol.innerHTML = '';
+    cargoCol.innerHTML = '';
+
+    const shuffledCars  = shuffle(PAIRS);
+    const shuffledCargo = shuffle(PAIRS);
+
+    shuffledCars.forEach(p  => carsCol.appendChild(makeCard(p.car, 'car', p.id)));
+    shuffledCargo.forEach(p => cargoCol.appendChild(makeCard(p.cargo, 'cargo', p.id)));
+  }
+
+  init();
+</script>
+</body>
+</html>

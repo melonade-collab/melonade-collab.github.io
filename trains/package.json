@@ -1,0 +1,11 @@
+{
+  "name": "trains",
+  "version": "1.0.0",
+  "description": "GO Transit schedule updater",
+  "scripts": {
+    "update": "node update-schedule.js"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16"
+  }
+}
