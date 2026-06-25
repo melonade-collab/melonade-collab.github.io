@@ -460,6 +460,16 @@ function addCar(i) {
   train.push(i);
   renderTrain();
   playClick();
+  const spoken = carDefs[i].name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+  speak(spoken);
+}
+
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.9; u.pitch = 1.1; u.volume = 1;
+  window.speechSynthesis.speak(u);
 }
 
 function removeCar(idx) {
