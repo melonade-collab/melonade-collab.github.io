@@ -755,7 +755,8 @@
     phoneInput.addEventListener('input', function () {
       formatPhone(this);
       if (phoneError.classList.contains('visible')) validatePhone();
-      if (openCaseInfo) resetCaseDetect();
+      const _email = emailInput.value.trim();
+      if (openCaseInfo && !caseDecisionMade && (!_email || !isValidEmail(_email))) resetCaseDetect();
     });
 
     phoneInput.addEventListener('blur', function () {
