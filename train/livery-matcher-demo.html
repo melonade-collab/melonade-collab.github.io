@@ -16,49 +16,59 @@ body {
   padding: 60px 16px 48px;
 }
 .back-link { position:fixed; top:12px; left:14px; font-size:0.7rem; color:rgba(255,255,255,0.5); text-decoration:none; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; letter-spacing:2px; z-index:100; }
+
 h1 { font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 900; letter-spacing: 3px; color: #ffd700; text-shadow: 3px 3px 0 #6a4a00; text-align: center; margin-bottom: 6px; }
-.subtitle { font-size: 0.72rem; color: rgba(255,215,0,0.5); letter-spacing: 3px; margin-bottom: 28px; text-align: center; }
+.subtitle { font-size: 0.72rem; color: rgba(255,215,0,0.5); letter-spacing: 3px; margin-bottom: 14px; text-align: center; }
+
+.stars-row { display:flex; gap:6px; justify-content:center; margin-bottom:16px; min-height:2rem; }
+.star { font-size:1.6rem; transition:transform 0.3s; opacity:0.2; }
+.star.earned { opacity:1; animation:starPop 0.4s ease; }
+@keyframes starPop { 0%{transform:scale(0)} 60%{transform:scale(1.5)} 100%{transform:scale(1)} }
 
 .matcher-wrap {
   width: 100%;
   max-width: 480px;
+}
+.col-labels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.col-label { font-size:0.6rem; font-weight:700; letter-spacing:2px; color:rgba(255,255,255,0.3); text-align:center; }
+
+.pair-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
-.col-label {
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: rgba(255,255,255,0.3);
-  text-align: center;
-  margin-bottom: 6px;
-}
+
 .photo-card {
   border-radius: 12px;
   overflow: hidden;
-  height: 86px;
+  height: 90px;
   cursor: pointer;
   border: 3px solid transparent;
   transition: border-color 0.2s, box-shadow 0.2s;
   position: relative;
+  flex-shrink: 0;
 }
-.photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.photo-card.selected { border-color: #ffd700; box-shadow: 0 0 0 2px #ffd700; }
-.photo-card.matched { border-color: #4ade80; pointer-events: none; }
-.photo-card.matched .match-check { display: flex; }
-.photo-card.wrong { animation: shake 0.4s ease; }
-.match-check { display: none; position: absolute; top: 5px; right: 5px; background: #4ade80; color: #fff; width: 22px; height: 22px; border-radius: 50%; font-size: 13px; font-weight: 900; align-items: center; justify-content: center; }
+.photo-card img { width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
+.photo-card.selected { border-color:#ffd700; box-shadow:0 0 0 2px #ffd700; }
+.photo-card.matched { border-color:#4ade80; pointer-events:none; }
+.photo-card.wrong { animation:shake 0.4s ease; border-color:#f87171; }
+.match-check { display:none; position:absolute; top:5px; right:5px; background:#4ade80; color:#fff; width:22px; height:22px; border-radius:50%; font-size:13px; font-weight:900; align-items:center; justify-content:center; }
+.photo-card.matched .match-check { display:flex; }
 
 .name-chip {
   border-radius: 12px;
-  height: 86px;
+  height: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.82rem;
+  font-size: clamp(0.7rem, 2.5vw, 0.85rem);
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   cursor: pointer;
   transition: all 0.2s;
   text-align: center;
@@ -68,35 +78,49 @@ h1 { font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 900; letter-spacing: 3px;
   border: 2px solid rgba(255,255,255,0.15);
   color: rgba(255,255,255,0.85);
 }
-.name-chip:hover:not(.matched) { background: rgba(255,215,0,0.12); border-color: #ffd700; color: #ffd700; }
-.name-chip.selected { background: rgba(255,215,0,0.18); border-color: #ffd700; color: #ffd700; }
-.name-chip.matched { background: rgba(74,222,128,0.15); border-color: #4ade80; color: #4ade80; pointer-events: none; }
-.name-chip.wrong { animation: shake 0.4s ease; border-color: #f87171; color: #f87171; }
+.name-chip:hover:not(.matched) { background:rgba(255,215,0,0.12); border-color:#ffd700; color:#ffd700; }
+.name-chip.selected { background:rgba(255,215,0,0.18); border-color:#ffd700; color:#ffd700; }
+.name-chip.matched { border-color:#4ade80; color:#4ade80; pointer-events:none; }
+.name-chip.wrong { animation:shake 0.4s ease; border-color:#f87171; color:#f87171; }
 
 @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-7px)} 40%,80%{transform:translateX(7px)} }
 
+.fact-bubble {
+  width: 100%;
+  max-width: 480px;
+  margin-top: 14px;
+  background: rgba(255,215,0,0.1);
+  border: 1.5px solid rgba(255,215,0,0.25);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.6;
+  min-height: 56px;
+  transition: opacity 0.3s;
+  opacity: 0;
+}
+.fact-bubble.show { opacity: 1; }
+
 .hint {
-  margin-top: 18px;
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.35);
+  width: 100%;
+  max-width: 480px;
+  margin-top: 10px;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.3);
   text-align: center;
   letter-spacing: 2px;
   min-height: 1.2em;
 }
 
-.win-screen {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  text-align: center;
-}
-.win-screen.show { display: flex; }
-.win-emoji { font-size: 4.5rem; animation: pop 0.5s ease; }
+.win-screen { display:none; flex-direction:column; align-items:center; gap:18px; text-align:center; }
+.win-screen.show { display:flex; }
+.win-emoji { font-size:4.5rem; animation:pop 0.5s ease; }
 @keyframes pop { 0%{transform:scale(0)} 70%{transform:scale(1.3)} 100%{transform:scale(1)} }
-.win-text { font-size: 1.6rem; font-weight: 900; color: #ffd700; letter-spacing: 3px; text-shadow: 3px 3px 0 #6a4a00; }
-.play-again { background: #ffd700; color: #1a1a2e; border: none; padding: 14px 32px; border-radius: 14px; font-size: 1rem; font-weight: 900; cursor: pointer; letter-spacing: 2px; transition: transform 0.15s; margin-top: 8px; }
-.play-again:hover { transform: scale(1.05); }
+.win-title { font-size:1.6rem; font-weight:900; color:#ffd700; letter-spacing:3px; text-shadow:3px 3px 0 #6a4a00; }
+.win-score { font-size:0.85rem; color:rgba(255,255,255,0.5); letter-spacing:2px; }
+.play-again { background:#ffd700; color:#1a1a2e; border:none; padding:14px 32px; border-radius:14px; font-size:1rem; font-weight:900; cursor:pointer; letter-spacing:2px; transition:transform 0.15s; margin-top:4px; }
+.play-again:hover { transform:scale(1.05); }
 </style>
 </head>
 <body>
@@ -105,34 +129,91 @@ h1 { font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 900; letter-spacing: 3px;
 <h1>🚂 LIVERY MATCHER</h1>
 <p class="subtitle">MATCH THE TRAIN TO ITS RAILWAY</p>
 
-<div id="gameArea" style="width:100%;max-width:480px;">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;">
+<div class="stars-row" id="starsRow"></div>
+
+<div id="gameArea" style="width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center;">
+  <div class="col-labels">
     <p class="col-label">TRAINS</p>
     <p class="col-label">RAILWAYS</p>
   </div>
-  <div class="matcher-wrap">
-    <div id="photoCol" style="display:flex;flex-direction:column;gap:10px;"></div>
-    <div id="nameCol" style="display:flex;flex-direction:column;gap:10px;"></div>
-  </div>
-  <p class="hint" id="hint">TAP A TRAIN, THEN TAP ITS RAILWAY NAME</p>
+  <div class="pair-grid" id="pairGrid" style="width:100%;"></div>
+  <div class="fact-bubble" id="factBubble"></div>
+  <p class="hint" id="hint">TAP A TRAIN TO HEAR THE OPTIONS!</p>
 </div>
 
 <div class="win-screen" id="winScreen">
   <div class="win-emoji">🏆</div>
-  <div class="win-text">PERFECT MATCH!</div>
+  <div class="win-title">ALL MATCHED!</div>
+  <div class="win-score" id="winScore"></div>
+  <div class="stars-row" id="winStars"></div>
   <button class="play-again" onclick="initGame()">Play Again!</button>
 </div>
 
 <script>
-const pairs = [
-  { id:'cp',   image:'https://images.unsplash.com/photo-1544314105-71dc83e32865?q=80&w=728&auto=format&fit=crop', pos:'center 40%', name:'Canadian Pacific',   color:'#c41e1e' },
-  { id:'bnsf', image:'https://images.unsplash.com/photo-1506917847218-5725045a0731?q=80&w=870&auto=format&fit=crop', pos:'50% 65%',   name:'BNSF Railway',       color:'#e87722' },
-  { id:'via',  image:'https://images.unsplash.com/photo-1615652437548-dea5540d223f?q=80&w=870&auto=format&fit=crop', pos:'center',    name:'VIA Rail',           color:'#003da5' },
-  { id:'rm',   image:'https://images.unsplash.com/photo-1758473439537-e5144e93782b?q=80&w=387&auto=format&fit=crop', pos:'center',    name:'Rocky Mountaineer',  color:'#b8960c' },
+const ALL_RAILWAYS = [
+  {
+    id: 'cp',
+    name: 'Canadian Pacific',
+    image: 'https://images.unsplash.com/photo-1604257345076-d9943f0866dd?w=500&auto=format&fit=crop&q=60',
+    pos: 'center',
+    color: '#c41e1e',
+    fact: "Canadian Pacific's bright red and white colours have been on their engines since the 1950s! The red is so bold that train spotters can identify a CP locomotive from kilometres away."
+  },
+  {
+    id: 'bnsf',
+    name: 'BNSF Railway',
+    image: 'https://images.unsplash.com/photo-1628671044922-33ab6bb77b28?w=500&auto=format&fit=crop&q=60',
+    pos: 'center',
+    color: '#e87722',
+    fact: "BNSF's orange and yellow colours came from two railways that merged together — the green Burlington Northern and the red Santa Fe warbonnet! The mix became the bright orange-yellow seen all across America today."
+  },
+  {
+    id: 'via',
+    name: 'VIA Rail',
+    image: 'https://images.unsplash.com/photo-1615652437548-dea5540d223f?q=80&w=870&auto=format&fit=crop',
+    pos: 'center',
+    color: '#003da5',
+    fact: "VIA Rail's blue and yellow trains travel all the way across Canada! The blue represents Canada's sky and waterways, while the yellow stripe represents the golden wheat prairies in the middle of the country."
+  },
+  {
+    id: 'rm',
+    name: 'Rocky Mountaineer',
+    image: 'https://images.unsplash.com/photo-1758473439537-e5144e93782b?q=80&w=387&auto=format&fit=crop',
+    pos: 'center',
+    color: '#b8960c',
+    fact: "The Rocky Mountaineer's dark blue and gold coaches have huge glass domes on the roof so passengers can look straight up at the Rocky Mountain peaks while sitting inside! It's one of the most beautiful trains in the world."
+  },
+  {
+    id: 'amtrak',
+    name: 'Amtrak',
+    image: 'https://images.unsplash.com/photo-1660016902828-f490c2d1736c?q=80&w=870&auto=format&fit=crop',
+    pos: 'center',
+    color: '#1b4d8e',
+    fact: "Amtrak's red, white and blue colours were chosen in 1971 to represent all of America! Amtrak passenger trains travel to cities in 46 of America's 48 mainland states — almost everywhere you can think of."
+  },
+  {
+    id: 'ferromex',
+    name: 'Ferromex',
+    image: 'https://images.unsplash.com/photo-1627674678760-59697663644f?q=80&w=387&auto=format&fit=crop',
+    pos: 'center',
+    color: '#006847',
+    fact: "Ferromex's yellow and red logo features an eagle — just like the Mexican flag! Ferromex is Mexico's biggest freight railway and carries goods from the US border all the way to the southern ports."
+  },
+  {
+    id: 'up',
+    name: 'Union Pacific',
+    image: 'https://images.unsplash.com/photo-1628748429334-101a87a9357d?w=500&auto=format&fit=crop&q=60',
+    pos: 'center',
+    color: '#e8c200',
+    fact: "Union Pacific's bright yellow engines are nicknamed 'Yellow Monsters' by train fans! The yellow colour was chosen in the 1930s to look modern and powerful — and it has barely changed in almost 90 years."
+  },
 ];
 
+const SHOW = 4;
 let selectedPhotoId = null;
 let matched = 0;
+let firstTryMisses = {};
+let currentPool = [];
 
 function shuffle(arr) {
   const a = [...arr];
@@ -143,91 +224,166 @@ function shuffle(arr) {
   return a;
 }
 
+function buildStars(count, max) {
+  return Array.from({length: max}, (_, i) =>
+    `<span class="star ${i < count ? 'earned' : ''}">⭐</span>`
+  ).join('');
+}
+
 function initGame() {
   selectedPhotoId = null;
   matched = 0;
+  firstTryMisses = {};
+  currentPool = shuffle(ALL_RAILWAYS).slice(0, SHOW);
+
   document.getElementById('winScreen').classList.remove('show');
   document.getElementById('gameArea').style.display = '';
-  document.getElementById('hint').textContent = 'TAP A TRAIN, THEN TAP ITS RAILWAY NAME';
+  document.getElementById('factBubble').classList.remove('show');
+  document.getElementById('factBubble').textContent = '';
+  document.getElementById('hint').textContent = 'TAP A TRAIN TO HEAR THE OPTIONS!';
+  document.getElementById('starsRow').innerHTML = buildStars(0, SHOW);
 
-  const photoCol = document.getElementById('photoCol');
-  const nameCol  = document.getElementById('nameCol');
-  photoCol.innerHTML = '';
-  nameCol.innerHTML  = '';
+  const grid = document.getElementById('pairGrid');
+  grid.innerHTML = '';
 
-  shuffle(pairs).forEach(p => {
+  // Build photo column and name column interleaved in grid
+  const photoOrder = shuffle([...currentPool]);
+  const nameOrder  = shuffle([...currentPool]);
+
+  // Grid has 2 columns; we want photos in col 1, names in col 2, 4 rows
+  // Use a wrapper approach: left div + right div inside the grid
+  const leftCol  = document.createElement('div');
+  const rightCol = document.createElement('div');
+  leftCol.style.cssText  = 'display:flex;flex-direction:column;gap:10px;';
+  rightCol.style.cssText = 'display:flex;flex-direction:column;gap:10px;';
+
+  photoOrder.forEach(r => {
     const card = document.createElement('div');
     card.className = 'photo-card';
-    card.dataset.id = p.id;
-    card.innerHTML = `<img src="${p.image}" alt="${p.name}" style="object-position:${p.pos}"><div class="match-check">✓</div>`;
-    card.onclick = () => selectPhoto(card, p.id);
-    photoCol.appendChild(card);
+    card.dataset.id = r.id;
+    card.innerHTML = `<img src="${r.image}" alt="${r.name}" style="object-position:${r.pos}"><div class="match-check">✓</div>`;
+    card.onclick = () => selectPhoto(card, r);
+    leftCol.appendChild(card);
   });
 
-  shuffle(pairs).forEach(p => {
+  nameOrder.forEach(r => {
     const chip = document.createElement('div');
     chip.className = 'name-chip';
-    chip.dataset.id = p.id;
-    chip.textContent = p.name;
-    chip.onclick = () => selectName(chip, p.id, p.color);
-    nameCol.appendChild(chip);
+    chip.dataset.id = r.id;
+    chip.textContent = r.name;
+    chip.onclick = () => selectName(chip, r);
+    rightCol.appendChild(chip);
   });
+
+  grid.appendChild(leftCol);
+  grid.appendChild(rightCol);
+
+  // Read intro
+  speak('Match each train to its railway. Tap a train to hear the choices!');
 }
 
-function selectPhoto(card, id) {
+function selectPhoto(card, r) {
   if (card.classList.contains('matched')) return;
+  const alreadySelected = card.classList.contains('selected');
   document.querySelectorAll('.photo-card.selected').forEach(c => c.classList.remove('selected'));
+  if (alreadySelected) { selectedPhotoId = null; document.getElementById('hint').textContent = 'TAP A TRAIN TO HEAR THE OPTIONS!'; return; }
   card.classList.add('selected');
-  selectedPhotoId = id;
+  selectedPhotoId = r.id;
   document.getElementById('hint').textContent = 'NOW TAP ITS RAILWAY NAME →';
-  speak('Tap the matching railway name.');
+
+  const availableNames = currentPool
+    .filter(p => !document.querySelector(`.name-chip[data-id="${p.id}"]`)?.classList.contains('matched'))
+    .map(p => p.name);
+  speak(`Which railway is this? ${availableNames.join('. ')}.`);
 }
 
-function selectName(chip, id, color) {
+function selectName(chip, r) {
   if (!selectedPhotoId) {
+    speak('Tap a train photo first!');
     document.getElementById('hint').textContent = 'TAP A TRAIN PHOTO FIRST ←';
     return;
   }
   if (chip.classList.contains('matched')) return;
 
-  if (selectedPhotoId === id) {
-    const photoCard = document.querySelector(`.photo-card[data-id="${id}"]`);
+  if (selectedPhotoId === r.id) {
+    // Correct!
+    const photoCard = document.querySelector(`.photo-card[data-id="${r.id}"]`);
     photoCard.classList.remove('selected');
     photoCard.classList.add('matched');
     chip.classList.add('matched');
-    chip.style.borderColor = color;
-    chip.style.color = color;
+    chip.style.borderColor = r.color;
+    chip.style.color = r.color;
     selectedPhotoId = null;
     matched++;
-    speak('Yes! Great match!');
-    if (matched === pairs.length) {
+
+    // Update stars
+    const correctOnFirstTry = !firstTryMisses[r.id];
+    document.getElementById('starsRow').innerHTML = buildStars(
+      currentPool.filter(p => {
+        const c = document.querySelector(`.photo-card[data-id="${p.id}"]`);
+        return c?.classList.contains('matched') && !firstTryMisses[p.id];
+      }).length, SHOW
+    );
+
+    // Show fact
+    const fact = document.getElementById('factBubble');
+    fact.textContent = r.fact;
+    fact.classList.add('show');
+    document.getElementById('hint').textContent = matched < SHOW ? 'KEEP GOING!' : '';
+    playChime();
+    setTimeout(() => speak(r.fact), 600);
+
+    if (matched === SHOW) {
       setTimeout(() => {
+        const perfectScore = currentPool.filter(p => !firstTryMisses[p.id]).length;
+        document.getElementById('winStars').innerHTML = buildStars(perfectScore, SHOW);
+        document.getElementById('winScore').textContent =
+          perfectScore === SHOW ? 'PERFECT ROUND!' : `${perfectScore} OF ${SHOW} ON FIRST TRY`;
         document.getElementById('gameArea').style.display = 'none';
         document.getElementById('winScreen').classList.add('show');
-        speak('You matched them all! Amazing!');
-      }, 700);
-    } else {
-      document.getElementById('hint').textContent = '✓ MATCHED! KEEP GOING!';
+        speak(perfectScore === SHOW
+          ? 'Perfect! You matched them all on the first try! Amazing!'
+          : `You matched all ${SHOW} trains! Great job!`
+        );
+      }, 1400);
     }
   } else {
+    // Wrong
+    if (!firstTryMisses[selectedPhotoId]) firstTryMisses[selectedPhotoId] = true;
     const photoCard = document.querySelector(`.photo-card[data-id="${selectedPhotoId}"]`);
     photoCard.classList.add('wrong');
     chip.classList.add('wrong');
-    speak('Try again!');
+    speak('Not quite — try again!');
+    document.getElementById('hint').textContent = 'NOT QUITE — TRY AGAIN!';
     setTimeout(() => {
-      photoCard.classList.remove('wrong','selected');
+      photoCard.classList.remove('wrong', 'selected');
       chip.classList.remove('wrong');
       selectedPhotoId = null;
-      document.getElementById('hint').textContent = 'NOT QUITE — TRY AGAIN!';
+      document.getElementById('hint').textContent = 'TAP A TRAIN TO HEAR THE OPTIONS!';
     }, 500);
   }
+}
+
+function playChime() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [[0, 523.25], [0.14, 659.25], [0.28, 783.99]].forEach(([t, freq]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq; osc.type = 'sine';
+      gain.gain.setValueAtTime(0.28, ctx.currentTime + t);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.45);
+      osc.start(ctx.currentTime + t); osc.stop(ctx.currentTime + t + 0.5);
+    });
+  } catch(e) {}
 }
 
 function speak(text) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.9; u.pitch = 1.1; u.volume = 1;
+  u.rate = 0.88; u.pitch = 1.1; u.volume = 1;
   window.speechSynthesis.speak(u);
 }
 
