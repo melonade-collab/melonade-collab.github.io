@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Train World!</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  background: linear-gradient(160deg, #0d1a2e 0%, #1a2e4a 50%, #0a1218 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+h1 {
+  font-size: clamp(2.4rem, 8vw, 4rem);
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #ffd700;
+  text-shadow: 4px 4px 0 #6a4a00;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.loco-row {
+  font-size: clamp(2rem, 6vw, 3rem);
+  text-align: center;
+  margin-bottom: 28px;
+  letter-spacing: 4px;
+  animation: chug 1.5s steps(1) infinite;
+}
+@keyframes chug {
+  0%{letter-spacing:4px} 50%{letter-spacing:6px} 100%{letter-spacing:4px}
+}
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 480px;
+}
+.game-card {
+  background: white;
+  border-radius: 20px;
+  padding: 22px 24px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+  border: 4px solid transparent;
+}
+.game-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 20px 55px rgba(0,0,0,0.5); }
+.game-card:active { transform: scale(0.97); }
+.game-card.spotter { border-color: #1a3a5c; }
+.game-card.builder { border-color: #1a2e0a; }
+.game-card.quiz    { border-color: #2a0a3a; }
+.card-icon { font-size: 3.5rem; flex-shrink: 0; }
+.card-text h2 {
+  font-size: clamp(1.3rem, 4vw, 1.7rem);
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+.card-text p {
+  font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+  color: #555;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+.tag.blue { background: #e0eeff; color: #1a3a5c; }
+.tag.green { background: #e0f4e0; color: #1a4010; }
+.tag.purple { background: #f0e0ff; color: #4a0a7a; }
+</style>
+</head>
+<body>
+<h1>TRAIN WORLD</h1>
+<div class="loco-row">🚂 🚃 🚃 🚃</div>
+
+<div class="cards">
+  <a class="game-card" href="world-quiz.html" style="border-color:#7a4a00;">
+    <div class="card-icon">🌍</div>
+    <div class="card-text">
+      <div class="tag" style="background:#fff3cd;color:#7a4a00;">QUIZ</div>
+      <h2>TRAINS OF THE WORLD</h2>
+      <p>Guess which country each train is from. Hear facts and see it on the map!</p>
+    </div>
+  </a>
+
+  <a class="game-card spotter" href="spotter.html">
+    <div class="card-icon">📖</div>
+    <div class="card-text">
+      <div class="tag blue">LEARN</div>
+      <h2>TRAIN SPOTTER</h2>
+      <p>Flip through 7 different freight cars. Tap to hear the name!</p>
+    </div>
+  </a>
+
+  <a class="game-card builder" href="builder.html">
+    <div class="card-icon">🔧</div>
+    <div class="card-text">
+      <div class="tag green">BUILD</div>
+      <h2>BUILD-A-TRAIN</h2>
+      <p>Add cars to make your own train, then hit GO and watch it roll!</p>
+    </div>
+  </a>
+
+  <a class="game-card quiz" href="quiz.html">
+    <div class="card-icon">⭐</div>
+    <div class="card-text">
+      <div class="tag purple">QUIZ</div>
+      <h2>TRAIN QUIZ</h2>
+      <p>Can you guess what each car carries? Earn stars for every right answer!</p>
+    </div>
+  </a>
+</div>
+</body>
+</html>

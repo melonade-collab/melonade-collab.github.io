@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Train Quiz!</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  background: linear-gradient(160deg, #2a0a3a 0%, #4a1060 50%, #1a0528 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 12px;
+  overflow-x: hidden;
+}
+h1 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #ffd700;
+  text-shadow: 3px 3px 0 #6a0090;
+  text-align: center;
+  margin-bottom: 4px;
+}
+.subtitle {
+  font-size: 0.8rem;
+  color: rgba(255,215,0,0.5);
+  letter-spacing: 4px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.score-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(0,0,0,0.35);
+  border-radius: 14px;
+  padding: 10px 20px;
+  margin-bottom: 14px;
+  width: 100%;
+  max-width: 560px;
+  justify-content: center;
+}
+.score-num {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #ffd700;
+  letter-spacing: 2px;
+}
+.score-label {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 3px;
+  font-weight: 600;
+}
+.stars-row {
+  display: flex;
+  gap: 4px;
+}
+.star { font-size: 1.4rem; transition: transform 0.3s; }
+.star.earned { animation: starPop 0.4s ease; }
+@keyframes starPop { 0%{transform:scale(0)} 60%{transform:scale(1.4)} 100%{transform:scale(1)} }
+
+.card {
+  background: white;
+  border-radius: 24px;
+  width: min(94vw, 560px);
+  padding: 22px 18px 18px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.question-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #aaa;
+}
+.car-display {
+  width: 100%;
+  background: linear-gradient(180deg, #e8f4fd 0%, #c8e0f0 100%);
+  border-radius: 14px;
+  padding: 10px 8px 4px;
+  position: relative;
+}
+.car-display svg { width: 100%; }
+.car-name-display {
+  font-size: clamp(1.8rem, 6vw, 2.4rem);
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #1a1a2e;
+  text-align: center;
+}
+.question-text {
+  font-size: clamp(1rem, 3.5vw, 1.3rem);
+  font-weight: 700;
+  color: #1a1a2e;
+  text-align: center;
+  letter-spacing: 1px;
+}
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+.opt-btn {
+  border: 3px solid #e0e0e8;
+  border-radius: 16px;
+  padding: 14px 6px 12px;
+  cursor: pointer;
+  background: #f8f8fc;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+}
+.opt-btn:hover:not(:disabled) { border-color: #9050c0; background: #f0e8fa; }
+.opt-btn:active:not(:disabled) { transform: scale(0.94); }
+.opt-btn:disabled { cursor: default; }
+.opt-btn.correct { border-color: #22c55e; background: #d4fce4; animation: correctPop 0.4s ease; }
+.opt-btn.wrong { border-color: #ef4444; background: #fde4e4; animation: shake 0.4s ease; }
+@keyframes correctPop { 0%{transform:scale(1)} 40%{transform:scale(1.08)} 100%{transform:scale(1)} }
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-6px)}
+  40%{transform:translateX(6px)}
+  60%{transform:translateX(-4px)}
+  80%{transform:translateX(4px)}
+}
+.opt-emoji { font-size: clamp(1.8rem, 6vw, 2.4rem); }
+.opt-label {
+  font-size: clamp(0.65rem, 2.2vw, 0.82rem);
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #333;
+  text-align: center;
+  line-height: 1.2;
+}
+.feedback-row {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  min-height: 28px;
+  letter-spacing: 1px;
+  color: transparent;
+  transition: color 0.2s;
+}
+.feedback-row.show-correct { color: #16a34a; }
+.feedback-row.show-wrong { color: #dc2626; }
+.next-btn {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 32px;
+  font-size: 1.1rem;
+  font-weight: 900;
+  cursor: pointer;
+  letter-spacing: 2px;
+  font-family: inherit;
+  display: none;
+  transition: filter 0.15s, transform 0.1s;
+}
+.next-btn:hover { filter: brightness(1.15); }
+.next-btn:active { transform: scale(0.94); }
+
+/* Final screen */
+.final-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  background: white;
+  border-radius: 24px;
+  width: min(94vw, 520px);
+  padding: 36px 24px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.5);
+  text-align: center;
+}
+.final-screen.show { display: flex; }
+.card.hide { display: none; }
+.final-trophy { font-size: 5rem; animation: bounce 0.6s ease infinite alternate; }
+@keyframes bounce { from{transform:scale(1)} to{transform:scale(1.1)} }
+.final-title {
+  font-size: clamp(1.8rem, 6vw, 2.4rem);
+  font-weight: 900;
+  color: #7c3aed;
+  letter-spacing: 3px;
+}
+.final-score {
+  font-size: clamp(2rem, 7vw, 3rem);
+  font-weight: 900;
+  color: #1a1a2e;
+}
+.final-msg { font-size: 1.1rem; color: #555; font-weight: 600; }
+.play-again-btn {
+  background: #ffd700;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 14px;
+  padding: 16px 36px;
+  font-size: 1.2rem;
+  font-weight: 900;
+  cursor: pointer;
+  letter-spacing: 2px;
+  font-family: inherit;
+  margin-top: 8px;
+  transition: filter 0.15s;
+}
+.play-again-btn:hover { filter: brightness(1.1); }
+</style>
+</head>
+<body>
+
+<h1>TRAIN QUIZ!</h1>
+<div class="subtitle">★ WHAT DOES IT CARRY? ★</div>
+
+<div class="score-bar">
+  <div>
+    <div class="score-label">SCORE</div>
+    <div class="score-num" id="scoreNum">0</div>
+  </div>
+  <div class="stars-row" id="starsRow"></div>
+  <div>
+    <div class="score-label">QUESTION</div>
+    <div class="score-num" id="qNum">1 / 7</div>
+  </div>
+</div>
+
+<div class="card" id="card">
+  <div class="question-label" id="questionLabel">QUESTION 1</div>
+  <div class="car-display">
+    <svg id="carSvg" viewBox="0 0 500 170" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <div class="car-name-display" id="carNameDisplay">TANK CAR</div>
+  <div class="question-text">What does this carry?</div>
+  <div class="options" id="options"></div>
+  <div class="feedback-row" id="feedbackRow"></div>
+  <button class="next-btn" id="nextBtn" onclick="nextQuestion()">NEXT ›</button>
+</div>
+
+<div class="final-screen" id="finalScreen">
+  <div class="final-trophy" id="finalTrophy">🏆</div>
+  <div class="final-title">GREAT JOB!</div>
+  <div class="final-score" id="finalScore">5 / 7</div>
+  <div class="final-msg" id="finalMsg">You're a train expert!</div>
+  <button class="play-again-btn" onclick="restartQuiz()">PLAY AGAIN!</button>
+</div>
+
+<script>
+function wheels() {
+  return `
+    <g transform="translate(80,118)">
+      <rect x="-30" y="-3" width="60" height="8" fill="#2a2a2a" rx="2"/>
+      <circle cx="-16" cy="10" r="17" fill="#1e1e1e" stroke="#555" stroke-width="3"/>
+      <circle cx="16" cy="10" r="17" fill="#1e1e1e" stroke="#555" stroke-width="3"/>
+      <circle cx="-16" cy="10" r="6" fill="#666"/>
+      <circle cx="16" cy="10" r="6" fill="#666"/>
+    </g>
+    <g transform="translate(420,118)">
+      <rect x="-30" y="-3" width="60" height="8" fill="#2a2a2a" rx="2"/>
+      <circle cx="-16" cy="10" r="17" fill="#1e1e1e" stroke="#555" stroke-width="3"/>
+      <circle cx="16" cy="10" r="17" fill="#1e1e1e" stroke="#555" stroke-width="3"/>
+      <circle cx="-16" cy="10" r="6" fill="#666"/>
+      <circle cx="16" cy="10" r="6" fill="#666"/>
+    </g>
+    <rect x="18" y="107" width="464" height="13" fill="#111" rx="2"/>
+    <rect x="0" y="109" width="20" height="8" fill="#555" rx="2"/>
+    <rect x="480" y="109" width="20" height="8" fill="#555" rx="2"/>
+    <line x1="0" y1="148" x2="500" y2="148" stroke="#7a6a50" stroke-width="5"/>
+    <line x1="0" y1="153" x2="500" y2="153" stroke="#5a4a38" stroke-width="7"/>
+  `;
+}
+
+const carSvgs = {
+  TANK: svg => { svg.innerHTML = `${wheels()}
+    <rect x="78" y="88" width="32" height="22" fill="#3a3a3a"/>
+    <rect x="390" y="88" width="32" height="22" fill="#3a3a3a"/>
+    <ellipse cx="250" cy="73" rx="220" ry="42" fill="#b0b0c8"/>
+    <ellipse cx="250" cy="73" rx="214" ry="36" fill="#d0d0e4"/>
+    <ellipse cx="32" cy="73" rx="18" ry="40" fill="#a0a0bc"/>
+    <ellipse cx="468" cy="73" rx="18" ry="40" fill="#a0a0bc"/>
+    <ellipse cx="110" cy="73" rx="5" ry="40" fill="none" stroke="#b0b0cc" stroke-width="3"/>
+    <ellipse cx="190" cy="73" rx="5" ry="40" fill="none" stroke="#b0b0cc" stroke-width="3"/>
+    <ellipse cx="250" cy="73" rx="5" ry="40" fill="none" stroke="#b0b0cc" stroke-width="3"/>
+    <ellipse cx="310" cy="73" rx="5" ry="40" fill="none" stroke="#b0b0cc" stroke-width="3"/>
+    <ellipse cx="390" cy="73" rx="5" ry="40" fill="none" stroke="#b0b0cc" stroke-width="3"/>
+    <ellipse cx="250" cy="36" rx="26" ry="13" fill="#9090a8"/>
+    <rect x="238" y="25" width="24" height="14" fill="#9090a8"/>
+    <rect x="244" y="17" width="12" height="11" fill="#7a7a90" rx="2"/>
+    <ellipse cx="210" cy="56" rx="65" ry="16" fill="rgba(255,255,255,0.18)"/>
+  `; },
+  BOX: svg => { svg.innerHTML = `${wheels()}
+    <rect x="22" y="36" width="456" height="73" fill="#c4541a" rx="3"/>
+    <rect x="22" y="36" width="456" height="10" fill="#a83010" rx="3"/>
+    <rect x="185" y="38" width="130" height="71" fill="#b04010" rx="1"/>
+    <rect x="247" y="38" width="4" height="71" fill="#8a2e0a"/>
+    <rect x="237" y="70" width="26" height="6" fill="#ffd700" rx="3"/>
+    <line x1="100" y1="38" x2="100" y2="108" stroke="#a83010" stroke-width="3"/>
+    <line x1="400" y1="38" x2="400" y2="108" stroke="#a83010" stroke-width="3"/>
+    <rect x="40" y="55" width="95" height="30" fill="#a03010" rx="4"/>
+    <text x="88" y="76" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="13" font-weight="900" fill="#ffd700">FREIGHT</text>
+  `; },
+  FLAT: svg => { svg.innerHTML = `${wheels()}
+    <rect x="22" y="97" width="456" height="12" fill="#6b4520" rx="2"/>
+    <line x1="80" y1="97" x2="80" y2="109" stroke="#4a2e12" stroke-width="2"/>
+    <line x1="160" y1="97" x2="160" y2="109" stroke="#4a2e12" stroke-width="2"/>
+    <line x1="240" y1="97" x2="240" y2="109" stroke="#4a2e12" stroke-width="2"/>
+    <line x1="320" y1="97" x2="320" y2="109" stroke="#4a2e12" stroke-width="2"/>
+    <line x1="400" y1="97" x2="400" y2="109" stroke="#4a2e12" stroke-width="2"/>
+    <rect x="74" y="72" width="7" height="27" fill="#3a2010" rx="2"/>
+    <rect x="248" y="72" width="7" height="27" fill="#3a2010" rx="2"/>
+    <rect x="424" y="72" width="7" height="27" fill="#3a2010" rx="2"/>
+    <ellipse cx="160" cy="84" rx="82" ry="12" fill="#7d4820"/>
+    <ellipse cx="160" cy="73" rx="82" ry="12" fill="#8b5228"/>
+    <ellipse cx="160" cy="62" rx="82" ry="12" fill="#7d4820"/>
+    <ellipse cx="77" cy="84" rx="6" ry="12" fill="#5a2e10"/>
+    <ellipse cx="247" cy="84" rx="6" ry="12" fill="#5a2e10"/>
+    <ellipse cx="350" cy="80" rx="70" ry="10" fill="#8b5228"/>
+    <ellipse cx="350" cy="72" rx="70" ry="10" fill="#9a6030"/>
+    <ellipse cx="282" cy="80" rx="6" ry="10" fill="#5a2e10"/>
+    <ellipse cx="422" cy="80" rx="6" ry="10" fill="#5a2e10"/>
+  `; },
+  HOPPER: svg => { svg.innerHTML = `${wheels()}
+    <polygon points="30,38 470,38 442,106 58,106" fill="#8b1a1a"/>
+    <rect x="28" y="32" width="444" height="10" fill="#6a1010" rx="2"/>
+    <polygon points="58,106 155,106 135,120 78,120" fill="#4a0808"/>
+    <polygon points="200,106 300,106 280,120 220,120" fill="#4a0808"/>
+    <polygon points="348,106 442,106 424,120 368,120" fill="#4a0808"/>
+    <polygon points="34,40 466,40 462,60 38,60" fill="#111"/>
+    <polygon points="38,60 462,60 444,80 56,80" fill="#1a1a1a"/>
+    <ellipse cx="140" cy="50" rx="22" ry="7" fill="#2a2a2a"/>
+    <ellipse cx="260" cy="48" rx="28" ry="8" fill="#222"/>
+    <ellipse cx="380" cy="52" rx="20" ry="6" fill="#2a2a2a"/>
+  `; },
+  GONDOLA: svg => { svg.innerHTML = `${wheels()}
+    <rect x="22" y="48" width="456" height="60" fill="#2c2c3e"/>
+    <rect x="28" y="90" width="444" height="18" fill="#1a1a28"/>
+    <rect x="28" y="50" width="444" height="40" fill="#1e1e2c"/>
+    <rect x="22" y="48" width="18" height="60" fill="#3a3a50"/>
+    <rect x="460" y="48" width="18" height="60" fill="#3a3a50"/>
+    <rect x="22" y="44" width="456" height="8" fill="#404055" rx="1"/>
+    <polygon points="55,90 110,58 148,76 188,54 228,72 268,56 308,70 348,58 388,74 428,60 470,90" fill="#5a5a5a"/>
+    <polygon points="75,90 118,68 156,82 200,64 238,78 278,63 318,76 356,66 398,80 440,90" fill="#484848"/>
+    <line x1="110" y1="68" x2="135" y2="62" stroke="#888" stroke-width="2"/>
+    <line x1="210" y1="66" x2="242" y2="60" stroke="#888" stroke-width="2"/>
+  `; },
+  REEFER: svg => { svg.innerHTML = `${wheels()}
+    <rect x="22" y="36" width="456" height="73" fill="#e8e8f0" rx="3"/>
+    <rect x="22" y="36" width="456" height="11" fill="#c8c8d8" rx="3"/>
+    <rect x="22" y="98" width="456" height="11" fill="#c8c8d8"/>
+    <rect x="30" y="48" width="52" height="38" fill="#b8b8cc" rx="2"/>
+    <line x1="30" y1="57" x2="82" y2="57" stroke="#9898b0" stroke-width="2"/>
+    <line x1="30" y1="66" x2="82" y2="66" stroke="#9898b0" stroke-width="2"/>
+    <line x1="30" y1="75" x2="82" y2="75" stroke="#9898b0" stroke-width="2"/>
+    <rect x="418" y="48" width="52" height="38" fill="#b8b8cc" rx="2"/>
+    <line x1="418" y1="57" x2="470" y2="57" stroke="#9898b0" stroke-width="2"/>
+    <line x1="418" y1="66" x2="470" y2="66" stroke="#9898b0" stroke-width="2"/>
+    <line x1="418" y1="75" x2="470" y2="75" stroke="#9898b0" stroke-width="2"/>
+    <rect x="192" y="38" width="116" height="71" fill="#d4d4e4" rx="1"/>
+    <line x1="250" y1="38" x2="250" y2="109" stroke="#b0b0c8" stroke-width="2"/>
+    <rect x="237" y="70" width="26" height="6" fill="#4a9ed4" rx="3"/>
+    <rect x="100" y="50" width="82" height="38" fill="#1a5a9a" rx="5"/>
+    <text x="141" y="70" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="10" font-weight="900" fill="white">ICE</text>
+    <text x="141" y="82" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="10" font-weight="900" fill="white">COLD</text>
+    <text x="340" y="84" text-anchor="middle" font-size="30">❄️</text>
+  `; },
+  CABOOSE: svg => { svg.innerHTML = `${wheels()}
+    <rect x="58" y="58" width="384" height="50" fill="#cc1111" rx="3"/>
+    <rect x="55" y="54" width="390" height="8" fill="#aa0000" rx="2"/>
+    <rect x="158" y="26" width="184" height="34" fill="#cc1111" rx="3"/>
+    <rect x="155" y="22" width="190" height="8" fill="#aa0000" rx="2"/>
+    <rect x="168" y="30" width="38" height="22" fill="#87ceeb" rx="3"/>
+    <rect x="214" y="30" width="38" height="22" fill="#87ceeb" rx="3"/>
+    <rect x="292" y="30" width="38" height="22" fill="#87ceeb" rx="3"/>
+    <rect x="248" y="30" width="38" height="22" fill="#aad4ee" rx="3" opacity="0.7"/>
+    <rect x="72" y="66" width="56" height="30" fill="#aad4ee" rx="4"/>
+    <rect x="372" y="66" width="56" height="30" fill="#aad4ee" rx="4"/>
+    <rect x="28" y="78" width="32" height="5" fill="#aa0000" rx="1"/>
+    <rect x="440" y="78" width="32" height="5" fill="#aa0000" rx="1"/>
+  `; }
+};
+
+const questions = [
+  {
+    car:'TANK CAR', svgKey:'TANK',
+    correct:{ emoji:'🛢️', label:'OIL' },
+    wrong:[{ emoji:'🌾', label:'GRAIN' }, { emoji:'🪵', label:'LOGS' }],
+    correctMsg:'Yes! Tank cars carry liquids like oil and milk! 🎉',
+    wrongMsg:'Not quite — tank cars carry liquids! Try again!'
+  },
+  {
+    car:'HOPPER', svgKey:'HOPPER',
+    correct:{ emoji:'⚫', label:'COAL' },
+    wrong:[{ emoji:'🍦', label:'ICE CREAM' }, { emoji:'🚗', label:'CARS' }],
+    correctMsg:'Amazing! Hoppers carry coal and grain! 🎉',
+    wrongMsg:'Nope! Hoppers carry heavy stuff like coal. Try again!'
+  },
+  {
+    car:'FLAT CAR', svgKey:'FLAT',
+    correct:{ emoji:'🪵', label:'LUMBER' },
+    wrong:[{ emoji:'🥛', label:'MILK' }, { emoji:'🌾', label:'GRAIN' }],
+    correctMsg:'Correct! Flat cars carry big things like lumber! 🎉',
+    wrongMsg:'Not this time! Flat cars carry big long cargo. Try again!'
+  },
+  {
+    car:'REEFER', svgKey:'REEFER',
+    correct:{ emoji:'🥦', label:'VEGETABLES' },
+    wrong:[{ emoji:'⚫', label:'COAL' }, { emoji:'⚙️', label:'METAL' }],
+    correctMsg:'You got it! Reefers keep food cold! 🎉',
+    wrongMsg:'Oops! Reefers are refrigerators on wheels. Try again!'
+  },
+  {
+    car:'BOXCAR', svgKey:'BOX',
+    correct:{ emoji:'📦', label:'PACKAGES' },
+    wrong:[{ emoji:'🛢️', label:'OIL' }, { emoji:'🪨', label:'ROCKS' }],
+    correctMsg:'Correct! Boxcars carry all kinds of packages! 🎉',
+    wrongMsg:'Close! Boxcars carry boxes and packages. Try again!'
+  },
+  {
+    car:'GONDOLA', svgKey:'GONDOLA',
+    correct:{ emoji:'⚙️', label:'SCRAP METAL' },
+    wrong:[{ emoji:'🍦', label:'ICE CREAM' }, { emoji:'🌾', label:'GRAIN' }],
+    correctMsg:'Wow, you\'re so smart! Gondolas carry heavy metal! 🎉',
+    wrongMsg:'Nope! Gondolas carry heavy things. Try again!'
+  },
+  {
+    car:'CABOOSE', svgKey:'CABOOSE',
+    correct:{ emoji:'👷', label:'TRAIN CREW' },
+    wrong:[{ emoji:'⚫', label:'COAL' }, { emoji:'🛢️', label:'OIL' }],
+    correctMsg:'The best one! The caboose carries the crew! 🎉',
+    wrongMsg:'The caboose is special — it carries people! Try again!'
+  }
+];
+
+let qIndex = 0;
+let score = 0;
+let answered = false;
+let order = [];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function buildStars() {
+  const row = document.getElementById('starsRow');
+  row.innerHTML = Array(7).fill(0).map((_,i) =>
+    `<span class="star" id="star${i}">${i < score ? '⭐' : '☆'}</span>`
+  ).join('');
+}
+
+function renderQuestion() {
+  const q = questions[order[qIndex]];
+  answered = false;
+
+  document.getElementById('questionLabel').textContent = `QUESTION ${qIndex+1} OF ${questions.length}`;
+  document.getElementById('qNum').textContent = `${qIndex+1} / ${questions.length}`;
+  document.getElementById('carNameDisplay').textContent = q.car;
+  carSvgs[q.svgKey](document.getElementById('carSvg'));
+
+  const feedback = document.getElementById('feedbackRow');
+  feedback.textContent = '';
+  feedback.className = 'feedback-row';
+
+  document.getElementById('nextBtn').style.display = 'none';
+
+  const allOptions = shuffle([
+    { ...q.correct, isCorrect: true },
+    ...q.wrong.map(w => ({ ...w, isCorrect: false }))
+  ]);
+
+  const optContainer = document.getElementById('options');
+  optContainer.innerHTML = '';
+  allOptions.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span class="opt-emoji">${opt.emoji}</span><span class="opt-label">${opt.label}</span>`;
+    btn.onclick = () => handleAnswer(btn, opt.isCorrect, q, allOptions, optContainer);
+    optContainer.appendChild(btn);
+  });
+
+  buildStars();
+}
+
+function handleAnswer(btn, isCorrect, q, allOptions, container) {
+  if (answered) return;
+  answered = true;
+
+  const feedback = document.getElementById('feedbackRow');
+  const btns = container.querySelectorAll('.opt-btn');
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    feedback.textContent = q.correctMsg;
+    feedback.className = 'feedback-row show-correct';
+    score++;
+    buildStars();
+    const starEl = document.getElementById(`star${score-1}`);
+    if (starEl) { starEl.textContent = '⭐'; starEl.classList.add('earned'); }
+    playCorrect();
+    btns.forEach(b => b.disabled = true);
+    setTimeout(showNext, 1200);
+  } else {
+    btn.classList.add('wrong');
+    feedback.textContent = q.wrongMsg;
+    feedback.className = 'feedback-row show-wrong';
+    playWrong();
+    setTimeout(() => {
+      btn.classList.remove('wrong');
+      btn.disabled = true;
+      answered = false;
+      feedback.textContent = '';
+      feedback.className = 'feedback-row';
+    }, 900);
+  }
+}
+
+function showNext() {
+  document.getElementById('nextBtn').style.display = 'block';
+}
+
+function nextQuestion() {
+  qIndex++;
+  if (qIndex >= questions.length) {
+    showFinal();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showFinal() {
+  document.getElementById('card').classList.add('hide');
+  const fs = document.getElementById('finalScreen');
+  fs.classList.add('show');
+
+  const pct = score / questions.length;
+  document.getElementById('finalScore').textContent = `${score} / ${questions.length}`;
+
+  let trophy, msg;
+  if (pct === 1) { trophy = '🏆'; msg = 'PERFECT SCORE! You\'re a train GENIUS!'; }
+  else if (pct >= 0.7) { trophy = '⭐'; msg = 'You\'re a train expert! Amazing work!'; }
+  else if (pct >= 0.4) { trophy = '🚂'; msg = 'Great job! Keep learning about trains!'; }
+  else { trophy = '🎉'; msg = 'Nice try! Play again to learn more!'; }
+
+  document.getElementById('finalTrophy').textContent = trophy;
+  document.getElementById('finalMsg').textContent = msg;
+  playFanfare();
+}
+
+function restartQuiz() {
+  score = 0;
+  qIndex = 0;
+  order = shuffle(questions.map((_,i) => i));
+  document.getElementById('card').classList.remove('hide');
+  document.getElementById('finalScreen').classList.remove('show');
+  renderQuestion();
+}
+
+function playCorrect() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [[523,0],[659,0.12],[784,0.24],[1047,0.36]].forEach(([freq, t]) => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.connect(g); g.connect(ctx.destination);
+      osc.frequency.value = freq; osc.type = 'sine';
+      g.gain.setValueAtTime(0.18, ctx.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+t+0.2);
+      osc.start(ctx.currentTime+t);
+      osc.stop(ctx.currentTime+t+0.25);
+    });
+  } catch(e) {}
+}
+
+function playWrong() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.frequency.value = 200; osc.type = 'sawtooth';
+    g.gain.setValueAtTime(0.15, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.4);
+    osc.start(); osc.stop(ctx.currentTime+0.45);
+  } catch(e) {}
+}
+
+function playFanfare() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [[523,0],[659,0.15],[784,0.3],[1047,0.45],[784,0.6],[1047,0.75],[1319,0.9]];
+    notes.forEach(([freq, t]) => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.connect(g); g.connect(ctx.destination);
+      osc.frequency.value = freq; osc.type = 'sine';
+      g.gain.setValueAtTime(0.15, ctx.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+t+0.25);
+      osc.start(ctx.currentTime+t);
+      osc.stop(ctx.currentTime+t+0.3);
+    });
+  } catch(e) {}
+}
+
+order = shuffle(questions.map((_,i) => i));
+renderQuestion();
+</script>
+</body>
+</html>

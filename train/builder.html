@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build-a-Train!</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  background: linear-gradient(160deg, #1a2e0a 0%, #2a4a10 50%, #0a1a04 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px;
+  overflow-x: hidden;
+}
+h1 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #ffd700;
+  text-shadow: 3px 3px 0 #6a4a00;
+  text-align: center;
+  margin-bottom: 4px;
+}
+.subtitle {
+  font-size: 0.8rem;
+  color: rgba(255,215,0,0.5);
+  letter-spacing: 4px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.palette-section {
+  background: rgba(0,0,0,0.35);
+  border-radius: 20px;
+  padding: 16px 14px;
+  width: 100%;
+  max-width: 680px;
+  margin-bottom: 14px;
+}
+.palette-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 5px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 12px;
+  text-align: center;
+}
+.palette {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+@media (max-width: 400px) { .palette { grid-template-columns: repeat(3, 1fr); } }
+.car-btn {
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 10px 6px 8px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, border-color 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: white;
+}
+.car-btn:hover { background: rgba(255,215,0,0.2); border-color: #ffd700; }
+.car-btn:active { transform: scale(0.93); }
+.car-btn svg { width: 100%; height: auto; }
+.car-btn span {
+  font-size: clamp(0.55rem, 1.8vw, 0.72rem);
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.9);
+  text-align: center;
+}
+.track-section {
+  background: rgba(0,0,0,0.4);
+  border-radius: 20px;
+  padding: 16px 14px;
+  width: 100%;
+  max-width: 680px;
+  margin-bottom: 14px;
+}
+.track-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 5px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 10px;
+  text-align: center;
+}
+.track-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #d8e8f0 0%, #b8d0e8 100%);
+  padding: 10px 8px 0;
+  min-height: 120px;
+  position: relative;
+  scrollbar-width: thin;
+}
+#trainDisplay {
+  display: flex;
+  align-items: flex-end;
+  min-height: 100px;
+  width: max-content;
+  transition: transform 0s;
+  position: relative;
+}
+.empty-track {
+  color: #7090a8;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 28px 20px;
+  letter-spacing: 2px;
+  width: 100%;
+  text-align: center;
+  user-select: none;
+}
+.train-car-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+.train-car-item svg { width: 110px; height: auto; }
+.remove-hint {
+  font-size: 0.6rem;
+  color: #c41e1e;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-weight: 700;
+  letter-spacing: 1px;
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.train-car-item:hover .remove-hint { opacity: 1; }
+.loco svg { width: 140px; height: auto; }
+.controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  width: 100%;
+  max-width: 680px;
+}
+.ctrl-btn {
+  flex: 1;
+  max-width: 200px;
+  padding: 14px 10px;
+  border: none;
+  border-radius: 14px;
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: transform 0.1s, filter 0.15s;
+  font-family: inherit;
+}
+.ctrl-btn:active { transform: scale(0.94); }
+#clearBtn { background: #555; color: #ddd; }
+#clearBtn:hover { background: #c41e1e; color: white; }
+#goBtn { background: #ffd700; color: #1a2e0a; }
+#goBtn:hover { filter: brightness(1.1); }
+#goBtn:disabled { background: #888; color: #555; cursor: default; filter: none; }
+.count-display {
+  text-align: center;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.8rem;
+  letter-spacing: 3px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+.celebration {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+.celebration.show { display: flex; }
+.celeb-text {
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  font-weight: 900;
+  color: #ffd700;
+  text-align: center;
+  text-shadow: 3px 3px 0 #8a6000;
+  letter-spacing: 3px;
+  animation: bounce 0.5s ease infinite alternate;
+}
+@keyframes bounce { from { transform: scale(1); } to { transform: scale(1.08); } }
+.celeb-emoji { font-size: 4rem; animation: spin 1.5s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.celeb-btn {
+  background: #ffd700;
+  color: #1a2e0a;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 32px;
+  font-size: 1.2rem;
+  font-weight: 900;
+  cursor: pointer;
+  letter-spacing: 2px;
+  font-family: inherit;
+  margin-top: 10px;
+}
+</style>
+</head>
+<body>
+
+<h1>BUILD-A-TRAIN!</h1>
+<div class="subtitle">★ TAP A CAR TO ADD IT ★</div>
+
+<div class="palette-section">
+  <div class="palette-title">CHOOSE YOUR CARS</div>
+  <div class="palette" id="palette"></div>
+</div>
+
+<div class="track-section">
+  <div class="track-title">YOUR TRAIN</div>
+  <div class="track-wrapper" id="trackWrapper">
+    <div id="trainDisplay">
+      <div class="empty-track" id="emptyMsg">TAP CARS ABOVE TO BUILD YOUR TRAIN!</div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="ctrl-btn" id="clearBtn" onclick="clearTrain()">CLEAR</button>
+  <button class="ctrl-btn" id="goBtn" onclick="goTrain()" disabled>GO! 🚂</button>
+</div>
+<div class="count-display" id="countDisplay">ADD SOME CARS TO GET STARTED</div>
+
+<div class="celebration" id="celebration">
+  <div class="celeb-emoji">🚂</div>
+  <div class="celeb-text">CHUGGA CHUGGA<br>CHOO CHOO!</div>
+  <div style="color:white;font-size:1.1rem;letter-spacing:2px;">YOUR TRAIN IS ON THE MOVE!</div>
+  <button class="celeb-btn" onclick="resetAfterGo()">BUILD AGAIN!</button>
+</div>
+
+<script>
+const carDefs = [
+  { name:'BOXCAR', color:'#c4541a', detail:'#a83010',
+    svgBody: () => `
+      <rect x="5" y="12" width="100" height="35" fill="#c4541a" rx="2"/>
+      <rect x="5" y="12" width="100" height="6" fill="#a83010" rx="2"/>
+      <rect x="38" y="13" width="34" height="34" fill="#b04010"/>
+      <line x1="55" y1="13" x2="55" y2="47" stroke="#8a2e0a" stroke-width="2"/>
+      <rect x="48" y="28" width="14" height="4" fill="#ffd700" rx="2"/>
+    `
+  },
+  { name:'TANK CAR', color:'#c0c0d0', detail:'#9090a8',
+    svgBody: () => `
+      <rect x="20" y="32" width="8" height="15" fill="#3a3a3a"/>
+      <rect x="82" y="32" width="8" height="15" fill="#3a3a3a"/>
+      <ellipse cx="55" cy="26" rx="48" ry="18" fill="#c8c8dc"/>
+      <ellipse cx="9" cy="26" rx="5" ry="17" fill="#a0a0bc"/>
+      <ellipse cx="101" cy="26" rx="5" ry="17" fill="#a0a0bc"/>
+      <ellipse cx="30" cy="26" rx="2" ry="17" fill="none" stroke="#aaaacc" stroke-width="2"/>
+      <ellipse cx="55" cy="26" rx="2" ry="17" fill="none" stroke="#aaaacc" stroke-width="2"/>
+      <ellipse cx="80" cy="26" rx="2" ry="17" fill="none" stroke="#aaaacc" stroke-width="2"/>
+      <rect x="48" y="8" width="14" height="7" fill="#8888a0" rx="2"/>
+    `
+  },
+  { name:'FLAT CAR', color:'#6b4520', detail:'#4a2e12',
+    svgBody: () => `
+      <rect x="5" y="38" width="100" height="8" fill="#6b4520" rx="1"/>
+      <line x1="28" y1="38" x2="28" y2="46" stroke="#4a2e12" stroke-width="2"/>
+      <line x1="55" y1="38" x2="55" y2="46" stroke="#4a2e12" stroke-width="2"/>
+      <line x1="82" y1="38" x2="82" y2="46" stroke="#4a2e12" stroke-width="2"/>
+      <rect x="17" y="28" width="3" height="12" fill="#3a2010" rx="1"/>
+      <rect x="90" y="28" width="3" height="12" fill="#3a2010" rx="1"/>
+      <ellipse cx="28" cy="30" rx="14" ry="7" fill="#8b5228"/>
+      <ellipse cx="28" cy="23" rx="14" ry="7" fill="#9a5e30"/>
+      <ellipse cx="80" cy="30" rx="18" ry="7" fill="#7d4820"/>
+      <ellipse cx="80" cy="23" rx="18" ry="7" fill="#8b5228"/>
+    `
+  },
+  { name:'HOPPER', color:'#8b1a1a', detail:'#5a0808',
+    svgBody: () => `
+      <polygon points="8,12 102,12 92,47 18,47" fill="#8b1a1a"/>
+      <rect x="6" y="8" width="98" height="6" fill="#6a1010" rx="1"/>
+      <polygon points="18,47 42,47 37,55 23,55" fill="#4a0808"/>
+      <polygon points="52,47 58,47 56,55 50,55" fill="#4a0808" opacity="0"/>
+      <polygon points="68,47 92,47 87,55 73,55" fill="#4a0808"/>
+      <polygon points="10,13 100,13 98,24 12,24" fill="#111"/>
+      <polygon points="12,24 98,24 90,38 20,38" fill="#1a1a1a"/>
+    `
+  },
+  { name:'GONDOLA', color:'#2c2c3e', detail:'#1a1a28',
+    svgBody: () => `
+      <rect x="5" y="18" width="100" height="30" fill="#2c2c3e"/>
+      <rect x="10" y="20" width="90" height="26" fill="#1e1e2c"/>
+      <rect x="5" y="18" width="6" height="30" fill="#3a3a50"/>
+      <rect x="99" y="18" width="6" height="30" fill="#3a3a50"/>
+      <rect x="5" y="14" width="100" height="6" fill="#404055" rx="1"/>
+      <polygon points="15,48 32,26 44,36 56,22 68,34 80,22 95,48" fill="#555"/>
+      <polygon points="20,48 35,30 48,40 62,26 74,38 90,48" fill="#444"/>
+    `
+  },
+  { name:'REEFER', color:'#e8e8f0', detail:'#c8c8d8',
+    svgBody: () => `
+      <rect x="5" y="12" width="100" height="35" fill="#e8e8f0" rx="2"/>
+      <rect x="5" y="12" width="100" height="6" fill="#c8c8d8" rx="2"/>
+      <rect x="5" y="41" width="100" height="6" fill="#c8c8d8"/>
+      <rect x="7" y="19" width="18" height="20" fill="#b8b8cc" rx="1"/>
+      <line x1="7" y1="24" x2="25" y2="24" stroke="#9898b0" stroke-width="1.5"/>
+      <line x1="7" y1="30" x2="25" y2="30" stroke="#9898b0" stroke-width="1.5"/>
+      <line x1="7" y1="36" x2="25" y2="36" stroke="#9898b0" stroke-width="1.5"/>
+      <rect x="85" y="19" width="18" height="20" fill="#b8b8cc" rx="1"/>
+      <line x1="85" y1="24" x2="103" y2="24" stroke="#9898b0" stroke-width="1.5"/>
+      <line x1="85" y1="30" x2="103" y2="30" stroke="#9898b0" stroke-width="1.5"/>
+      <line x1="85" y1="36" x2="103" y2="36" stroke="#9898b0" stroke-width="1.5"/>
+      <rect x="32" y="19" width="46" height="22" fill="#d4d4e4" rx="1"/>
+      <line x1="55" y1="19" x2="55" y2="41" stroke="#b0b0c8" stroke-width="1.5"/>
+      <text x="55" y="34" text-anchor="middle" font-size="12">❄️</text>
+    `
+  },
+  { name:'CABOOSE', color:'#cc1111', detail:'#880000',
+    svgBody: () => `
+      <rect x="12" y="24" width="86" height="24" fill="#cc1111" rx="2"/>
+      <rect x="10" y="20" width="90" height="6" fill="#aa0000" rx="1"/>
+      <rect x="32" y="10" width="46" height="16" fill="#cc1111" rx="2"/>
+      <rect x="30" y="7" width="50" height="5" fill="#aa0000" rx="1"/>
+      <rect x="36" y="12" width="14" height="10" fill="#87ceeb" rx="2"/>
+      <rect x="60" y="12" width="14" height="10" fill="#87ceeb" rx="2"/>
+      <rect x="20" y="28" width="18" height="14" fill="#aad4ee" rx="2"/>
+      <rect x="72" y="28" width="18" height="14" fill="#aad4ee" rx="2"/>
+      <rect x="5" y="34" width="9" height="3" fill="#aa0000" rx="1"/>
+      <rect x="96" y="34" width="9" height="3" fill="#aa0000" rx="1"/>
+    `
+  }
+];
+
+function miniCarSvg(def) {
+  return `<svg viewBox="0 0 110 65" xmlns="http://www.w3.org/2000/svg">
+    ${def.svgBody()}
+    <!-- Wheels -->
+    <g transform="translate(20,48)">
+      <rect x="-12" y="-2" width="24" height="5" fill="#1a1a1a" rx="1"/>
+      <circle cx="-7" cy="5" r="8" fill="#111" stroke="#444" stroke-width="1.5"/>
+      <circle cx="7" cy="5" r="8" fill="#111" stroke="#444" stroke-width="1.5"/>
+      <circle cx="-7" cy="5" r="3" fill="#555"/>
+      <circle cx="7" cy="5" r="3" fill="#555"/>
+    </g>
+    <g transform="translate(90,48)">
+      <rect x="-12" y="-2" width="24" height="5" fill="#1a1a1a" rx="1"/>
+      <circle cx="-7" cy="5" r="8" fill="#111" stroke="#444" stroke-width="1.5"/>
+      <circle cx="7" cy="5" r="8" fill="#111" stroke="#444" stroke-width="1.5"/>
+      <circle cx="-7" cy="5" r="3" fill="#555"/>
+      <circle cx="7" cy="5" r="3" fill="#555"/>
+    </g>
+    <rect x="2" y="46" width="106" height="5" fill="#0a0a0a" rx="1"/>
+    <rect x="0" y="47" width="8" height="4" fill="#444" rx="1"/>
+    <rect x="102" y="47" width="8" height="4" fill="#444" rx="1"/>
+    <!-- Ground line -->
+    <line x1="0" y1="61" x2="110" y2="61" stroke="#4a6040" stroke-width="3"/>
+  </svg>`;
+}
+
+function locoSvg() {
+  return `<svg viewBox="0 0 140 75" xmlns="http://www.w3.org/2000/svg">
+    <!-- Locomotive body -->
+    <rect x="20" y="18" width="112" height="38" fill="#2a2a2a" rx="4"/>
+    <rect x="20" y="18" width="112" height="8" fill="#1a1a1a" rx="4"/>
+    <!-- Cab -->
+    <rect x="90" y="8" width="42" height="32" fill="#333" rx="3"/>
+    <rect x="88" y="5" width="46" height="6" fill="#222" rx="2"/>
+    <rect x="94" y="12" width="16" height="14" fill="#87ceeb" rx="2"/>
+    <rect x="114" y="12" width="16" height="14" fill="#87ceeb" rx="2"/>
+    <!-- Boiler -->
+    <ellipse cx="50" cy="30" rx="28" ry="16" fill="#3a3a3a"/>
+    <ellipse cx="50" cy="30" rx="26" ry="14" fill="#444"/>
+    <!-- Chimney -->
+    <rect x="34" y="8" width="12" height="12" fill="#222" rx="2"/>
+    <rect x="30" y="6" width="20" height="5" fill="#1a1a1a" rx="2"/>
+    <!-- Smoke -->
+    <circle cx="40" cy="2" r="4" fill="rgba(200,200,200,0.5)"/>
+    <circle cx="48" cy="-1" r="5" fill="rgba(200,200,200,0.4)"/>
+    <circle cx="58" cy="-3" r="6" fill="rgba(200,200,200,0.3)"/>
+    <!-- Red stripe -->
+    <rect x="20" y="44" width="112" height="6" fill="#cc1111"/>
+    <!-- Headlight -->
+    <circle cx="22" cy="34" r="6" fill="#ffffa0"/>
+    <circle cx="22" cy="34" r="4" fill="#ffff60"/>
+    <!-- Wheels -->
+    <circle cx="38" cy="58" r="12" fill="#111" stroke="#555" stroke-width="2"/>
+    <circle cx="38" cy="58" r="5" fill="#444"/>
+    <circle cx="65" cy="58" r="12" fill="#111" stroke="#555" stroke-width="2"/>
+    <circle cx="65" cy="58" r="5" fill="#444"/>
+    <circle cx="92" cy="58" r="12" fill="#111" stroke="#555" stroke-width="2"/>
+    <circle cx="92" cy="58" r="5" fill="#444"/>
+    <circle cx="118" cy="55" r="9" fill="#111" stroke="#555" stroke-width="2"/>
+    <circle cx="118" cy="55" r="4" fill="#444"/>
+    <!-- Frame -->
+    <rect x="18" y="52" width="118" height="8" fill="#1a1a1a" rx="1"/>
+    <!-- Coupler -->
+    <rect x="130" y="47" width="10" height="5" fill="#444" rx="1"/>
+    <!-- Ground -->
+    <line x1="0" y1="71" x2="140" y2="71" stroke="#4a6040" stroke-width="3"/>
+  </svg>`;
+}
+
+let train = [];
+
+function buildPalette() {
+  const palette = document.getElementById('palette');
+  carDefs.forEach((def, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'car-btn';
+    btn.innerHTML = `${miniCarSvg(def)}<span>${def.name}</span>`;
+    btn.onclick = () => addCar(i);
+    palette.appendChild(btn);
+  });
+}
+
+function addCar(i) {
+  train.push(i);
+  renderTrain();
+  playClick();
+}
+
+function removeCar(idx) {
+  train.splice(idx, 1);
+  renderTrain();
+}
+
+function renderTrain() {
+  const display = document.getElementById('trainDisplay');
+  const emptyMsg = document.getElementById('emptyMsg');
+  const count = document.getElementById('countDisplay');
+  const goBtn = document.getElementById('goBtn');
+
+  if (train.length === 0) {
+    display.innerHTML = '<div class="empty-track" id="emptyMsg">TAP CARS ABOVE TO BUILD YOUR TRAIN!</div>';
+    count.textContent = 'ADD SOME CARS TO GET STARTED';
+    goBtn.disabled = true;
+    return;
+  }
+
+  let html = `<div class="loco">${locoSvg()}</div>`;
+  train.forEach((carIdx, i) => {
+    const def = carDefs[carIdx];
+    html += `<div class="train-car-item" onclick="removeCar(${i})">
+      <div class="remove-hint">TAP TO REMOVE</div>
+      ${miniCarSvg(def)}
+    </div>`;
+  });
+  display.innerHTML = html;
+  display.style.transform = '';
+
+  const n = train.length;
+  const carWord = n === 1 ? 'CAR' : 'CARS';
+  count.textContent = `${n} ${carWord} — READY TO ROLL!`;
+  goBtn.disabled = false;
+
+  const wrapper = document.getElementById('trackWrapper');
+  setTimeout(() => { wrapper.scrollLeft = wrapper.scrollWidth; }, 50);
+}
+
+function clearTrain() {
+  train = [];
+  renderTrain();
+}
+
+function goTrain() {
+  if (train.length === 0) return;
+  const display = document.getElementById('trainDisplay');
+  const width = display.scrollWidth + 300;
+  display.style.transition = `transform ${Math.max(2, train.length * 0.5)}s linear`;
+  display.style.transform = `translateX(-${width}px)`;
+  playChugging(train.length);
+  setTimeout(() => {
+    document.getElementById('celebration').classList.add('show');
+  }, Math.max(2000, train.length * 500) - 200);
+}
+
+function resetAfterGo() {
+  document.getElementById('celebration').classList.remove('show');
+  const display = document.getElementById('trainDisplay');
+  display.style.transition = 'none';
+  display.style.transform = '';
+  clearTrain();
+}
+
+function playClick() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 600;
+    osc.type = 'square';
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    osc.start(); osc.stop(ctx.currentTime + 0.1);
+  } catch(e) {}
+}
+
+function playChugging(carCount) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const beats = [];
+    const duration = Math.max(2.5, carCount * 0.5 + 1);
+    const interval = 0.22;
+    for (let t = 0; t < duration; t += interval) beats.push(t);
+
+    beats.forEach((time, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = i % 2 === 0 ? 90 : 75;
+      osc.type = 'sawtooth';
+      gain.gain.setValueAtTime(0, ctx.currentTime + time);
+      gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + time + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + time + 0.18);
+      osc.start(ctx.currentTime + time);
+      osc.stop(ctx.currentTime + time + 0.2);
+    });
+
+    // Whistle at the start
+    const whistle = ctx.createOscillator();
+    const wGain = ctx.createGain();
+    whistle.connect(wGain); wGain.connect(ctx.destination);
+    whistle.frequency.value = 880;
+    whistle.type = 'sine';
+    wGain.gain.setValueAtTime(0.15, ctx.currentTime + 0.1);
+    wGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.7);
+    whistle.start(ctx.currentTime + 0.1);
+    whistle.stop(ctx.currentTime + 0.8);
+  } catch(e) {}
+}
+
+buildPalette();
+renderTrain();
+</script>
+</body>
+</html>
