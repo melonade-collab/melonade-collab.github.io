@@ -425,6 +425,7 @@ const QUESTIONS = [
   {
     country: 'Canada',
     image: 'https://images.unsplash.com/photo-1745973216942-84393fcc9025?q=80&w=464&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imgStyle: 'transform:scale(0.88);transform-origin:center;',
     options: ['Canada', 'United States', 'France', 'Belgium'],
     bbox: '-72.2,45.2,-71.6,45.6', marker: '45.40,-71.90',
     blurbs: [
@@ -986,7 +987,7 @@ function startQ(idx) {
 
   const img = document.getElementById('trainImg');
   if (q.image) {
-    img.innerHTML = `<img src="${q.image}" alt="${q.country} train" style="object-position:${q.imgPosition||'center'}">`;
+    img.innerHTML = `<img src="${q.image}" alt="${q.country} train" style="object-position:${q.imgPosition||'center'};${q.imgStyle||''}">`;
     img.style.background = '';
   } else {
     img.style.background = q.bg;
