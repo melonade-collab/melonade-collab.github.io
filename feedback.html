@@ -755,11 +755,12 @@
 
     function classifyFeedback(message, rating, sentiment) {
       const lo = message.toLowerCase();
+      const ALWAYS_HIGH = ['Billing', 'Technical Support'];
       const INTENTS = [
         { team: 'Billing',              sla: 1, reason: 'billing or payment issue',
-          keywords: ['charge','charged','bill','billing','payment','refund','invoice','overcharged','fee','subscription','money','credit','price','pricing','expensive','cost'] },
+          keywords: ['charge','charged','bill','billing','payment','payments','pay','paid','paying','refund','invoice','overcharged','double charged','fee','subscription','money','credit','debit','transaction','price','pricing','cost','unauthorized','wrong amount'] },
         { team: 'Technical Support',    sla: 1, reason: 'technical issue',
-          keywords: ['error','crash','bug','broken','not working','slow','freeze','frozen','login','password','access','glitch','not loading','app','website','404','timeout'] },
+          keywords: ['error','crash','bug','broken','broke','not working','doesnt work',"doesn't work",'stopped working','wont work',"won't work",'slow','freeze','frozen','stuck','login','password','cant log in',"can't log in",'access','glitch','not loading','app','website','404','timeout','down','outage','keeps crashing','black screen','spinning'] },
         { team: 'Fulfillment',          sla: 2, reason: 'shipping or order issue',
           keywords: ['delivery','package','order','shipped','tracking','missing','lost','late','delay','shipping','courier','parcel','not delivered','arrived'] },
         { team: 'Product',              sla: 3, reason: 'product feedback or feature request',
@@ -786,7 +787,8 @@
       }
 
       const isPositive = best.team === 'Customer Success' || sentiment === 'happy';
-      const priority = isPositive ? 'Low'
+      const priority = ALWAYS_HIGH.includes(best.team) ? 'High'
+                     : isPositive ? 'Low'
                      : ((rating !== null && rating <= 4) || sentiment === 'angry') ? 'High'
                      : 'Normal';
       return { team: best.team, sla: best.sla, reason: best.reason, priority };
