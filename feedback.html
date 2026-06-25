@@ -14,12 +14,39 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: #f0f0f8;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       min-height: 100vh;
-      padding: 24px;
     }
+
+    /* ── Case study header ── */
+    .cs-header { background: #1a237e; padding: 52px 40px 44px; }
+    .cs-header-inner { max-width: 800px; margin: 0 auto; }
+    .cs-eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+    .cs-h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -0.5px; margin-bottom: 14px; line-height: 1.1; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.7); line-height: 1.7; max-width: 560px; }
+
+    /* ── Accordion section ── */
+    .cs-body { max-width: 800px; margin: 0 auto; padding: 48px 40px 40px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .acc-header .card-label { margin-bottom: 0; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #3949ab; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p, .acc-body > ul { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { padding-left: 18px; }
+    .acc-body li { margin-bottom: 8px; }
+    .feat-label { font-size: 0.82rem; font-weight: 700; color: #283593; }
+
+    /* ── Prototype wrap ── */
+    .proto-section { background: #f0f0f8; padding: 0 0 80px; }
+    .proto-label-bar { background: #e8eaf6; padding: 32px 40px 24px; }
+    .proto-label { max-width: 800px; margin: 0 auto; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #3949ab; }
+    .proto-inner { max-width: 520px; margin: 0 auto; padding: 40px 20px 0; }
 
     .card {
       background: #fff;
@@ -353,10 +380,8 @@
     .addr-clear:hover { color: #e74c3c; background: none; }
 
     @media (max-width: 520px) {
-      body {
-        align-items: flex-start;
-        padding: 16px;
-      }
+      .cs-header { padding: 36px 24px 32px; }
+      .cs-body { padding: 32px 20px 32px; }
 
       .card {
         padding: 28px 20px;
@@ -377,8 +402,79 @@
   </style>
 </head>
 <body>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="cs-eyebrow">Prototype · Agentic AI</p>
+    <h1 class="cs-h1">Feedback Routing Agent</h1>
+    <p class="cs-intro">Most feedback forms dump submissions into a queue where someone manually reads, tags, prioritizes, and assigns each one. This prototype explores what that intake layer looks like when an agent does it instead.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">The Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Support teams spend real time on triage — not resolution. Every submission has to be read, categorized, assessed for urgency, and routed before any actual help begins. At volume, this gets inconsistent.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tech</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Client-side NLP for sentiment detection and extractive summarization</li>
+        <li>Address geocoding via a live lookup API (Nominatim / OpenStreetMap)</li>
+        <li>Multi-step agent pipeline with animated state transitions</li>
+        <li>Structured JSON output for downstream system handoff</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Features</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li><span class="feat-label">Live sentiment detection</span> — reads tone as you type (positive / negative / neutral), with negation handling so "not great" doesn't register as positive</li>
+        <li><span class="feat-label">Extractive summarization</span> — distills long messages to the key sentence so you can confirm what the agent will act on before submitting</li>
+        <li><span class="feat-label">Open case detection</span> — looks up the email or phone and surfaces any existing open cases, with the option to link the submission rather than create a duplicate record</li>
+        <li><span class="feat-label">Address autocomplete</span> — enriches submissions with location data via a live geocoding API for regional routing or geo-clustering</li>
+        <li><span class="feat-label">NPS-style rating</span> — 0–10 scale with contextual labels per score that adjust based on the selected value</li>
+        <li><span class="feat-label">Agent routing pipeline</span> — animated multi-step processing: reads feedback → detects category and intent → assesses priority → routes to the right team</li>
+        <li><span class="feat-label">Case creation</span> — generates a structured case record with priority level, category, assigned queue, and SLA</li>
+        <li><span class="feat-label">Data transparency</span> — shows the full JSON payload so you can see exactly what gets sent downstream</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Why This</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Every feedback form creates a triage problem — someone has to read each submission, work out what it's about, judge the urgency, and route it before anything useful happens. This prototype puts that cognitive work on the agent, and runs it client-side before anything reaches a queue. The browser is doing the reading, the categorizing, and the routing decision.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="proto-section">
+  <div class="proto-label-bar">
+    <p class="proto-label">Interactive prototype</p>
+  </div>
+  <div class="proto-inner">
   <div class="card">
-    <h1>Feedback Routing Agent</h1>
     <p class="subtitle">For demo purposes only. Feedback is not actually being collected or stored.</p>
 
     <form id="feedbackForm" novalidate>
@@ -492,8 +588,15 @@
       </div>
     </div>
   </div>
+  </div>
+</div>
 
   <script>
+    function toggleAcc(hdr) {
+      hdr.classList.toggle('open');
+      hdr.nextElementSibling.classList.toggle('open');
+    }
+
     // Sentiment analysis
     const positiveRoots = ['love','like','great','excellent','amaz','wonder','fantast','good','happy','happi','pleas','satisf','help','awesom','brilliant','perfect','thank','appreciat','enjoy','impress','recommend','easy','easi','useful','nice','best','friend','clear','smooth','delight','glad','excit','top','outstand','superb','incredibl','stellar','thrill','valued','brilliant','seamless','intuitive'];
     const negativeRoots = ['hate','hating','garbage','crap','trash','junk','rubbish','suck','terrible','awful','bad','horribl','worst','angr','frustrat','disappoint','useless','broken','wrong','problem','complaint','waste','poor','pathetic','disgust','annoy','confus','difficult','hard','fail','slow','crash','unhappy','upset','ridicul','unacceptable','worse','dreadful','nightmare','disaster','mess','worthless','pointless','stupid','ugly','buggy','glitch','awful','painful','terrible','horrif','dreadful'];
@@ -1071,7 +1174,6 @@
 
       // Hide form, show agent analysis
       this.style.display = 'none';
-      document.querySelector('h1').style.display = 'none';
       document.querySelector('.subtitle').style.display = 'none';
       document.getElementById('agentAnalysis').style.display = 'block';
 
