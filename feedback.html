@@ -281,6 +281,77 @@
       vertical-align: middle;
     }
 
+    /* ── Address autocomplete ── */
+    .addr-wrap { position: relative; }
+    .addr-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: white;
+      border: 1px solid #c5cae9;
+      border-radius: 6px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+      z-index: 50;
+      overflow: hidden;
+      display: none;
+    }
+    .addr-dropdown.open { display: block; }
+    .addr-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid #e8eaf6;
+      font-size: 0.84rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      transition: background 0.12s;
+    }
+    .addr-item:last-child { border-bottom: none; }
+    .addr-item:hover, .addr-item.kf { background: #eff0fb; }
+    .addr-item-main { font-weight: 600; color: #1a1a1a; line-height: 1.3; }
+    .addr-item-sub  { font-size: 0.75rem; color: #999; line-height: 1.3; margin-top: 2px; }
+    .addr-msg { padding: 12px 14px; font-size: 0.82rem; color: #aaa; text-align: center; }
+    .addr-status {
+      font-size: 0.75rem;
+      color: #aaa;
+      min-height: 16px;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .addr-status.s-searching { color: #3949ab; }
+    .addr-status.s-found     { color: #2e7d32; }
+    .addr-status.s-error     { color: #e74c3c; }
+    .addr-spinner {
+      width: 11px; height: 11px;
+      border: 2px solid #e8eaf6;
+      border-top-color: #3949ab;
+      border-radius: 50%;
+      animation: addr-spin 0.6s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes addr-spin { to { transform: rotate(360deg); } }
+    .addr-confirm {
+      margin-top: 8px;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: #eff0fb;
+      border: 1px solid #c5cae9;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      color: #3949ab;
+      font-weight: 600;
+    }
+    .addr-clear {
+      background: none; border: none; color: #aaa;
+      cursor: pointer; font-size: 1rem; line-height: 1;
+      padding: 0 2px; width: auto; margin-top: 0;
+    }
+    .addr-clear:hover { color: #e74c3c; background: none; }
+
     @media (max-width: 520px) {
       body {
         align-items: flex-start;
@@ -329,57 +400,22 @@
       </div>
 
       <div class="field">
-        <label for="city">City</label>
-        <select id="city" name="city" required>
-          <option value="" disabled selected>Select your closest major city</option>
-          <option>Brampton</option>
-          <option>Calgary</option>
-          <option>Edmonton</option>
-          <option>Halifax</option>
-          <option>Hamilton</option>
-          <option>Kelowna</option>
-          <option>Laval</option>
-          <option>London</option>
-          <option>Mississauga</option>
-          <option>Moncton</option>
-          <option>Montreal</option>
-          <option>Ottawa</option>
-          <option>Quebec City</option>
-          <option>Regina</option>
-          <option>Saskatoon</option>
-          <option>St. John's</option>
-          <option>Sudbury</option>
-          <option>Thunder Bay</option>
-          <option>Toronto</option>
-          <option>Vancouver</option>
-          <option>Victoria</option>
-          <option>Windsor</option>
-          <option>Winnipeg</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="province">Province</label>
-        <select id="province" name="province" required>
-          <option value="" disabled selected>Select your province</option>
-          <option value="AB">Alberta</option>
-          <option value="BC">British Columbia</option>
-          <option value="MB">Manitoba</option>
-          <option value="NB">New Brunswick</option>
-          <option value="NL">Newfoundland and Labrador</option>
-          <option value="NS">Nova Scotia</option>
-          <option value="ON">Ontario</option>
-          <option value="PE">Prince Edward Island</option>
-          <option value="QC">Quebec</option>
-          <option value="SK">Saskatchewan</option>
-        </select>
-        <span class="field-error" id="provinceError">Please select your province.</span>
-      </div>
-
-      <div class="field">
-        <label for="postal">Postal code <span class="optional-hint">(optional)</span></label>
-        <input type="text" id="postal" name="postal" placeholder="A1A 1A1" maxlength="7" autocomplete="postal-code" inputmode="text">
-        <span class="field-error" id="postalError">Please enter a valid postal code (e.g. A1A 1A1).</span>
+        <label for="addressSearch">Location <span class="optional-hint">(optional)</span></label>
+        <div class="addr-wrap">
+          <input
+            type="text"
+            id="addressSearch"
+            placeholder="Start typing your city or address…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <div class="addr-dropdown" id="addrDropdown"></div>
+        </div>
+        <div class="addr-status" id="addrStatus"></div>
+        <div class="addr-confirm" id="addrConfirm">
+          📍 <span id="addrConfirmText"></span>
+          <button type="button" class="addr-clear" onclick="clearAddress()" title="Clear">×</button>
+        </div>
       </div>
 
       <div class="field">
@@ -533,9 +569,9 @@
       const name     = toTitleCase(document.getElementById('name').value.trim());
       const email    = document.getElementById('email').value.trim();
       const phone    = document.getElementById('phone').value.trim();
-      const city     = document.getElementById('city').value;
-      const province = document.getElementById('province').value;
-      const postal   = document.getElementById('postal').value.trim();
+      const city     = parsedCity;
+      const province = parsedProvince;
+      const postal   = parsedPostal;
       const message  = document.getElementById('message').value.trim();
 
       if (!name && !city && !message && selectedRating === null) {
@@ -595,33 +631,9 @@
       buildFormSummary();
     });
 
-    ['name', 'email', 'phone', 'city', 'province', 'postal'].forEach(id => {
+    ['name', 'email', 'phone'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', buildFormSummary);
-    });
-
-    // City → Province auto-select
-    const cityToProvince = {
-      'Brampton': 'ON', 'Hamilton': 'ON', 'London': 'ON', 'Mississauga': 'ON',
-      'Ottawa': 'ON', 'Sudbury': 'ON', 'Thunder Bay': 'ON', 'Toronto': 'ON', 'Windsor': 'ON',
-      'Calgary': 'AB', 'Edmonton': 'AB',
-      'Vancouver': 'BC', 'Victoria': 'BC', 'Kelowna': 'BC',
-      'Winnipeg': 'MB',
-      'Moncton': 'NB',
-      'St. John\'s': 'NL',
-      'Halifax': 'NS',
-      'Laval': 'QC', 'Montreal': 'QC', 'Quebec City': 'QC',
-      'Regina': 'SK', 'Saskatoon': 'SK'
-    };
-
-    document.getElementById('city').addEventListener('change', function () {
-      const province = cityToProvince[this.value];
-      if (province) {
-        const provinceSelect = document.getElementById('province');
-        provinceSelect.value = province;
-        provinceSelect.classList.remove('invalid');
-        document.getElementById('provinceError').classList.remove('visible');
-      }
+      if (el) el.addEventListener('input', buildFormSummary);
     });
 
     // Email
@@ -680,47 +692,149 @@
 
     phoneInput.addEventListener('blur', validatePhone);
 
-    // Postal code
-    const postalInput = document.getElementById('postal');
-    const postalError = document.getElementById('postalError');
+    // ── Address autocomplete ──
+    let parsedCity = '', parsedProvince = '', parsedPostal = '';
+    let addrResults = [], addrKbdIdx = -1, addrDebounce = null;
 
-    function formatPostal(input) {
-      const pos = input.selectionStart;
-      const upper = input.value.toUpperCase().replace(/[^A-Z0-9 ]/g, '');
-      const stripped = upper.replace(/ /g, '').slice(0, 6);
-      let formatted;
-      if (stripped.length > 3) {
-        formatted = stripped.slice(0, 3) + ' ' + stripped.slice(3);
-      } else if (stripped.length === 3 && input.value.slice(-1) === ' ') {
-        formatted = stripped + ' ';
-      } else {
-        formatted = stripped;
-      }
-      if (input.value !== formatted) {
-        input.value = formatted;
-        const newPos = pos > 3 && formatted.charAt(3) === ' ' ? Math.min(pos + 1, formatted.length) : Math.min(pos, formatted.length);
-        try { input.setSelectionRange(newPos, newPos); } catch(e) {}
-      }
-    }
+    const PROVINCE_ABBR = {
+      'Alberta':'AB','British Columbia':'BC','Manitoba':'MB','New Brunswick':'NB',
+      'Newfoundland and Labrador':'NL','Northwest Territories':'NT','Nova Scotia':'NS',
+      'Nunavut':'NU','Ontario':'ON','Prince Edward Island':'PE','Quebec':'QC',
+      'Saskatchewan':'SK','Yukon':'YT',
+      'Alabama':'AL','Alaska':'AK','Arizona':'AZ','Arkansas':'AR','California':'CA',
+      'Colorado':'CO','Connecticut':'CT','Delaware':'DE','Florida':'FL','Georgia':'GA',
+      'Hawaii':'HI','Idaho':'ID','Illinois':'IL','Indiana':'IN','Iowa':'IA',
+      'Kansas':'KS','Kentucky':'KY','Louisiana':'LA','Maine':'ME','Maryland':'MD',
+      'Massachusetts':'MA','Michigan':'MI','Minnesota':'MN','Mississippi':'MS',
+      'Missouri':'MO','Montana':'MT','Nebraska':'NE','Nevada':'NV','New Hampshire':'NH',
+      'New Jersey':'NJ','New Mexico':'NM','New York':'NY','North Carolina':'NC',
+      'North Dakota':'ND','Ohio':'OH','Oklahoma':'OK','Oregon':'OR','Pennsylvania':'PA',
+      'Rhode Island':'RI','South Carolina':'SC','South Dakota':'SD','Tennessee':'TN',
+      'Texas':'TX','Utah':'UT','Vermont':'VT','Virginia':'VA','Washington':'WA',
+      'West Virginia':'WV','Wisconsin':'WI','Wyoming':'WY','District of Columbia':'DC'
+    };
 
-    function isValidPostal(value) {
-      return /^[A-Z]\d[A-Z] \d[A-Z]\d$/.test(value);
-    }
+    const addrInput       = document.getElementById('addressSearch');
+    const addrDropdown    = document.getElementById('addrDropdown');
+    const addrStatus      = document.getElementById('addrStatus');
+    const addrConfirm     = document.getElementById('addrConfirm');
+    const addrConfirmText = document.getElementById('addrConfirmText');
 
-    function validatePostal() {
-      const value = postalInput.value.trim();
-      const invalid = value.length > 0 && !isValidPostal(value);
-      postalInput.classList.toggle('invalid', invalid);
-      postalError.classList.toggle('visible', invalid);
-      return invalid;
-    }
-
-    postalInput.addEventListener('input', function () {
-      formatPostal(this);
-      if (postalError.classList.contains('visible')) validatePostal();
+    addrInput.addEventListener('input', () => {
+      clearTimeout(addrDebounce);
+      const q = addrInput.value.trim();
+      if (q.length < 4) { closeAddrDropdown(); setAddrStatus('', ''); return; }
+      setAddrStatus('searching', '');
+      addrDebounce = setTimeout(() => fetchAddr(q), 450);
     });
 
-    postalInput.addEventListener('blur', validatePostal);
+    addrInput.addEventListener('keydown', e => {
+      const items = addrDropdown.querySelectorAll('.addr-item');
+      if (e.key === 'ArrowDown')      { e.preventDefault(); addrKbdIdx = Math.min(addrKbdIdx+1, items.length-1); syncAddrKbd(items); }
+      else if (e.key === 'ArrowUp')   { e.preventDefault(); addrKbdIdx = Math.max(addrKbdIdx-1, -1); syncAddrKbd(items); }
+      else if (e.key === 'Enter' && addrKbdIdx >= 0) { e.preventDefault(); selectAddr(addrResults[addrKbdIdx]); }
+      else if (e.key === 'Escape')    closeAddrDropdown();
+    });
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.addr-wrap')) closeAddrDropdown();
+    });
+
+    function syncAddrKbd(items) {
+      items.forEach((el, i) => el.classList.toggle('kf', i === addrKbdIdx));
+    }
+
+    async function fetchAddr(q) {
+      try {
+        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&addressdetails=1&limit=5&accept-language=en`;
+        const res  = await fetch(url, { headers: { 'User-Agent': 'MelanieWiltshirePortfolio/1.0' } });
+        const data = await res.json();
+        addrResults = data;
+        renderAddrDropdown(data);
+      } catch {
+        setAddrStatus('error', 'Address lookup unavailable');
+        closeAddrDropdown();
+      }
+    }
+
+    function renderAddrDropdown(data) {
+      addrKbdIdx = -1;
+      if (!data.length) {
+        addrDropdown.innerHTML = `<div class="addr-msg">No results found</div>`;
+        addrDropdown.classList.add('open');
+        setAddrStatus('', 'No results');
+        return;
+      }
+      addrDropdown.innerHTML = data.map((r, i) => {
+        const parts = r.display_name.split(', ');
+        const main  = parts.slice(0,2).join(', ');
+        const sub   = parts.slice(2).join(', ');
+        return `<div class="addr-item" data-i="${i}">
+          <span style="color:#3949ab;flex-shrink:0;margin-top:2px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </span>
+          <div>
+            <div class="addr-item-main">${escAddr(main)}</div>
+            <div class="addr-item-sub">${escAddr(sub)}</div>
+          </div>
+        </div>`;
+      }).join('');
+      addrDropdown.querySelectorAll('.addr-item').forEach(el => {
+        el.addEventListener('click', () => selectAddr(addrResults[+el.dataset.i]));
+      });
+      addrDropdown.classList.add('open');
+      setAddrStatus('found', `${data.length} result${data.length !== 1 ? 's' : ''} found`);
+    }
+
+    function selectAddr(r) {
+      const a       = r.address || {};
+      parsedCity     = a.city || a.town || a.village || a.hamlet || a.municipality || a.county || '';
+      const stateRaw = a.state || a.province || a.region || '';
+      parsedProvince = PROVINCE_ABBR[stateRaw] || stateRaw;
+      parsedPostal   = (a.postcode || '').toUpperCase();
+      addrInput.value = r.display_name;
+      closeAddrDropdown();
+      const parts = [parsedCity, parsedProvince, parsedPostal].filter(Boolean);
+      addrConfirmText.textContent = parts.join(', ');
+      addrConfirm.style.display = parts.length ? 'flex' : 'none';
+      setAddrStatus('found', 'Location parsed');
+      buildFormSummary();
+    }
+
+    function clearAddress() {
+      parsedCity = parsedProvince = parsedPostal = '';
+      addrInput.value = '';
+      addrConfirm.style.display = 'none';
+      addrConfirmText.textContent = '';
+      setAddrStatus('', '');
+      buildFormSummary();
+    }
+
+    function closeAddrDropdown() {
+      addrDropdown.classList.remove('open');
+      addrDropdown.innerHTML = '';
+      addrKbdIdx = -1;
+    }
+
+    function setAddrStatus(type, msg) {
+      addrStatus.className = 'addr-status';
+      if (type === 'searching') {
+        addrStatus.className += ' s-searching';
+        addrStatus.innerHTML = `<span class="addr-spinner"></span> Searching…`;
+      } else if (type === 'found') {
+        addrStatus.className += ' s-found';
+        addrStatus.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> ${escAddr(msg)}`;
+      } else if (type === 'error') {
+        addrStatus.className += ' s-error';
+        addrStatus.innerHTML = `⚠ ${escAddr(msg)}`;
+      } else {
+        addrStatus.textContent = msg;
+      }
+    }
+
+    function escAddr(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
 
     function populateDataView(d) {
       const fields = [
@@ -857,15 +971,14 @@
       }
 
       if (validatePhone()) { phoneInput.focus(); return; }
-      if (validatePostal()) { postalInput.focus(); return; }
 
       const phone     = document.getElementById('phone').value.trim();
       const sentiment = message ? analyseSentiment(message) : 'neutral';
       const formData  = {
         name, email, message, phone,
-        city:      document.getElementById('city').value,
-        province:  document.getElementById('province').value,
-        postal:    document.getElementById('postal').value.trim(),
+        city:      parsedCity,
+        province:  parsedProvince,
+        postal:    parsedPostal,
         rating:    selectedRating,
         sentiment: { happy: 'positive', angry: 'negative', neutral: 'neutral' }[sentiment],
       };
