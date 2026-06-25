@@ -364,7 +364,8 @@ function speakFact() {
 function speak() {
   if (!window.speechSynthesis) return;
   const car = cars[current];
-  const msg = new SpeechSynthesisUtterance(`${car.name}! It carries ${car.carries}`);
+  const spokenName = car.name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+  const msg = new SpeechSynthesisUtterance(`${spokenName}! It carries ${car.carries}`);
   msg.rate = 0.82; msg.pitch = 1.15; msg.volume = 1;
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(msg);
