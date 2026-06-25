@@ -119,6 +119,22 @@ body {
   box-shadow: 0 0 0 3px #FCA5A5 !important;
 }
 .opt:disabled { opacity: 0.32; cursor: default; }
+.opt.selected {
+  outline: 4px solid #fff;
+  transform: scale(1.04);
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.5), 0 3px 10px rgba(0,0,0,0.15);
+}
+.btn-submit {
+  width: 100%; padding: 15px; margin-top: 12px;
+  background: #ffd700; color: #0d1a2e;
+  border: none; border-radius: 14px;
+  font-size: 1rem; font-weight: 800; font-family: inherit;
+  cursor: pointer; letter-spacing: 0.3px;
+  transition: background 0.15s, transform 0.1s, opacity 0.2s;
+}
+.btn-submit:disabled { opacity: 0.28; cursor: default; }
+.btn-submit:not(:disabled):hover { background: #f0c800; }
+.btn-submit:not(:disabled):active { transform: scale(0.98); }
 
 @keyframes shake {
   0%,100% { transform: translateX(0); }
@@ -219,6 +235,7 @@ body {
         <div class="q-text">Which country is this train from?</div>
         <div class="options-grid" id="optGrid"></div>
         <div class="wrong-msg" id="wrongMsg"></div>
+        <button class="btn-submit" id="submitBtn" disabled onclick="submitAnswer()">Check answer →</button>
       </div>
     </div>
   </div>
@@ -260,10 +277,7 @@ body {
 const QUESTIONS = [
   {
     country: 'Japan',
-    emoji: '🚄',
-    bg: 'linear-gradient(160deg, #B91C1C 0%, #7F1D1D 100%)',
-    label: 'Shinkansen · Japan',
-    // image: 'images/japan-shinkansen.jpg',
+    image: 'https://images.unsplash.com/photo-1568074622334-e92bc57cbc95?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     options: ['Japan', 'China', 'South Korea', 'France'],
     bbox: '128.0,30.0,147.0,46.0', marker: '35.68,139.69',
     blurbs: [
@@ -276,11 +290,9 @@ const QUESTIONS = [
   },
   {
     country: 'France',
-    emoji: '🚂',
-    bg: 'linear-gradient(160deg, #1D4ED8 0%, #1E3A8A 100%)',
-    label: 'TGV · France',
-    // image: 'images/france-tgv.jpg',
-    options: ['Germany', 'France', 'Spain', 'Italy'],
+    image: 'https://images.unsplash.com/photo-1486915585284-e6cb5cd1ec87?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imgPosition: 'center 70%',
+    options: ['Germany', 'France', 'Spain', 'Austria'],
     bbox: '-5.0,41.0,10.0,52.0', marker: '48.85,2.35',
     blurbs: [
       "France's TGV stands for Train à Grande Vitesse, which means 'very fast train'! France has such a brilliant rail network that you can travel from Paris to Lyon — over 400 kilometres away — in just two hours. Trains are a huge part of everyday life in France.",
@@ -306,6 +318,7 @@ const QUESTIONS = [
   {
     country: 'India',
     image: 'https://images.unsplash.com/photo-1592844002373-a55ecd7af140?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imgPosition: 'center 70%',
     options: ['India', 'China', 'Brazil', 'Russia'],
     bbox: '69.5,23.0,78.5,30.5', marker: '26.92,75.79',
     blurbs: [
@@ -318,10 +331,7 @@ const QUESTIONS = [
   },
   {
     country: 'Switzerland',
-    emoji: '🚞',
-    bg: 'linear-gradient(160deg, #DC2626 0%, #991B1B 100%)',
-    label: 'Mountain railway · Switzerland',
-    // image: 'images/switzerland-mountain-train.jpg',
+    image: 'https://images.unsplash.com/photo-1514970746-d4a465d514d0?q=80&w=464&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     options: ['Austria', 'Norway', 'Switzerland', 'Germany'],
     bbox: '5.9,45.8,10.5,47.9', marker: '46.82,8.23',
     blurbs: [
@@ -347,6 +357,99 @@ const QUESTIONS = [
   },
   {
     country: 'Canada',
+    image: 'https://images.unsplash.com/photo-1692942138132-f239e49564fb?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['Canada', 'United States', 'Norway', 'Chile'],
+    bbox: '-126.0,49.0,-118.0,54.0', marker: '50.67,-120.34',
+    blurbs: [
+      "The famous Last Spike — the final nail that completed Canada's first transcontinental railway — was driven right here in British Columbia, at a tiny place called Craigellachie, in November 1885! A photograph taken at that moment shows dozens of workers crowded around as a company director drove in the plain iron spike. No golden spike for Canada — just a regular one, and a country connected coast to coast for the first time.",
+      "Building the Canadian Pacific Railway through British Columbia's Fraser Canyon was so dangerous that it was considered the hardest railway construction job in North American history! Workers had to dangle in wicker baskets over sheer cliffs to drill holes for explosives, and the canyon walls dropped hundreds of metres straight into the raging river below. Hundreds of workers lost their lives building this stretch of track.",
+      "The Kettle Valley Railway was blasted through the mountains of BC's interior in the early 1900s to connect the mining towns of the Kootenays to the coast. It crossed so many high trestles and tunnels through the Cascade Mountains that engineers called it 'McCulloch's Wonder' after its chief builder. Today the old railway bed is a famous cycling and hiking trail through stunning Okanagan scenery.",
+      "The Rocky Mountaineer luxury train runs entirely through British Columbia and Alberta in daylight hours — the company guarantees passengers will never miss any scenery by travelling through the night! The train stops each evening so passengers sleep in a hotel, then boards again in the morning for another day of mountains, canyons, and river valleys rolling past the glass-dome windows.",
+      "British Columbia's rugged mountains and deep river valleys made railway building so expensive and difficult that some lines cost more per kilometre than almost any railway ever built anywhere on Earth! Engineers had to design curves, tunnels, and spiral loops just to gain enough altitude to cross the mountain passes without the trains stalling on slopes too steep to climb."
+    ]
+  },
+  {
+    country: 'Canada',
+    image: 'https://images.unsplash.com/photo-1503776470087-3569342b4a2e?q=80&w=464&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imgPosition: 'center 70%',
+    options: ['Canada', 'United States', 'Japan', 'Australia'],
+    bbox: '-123.3,49.1,-122.9,49.4', marker: '49.28,-123.12',
+    blurbs: [
+      "Vancouver's SkyTrain is one of the longest fully automated driverless rapid transit systems in the entire world! There are no drivers at all — the trains are controlled entirely by computers. The Expo Line opened in 1985 for the World's Fair and now carries hundreds of thousands of passengers a day above and below the streets of Greater Vancouver.",
+      "The Rocky Mountaineer luxury train departs from Vancouver and winds through some of the most spectacular mountain scenery on Earth! The train climbs through the Fraser Canyon — where sheer rock walls rise hundreds of metres on either side — before reaching the Canadian Rockies. The glass-dome carriages mean every single passenger gets an unobstructed view of the mountains above.",
+      "Vancouver is where VIA Rail's legendary cross-Canada train, The Canadian, begins and ends its four-day journey to Toronto. Pulling out of Vancouver, passengers cross the Fraser River delta, pass through tunnels in the Coast Mountains, and begin one of the greatest railway adventures on the continent — all 4,466 kilometres of it.",
+      "The West Coast Express is a commuter train that carries workers from the Fraser Valley into Vancouver every morning along the north bank of the Fraser River. The route passes through dramatic river canyons and forested hillsides that most commuters in the world could only dream of seeing on their way to work!",
+      "Vancouver's main railway station, Pacific Central, sits in a beautiful 1919 Beaux-Arts building that was once considered one of the grandest in western Canada. Vancouver grew into a major city largely because the Canadian Pacific Railway chose it as its western terminus in 1887 — before that, it was a tiny sawmill town with barely a few hundred residents."
+    ]
+  },
+  {
+    country: 'Canada',
+    image: 'https://images.unsplash.com/photo-1621746856088-922575fffc81?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imgPosition: 'center 70%',
+    options: ['Canada', 'United States', 'United Kingdom', 'Australia'],
+    bbox: '-79.6,43.5,-79.2,43.8', marker: '43.65,-79.38',
+    blurbs: [
+      "Toronto has the largest streetcar network in all of North America! The iconic red streetcars have been rumbling along Toronto's streets since 1861 — first pulled by horses, then by electricity. Today over 200 modern streetcars run on eleven routes through the city, and on King Street they have their own dedicated lanes so they zip past the traffic!",
+      "Toronto's subway opened in 1954, making it one of the oldest underground railways in North America! The very first line ran along Yonge Street — one of the longest streets in the world — and passengers were so excited on opening day that the queues stretched around the block. Today the TTC carries over a million passengers every single weekday.",
+      "GO Transit is the massive commuter rail network that connects Toronto to cities all across the Greater Toronto Area! Double-decker trains carry workers from places like Hamilton, Oakville, and Oshawa into the city every morning — some passengers travel over 100 kilometres each way. GO trains are so popular that the network is being expanded to run all-day, every day.",
+      "The UP Express — Union Pearson Express — is a dedicated airport train that whisks passengers from downtown Toronto to Pearson International Airport in just 25 minutes! It opened in 2015 and was the first dedicated airport rail link in Canada. Pearson handles over 50 million passengers a year, making it the busiest airport in the whole country.",
+      "Toronto's rail network is growing faster than almost any other city in North America! The city is building new subway lines, extending existing ones, and adding light rail routes all at the same time. More people are moving to Toronto every year than almost any other city on the continent, and the trains are racing to keep up with them all!"
+    ]
+  },
+  {
+    country: 'Canada',
+    image: 'https://images.unsplash.com/photo-1582052201614-dbe0e50258c3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z28lMjB0cmFpbnxlbnwwfHwwfHx8MA%3D%3D',
+    options: ['Canada', 'United Kingdom', 'Netherlands', 'Sweden'],
+    bbox: '-80.0,43.2,-78.8,44.0', marker: '43.65,-79.38',
+    blurbs: [
+      "Ontario's GO Train is the backbone of commuting across the Greater Toronto and Hamilton Area! The network stretches over 900 kilometres of track, reaching from Niagara Falls in the west all the way to Oshawa in the east and Barrie in the north. Every weekday, hundreds of thousands of people rely on GO trains to get to work — it's the busiest commuter rail network in all of Canada.",
+      "GO Train coaches are double-deckers — two full levels of seating stacked on top of each other! This clever design means each train can carry far more passengers without needing to be any longer. The upper deck gives riders a brilliant elevated view across the Lake Ontario shoreline, the Toronto skyline, and the flat farmland of southern Ontario rolling past the windows.",
+      "The Lakeshore corridor — the GO Train line that hugs the northern shore of Lake Ontario between Oakville and Oshawa — is the busiest commuter rail corridor in all of Canada! During rush hour, trains run so frequently that some stations see a GO Train every few minutes. On the clearest days, passengers can look south across the lake and just make out the shoreline on the other side.",
+      "Ontario is in the middle of the biggest commuter rail expansion in Canadian history! New electric trains are being introduced across the GO network to replace the old diesel locomotives. Electric trains are quieter, faster to accelerate, and much cleaner — and they'll allow GO to run trains far more frequently, turning the network from a rush-hour service into an all-day, every-direction transit system.",
+      "GO Transit was founded in 1967 — Canada's centennial year — originally running just one line along the Lakeshore. It was so popular that within a few years lines were being added in every direction. Today the green and white GO logo is one of the most recognised symbols in Ontario, and for millions of commuters the sound of the GO Train horn is simply the sound of heading home."
+    ]
+  },
+  {
+    country: 'Canada',
+    image: 'https://images.unsplash.com/photo-1723637375861-6c73ac92af9d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8Z28lMjB0cmFpbnxlbnwwfHwwfHx8MA%3D%3D',
+    options: ['Canada', 'United States', 'Germany', 'Australia'],
+    bbox: '-80.0,43.2,-78.8,44.0', marker: '43.65,-79.38',
+    blurbs: [
+      "Ontario's GO Train is the backbone of commuting across the Greater Toronto and Hamilton Area! The network stretches over 900 kilometres of track, reaching from Niagara Falls in the west all the way to Oshawa in the east and Barrie in the north. Every weekday, hundreds of thousands of people rely on GO trains to get to work — it's the busiest commuter rail network in all of Canada.",
+      "GO Train coaches are double-deckers — two full levels of seating stacked on top of each other! This clever design means each train can carry far more passengers without needing to be any longer. The upper deck gives riders a brilliant elevated view across the Lake Ontario shoreline, the Toronto skyline, and the flat farmland of southern Ontario rolling past the windows.",
+      "The Lakeshore corridor — the GO Train line that hugs the northern shore of Lake Ontario between Oakville and Oshawa — is the busiest commuter rail corridor in all of Canada! During rush hour, trains run so frequently that some stations see a GO Train every few minutes. On the clearest days, passengers can look south across the lake and just make out the shoreline on the other side.",
+      "Ontario is in the middle of the biggest commuter rail expansion in Canadian history! New electric trains are being introduced across the GO network to replace the old diesel locomotives. Electric trains are quieter, faster to accelerate, and much cleaner — and they'll allow GO to run trains far more frequently, turning the network from a rush-hour service into an all-day, every-direction transit system.",
+      "GO Transit was founded in 1967 — Canada's centennial year — originally running just one line along the Lakeshore. It was so popular that within a few years lines were being added in every direction. Today the green and white GO logo is one of the most recognised symbols in Ontario, and for millions of commuters the sound of the GO Train horn is simply the sound of heading home."
+    ]
+  },
+  {
+    country: 'Canada',
+    image: 'https://images.unsplash.com/photo-1521899273693-e61e6683a3d0?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Z28lMjB0cmFpbnxlbnwwfHwwfHx8MA%3D%3D',
+    options: ['Canada', 'United States', 'Australia', 'United Kingdom'],
+    bbox: '-80.0,43.2,-78.8,44.0', marker: '43.65,-79.38',
+    blurbs: [
+      "Ontario's GO Train is the backbone of commuting across the Greater Toronto and Hamilton Area! The network stretches over 900 kilometres of track, reaching from Niagara Falls in the west all the way to Oshawa in the east and Barrie in the north. Every weekday, hundreds of thousands of people rely on GO trains to get to work — it's the busiest commuter rail network in all of Canada.",
+      "GO Train coaches are double-deckers — two full levels of seating stacked on top of each other! This clever design means each train can carry far more passengers without needing to be any longer. The upper deck gives riders a brilliant elevated view across the Lake Ontario shoreline, the Toronto skyline, and the flat farmland of southern Ontario rolling past the windows.",
+      "The Lakeshore corridor — the GO Train line that hugs the northern shore of Lake Ontario between Oakville and Oshawa — is the busiest commuter rail corridor in all of Canada! During rush hour, trains run so frequently that some stations see a GO Train every few minutes. On the clearest days, passengers can look south across the lake and just make out the shoreline on the other side.",
+      "Ontario is in the middle of the biggest commuter rail expansion in Canadian history! New electric trains are being introduced across the GO network to replace the old diesel locomotives. Electric trains are quieter, faster to accelerate, and much cleaner — and they'll allow GO to run trains far more frequently, turning the network from a rush-hour service into an all-day, every-direction transit system.",
+      "GO Transit was founded in 1967 — Canada's centennial year — originally running just one line along the Lakeshore. It was so popular that within a few years lines were being added in every direction. Today the green and white GO logo is one of the most recognised symbols in Ontario, and for millions of commuters the sound of the GO Train horn is simply the sound of heading home."
+    ]
+  },
+  {
+    country: 'Canada',
+    image: 'https://images.unsplash.com/photo-1615652437548-dea5540d223f?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['Canada', 'United States', 'Norway', 'Finland'],
+    bbox: '-80.5,43.4,-78.5,44.5', marker: '43.65,-79.38',
+    blurbs: [
+      "VIA Rail's The Canadian is one of the greatest train journeys on Earth — a four-day, 4,466-kilometre adventure from Toronto all the way to Vancouver! The train passes through the Canadian Shield's ancient rocks and forests, across the vast prairies, and finally through the Rocky Mountains. Passengers sleep, eat, and watch the whole country roll past their windows.",
+      "Canada has a train that runs to Churchill, Manitoba — one of the only places in the world where you can watch polar bears from a train window! The route crosses hundreds of kilometres of remote boreal forest and tundra with no roads at all. For the communities along the line, the train is the only land link to the outside world.",
+      "The Agawa Canyon Tour Train in northern Ontario takes passengers deep into a wilderness that cannot be reached by road at all! In autumn, the canyon fills with the most spectacular red, orange, and gold colours as the maple and birch trees change. It's one of the best places in the world to see fall foliage — and the only way in is by train.",
+      "Toronto's Union Station is the busiest railway station in all of Canada, with over 65 million passengers passing through every year! It opened in 1927 and was so grand that it took 15 years to build. Its enormous main hall has a ceiling so high that it feels more like a cathedral than a train station.",
+      "Canada stretches across six time zones — more than almost any other country on Earth! In the 1800s, Canadian railways actually helped create the world's time zone system. Before railways, every town set its own local time. But trains needed reliable schedules, so railway companies pushed for a standard system of time zones that the whole world eventually adopted!"
+    ]
+  },
+  {
+    country: 'Canada',
     image: 'https://images.unsplash.com/photo-1589196728426-4613a4992c42?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     imgPosition: 'center 75%',
     options: ['Canada', 'United States', 'Norway', 'New Zealand'],
@@ -362,7 +465,7 @@ const QUESTIONS = [
   {
     country: 'United States',
     image: 'https://images.unsplash.com/photo-1601999007938-f584b47324ac?q=80&w=435&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    options: ['United States', 'Canada', 'Australia', 'Ireland'],
+    options: ['United States', 'Canada', 'Australia', 'New Zealand'],
     bbox: '-72.6,42.7,-70.7,45.4', marker: '44.27,-71.30',
     blurbs: [
       "New Hampshire is home to the Mount Washington Cog Railway — the first mountain-climbing cog railway ever built in the western hemisphere! It opened in 1869 and uses a special toothed rack in the middle of the track to push trains up the incredibly steep mountain. It still runs today, over 150 years later!",
@@ -370,6 +473,72 @@ const QUESTIONS = [
       "The Conway Scenic Railroad runs heritage steam and diesel trains through New Hampshire's beautiful White Mountains. Passengers ride in restored vintage carriages through forests, river valleys, and some of the most stunning autumn leaf colours anywhere in the world.",
       "New Hampshire got its very first railway in 1838 — one of the earliest in the entire United States! The Nashua and Lowell Railroad connected the mill towns of New Hampshire to Boston, helping goods and people travel faster than ever before in New England.",
       "The Amtrak Downeaster train connects New Hampshire to Boston and Portland, Maine, running along the same coastal corridor that steam trains have used for nearly 200 years. It passes through some of New England's prettiest towns, and on clear days passengers can spot the Atlantic Ocean from the windows!"
+    ]
+  },
+  {
+    country: 'United States',
+    image: 'https://images.unsplash.com/photo-1606954736404-22c88d83a2f8?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imgPosition: 'center 70%',
+    options: ['United States', 'Canada', 'Switzerland', 'Norway'],
+    bbox: '-109.1,36.9,-102.0,41.1', marker: '39.55,-105.78',
+    blurbs: [
+      "Colorado is home to some of the most spectacular mountain railway journeys in North America! The Durango and Silverton Narrow Gauge Railroad has been chugging through the Rocky Mountain wilderness since 1882. The train is so narrow it fits through gorges barely wider than the carriages themselves, clinging to cliffsides high above the Animas River.",
+      "The Pikes Peak Cog Railway climbs to the summit of Pikes Peak — over 4,300 metres above sea level — making it one of the highest railways in North America! The mountain inspired the song 'America the Beautiful' after a poet rode to the top and was so overwhelmed by the view that she wrote the words on the spot.",
+      "Building railways through Colorado's Rocky Mountains in the 1800s was one of the hardest engineering challenges in American history. Workers had to blast tunnels through solid granite, build bridges over freezing rivers, and lay tracks on slopes so steep that ordinary trains would slide backwards. Some mountain passes were buried under ten metres of snow every winter!",
+      "The California Zephyr — one of America's most famous long-distance trains — crosses Colorado on its journey from Chicago to San Francisco. The stretch through the Rockies and the Colorado River canyon is considered one of the most beautiful train rides in the entire world, with passengers pressing their faces to the glass as the train winds through towering red rock walls.",
+      "Denver, Colorado's capital, became one of the most important railway cities in the American West! In the late 1800s, competing railway companies raced each other to reach Denver first, knowing that whoever controlled the mountain routes would control trade across the whole region. Denver grew from a tiny settlement into a booming city almost entirely because of the railways."
+    ]
+  },
+  {
+    country: 'United States',
+    image: 'https://images.unsplash.com/photo-1506917847218-5725045a0731?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['United States', 'Australia', 'Kazakhstan', 'South Africa'],
+    bbox: '-117.5,34.0,-114.0,36.5', marker: '35.10,-116.10',
+    blurbs: [
+      "The Mojave Desert in California is one of the busiest freight railway corridors in all of North America! The BNSF and Union Pacific railways both run parallel tracks through the desert, carrying enormous trains loaded with goods from the ports of Los Angeles and Long Beach — the two busiest ports in America — inland to the rest of the country.",
+      "Trains crossing the Mojave Desert face some of the most extreme conditions on the entire American rail network! Summer temperatures regularly soar above 50 degrees Celsius, which can cause the steel rails themselves to expand and buckle. Railway workers monitor the tracks constantly in summer, and trains sometimes have to slow down on the hottest days to keep everyone safe.",
+      "The desert crossing was one of the most challenging stretches of the famous 1860s railway building era. Workers had to haul water, food, and all their supplies across vast waterless distances. Some sections of the Mojave had no water source for over 100 kilometres — every drop needed by the steam locomotives had to be brought in by train from elsewhere.",
+      "Some of the longest freight trains in the world roll through the Mojave Desert! Double-stack container trains — where shipping containers are stacked two high — can stretch for over three kilometres and carry the equivalent of hundreds of lorry loads in a single journey. Watching one pass a desert crossing can take several minutes from first locomotive to last wagon.",
+      "The Mojave Desert is also home to some of America's most historic railway ghost towns — settlements that sprang up as railway depots and water stops in the 1800s but were abandoned when steam locomotives were replaced by diesel engines that didn't need to stop for water every hundred kilometres. The desert has preserved many of these ghost stations almost perfectly."
+    ]
+  },
+  {
+    country: 'United States',
+    image: 'https://images.unsplash.com/photo-1683444805809-8e5dd0d6c665?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['United States', 'Canada', 'United Kingdom', 'Australia'],
+    bbox: '-81.1,35.1,-80.6,35.4', marker: '35.23,-80.84',
+    blurbs: [
+      "Charlotte, North Carolina owes its very existence to the railway! In the 1850s, two major rail lines crossed right at this spot, and a bustling trading town grew up around the junction almost overnight. Charlotte became one of the most important railway crossroads in the entire American South, and that railway heritage still shapes the city today.",
+      "Charlotte's LYNX Blue Line light rail is one of the fastest-growing transit systems in the United States! It runs from the university in the north all the way through downtown and into the southern suburbs, and ridership has grown so fast that the city keeps extending it further. Trains run so frequently that many riders don't even check the timetable — they just show up and wait.",
+      "The Carolinian and Piedmont Amtrak trains connect Charlotte to Raleigh and on to New York City, following railway corridors that have carried passengers through the Carolinas for over 150 years. The journey north passes through tobacco farmland, historic small towns, and the rolling foothills of the Appalachian Mountains.",
+      "Charlotte is one of the biggest freight railway hubs in the southeastern United States! Two of America's largest freight companies — Norfolk Southern and CSX — run major lines through the city. Enormous trains loaded with cars, timber, and manufactured goods roll through Charlotte around the clock, connecting the Carolinas to the rest of the continent.",
+      "Charlotte is building a brand-new Gateway Station that will bring together Amtrak, light rail, buses, and future high-speed rail all under one roof for the very first time. North Carolina is part of an exciting plan to build a fast passenger railway connecting Charlotte, Raleigh, and eventually cities all along the East Coast — making train travel faster and easier for millions of people."
+    ]
+  },
+  {
+    country: 'United States',
+    image: 'https://images.unsplash.com/photo-1568514328861-5465017e40fc?q=80&w=623&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['United States', 'Canada', 'South Africa', 'Brazil'],
+    bbox: '-85.6,30.4,-80.8,35.0', marker: '33.75,-84.39',
+    blurbs: [
+      "Georgia was home to one of the most exciting train adventures in history — the Great Locomotive Chase of 1862! During the American Civil War, a group of Union soldiers snuck into Georgia, stole a Confederate locomotive called The General, and raced north trying to destroy the railway line. Confederate soldiers chased them on foot, by car, and then by another locomotive in a wild 140-kilometre pursuit!",
+      "Atlanta, Georgia is one of the most important railway cities in all of America! Two of the biggest freight railway companies in the country — CSX and Norfolk Southern — have their headquarters there. Hundreds of freight trains pass through Georgia every single day carrying cars, food, chemicals, and coal across the entire eastern United States.",
+      "The first railway in Georgia opened in 1833 — one of the very earliest in the whole country! The Western and Atlantic Railroad was built to connect the mountains of northern Georgia to the sea, and the spot where its tracks ended became so important that a whole city grew up around it. That city is now Atlanta, one of America's biggest cities.",
+      "Savannah, Georgia's beautiful coastal city, became one of the most important railway and port cities in the American South. Cotton and goods from across Georgia were carried by train to Savannah's harbour, then loaded onto ships heading all around the world. The railway made Savannah incredibly wealthy in the 1800s.",
+      "Atlanta's MARTA rapid transit system carries hundreds of thousands of passengers every day through tunnels under the city and elevated tracks above the streets. One of its lines runs directly to Atlanta's international airport — one of the busiest airports on Earth — so travellers can jump straight from the plane onto a train into the city!"
+    ]
+  },
+  {
+    country: 'India',
+    image: 'https://images.unsplash.com/photo-1685858875697-0759165f85e3?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['India', 'Sri Lanka', 'Thailand', 'Indonesia'],
+    bbox: '73.6,14.9,74.4,15.8', marker: '15.30,74.08',
+    blurbs: [
+      "Goa sits along the Konkan Railway — one of the greatest engineering achievements in Indian history! The line hugs India's stunning western coastline, crossing 2,000 bridges and passing through 92 tunnels carved through the Western Ghats mountains. Building it took over ten years and required some of the most creative railway engineering ever seen in Asia.",
+      "Goa's main railway station is called Vasco da Gama, named after the famous Portuguese explorer who sailed to India over 500 years ago! Goa was a Portuguese colony for 450 years — longer than most countries in the world were ever colonised — and echoes of that history are woven into everything, including the railway station names.",
+      "The train journey into Goa crosses the wide Zuari and Mandovi rivers on long railway bridges, with views of fishing boats, mangrove forests, and golden beaches stretching out to the Arabian Sea. Arriving in Goa by train gives passengers one of the most beautiful approaches to any destination in all of India.",
+      "During Goa's busy tourist season, special trains run from cities all across India bringing visitors to the beaches. Some trains travel over 2,000 kilometres — from as far away as Delhi and Kolkata — taking passengers on overnight journeys through forests, mountains, and rice paddies before arriving at the seaside.",
+      "The Konkan Railway passes through some of the most biodiverse forest in all of Asia — the Western Ghats are a UNESCO World Heritage Site and home to tigers, leopards, elephants, and hundreds of species found nowhere else on Earth. Passengers on night trains sometimes glimpse animals at the forest edge in the beam of the locomotive's headlight!"
     ]
   },
   {
@@ -388,7 +557,8 @@ const QUESTIONS = [
   {
     country: 'United States',
     image: 'https://images.unsplash.com/flagged/photo-1550719723-8602e87f2dc8?q=80&w=725&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    options: ['United States', 'Canada', 'Mexico', 'Australia'],
+    imgPosition: 'center 70%',
+    options: ['United States', 'Canada', 'Chile', 'Australia'],
     bbox: '-124.5,32.5,-114.0,42.0', marker: '37.77,-122.42',
     blurbs: [
       "California is where the very first Transcontinental Railroad ended! In 1869, railway workers from the east and west finally met in the middle, connecting the whole of America by train for the first time. The western half was built starting from Sacramento, California, largely by Chinese immigrant workers who did some of the most dangerous construction work in history.",
@@ -399,9 +569,144 @@ const QUESTIONS = [
     ]
   },
   {
+    country: 'Poland',
+    image: 'https://images.unsplash.com/photo-1721222339587-41f46a42fb11?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imgPosition: 'center 70%',
+    options: ['Poland', 'Germany', 'Czech Republic', 'Hungary'],
+    bbox: '14.1,49.0,24.2,55.0', marker: '52.23,21.01',
+    blurbs: [
+      "Poland sits right at the crossroads of Europe, and its railways connect the continent from east to west! Trains from Paris, Berlin, and Vienna all pass through Poland on their way to Moscow, Kyiv, and beyond. Warsaw's central station is one of the busiest international railway hubs in all of eastern Europe, with trains arriving from a dozen different countries every day.",
+      "Poland introduced its Pendolino high-speed trains in 2014, cutting journey times dramatically across the country. The Pendolino tilts as it goes around bends — just like a motorcycle leaning into a corner — so passengers barely feel the curves. Warsaw to Kraków, a distance of nearly 300 kilometres, now takes just over two hours.",
+      "Kraków's beautiful main railway station sits right next to the medieval Old Town, a UNESCO World Heritage Site. Stepping off the train, passengers walk straight into one of the best-preserved medieval city centres in all of Europe — with a 13th-century market square, a royal castle, and cobbled streets that have barely changed in 700 years.",
+      "Poland's railways played an enormous role in connecting the country after it was reunified in 1918, having been divided between three different empires for 123 years! Each empire had built railways to different standards, so Polish engineers had the huge task of connecting three incompatible railway networks into one working system — an incredible feat of organisation.",
+      "Warsaw has one of the most extensive tram networks in Europe, with over 250 kilometres of track weaving through the city! The trams survived the almost total destruction of Warsaw in World War II and were rebuilt along with the city. Today Warsaw's bright yellow trams are as iconic a part of the city as its reconstructed Old Town."
+    ]
+  },
+  {
+    country: 'Russia',
+    image: 'https://images.unsplash.com/photo-1434871619871-1f315a50efba?q=80&w=874&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imgPosition: 'center 70%',
+    options: ['Russia', 'China', 'Poland', 'Kazakhstan'],
+    bbox: '36.0,55.0,40.0,57.0', marker: '55.75,37.62',
+    blurbs: [
+      "Russia is home to the longest railway in the entire world — the Trans-Siberian Railway! It stretches 9,289 kilometres from Moscow all the way to Vladivostok on the Pacific Ocean. The full journey takes about six days and nights, crossing eight different time zones. That means by the time you arrive, it's a completely different time of day than when you left!",
+      "The Moscow Metro is famous for being one of the most beautiful underground railways anywhere on Earth! Many of its stations look like grand palaces, with marble columns, glittering chandeliers, and enormous mosaic artworks covering the walls and ceilings. Soviet architects wanted the metro to feel like a 'palace for the people' — and they certainly delivered!",
+      "Building the Trans-Siberian Railway was one of the greatest construction projects in human history. Workers had to lay tracks across frozen Siberian tundra, dense taiga forest, and the shores of Lake Baikal — the world's deepest lake. At one point, trains were loaded onto ferries and floated across the lake because the lakeside cliffs were too steep to build through!",
+      "The Circum-Baikal Railway hugs the southern shore of Lake Baikal for 89 kilometres, passing through 38 tunnels and over 470 bridges and viaducts. Lake Baikal holds more fresh water than all of North America's Great Lakes combined! The railway was once the only link in the entire Trans-Siberian route, making it one of the most important stretches of track ever built.",
+      "Russia's railways use a wider track gauge than most of Europe — a deliberate choice made in the 1800s so that foreign trains couldn't simply roll in and be used by an invading army! This means that at Russia's borders, trains have to stop and have their wheels swapped out, or passengers change to a different train — a fascinating quirk of railway history that still exists today."
+    ]
+  },
+  {
+    country: 'Italy',
+    image: 'https://images.unsplash.com/photo-1768213021804-3914aceac32c?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['Italy', 'France', 'Spain', 'Greece'],
+    bbox: '6.6,36.6,18.5,47.1', marker: '41.90,12.50',
+    blurbs: [
+      "Italy's Frecciarossa — which means 'Red Arrow' — is one of the fastest and most stylish trains in Europe! It rockets between Rome and Milan in just under three hours, covering nearly 600 kilometres. The trains are bright red and sleek, with a first class so luxurious that passengers are served restaurant-quality meals at their seats as the Italian countryside flashes past the windows.",
+      "Arriving in Venice by train is one of the most magical experiences in all of Europe! The railway crosses a long causeway built over the lagoon, and as the train reaches the end, the ancient city of Venice suddenly appears rising out of the water — no roads, no cars, just canals and centuries-old buildings. Venice's Santa Lucia station is the only place in the world where you step off a train and straight onto a boat!",
+      "The Cinque Terre railway runs along one of the most dramatic coastlines in the world, threading through five tiny clifftop villages on the Ligurian Sea! The villages are so steep and rocky that the train is the main way residents get around — the railway is literally carved into the cliffside, popping in and out of tunnels with flashes of turquoise sea between them.",
+      "Building a metro in Rome is one of the hardest jobs in the world — because wherever workers dig, they find ancient Roman ruins! Construction of Rome's underground has been halted dozens of times over the decades when diggers uncovered mosaics, temples, and even an entire ancient street. Rome's metro is one of the smallest of any major European capital, entirely because of what lies beneath!",
+      "Italy opened its very first railway in 1839, running between Naples and the royal palace at Portici — just 7 kilometres long! King Ferdinand II of the Two Sicilies rode it on opening day and was reportedly terrified by the speed. Within a few decades, railways had spread across the whole Italian peninsula, helping to unite the country for the first time in its history."
+    ]
+  },
+  {
+    country: 'Mexico',
+    image: 'https://images.unsplash.com/photo-1543347288-068b4d977444?q=80&w=435&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['Mexico', 'Colombia', 'Peru', 'Brazil'],
+    bbox: '-99.5,18.5,-98.5,19.8', marker: '19.43,-99.13',
+    blurbs: [
+      "El Chepe — the Ferrocarril Chihuahua al Pacífico — is one of the greatest train journeys on Earth! It crosses 37 bridges and plunges through 86 tunnels as it winds down from the high deserts of Chihuahua into the enormous Copper Canyon — a canyon system four times larger than the Grand Canyon! The journey takes two days and drops over 2,400 metres in altitude.",
+      "Mexico City's Metro is one of the busiest underground railways in the entire world, carrying over four million passengers every single day! Because many riders couldn't read when it first opened in 1969, every station was given its own unique symbol — a jaguar, a grasshopper, a star — so people could recognise their stop by picture rather than by name. Those symbols are still used on every station sign today.",
+      "The Tren Maya is a brand-new railway that opened in 2023, looping 1,554 kilometres around Mexico's Yucatán Peninsula past ancient Mayan ruins, tropical jungle, and Caribbean coastline! It connects cities, towns, and archaeological sites that were previously very difficult to reach — including the famous ruins of Chichén Itzá, which passengers can now visit directly by train.",
+      "During the Mexican Revolution in the early 1900s, railways became one of the most important weapons of war! Soldiers rode on the rooftops of trains, entire armies moved by rail, and both sides fought desperately to control the railway lines. Legendary revolutionary figures like Pancho Villa captured whole trains and used them to move his troops across the vast deserts of northern Mexico.",
+      "The Tequila Express is a festive train that runs from Guadalajara through the blue agave fields of Jalisco — the region where tequila has been made for hundreds of years! The landscape of blue-green agave plants stretching across the hillsides is so unique and beautiful that it has been declared a UNESCO World Heritage Site. The train journey is filled with mariachi music, dancing, and of course, tequila tastings for the grown-ups!"
+    ]
+  },
+  {
+    country: 'China',
+    image: 'https://images.unsplash.com/photo-1564632570063-9ce5e7bd724e?q=80&w=327&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imgPosition: 'center 70%',
+    options: ['China', 'Japan', 'South Korea', 'Taiwan'],
+    bbox: '113.0,22.8,114.0,23.5', marker: '23.13,113.26',
+    blurbs: [
+      "China has the largest high-speed rail network in the entire world — by a long way! With over 45,000 kilometres of high-speed track, China has more fast railway than all other countries on Earth combined. The network grew from almost nothing in 2008 to this extraordinary size in just fifteen years — one of the greatest engineering achievements in human history.",
+      "Guangzhou is one of the busiest railway hubs in all of China! The Guangzhou–Beijing high-speed line covers over 2,200 kilometres in just eight hours — a journey that used to take more than 20 hours on older trains. Guangzhou South Station is so enormous that it has 28 platforms and looks more like a giant airport than a railway station.",
+      "China's CRH380A bullet train set a world speed record for a production train on conventional high-speed track, reaching 486 kilometres per hour during a test run! Regular passenger services run at up to 350 kilometres per hour. At that speed, travelling from Guangzhou to Shanghai — over 1,800 kilometres — takes just over six hours.",
+      "The Pearl River Delta around Guangzhou is one of the most densely populated regions on Earth, and its metro systems are among the busiest anywhere! The Guangzhou Metro alone carries over eight million passengers every single day — more than the entire population of Switzerland riding the same city's trains in 24 hours.",
+      "China's high-speed trains are so smooth and quiet that passengers can balance a coin on its edge on the windowsill and it won't fall over, even at full speed! The trains use the same magnetic and aerodynamic technology as aeroplanes to glide through the air with barely any vibration. Some passengers say it feels more like floating than travelling."
+    ]
+  },
+  {
+    country: 'Brazil',
+    image: 'https://images.unsplash.com/photo-1604212399401-5fd807a65e18?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imgPosition: 'center 70%',
+    options: ['Brazil', 'Argentina', 'Colombia', 'Mexico'],
+    bbox: '-53.0,-23.8,-42.0,-15.0', marker: '-23.55,-46.63',
+    blurbs: [
+      "Brazil has one of the busiest metro systems in all of South America — the São Paulo Metro! São Paulo is one of the largest cities on Earth, home to over 22 million people, and its metro carries millions of passengers every single day through tunnels beneath the enormous, buzzing city. New lines are being built constantly to keep up with the city's incredible growth.",
+      "Brazil once had an extraordinary network of railways crossing the country, built during the great coffee boom of the 1800s. Coffee planters needed to move their harvests to the ports quickly, so railways spread out across the state of São Paulo like the branches of a tree. At its peak, Brazil had one of the biggest railway networks in all of South America.",
+      "The Serra Verde Express in the state of Paraná is one of the most beautiful train journeys in South America! The train descends from the highlands of Curitiba down through the Atlantic Forest to the coast — dropping nearly 900 metres in altitude and passing through 14 tunnels and over 30 bridges in just 110 kilometres. The views of waterfalls and forest are absolutely breathtaking.",
+      "Rio de Janeiro has a famous cog railway — the Santa Teresa Tram — that climbs steep hillsides through one of the city's most colourful neighbourhoods! The bright yellow trams rattle over a historic aqueduct built in the 1700s and wind through narrow streets filled with artists, musicians, and incredible views over the city and Guanabara Bay.",
+      "Brazil's iron ore railways are some of the most heavily used freight railways in the entire world! The Carajás Railway in the Amazon region carries iron ore from one of the biggest mines on Earth to the Atlantic coast — trains up to three kilometres long roll through the rainforest loaded with millions of tonnes of ore every year."
+    ]
+  },
+  {
+    country: 'Indonesia',
+    image: 'https://images.unsplash.com/photo-1714838339777-870157a77721?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['Indonesia', 'India', 'Vietnam', 'Malaysia'],
+    bbox: '106.6,-7.4,107.0,-6.1', marker: '-6.21,106.85',
+    blurbs: [
+      "Indonesia's railways mostly run on the island of Java — one of the most densely populated islands on Earth! The Argo Bromo Anggrek express train connects Jakarta and Surabaya, racing through rice paddies, volcanic mountains, and ancient temple landscapes at up to 120 kilometres per hour. Java's trains carry millions of passengers every day through some of the most spectacular scenery in Southeast Asia.",
+      "Jakarta, Indonesia's enormous capital city, has been building a brand-new MRT metro system to help its 30 million residents get around! The first line opened in 2019 and was such a success that queues stretched around the block on opening day. Indonesians were so excited to have a modern metro that many rode it just for the experience, even with nowhere particular to go!",
+      "The train journey through Java passes close to some of the world's most dramatic volcanoes — including Mount Bromo and Mount Semeru, which still erupt regularly! Passengers on early morning trains sometimes see glowing lava or plumes of ash rising above the clouds as the sun comes up over the volcanic peaks. It's one of the most dramatic train backdrops on Earth.",
+      "Indonesia once had a vast railway network built during the Dutch colonial era, and some of the old steam locomotives from that period are still preserved and occasionally run on heritage tours! The Dutch built railways across Java in the 1800s to carry sugar, coffee, and spices from the island's fertile interior to the ports. Some of those original bridges and tunnels are still in use today.",
+      "The Kereta Cepat Whoosh is Indonesia's very first high-speed railway, which opened in 2023! It connects Jakarta to Bandung — a journey that used to take three hours by road — in just 46 minutes. The trains were built with help from China and reach speeds of up to 350 kilometres per hour, making Indonesia the first country in Southeast Asia to have a true high-speed rail line."
+    ]
+  },
+  {
+    country: 'Australia',
+    image: 'https://images.unsplash.com/photo-1691132345566-f712d1f46e0e?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['Australia', 'United States', 'Canada', 'South Africa'],
+    bbox: '113.0,-44.0,154.0,-10.0', marker: '-25.27,133.78',
+    blurbs: [
+      "Australia is home to the Indian Pacific — one of the longest train journeys in the entire world! The train travels 4,352 kilometres from Sydney on the east coast all the way to Perth on the west coast, taking over three days and nights. Along the way it crosses the Nullarbor Plain, which has the longest straight stretch of railway on Earth — 478 kilometres without a single bend!",
+      "The Ghan is one of Australia's most legendary trains, running from Adelaide in the south all the way to Darwin on the northern coast — a journey of nearly 3,000 kilometres through the red heart of Australia! It's named after the Afghan cameleers who once carried supplies across the outback before the railway existed. The train passes through ancient desert landscapes that very few people ever see.",
+      "Australia has a unique railway challenge that almost no other country faces — each state originally built its railways to a different track width! When the states tried to connect their networks, trains had to stop at state borders and passengers change trains. It took until 1995 to finally complete a standard gauge line connecting all the major cities on the east coast.",
+      "Sydney's train network is one of the biggest in the Southern Hemisphere, with over 800 kilometres of track and more than 170 stations! The City Circle loop runs through tunnels under the heart of Sydney, connecting the main stations in a ring beneath the skyscrapers. The famous Harbour Bridge also carries railway tracks across Sydney Harbour — trains and cars share the bridge side by side.",
+      "The Puffing Billy Railway in Victoria is a beloved heritage steam train that has been running through the Dandenong Ranges since 1900! Children famously sit with their legs dangling out of the open-sided carriages as the little steam train winds through forests of giant mountain ash trees. It's one of the most popular tourist railways in all of Australia."
+    ]
+  },
+  {
+    country: 'Ireland',
+    image: 'https://images.unsplash.com/photo-1600859747268-54c7e693c327?q=80&w=327&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imgPosition: 'center 70%',
+    options: ['Ireland', 'United Kingdom', 'Portugal', 'Denmark'],
+    bbox: '-10.5,51.3,-5.9,55.4', marker: '53.35,-6.27',
+    blurbs: [
+      "Ireland's DART — Dublin Area Rapid Transit — is one of the most scenic commuter railways in Europe! It hugs the coastline of Dublin Bay for much of its route, giving passengers views of sandy beaches, sailing boats, and the Irish Sea. On a clear day you can even see the mountains of Wales across the water from the train window!",
+      "Ireland's railways run on a wider track gauge than most of Europe — a unique width used almost nowhere else in the world! When Ireland's railways were being built in the 1840s, engineers couldn't agree on a standard width, so the government stepped in and chose a measurement right between the two options. That quirky compromise is still in use on every Irish railway today.",
+      "The scenic Coastal Commuter railway between Dublin and the seaside town of Greystones passes through a tunnel carved directly through a clifftop headland! The cliffs drop straight into the Irish Sea on one side, and engineers had no choice but to cut straight through the rock. It's one of the most dramatic short stretches of railway in all of Ireland.",
+      "Ireland once had an extraordinary network of tiny narrow gauge railways weaving through remote countryside, bogs, and coastal villages. Most were closed in the mid-1900s, but the Waterford and Suir Valley Railway still runs heritage steam trips through the beautiful Suir Valley. The little trains feel like stepping back a hundred years into rural Ireland.",
+      "The railway line between Dublin and Belfast crosses the border between the Republic of Ireland and Northern Ireland without stopping — passengers barely notice they've crossed from one country into another! The Enterprise train makes the journey in about two hours, passing through rolling green drumlins and along the shores of Dundalk Bay."
+    ]
+  },
+  {
+    country: 'Estonia',
+    image: 'https://images.unsplash.com/photo-1570006924137-0ff9bb0d76ea?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['Estonia', 'Finland', 'Latvia', 'Poland'],
+    bbox: '21.8,57.5,28.2,59.7', marker: '59.44,24.75',
+    blurbs: [
+      "Estonia is one of the most digitally advanced countries in the world — and its trains match! The national rail operator Elron runs modern, bright yellow electric and diesel trains across the country, and passengers can buy tickets on their phones in seconds. Estonia was one of the first countries in the world to offer free public Wi-Fi on trains.",
+      "Tallinn's Balti jaam — Baltic Station — is one of the oldest railway stations in the entire former Soviet Union, opened in 1870! Today it sits right next to Tallinn's medieval Old Town, a UNESCO World Heritage Site. Stepping off the train, you can walk straight into a city that looks almost exactly as it did 600 years ago.",
+      "Estonia is getting a brand-new high-speed railway called Rail Baltica that will connect Tallinn all the way to Warsaw in Poland — passing through Latvia and Lithuania too! When it opens, you'll be able to travel from Estonia to central Europe entirely by train for the first time in history. The tunnels under Tallinn are already being dug!",
+      "The train from Tallinn to Tartu — Estonia's university city — passes through some of the most peaceful scenery in northern Europe: deep pine and birch forests, frozen lakes in winter, and vast bogs that have barely changed in thousands of years. Estonia has more forest per person than almost any other country in Europe.",
+      "Estonia's railways use a wider track gauge than most of western Europe — a Soviet-era standard shared with Russia, Latvia, and Lithuania. This means that when Rail Baltica opens, it will need its own new tracks built to European standard width. It's a fascinating reminder of how history shapes even something as simple as the distance between two rails!"
+    ]
+  },
+  {
     country: 'Portugal',
     image: 'https://images.unsplash.com/photo-1527839321757-ad3a2f2be351?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    options: ['Portugal', 'Spain', 'Italy', 'Greece'],
+    options: ['Portugal', 'Spain', 'Croatia', 'Greece'],
     bbox: '-9.5,36.9,-6.2,42.2', marker: '39.50,-8.00',
     blurbs: [
       "Portugal has one of the most beautiful railway journeys in Europe — the Douro Valley line, which follows the Douro River through terraced hillsides covered in vineyards all the way to the Spanish border. The river glitters far below as the train winds around steep cliffsides, and passengers often spot eagles and herons along the way.",
@@ -409,6 +714,32 @@ const QUESTIONS = [
       "Porto's stunning São Bento railway station is decorated with over 20,000 hand-painted blue and white tiles — called azulejos — that tell the story of Portugal's history! Artists spent years painting scenes of royal processions, medieval battles, and harvests directly onto the station walls. It's one of the most beautiful train stations in the world.",
       "Portugal built a high-speed rail line called the Alfa Pendular that tilts as it goes around corners — so passengers barely feel the bends! It travels between Lisbon and Porto in about two hours and fifteen minutes, running through rolling hills, cork oak forests, and ancient university towns.",
       "The train from Lisbon to the Algarve coast in southern Portugal passes through cork oak forests that supply most of the world's wine corks! Portugal produces over half of all the cork in the world, and from the train window passengers can see workers stripping the bark by hand — a tradition that has been going on for centuries."
+    ]
+  },
+  {
+    country: 'United Kingdom',
+    image: 'https://images.unsplash.com/photo-1684431186863-64f43181a0ad?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['United Kingdom', 'Germany', 'Belgium', 'Ireland'],
+    bbox: '-2.3,53.5,-1.2,53.9', marker: '53.80,-1.55',
+    blurbs: [
+      "West Yorkshire is right at the heart of where the railway age began! The world's first commercial steam railway — the Middleton Railway in Leeds — opened in 1812, before even Stephenson's famous Rocket. The north of England was the birthplace of the industrial revolution, and railways were invented here to haul coal from the mines that powered the whole world.",
+      "The Settle–Carlisle railway, which passes through the hills just west of Yorkshire, is one of the greatest Victorian engineering achievements in Britain. Built in the 1870s through the wild Pennine moorlands, it crosses the magnificent Ribblehead Viaduct — 24 arches stretching 400 metres across a windswept valley. Workers lived in temporary villages on the moors for years to build it.",
+      "Leeds is one of the biggest railway hubs in the north of England, with trains radiating out to Manchester, York, Sheffield, and beyond. The city was so important to the Victorian railway network that it had multiple competing stations built by rival railway companies all trying to attract passengers — some of those grand Victorian station buildings still stand today.",
+      "West Yorkshire's steep Pennine hills created a unique railway engineering challenge — the hills were too steep for normal trains! Engineers built extraordinary rope-hauled inclines where stationary steam engines at the top pulled carriages up the hillside on cables. Some of these remarkable early railways ran through the mill towns of Bradford and Huddersfield in the early 1800s.",
+      "The Keighley and Worth Valley Railway runs through the Yorkshire moors and is one of Britain's most beloved heritage steam railways! It was famously used as the filming location for the classic 1970 film The Railway Children. Steam trains still puff along the same tracks today, and passengers can visit Oakworth Station, which looks almost exactly as it did when the film was made."
+    ]
+  },
+  {
+    country: 'United Kingdom',
+    image: 'https://plus.unsplash.com/premium_photo-1729937840264-288f999ebd70?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['United Kingdom', 'Ireland', 'Norway', 'New Zealand'],
+    bbox: '-5.9,56.7,-5.2,57.1', marker: '56.87,-5.43',
+    blurbs: [
+      "The Glenfinnan Viaduct in the Scottish Highlands is one of the most famous railway bridges in the world — and you might recognise it from the Harry Potter films! The Hogwarts Express steams across this very viaduct in the movies. The real train that crosses it is the Jacobite steam locomotive, which runs through the Scottish Highlands every summer.",
+      "The West Highland Line, which crosses the Glenfinnan Viaduct, is widely considered the most scenic railway journey in all of Britain! It runs from Glasgow through dramatic highland glens, past ancient castles, and alongside the shores of Loch Lomond and Loch Shiel. The Glenfinnan Monument at the end of the loch marks where Bonnie Prince Charlie raised his flag in 1745.",
+      "The Glenfinnan Viaduct was built in 1901 entirely from concrete — one of the first major railway structures in the world to use this material! The engineer Robert McAlpine was nicknamed 'Concrete Bob' for his bold use of the new building technique. The viaduct has 21 arches and curves in a gentle arc as it crosses the valley.",
+      "Scotland's railways have to deal with some of the wildest weather in Europe! The West Highland Line regularly faces snowdrifts, high winds, and flooding. Special snowplough trains are kept ready all winter, and deer, red squirrels, and even golden eagles are commonly spotted from carriage windows along the route.",
+      "The Jacobite steam train that crosses Glenfinnan is pulled by a locomotive built in the 1940s — over 80 years old! Steam trains stopped being used on most British railways in 1968, but the Jacobite kept running as a tourist attraction. On a still morning, passengers can watch the steam drift across the Highland loch long after the train has passed."
     ]
   },
   {
@@ -426,7 +757,7 @@ const QUESTIONS = [
   },
 ];
 
-let gameQ = [], cur = 0, score = 0;
+let gameQ = [], cur = 0, score = 0, selectedOpt = null;
 
 function speak(text) {
   if (!window.speechSynthesis) return;
@@ -504,6 +835,8 @@ function startQ(idx) {
   document.getElementById('screenF').style.display = 'none';
   document.getElementById('wrongMsg').textContent = '';
   document.getElementById('scoreNum').textContent = score;
+  selectedOpt = null;
+  document.getElementById('submitBtn').disabled = true;
   buildProgress();
 
   const img = document.getElementById('trainImg');
@@ -516,16 +849,28 @@ function startQ(idx) {
   }
 
   document.getElementById('optGrid').innerHTML = shuffledOpts.map((opt, i) =>
-    `<button class="opt c${i}" data-val="${opt}" onclick="pick(this)">${opt}</button>`
+    `<button class="opt c${i}" data-val="${opt}" onclick="selectOpt(this)">${opt}</button>`
   ).join('');
 }
 
-function pick(btn) {
+function selectOpt(btn) {
+  if (btn.disabled) return;
+  document.querySelectorAll('.opt').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedOpt = btn;
+  speak(btn.dataset.val);
+  document.getElementById('submitBtn').disabled = false;
+}
+
+function submitAnswer() {
+  if (!selectedOpt) return;
+  const btn = selectedOpt;
   const val = btn.dataset.val;
   const q   = gameQ[cur];
-  speak(val);
+  document.getElementById('submitBtn').disabled = true;
 
   if (val === q.country) {
+    btn.classList.remove('selected');
     btn.classList.add('correct');
     document.querySelectorAll('.opt').forEach(b => { if (b !== btn) b.disabled = true; });
     score++;
@@ -535,7 +880,11 @@ function pick(btn) {
     setTimeout(() => showResult(q), 950);
   } else {
     btn.classList.add('wrong');
-    setTimeout(() => { btn.classList.remove('wrong'); btn.disabled = true; }, 600);
+    setTimeout(() => {
+      btn.classList.remove('wrong', 'selected');
+      btn.disabled = true;
+      selectedOpt = null;
+    }, 600);
     const msg = document.getElementById('wrongMsg');
     msg.textContent = 'Not quite — try again!';
     setTimeout(() => { if (msg.textContent.startsWith('Not')) msg.textContent = ''; }, 1800);
@@ -581,12 +930,12 @@ function showFinal() {
 function restart() {
   cur = 0; score = 0;
   window.speechSynthesis && window.speechSynthesis.cancel();
-  gameQ = shuffle(QUESTIONS);
+  gameQ = shuffle(QUESTIONS).slice(0, 5);
   startQ(0);
 }
 
 // Start
-gameQ = shuffle(QUESTIONS);
+gameQ = shuffle(QUESTIONS).slice(0, 5);
 startQ(0);
 </script>
 </body>
