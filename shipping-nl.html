@@ -15,7 +15,7 @@
 
     .topbar {
       background: #1A3C5E;
-      padding: 44px 24px 16px;
+      padding: 16px 24px;
       display: flex;
       align-items: center;
       gap: 14px;
@@ -239,8 +239,53 @@
       transition: background 0.15s;
     }
     .book-btn:hover { background: #2563EB; }
+    .book-btn:disabled { background: #059669; cursor: default; }
+
+    .booking-conf { display: none; margin-top: 20px; border-radius: 12px; overflow: hidden; border: 1.5px solid #86EFAC; }
+    .booking-conf-head { background: #059669; padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
+    .booking-conf-check { width: 28px; height: 28px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff; font-size: 0.9rem; font-weight: 700; }
+    .booking-conf-title { color: #fff; font-size: 0.95rem; font-weight: 700; }
+    .booking-conf-ref { color: rgba(255,255,255,0.7); font-size: 0.75rem; margin-top: 2px; font-family: monospace; letter-spacing: 0.5px; }
+    .booking-conf-body { background: #F0FDF4; padding: 16px 20px; }
+    .booking-conf-row { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; border-bottom: 1px solid #BBF7D0; font-size: 0.82rem; }
+    .booking-conf-row:last-child { border-bottom: none; }
+    .booking-conf-key { color: #6B7280; font-weight: 600; }
+    .booking-conf-val { color: #1E293B; font-weight: 700; text-align: right; }
+    .booking-conf-note { font-size: 0.72rem; color: #94A3B8; margin-top: 12px; text-align: center; }
+
+    /* ── Case study header ── */
+    .cs-header { background: #1A3C5E; padding: 52px 40px 44px; }
+    .cs-header-inner { max-width: 800px; margin: 0 auto; }
+    .cs-eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+    .cs-h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -0.5px; margin-bottom: 14px; line-height: 1.1; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.7); line-height: 1.7; max-width: 560px; }
+
+    /* ── Accordion section ── */
+    .cs-body { max-width: 800px; margin: 0 auto; padding: 48px 40px 40px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .acc-header .card-label { margin-bottom: 0; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #1A3C5E; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p, .acc-body > ul { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { padding-left: 18px; }
+    .acc-body li { margin-bottom: 8px; }
+    .feat-label { font-size: 0.82rem; font-weight: 700; color: #1A3C5E; }
+
+    /* ── Prototype wrap ── */
+    .proto-section { background: #EDF2F7; padding-bottom: 80px; }
+    .proto-label-bar { background: #DBEAFE; padding: 32px 40px 24px; }
+    .proto-label { max-width: 800px; margin: 0 auto; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #1A3C5E; }
 
     @media (max-width: 520px) {
+      .cs-header { padding: 36px 24px 32px; }
+      .cs-body { padding: 32px 20px 32px; }
       .g2, .g3 { grid-template-columns: 1fr; }
       .checks { grid-template-columns: 1fr 1fr; }
       .rates-grid { grid-template-columns: 1fr; }
@@ -248,6 +293,77 @@
   </style>
 </head>
 <body>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="cs-eyebrow">Prototype · Agentic AI</p>
+    <h1 class="cs-h1">NL Shipping Form</h1>
+    <p class="cs-intro">Shipping forms ask structured questions in a domain most people aren't fluent in. This prototype explores a natural language intake where you describe the shipment and the agent handles the translation to form fields.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">The Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Shipping forms require structured inputs — weight, dimensions, service tier, declared value, special handling — before you've even described what you're sending. Most people who ship infrequently don't think in those terms, and the form shouldn't make that their problem to solve first.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tech</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Client-side NLP parser — extracts origin, destination, weight, dimensions, service type, declared value, contents, and special handling flags from free-text input</li>
+        <li>Longest-match city lookup across 80+ Canadian cities and regions</li>
+        <li>Service inference from delivery dates — calculates business days to recommend the right service tier when none is stated</li>
+        <li>Shipment type detection with contextual packaging recommendations (parcels, envelopes, legal envelopes)</li>
+        <li>Animated multi-step processing pipeline</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Features</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li><span class="feat-label">Natural language input</span> — describe your shipment the way you'd explain it to someone; the agent handles the translation to form fields</li>
+        <li><span class="feat-label">Animated parsing pipeline</span> — shows the agent working through your description in real time across four steps</li>
+        <li><span class="feat-label">Smart field fill</span> — AI-extracted values populate with an amber "AI" badge; missing fields get a dashed border so you know exactly what needs your input</li>
+        <li><span class="feat-label">Parcel type recommendation</span> — detects document shipments and recommends the right envelope size, including where to pick one up for free</li>
+        <li><span class="feat-label">Service inference</span> — if you mention a delivery deadline but no service tier, it works backwards from the date to pick the right level</li>
+        <li><span class="feat-label">Rate comparison</span> — generates Ground, Express, and Overnight quotes once the form is complete</li>
+        <li><span class="feat-label">Example prompts</span> — quick-load scenarios for fragile electronics, palletized freight, and legal documents</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Why This</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Every shipping form is a domain knowledge test — service tiers, dimensional weight, declared value — terminology that infrequent shippers don't use or think in. This prototype puts the translation work on the agent, client-side, so the interface can start where people actually are: a plain description of what they need to send.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="proto-section">
+  <div class="proto-label-bar">
+    <p class="proto-label">Interactive prototype</p>
+  </div>
 
 <div class="topbar">
   <div class="topbar-logo">
@@ -415,13 +531,32 @@
     <div class="rates" id="rates">
       <div class="sec" style="margin-top:20px">Available Rates</div>
       <div class="rates-grid" id="ratesGrid"></div>
-      <button class="book-btn" onclick="book()">Book Selected Rate →</button>
+      <button class="book-btn" id="bookBtn" onclick="book()">Book Selected Rate →</button>
+      <div class="booking-conf" id="bookingConf">
+        <div class="booking-conf-head">
+          <div class="booking-conf-check">✓</div>
+          <div>
+            <div class="booking-conf-title">Shipment booked</div>
+            <div class="booking-conf-ref" id="confRef"></div>
+          </div>
+        </div>
+        <div class="booking-conf-body">
+          <div id="confRows"></div>
+          <p class="booking-conf-note">This is a prototype — no actual booking was made.</p>
+        </div>
+      </div>
     </div>
 
   </div>
 </div>
+</div>
 
 <script>
+function toggleAcc(hdr) {
+  hdr.classList.toggle('open');
+  hdr.nextElementSibling.classList.toggle('open');
+}
+
 /* ── Examples ── */
 const EXAMPLES = {
   electronics: "I need to ship a fragile box of electronics from Toronto to Vancouver — dimensions are about 14×10×8 inches, weighs 10 lbs, value is $600. Please handle with care and get it there by Thursday.",
@@ -814,9 +949,33 @@ function selectRate(el) {
 
 function book() {
   const sel = document.querySelector('.rate.sel');
-  const svc = sel ? sel.querySelector('.rate-svc').textContent : 'selected service';
-  const price = sel ? sel.querySelector('.rate-price').textContent : '';
-  alert(`Booking confirmed!\n\n${svc} — ${price}\n\nThis is a prototype — no actual booking was made.`);
+  if (!sel) return;
+  const svc    = sel.querySelector('.rate-svc').textContent;
+  const price  = sel.querySelector('.rate-price').textContent;
+  const eta    = sel.querySelector('.rate-eta').textContent;
+  const origin = document.getElementById('i-origin').value || '—';
+  const dest   = document.getElementById('i-dest').value || '—';
+  const weight = document.getElementById('i-weight').value || '—';
+  const ref    = 'FRT-' + Math.random().toString(36).slice(2,10).toUpperCase();
+
+  document.getElementById('confRef').textContent = 'Reference ' + ref;
+  document.getElementById('confRows').innerHTML = [
+    ['Service',            svc],
+    ['Route',              origin + ' → ' + dest],
+    ['Weight',             weight],
+    ['Rate',               price],
+    ['Estimated delivery', eta],
+  ].map(([k,v]) =>
+    `<div class="booking-conf-row"><span class="booking-conf-key">${k}</span><span class="booking-conf-val">${v}</span></div>`
+  ).join('');
+
+  const conf = document.getElementById('bookingConf');
+  conf.style.display = 'block';
+  setTimeout(() => conf.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+
+  const btn = document.getElementById('bookBtn');
+  btn.textContent = 'Booked ✓';
+  btn.disabled = true;
 }
 
 /* ── Hide form card initially ── */

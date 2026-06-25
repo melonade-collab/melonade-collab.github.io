@@ -13,12 +13,8 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #b5cdb5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: #f7f7f5;
       min-height: 100vh;
-      padding: 40px 20px;
     }
 
     /* ── Phone frame ── */
@@ -395,13 +391,42 @@
       color: #9e9e9e;
     }
 
+    /* ── Case study header ── */
+    .cs-header { background: #1b5e20; padding: 52px 40px 44px; }
+    .cs-header-inner { max-width: 800px; margin: 0 auto; }
+    .cs-eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+    .cs-h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -0.5px; margin-bottom: 14px; line-height: 1.1; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.7); line-height: 1.7; max-width: 560px; }
+
+    /* ── Accordion section ── */
+    .cs-body { max-width: 800px; margin: 0 auto; padding: 48px 40px 40px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .acc-header .card-label { margin-bottom: 0; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #2e7d32; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p, .acc-body > ul { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { padding-left: 18px; }
+    .acc-body li { margin-bottom: 8px; }
+    .feat-label { font-size: 0.82rem; font-weight: 700; color: #1b5e20; }
+
+    /* ── Prototype wrap ── */
+    .proto-section { background: #b5cdb5; padding-bottom: 80px; }
+    .proto-label-bar { background: #c8dbc8; padding: 32px 40px 24px; }
+    .proto-label { max-width: 800px; margin: 0 auto; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #2e7d32; }
+    .proto-inner { display: flex; justify-content: center; padding: 40px 20px 0; }
+
     /* ── On actual mobile: full screen ── */
     @media (max-width: 440px) {
-      body {
-        padding: 0;
-        align-items: flex-start;
-        background: #fff;
-      }
+      .cs-header, .cs-body, .proto-label-bar { display: none; }
+      .proto-section { padding: 0; background: #fff; }
+      .proto-inner { padding: 0; }
       .phone-frame {
         width: 100%;
         border-radius: 0;
@@ -419,6 +444,77 @@
   </style>
 </head>
 <body>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="cs-eyebrow">Prototype · Live API + AI</p>
+    <h1 class="cs-h1">Plant Care Tracker</h1>
+    <p class="cs-intro">Static plant care cards tell you when to water in a vacuum. This prototype connects your care schedule to live conditions — weather, humidity, UV — and gives advice that's specific to today.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">The Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Generic care schedules don't account for what's actually happening in your home or outside your window. The same "water every 10 days" rule means something different on a hot, sunny July afternoon than on a grey, overcast November morning. A static card can't make that distinction.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tech</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Live weather via the Open-Meteo API — temperature, weather code, humidity, UV index, and wind speed</li>
+        <li>Watering history persisted to localStorage with interval tracking</li>
+        <li>Contextual AI insight engine — cross-references watering status with live weather to generate plant-specific advice</li>
+        <li>City selection from user profile, with support for 23 Canadian cities</li>
+        <li>Heating season awareness — adjusts advice based on time of year and indoor heating likelihood</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Features</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li><span class="feat-label">Care card</span> — light, water frequency, and humidity requirements at a glance</li>
+        <li><span class="feat-label">Watering tracker</span> — logs each watering, shows days since last, next ETA, and overdue status with a progress bar</li>
+        <li><span class="feat-label">Live weather</span> — fetches current conditions for your city and displays temperature, description, humidity, and UV index</li>
+        <li><span class="feat-label">AI insight card</span> — generates contextual watering advice by combining your history with today's weather: sunny means faster drying, overcast means wait longer, rain means collect some for your plants</li>
+        <li><span class="feat-label">Heating season awareness</span> — in cooler months, flags that indoor heating dries out the air and recommends humidity support</li>
+        <li><span class="feat-label">Plant management</span> — log waterings, clear history, remove plant from your collection</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Why This</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Every plant care app gives you a schedule. None of them know what the weather is doing outside your window. This prototype connects the two — watering history plus live conditions — so the advice you get is grounded in what's actually happening today, not a rule of thumb written for average conditions that rarely apply.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="proto-section">
+  <div class="proto-label-bar">
+    <p class="proto-label">Interactive prototype</p>
+  </div>
+  <div class="proto-inner">
   <div class="phone-frame">
 
     <!-- Status bar -->
@@ -581,10 +677,17 @@
     </div><!-- end app-content -->
 
   </div><!-- end phone-frame -->
+  </div><!-- end proto-inner -->
+</div><!-- end proto-section -->
 
   <a href="index.html" class="portfolio-back-link" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
 
   <script>
+    function toggleAcc(hdr) {
+      hdr.classList.toggle('open');
+      hdr.nextElementSibling.classList.toggle('open');
+    }
+
     function toggleSettings(e) {
       e.stopPropagation();
       const m = document.getElementById('settingsMenu');
