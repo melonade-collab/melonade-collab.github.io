@@ -221,6 +221,10 @@ const cars = [
     draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1582044444283-e0dd8197e6e2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGZyZWlnaHQlMjB0cmFpbiUyMGZsYXQlMjBjYXJ8ZW58MHx8MHx8fDA%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   },
   {
+    name:'OPEN-TOP HOPPER', carries:'Coal, sand, rock', emoji:'⚫ 🏖️ ⛏️',
+    draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1725211874607-4193e918c350?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjE0fHxmcmVpZ2h0JTIwdHJhaW4lMjBob3BwZXIlMjBjYXJ8ZW58MHx8MHx8fDA%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMax slice" style="border-radius:8px"/>`;}
+  },
+  {
     name:'COVERED HOPPER', carries:'Coal, sand, grain', emoji:'⚫ 🏖️ 🌾',
     draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1632685384711-7f5608a02f32?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjk0fHxmcmVpZ2h0JTIwdHJhaW4lMjBjYXJzfGVufDB8fDB8fHww" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   },
@@ -233,40 +237,20 @@ const cars = [
     draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1630698309706-4b1fefcebb43?q=80&w=869&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   },
   {
-    name:'AUTORACK', carries:'Cars, trucks, SUVs', emoji:'🚗 🚙 🛻',
+    name:'WELL CAR W/ INTERMODALS', carries:'Shipping containers', emoji:'📦 🚢 🌍',
+    draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1645402221426-be61c1bff1e7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fGZyZWlnaHQlMjB0cmFpbnxlbnwwfHwwfHx8MA%3D%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
+  },
+  {
+    name:'AUTORACK', carries:'Cars, trucks, SUVs', emoji:'🚗 🚐 🚛',
     draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1580862332890-bbfae435682f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjkzfHxmcmVpZ2h0JTIwdHJhaW4lMjBjYXJzfGVufDB8fDB8fHww" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   },
   {
-    name:'REFRIGERATED CAR', carries:'Vegetables, meat, ice cream', emoji:'🥦 🥩 🍦',
+    name:'REFRIGERATED BOXCAR', carries:'Vegetables, meat, ice cream', emoji:'🥦 🥩 🍦',
     draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1697347070627-49d367e62fe8?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   },
   {
     name:'CABOOSE', carries:'The train crew!', emoji:'👷 🚂 🏠',
-    draw(svg){ svg.innerHTML = `${wheels()}
-      <rect x="58" y="58" width="384" height="50" fill="#cc1111" rx="3"/>
-      <rect x="55" y="54" width="390" height="8" fill="#aa0000" rx="2"/>
-      <rect x="158" y="26" width="184" height="34" fill="#cc1111" rx="3"/>
-      <rect x="155" y="22" width="190" height="8" fill="#aa0000" rx="2"/>
-      <rect x="168" y="30" width="38" height="22" fill="#87ceeb" rx="3"/>
-      <line x1="187" y1="30" x2="187" y2="52" stroke="#5ab0d8" stroke-width="1"/>
-      <rect x="214" y="30" width="38" height="22" fill="#87ceeb" rx="3"/>
-      <line x1="233" y1="30" x2="233" y2="52" stroke="#5ab0d8" stroke-width="1"/>
-      <rect x="292" y="30" width="38" height="22" fill="#87ceeb" rx="3"/>
-      <line x1="311" y1="30" x2="311" y2="52" stroke="#5ab0d8" stroke-width="1"/>
-      <rect x="248" y="30" width="38" height="22" fill="#aad4ee" rx="3" opacity="0.7"/>
-      <rect x="72" y="66" width="56" height="30" fill="#aad4ee" rx="4"/>
-      <line x1="100" y1="66" x2="100" y2="96" stroke="#8ab8d8" stroke-width="2"/>
-      <rect x="372" y="66" width="56" height="30" fill="#aad4ee" rx="4"/>
-      <line x1="400" y1="66" x2="400" y2="96" stroke="#8ab8d8" stroke-width="2"/>
-      <rect x="28" y="78" width="32" height="5" fill="#aa0000" rx="1"/>
-      <rect x="440" y="78" width="32" height="5" fill="#aa0000" rx="1"/>
-      <rect x="26" y="65" width="5" height="24" fill="#aa0000"/>
-      <rect x="55" y="65" width="5" height="24" fill="#aa0000"/>
-      <rect x="440" y="65" width="5" height="24" fill="#aa0000"/>
-      <rect x="469" y="65" width="5" height="24" fill="#aa0000"/>
-      <rect x="32" y="96" width="26" height="8" fill="#880000" rx="1"/>
-      <rect x="442" y="96" width="26" height="8" fill="#880000" rx="1"/>
-    `;}
+    draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1760483467243-9cc10ccab328?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNhYm9vc2V8ZW58MHx8MHx8fDA%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   }
 ];
 
@@ -280,7 +264,9 @@ let current = 0;
 function render() {
   const car = cars[current];
   document.getElementById('carNumber').textContent = `CAR ${current+1} OF ${cars.length}`;
-  document.getElementById('carName').textContent = car.name;
+  const nameBtn = document.getElementById('carName');
+  nameBtn.textContent = car.name;
+  nameBtn.style.fontSize = car.name.length > 14 ? 'clamp(1rem, 3.8vw, 1.6rem)' : '';
   document.getElementById('carriesText').textContent = car.carries;
   document.getElementById('carriesEmoji').textContent = car.emoji;
   car.draw(document.getElementById('carSvg'));
