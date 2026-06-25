@@ -302,7 +302,6 @@ function handleAnswer(btn, chosen, q) {
   } else {
     btn.classList.add('wrong');
     firstTryMisses[q.id] = true;
-    // Re-enable after shake so they can try again
     setTimeout(() => {
       document.querySelectorAll('.opt-btn').forEach(b => {
         if (!b.classList.contains('correct')) b.disabled = false;
