@@ -668,16 +668,6 @@
     }
 
     // ── Open case detection ──
-    const KNOWN_CASES = {
-      // by email
-      'test@example.com': { caseNo: 'CAS-2026-00847', team: 'Technical Support', opened: '3 days ago' },
-      'jane@demo.com':    { caseNo: 'CAS-2026-01203', team: 'Billing',           opened: 'last week'  },
-      'user@test.com':    { caseNo: 'CAS-2026-00531', team: 'Fulfillment',       opened: '5 days ago' },
-      // by phone (10 digits)
-      '4165551234':       { caseNo: 'CAS-2026-00923', team: 'Customer Experience', opened: '2 days ago' },
-      '4165559876':       { caseNo: 'CAS-2026-01105', team: 'Fulfillment',         opened: '4 days ago' },
-    };
-
     let openCaseInfo = null, linkedCase = false, linkedCaseNo = null;
 
     function generateCaseNo() {
@@ -687,21 +677,17 @@
     function checkForOpenCase() {
       const email       = emailInput.value.trim();
       const phoneDigits = phoneInput.value.replace(/\D/g, '');
-      // Email takes priority; only fall back to phone if no valid email entered
-      let match = null, matchedBy = '';
-      if (email && isValidEmail(email)) {
-        match = KNOWN_CASES[email.toLowerCase()];
-        matchedBy = 'email';
-      } else if (!email && phoneDigits.length === 10) {
-        match = KNOWN_CASES[phoneDigits];
-        matchedBy = 'phone';
-      }
+      // Email takes priority; fall back to phone only if no valid email entered
+      let hasContact = false, via = '';
+      if (email && isValidEmail(email))          { hasContact = true; via = 'this email address'; }
+      else if (!email && phoneDigits.length === 10) { hasContact = true; via = 'this phone number'; }
+
       const el = document.getElementById('caseDetect');
-      if (match) {
-        openCaseInfo = match; linkedCase = false; linkedCaseNo = null;
-        const via = matchedBy === 'email' ? `this email` : `this phone number`;
+      if (hasContact) {
+        if (!openCaseInfo) openCaseInfo = { caseNo: generateCaseNo() };
+        linkedCase = false; linkedCaseNo = null;
         document.getElementById('caseDetectMsg').textContent =
-          `We found an open case (${match.caseNo}) for ${via}, opened ${match.opened} with our ${match.team} team. Is this submission related to your open case?`;
+          `We found an open case (${openCaseInfo.caseNo}) associated with ${via}. Is this submission related to your open case?`;
         document.getElementById('caseDetectActions').style.display = 'flex';
         el.style.cssText = 'display:block;margin-top:8px;padding:12px 14px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:8px;';
       } else {
