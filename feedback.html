@@ -388,7 +388,7 @@
       </div>
 
       <div class="field">
-        <label for="email">Email <span class="optional-hint">(optional)</span></label>
+        <label for="email">Email</label>
         <input type="email" id="email" name="email" placeholder="you@example.com">
         <span class="field-error" id="emailError">Please enter a valid email address.</span>
         <div id="caseDetect" style="display:none;margin-top:8px;padding:12px 14px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:8px;">
@@ -407,9 +407,11 @@
       </div>
 
       <div class="field">
-        <label for="phone">Phone number <span class="optional-hint">(optional)</span></label>
+        <label for="phone">Phone number</label>
         <input type="tel" id="phone" name="phone" placeholder="(416) 555-1234" maxlength="14">
         <span class="field-error" id="phoneError">Please enter a valid 10-digit phone number.</span>
+        <span class="field-error" id="contactRequiredError">Please provide at least an email or phone number.</span>
+        <p style="font-size:0.74rem;color:#aaa;margin-top:5px;">At least one of email or phone is required.</p>
       </div>
 
       <div class="field">
@@ -667,9 +669,13 @@
 
     // ── Open case detection ──
     const KNOWN_CASES = {
+      // by email
       'test@example.com': { caseNo: 'CAS-2026-00847', team: 'Technical Support', opened: '3 days ago' },
       'jane@demo.com':    { caseNo: 'CAS-2026-01203', team: 'Billing',           opened: 'last week'  },
       'user@test.com':    { caseNo: 'CAS-2026-00531', team: 'Fulfillment',       opened: '5 days ago' },
+      // by phone (10 digits)
+      '4165551234':       { caseNo: 'CAS-2026-00923', team: 'Customer Experience', opened: '2 days ago' },
+      '4165559876':       { caseNo: 'CAS-2026-01105', team: 'Fulfillment',         opened: '4 days ago' },
     };
 
     let openCaseInfo = null, linkedCase = false, linkedCaseNo = null;
@@ -678,13 +684,24 @@
       return 'CAS-2026-' + String(Math.floor(10000 + Math.random() * 90000));
     }
 
-    function checkForOpenCase(email) {
-      const match = KNOWN_CASES[email.toLowerCase().trim()];
+    function checkForOpenCase() {
+      const email       = emailInput.value.trim();
+      const phoneDigits = phoneInput.value.replace(/\D/g, '');
+      // Email takes priority; only fall back to phone if no valid email entered
+      let match = null, matchedBy = '';
+      if (email && isValidEmail(email)) {
+        match = KNOWN_CASES[email.toLowerCase()];
+        matchedBy = 'email';
+      } else if (!email && phoneDigits.length === 10) {
+        match = KNOWN_CASES[phoneDigits];
+        matchedBy = 'phone';
+      }
       const el = document.getElementById('caseDetect');
-      if (match && isValidEmail(email)) {
+      if (match) {
         openCaseInfo = match; linkedCase = false; linkedCaseNo = null;
+        const via = matchedBy === 'email' ? `this email` : `this phone number`;
         document.getElementById('caseDetectMsg').textContent =
-          `We found an open case (${match.caseNo}) for this email, opened ${match.opened} with our ${match.team} team. Is this submission related to your open case?`;
+          `We found an open case (${match.caseNo}) for ${via}, opened ${match.opened} with our ${match.team} team. Is this submission related to your open case?`;
         document.getElementById('caseDetectActions').style.display = 'flex';
         el.style.cssText = 'display:block;margin-top:8px;padding:12px 14px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:8px;';
       } else {
@@ -710,17 +727,14 @@
     emailInput.addEventListener('input', function () {
       const pos = this.selectionStart;
       const lower = this.value.toLowerCase();
-      if (this.value !== lower) {
-        this.value = lower;
-        this.setSelectionRange(pos, pos);
-      }
+      if (this.value !== lower) { this.value = lower; this.setSelectionRange(pos, pos); }
       if (emailError.classList.contains('visible')) validateEmail();
       if (openCaseInfo) resetCaseDetect();
     });
 
     emailInput.addEventListener('blur', function () {
       validateEmail();
-      checkForOpenCase(this.value);
+      checkForOpenCase();
     });
 
     // Phone
@@ -747,9 +761,13 @@
     phoneInput.addEventListener('input', function () {
       formatPhone(this);
       if (phoneError.classList.contains('visible')) validatePhone();
+      if (openCaseInfo) resetCaseDetect();
     });
 
-    phoneInput.addEventListener('blur', validatePhone);
+    phoneInput.addEventListener('blur', function () {
+      validatePhone();
+      checkForOpenCase();
+    });
 
     // ── Address autocomplete ──
     let parsedCity = '', parsedProvince = '', parsedPostal = '';
@@ -1036,6 +1054,14 @@
       }
 
       if (validatePhone()) { phoneInput.focus(); return; }
+
+      const phoneDigitsCheck = phoneInput.value.replace(/\D/g, '');
+      if (!email && !phoneDigitsCheck) {
+        document.getElementById('contactRequiredError').classList.add('visible');
+        emailInput.focus();
+        return;
+      }
+      document.getElementById('contactRequiredError').classList.remove('visible');
 
       const phone     = document.getElementById('phone').value.trim();
       const sentiment = message ? analyseSentiment(message) : 'neutral';
