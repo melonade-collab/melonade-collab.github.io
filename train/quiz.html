@@ -436,6 +436,16 @@ function renderQuestion() {
   });
 
   buildStars();
+  speakQuestion(q, allOptions);
+}
+
+function speakQuestion(q, options) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const labels = options.map((o, i) => `${['Option 1', 'Option 2', 'Option 3'][i]}: ${o.label}`).join('. ');
+  const msg = new SpeechSynthesisUtterance(`What does the ${q.car} carry? ${labels}.`);
+  msg.rate = 0.82; msg.pitch = 1.1; msg.volume = 1;
+  window.speechSynthesis.speak(msg);
 }
 
 function handleAnswer(btn, isCorrect, q, allOptions, container) {

@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shipping Assistant — Prototype</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F6F3;
+    --surface: #FFFFFF;
+    --border: #E4E2DC;
+    --text-primary: #1A1917;
+    --text-secondary: #6B6860;
+    --text-muted: #A09E98;
+    --accent: #2C5F8A;
+    --accent-light: #EBF2F8;
+    --accent-hover: #1E4870;
+    --va-bubble: #1A1917;
+    --va-text: #FFFFFF;
+    --user-bubble: #EBF2F8;
+    --user-text: #1A1917;
+    --rate-card: #F0F7FF;
+    --green: #1A6B45;
+    --green-light: #E8F5EE;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* Case study layout */
+  .cs-back {
+    position: fixed; top: 14px; left: 16px;
+    font-size: 0.7rem; color: rgba(255,255,255,0.6);
+    text-decoration: none; background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 4px 10px; border-radius: 6px; letter-spacing: 2px;
+    z-index: 100;
+  }
+  .cs-header { background: #1E3D5C; padding: 64px 40px 48px; }
+  .cs-header-inner { max-width: 800px; margin: 0 auto; }
+  .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+  .cs-header h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
+  .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.72); line-height: 1.7; max-width: 560px; }
+  .cs-body { max-width: 800px; margin: 0 auto; padding: 48px 40px 80px; }
+  .cs-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; padding: 22px 26px; }
+  .cs-card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #1E3D5C; margin-bottom: 12px; }
+  .cs-card p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+  .cs-card ul { padding-left: 18px; }
+  .cs-card li { font-size: 0.875rem; color: #555; line-height: 1.7; margin-bottom: 6px; }
+  .mb16 { margin-bottom: 16px; }
+  .mb40 { margin-bottom: 40px; }
+  .proto-stage { display: flex; flex-direction: column; align-items: center; background: var(--accent-light); border-radius: 16px; padding: 36px 20px 48px; }
+  .proto-stage-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #1E3D5C; margin-bottom: 24px; }
+
+  /* Prototype frame */
+  .frame {
+    width: 100%;
+    max-width: 420px;
+    background: var(--surface);
+    border-radius: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 16px 48px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 680px;
+  }
+
+  /* Header */
+  .va-header {
+    background: var(--va-bubble);
+    padding: 18px 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .va-avatar {
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .va-header-info {
+    flex: 1;
+  }
+
+  .va-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #FFFFFF;
+    letter-spacing: 0.01em;
+  }
+
+  .va-status {
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    margin-top: 1px;
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #4ADE80;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+
+  /* Chat area */
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scroll-behavior: smooth;
+  }
+
+  .chat-area::-webkit-scrollbar { width: 0; }
+
+  /* Bubbles */
+  .bubble-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    animation: fadeUp 0.25s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .bubble-row.va { justify-content: flex-start; }
+  .bubble-row.user { justify-content: flex-end; }
+
+  .bubble-row .mini-avatar {
+    width: 26px;
+    height: 26px;
+    background: var(--va-bubble);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+  }
+
+  .bubble {
+    max-width: 80%;
+    padding: 11px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .bubble-row.va .bubble {
+    background: var(--va-bubble);
+    color: var(--va-text);
+    border-bottom-left-radius: 4px;
+  }
+
+  .bubble-row.user .bubble {
+    background: var(--user-bubble);
+    color: var(--user-text);
+    border-bottom-right-radius: 4px;
+    font-weight: 500;
+  }
+
+  /* Typing indicator */
+  .typing {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 14px;
+  }
+
+  .typing span {
+    width: 6px;
+    height: 6px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 50%;
+    animation: blink 1.2s infinite;
+  }
+
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes blink {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+  }
+
+  /* Action buttons offered by VA */
+  .action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+    animation: fadeUp 0.25s ease forwards;
+    opacity: 0;
+  }
+
+  .action-btn {
+    background: transparent;
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .action-btn:hover {
+    background: var(--accent);
+    color: white;
+  }
+
+  .action-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  /* Country input inline */
+  .inline-input-wrap {
+    background: var(--va-bubble);
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+    padding: 14px;
+    max-width: 86%;
+    animation: fadeUp 0.25s ease forwards;
+    opacity: 0;
+  }
+
+  .inline-input-label {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  .country-input-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .country-input {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 9px 12px;
+    color: white;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .country-input::placeholder { color: rgba(255,255,255,0.35); }
+  .country-input:focus { border-color: rgba(255,255,255,0.5); }
+
+  .country-submit {
+    background: var(--accent);
+    border: none;
+    border-radius: 10px;
+    padding: 9px 14px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+
+  .country-submit:hover { background: var(--accent-hover); }
+
+  /* Rate card */
+  .rate-card {
+    background: var(--va-bubble);
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+    padding: 14px;
+    max-width: 86%;
+    animation: fadeUp 0.25s ease forwards;
+    opacity: 0;
+  }
+
+  .rate-card-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 10px;
+  }
+
+  .rate-destination {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .flag {
+    font-size: 20px;
+  }
+
+  .rate-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .rate-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 9px 12px;
+  }
+
+  .rate-row-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .rate-row-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .rate-row-value.highlight {
+    color: #6EC4FF;
+  }
+
+  .rate-note {
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  /* Suggested prompts at bottom */
+  .suggestions {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .suggestions-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .suggestion-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .chip {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 7px 13px;
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .chip:hover {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .chip:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  /* Reset */
+  .reset-btn {
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    margin-top: 10px;
+    display: block;
+    text-align: center;
+    width: 100%;
+    padding: 4px;
+    transition: color 0.15s;
+  }
+
+  .reset-btn:hover { color: var(--text-secondary); }
+
+  /* Prototype label */
+  .proto-label {
+    margin-top: 16px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<a class="cs-back" href="index.html">← Portfolio</a>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="eyebrow">Customer support · Consumer shipping</p>
+    <h1>Shipping Assistant</h1>
+    <p class="cs-intro">Customers had no self-serve way to get a shipping rate or delivery time estimate without calling in and waiting for a live agent.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+  <div class="cs-card mb16">
+    <p class="cs-card-label">Problem</p>
+    <p>Carriers handle high volumes of inbound calls from customers who only need a simple answer: how much will this cost, or how long will it take? There was no self-serve path. Customers had to phone in, navigate a menu tree, and wait for a live agent — for information that could be delivered instantly.</p>
+  </div>
+
+  <div class="cs-card mb40">
+    <p class="cs-card-label">Constraints</p>
+    <ul>
+      <li>No account creation or login — had to work for any customer without requiring sign-in</li>
+      <li>Had to feel conversational and natural, not like filling out a rate calculator form</li>
+      <li>Needed to handle rate lookups, delivery time questions, or both in one flow</li>
+      <li>Required a clear path to live agent handoff for customers with more complex needs</li>
+    </ul>
+  </div>
+
+  <div class="proto-stage">
+    <p class="proto-stage-label">Interactive Prototype</p>
+    <div class="frame" id="frame">
+  <div class="va-header">
+    <div class="va-avatar">📦</div>
+    <div class="va-header-info">
+      <div class="va-name">Shipping Assistant</div>
+      <div class="va-status"><span class="status-dot"></span>Online</div>
+    </div>
+  </div>
+
+  <div class="chat-area" id="chatArea"></div>
+
+  <div class="suggestions" id="suggestionsArea">
+    <div class="suggestions-label">Ask me about</div>
+    <div class="suggestion-chips" id="chips">
+      <button class="chip" onclick="startFlow('rates')">How much does international shipping cost?</button>
+      <button class="chip" onclick="startFlow('delivery')">How long will my parcel take to arrive?</button>
+      <button class="chip" onclick="startFlow('both')">I need to know cost and delivery time</button>
+    </div>
+    <button class="reset-btn" id="resetBtn" onclick="resetChat()" style="display:none">↩ Start over</button>
+  </div>
+</div>
+
+  </div><!-- /frame -->
+  </div><!-- /proto-stage -->
+</div><!-- /cs-body -->
+
+<script>
+const chatArea = document.getElementById('chatArea');
+const chips = document.getElementById('chips');
+const resetBtn = document.getElementById('resetBtn');
+
+// Known countries with flags + regions
+const knownCountries = {
+  "united states": { flag: "🇺🇸", name: "United States", region: "north_america" },
+  "us": { flag: "🇺🇸", name: "United States", region: "north_america" },
+  "usa": { flag: "🇺🇸", name: "United States", region: "north_america" },
+  "canada": { flag: "🇨🇦", name: "Canada", region: "north_america" },
+  "mexico": { flag: "🇲🇽", name: "Mexico", region: "north_america" },
+  "united kingdom": { flag: "🇬🇧", name: "United Kingdom", region: "europe" },
+  "uk": { flag: "🇬🇧", name: "United Kingdom", region: "europe" },
+  "france": { flag: "🇫🇷", name: "France", region: "europe" },
+  "germany": { flag: "🇩🇪", name: "Germany", region: "europe" },
+  "italy": { flag: "🇮🇹", name: "Italy", region: "europe" },
+  "spain": { flag: "🇪🇸", name: "Spain", region: "europe" },
+  "netherlands": { flag: "🇳🇱", name: "Netherlands", region: "europe" },
+  "portugal": { flag: "🇵🇹", name: "Portugal", region: "europe" },
+  "greece": { flag: "🇬🇷", name: "Greece", region: "europe" },
+  "sweden": { flag: "🇸🇪", name: "Sweden", region: "europe" },
+  "norway": { flag: "🇳🇴", name: "Norway", region: "europe" },
+  "denmark": { flag: "🇩🇰", name: "Denmark", region: "europe" },
+  "finland": { flag: "🇫🇮", name: "Finland", region: "europe" },
+  "switzerland": { flag: "🇨🇭", name: "Switzerland", region: "europe" },
+  "austria": { flag: "🇦🇹", name: "Austria", region: "europe" },
+  "belgium": { flag: "🇧🇪", name: "Belgium", region: "europe" },
+  "poland": { flag: "🇵🇱", name: "Poland", region: "europe" },
+  "ireland": { flag: "🇮🇪", name: "Ireland", region: "europe" },
+  "czech republic": { flag: "🇨🇿", name: "Czech Republic", region: "europe" },
+  "hungary": { flag: "🇭🇺", name: "Hungary", region: "europe" },
+  "romania": { flag: "🇷🇴", name: "Romania", region: "europe" },
+  "turkey": { flag: "🇹🇷", name: "Turkey", region: "europe" },
+  "croatia": { flag: "🇭🇷", name: "Croatia", region: "europe" },
+  "japan": { flag: "🇯🇵", name: "Japan", region: "east_asia" },
+  "china": { flag: "🇨🇳", name: "China", region: "east_asia" },
+  "south korea": { flag: "🇰🇷", name: "South Korea", region: "east_asia" },
+  "taiwan": { flag: "🇹🇼", name: "Taiwan", region: "east_asia" },
+  "hong kong": { flag: "🇭🇰", name: "Hong Kong", region: "east_asia" },
+  "singapore": { flag: "🇸🇬", name: "Singapore", region: "southeast_asia" },
+  "thailand": { flag: "🇹🇭", name: "Thailand", region: "southeast_asia" },
+  "vietnam": { flag: "🇻🇳", name: "Vietnam", region: "southeast_asia" },
+  "malaysia": { flag: "🇲🇾", name: "Malaysia", region: "southeast_asia" },
+  "indonesia": { flag: "🇮🇩", name: "Indonesia", region: "southeast_asia" },
+  "philippines": { flag: "🇵🇭", name: "Philippines", region: "southeast_asia" },
+  "india": { flag: "🇮🇳", name: "India", region: "south_asia" },
+  "pakistan": { flag: "🇵🇰", name: "Pakistan", region: "south_asia" },
+  "bangladesh": { flag: "🇧🇩", name: "Bangladesh", region: "south_asia" },
+  "australia": { flag: "🇦🇺", name: "Australia", region: "oceania" },
+  "new zealand": { flag: "🇳🇿", name: "New Zealand", region: "oceania" },
+  "brazil": { flag: "🇧🇷", name: "Brazil", region: "south_america" },
+  "argentina": { flag: "🇦🇷", name: "Argentina", region: "south_america" },
+  "colombia": { flag: "🇨🇴", name: "Colombia", region: "south_america" },
+  "chile": { flag: "🇨🇱", name: "Chile", region: "south_america" },
+  "peru": { flag: "🇵🇪", name: "Peru", region: "south_america" },
+  "south africa": { flag: "🇿🇦", name: "South Africa", region: "africa" },
+  "nigeria": { flag: "🇳🇬", name: "Nigeria", region: "africa" },
+  "kenya": { flag: "🇰🇪", name: "Kenya", region: "africa" },
+  "ghana": { flag: "🇬🇭", name: "Ghana", region: "africa" },
+  "egypt": { flag: "🇪🇬", name: "Egypt", region: "middle_east" },
+  "uae": { flag: "🇦🇪", name: "UAE", region: "middle_east" },
+  "united arab emirates": { flag: "🇦🇪", name: "UAE", region: "middle_east" },
+  "saudi arabia": { flag: "🇸🇦", name: "Saudi Arabia", region: "middle_east" },
+  "israel": { flag: "🇮🇱", name: "Israel", region: "middle_east" },
+  "russia": { flag: "🇷🇺", name: "Russia", region: "eastern_europe" },
+  "ukraine": { flag: "🇺🇦", name: "Ukraine", region: "eastern_europe" },
+};
+
+// Region rate templates [option A, option B]
+const regionRates = {
+  north_america:  { std: [12.99, 15.99], exp: [24.99, 28.99], stdDays: ["7–10", "6–9"],   expDays: ["3–5", "3–4"] },
+  europe:         { std: [18.99, 21.99], exp: [34.99, 39.99], stdDays: ["10–14", "9–13"], expDays: ["5–7", "4–6"] },
+  east_asia:      { std: [20.99, 23.99], exp: [38.99, 44.99], stdDays: ["12–16", "11–15"],expDays: ["6–8", "5–7"] },
+  southeast_asia: { std: [21.99, 24.99], exp: [40.99, 46.99], stdDays: ["12–17", "13–18"],expDays: ["6–9", "7–10"] },
+  south_asia:     { std: [22.99, 25.99], exp: [42.99, 47.99], stdDays: ["14–18", "13–17"],expDays: ["7–10", "6–9"] },
+  oceania:        { std: [21.99, 24.99], exp: [39.99, 45.99], stdDays: ["12–16", "14–18"],expDays: ["6–8", "7–9"] },
+  south_america:  { std: [22.99, 26.99], exp: [42.99, 49.99], stdDays: ["14–20", "15–21"],expDays: ["8–12", "9–13"] },
+  africa:         { std: [25.99, 29.99], exp: [47.99, 54.99], stdDays: ["16–22", "18–24"],expDays: ["9–13", "10–14"] },
+  middle_east:    { std: [22.99, 26.99], exp: [42.99, 49.99], stdDays: ["12–17", "14–19"],expDays: ["7–10", "8–11"] },
+  eastern_europe: { std: [20.99, 23.99], exp: [38.99, 43.99], stdDays: ["12–16", "13–17"],expDays: ["6–9", "7–10"] },
+  default:        { std: [24.99, 28.99], exp: [46.99, 52.99], stdDays: ["14–21", "16–23"],expDays: ["9–13", "10–14"] },
+};
+
+// Deterministic index from name so same country always returns same rates
+function strHash(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+function getCountryData(input) {
+  const key = input.toLowerCase().trim();
+  const known = knownCountries[key];
+  const displayName = known ? known.name : input.trim().replace(/\b\w/g, c => c.toUpperCase());
+  const region = known ? known.region : 'default';
+  const flag = known ? known.flag : '🌍';
+  const rates = regionRates[region] || regionRates.default;
+  const i = strHash(displayName) % 2;
+  return {
+    flag, name: displayName,
+    std: `$${rates.std[i].toFixed(2)}`,
+    exp: `$${rates.exp[i].toFixed(2)}`,
+    stdDays: `${rates.stdDays[i]} business days`,
+    expDays: `${rates.expDays[i]} business days`,
+  };
+}
+
+let currentMode = null;
+let flowStage = 'idle';
+
+function disableChips() {
+  document.querySelectorAll('.chip').forEach(c => c.disabled = true);
+  resetBtn.style.display = 'block';
+}
+
+function addBubble(type, content, delay = 0) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const row = document.createElement('div');
+      row.className = `bubble-row ${type}`;
+
+      if (type === 'va') {
+        const avatar = document.createElement('div');
+        avatar.className = 'mini-avatar';
+        avatar.textContent = '📦';
+        row.appendChild(avatar);
+      }
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.innerHTML = content;
+      row.appendChild(bubble);
+
+      chatArea.appendChild(row);
+      chatArea.scrollTop = chatArea.scrollHeight;
+      resolve();
+    }, delay);
+  });
+}
+
+function addTyping(delay = 0) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const row = document.createElement('div');
+      row.className = 'bubble-row va typing-row';
+      const avatar = document.createElement('div');
+      avatar.className = 'mini-avatar';
+      avatar.textContent = '📦';
+      row.appendChild(avatar);
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+      row.appendChild(bubble);
+      chatArea.appendChild(row);
+      chatArea.scrollTop = chatArea.scrollHeight;
+      resolve(row);
+    }, delay);
+  });
+}
+
+function removeTyping(el) {
+  if (el && el.parentNode) el.parentNode.removeChild(el);
+}
+
+function addActionButtons(buttons, delay = 0) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const row = document.createElement('div');
+      row.className = 'action-row';
+      row.style.paddingLeft = '34px';
+
+      buttons.forEach(btn => {
+        const b = document.createElement('button');
+        b.className = 'action-btn';
+        b.textContent = btn.label;
+        b.onclick = btn.action;
+        row.appendChild(b);
+      });
+
+      chatArea.appendChild(row);
+      chatArea.scrollTop = chatArea.scrollHeight;
+      resolve(row);
+    }, delay);
+  });
+}
+
+function addCountryInput(mode, delay = 0) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const wrap = document.createElement('div');
+      wrap.className = 'bubble-row va';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'mini-avatar';
+      avatar.textContent = '📦';
+      wrap.appendChild(avatar);
+
+      const inputWrap = document.createElement('div');
+      inputWrap.className = 'inline-input-wrap';
+
+      const modeLabel = mode === 'rates' ? 'shipping rates' : mode === 'delivery' ? 'delivery times' : 'rates and delivery times';
+      inputWrap.innerHTML = `
+        <div class="inline-input-label">Which country are you shipping to? I'll pull up the ${modeLabel} for you.</div>
+        <div class="country-input-row">
+          <input class="country-input" id="countryInput" placeholder="e.g. France, Japan…" autocomplete="off" />
+          <button class="country-submit" id="countrySubmit">Look up</button>
+        </div>
+      `;
+
+      wrap.appendChild(inputWrap);
+      chatArea.appendChild(wrap);
+      chatArea.scrollTop = chatArea.scrollHeight;
+
+      const input = document.getElementById('countryInput');
+      const submit = document.getElementById('countrySubmit');
+
+      const doLookup = () => {
+        const val = input.value.trim();
+        if (!val) return;
+        input.disabled = true;
+        submit.disabled = true;
+        resolve(val);
+      };
+
+      submit.onclick = doLookup;
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') doLookup(); });
+      setTimeout(() => input.focus(), 100);
+    }, delay);
+  });
+}
+
+function addRateCard(country, mode, delay = 0) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const row = document.createElement('div');
+      row.className = 'bubble-row va';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'mini-avatar';
+      avatar.textContent = '📦';
+      row.appendChild(avatar);
+
+      const card = document.createElement('div');
+      card.className = 'rate-card';
+
+      if (mode === 'rates' || mode === 'both') {
+        card.innerHTML += `
+          <div class="rate-card-label">Shipping Rates · ${country.name}</div>
+          <div class="rate-destination"><span class="flag">${country.flag}</span>${country.name}</div>
+          <div class="rate-rows">
+            <div class="rate-row">
+              <span class="rate-row-label">Standard Shipping</span>
+              <span class="rate-row-value highlight">${country.std}</span>
+            </div>
+            <div class="rate-row">
+              <span class="rate-row-label">Express Shipping</span>
+              <span class="rate-row-value highlight">${country.exp}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      if (mode === 'delivery' || mode === 'both') {
+        card.innerHTML += `
+          ${mode === 'both' ? '<div style="margin-top:12px; border-top: 1px solid rgba(255,255,255,0.08); padding-top:12px;"><div class="rate-card-label">Delivery Times</div></div>' : `<div class="rate-card-label">Delivery Times · ${country.name}</div><div class="rate-destination"><span class="flag">${country.flag}</span>${country.name}</div>`}
+          <div class="rate-rows" style="margin-top: ${mode === 'both' ? '0' : ''}">
+            <div class="rate-row">
+              <span class="rate-row-label">Standard</span>
+              <span class="rate-row-value highlight">${country.stdDays}</span>
+            </div>
+            <div class="rate-row">
+              <span class="rate-row-label">Express</span>
+              <span class="rate-row-value highlight">${country.expDays}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      card.innerHTML += `<div class="rate-note">Rates apply to parcels under 2 kg. Additional charges may apply for oversized items or remote areas.</div>`;
+
+      row.appendChild(card);
+      chatArea.appendChild(row);
+      chatArea.scrollTop = chatArea.scrollHeight;
+      resolve();
+    }, delay);
+  });
+}
+
+async function startFlow(mode) {
+  currentMode = mode;
+  disableChips();
+
+  const userMessages = {
+    rates: "How much does international shipping cost?",
+    delivery: "How long will my parcel take to arrive?",
+    both: "I need to know cost and delivery time"
+  };
+
+  await addBubble('user', userMessages[mode]);
+
+  const typing1 = await addTyping(300);
+  await new Promise(r => setTimeout(r, 1000));
+  removeTyping(typing1);
+
+  const vaResponses = {
+    rates: "Of course! Shipping rates vary by destination. I can look that up for you right now.",
+    delivery: "Happy to help with that! Delivery times depend on where your parcel is headed.",
+    both: "Sure thing — I can pull up both rates and delivery times for any destination."
+  };
+
+  await addBubble('va', vaResponses[mode]);
+
+  const countryVal = await addCountryInput(mode, 400);
+
+  await addBubble('user', `📍 ${countryVal}`, 200);
+
+  const countryData = getCountryData(countryVal);
+
+  const typing2 = await addTyping(400);
+  await new Promise(r => setTimeout(r, 1000));
+  removeTyping(typing2);
+
+  const confirmMessages = {
+    rates: `Got it — here are the current shipping rates to <strong>${countryData.name}</strong> ${countryData.flag}`,
+    delivery: `Here's what to expect for delivery to <strong>${countryData.name}</strong> ${countryData.flag}`,
+    both: `Here's everything you need for shipping to <strong>${countryData.name}</strong> ${countryData.flag}`
+  };
+
+  await addBubble('va', confirmMessages[mode]);
+  await addRateCard(countryData, mode, 300);
+
+  const typing3 = await addTyping(400);
+  await new Promise(r => setTimeout(r, 900));
+  removeTyping(typing3);
+
+  // Offer the other lookup for the same country if they only did one
+  if (mode === 'rates') {
+    await addBubble('va', `Want to see delivery times to <strong>${countryData.name}</strong> as well?`, 0);
+    await addActionButtons([
+      { label: `See delivery times → ${countryData.flag}`, action: () => showSecondLookup(countryData, 'delivery') },
+      { label: "Look up another country", action: () => resetChat() },
+      { label: "Talk to an agent", action: () => endFlow() }
+    ], 300);
+  } else if (mode === 'delivery') {
+    await addBubble('va', `Would you also like to see shipping rates to <strong>${countryData.name}</strong>?`, 0);
+    await addActionButtons([
+      { label: `See shipping rates → ${countryData.flag}`, action: () => showSecondLookup(countryData, 'rates') },
+      { label: "Look up another country", action: () => resetChat() },
+      { label: "Talk to an agent", action: () => endFlow() }
+    ], 300);
+  } else {
+    await addBubble('va', "Is there anything else I can help you with?", 0);
+    await addActionButtons([
+      { label: "Look up another country", action: () => resetChat() },
+      { label: "Talk to an agent", action: () => endFlow() }
+    ], 300);
+  }
+}
+
+async function showSecondLookup(countryData, mode) {
+  document.querySelectorAll('.action-btn').forEach(b => b.disabled = true);
+
+  const userMsg = mode === 'delivery'
+    ? `Yes, show me delivery times to ${countryData.name} too`
+    : `Yes, show me rates to ${countryData.name} too`;
+  await addBubble('user', userMsg);
+
+  const typing = await addTyping(300);
+  await new Promise(r => setTimeout(r, 900));
+  removeTyping(typing);
+
+  const vaMsg = mode === 'delivery'
+    ? `Here are the delivery times to <strong>${countryData.name}</strong> ${countryData.flag}`
+    : `Here are the shipping rates to <strong>${countryData.name}</strong> ${countryData.flag}`;
+  await addBubble('va', vaMsg);
+  await addRateCard(countryData, mode, 300);
+
+  const typing2 = await addTyping(400);
+  await new Promise(r => setTimeout(r, 900));
+  removeTyping(typing2);
+
+  await addBubble('va', "Is there anything else I can help you with?", 0);
+  await addActionButtons([
+    { label: "Look up another country", action: () => resetChat() },
+    { label: "Talk to an agent", action: () => endFlow() }
+  ], 300);
+}
+
+async function endFlow() {
+  document.querySelectorAll('.action-btn').forEach(b => b.disabled = true);
+  const typing = await addTyping(300);
+  await new Promise(r => setTimeout(r, 900));
+  removeTyping(typing);
+  await addBubble('va', "Connecting you now — one moment! 👋");
+}
+
+function resetChat() {
+  chatArea.innerHTML = '';
+  document.querySelectorAll('.chip').forEach(c => c.disabled = false);
+  resetBtn.style.display = 'none';
+  currentMode = null;
+  flowStage = 'idle';
+
+  // Re-show opening message
+  setTimeout(() => {
+    addBubble('va', "Hi there! I'm here to help with your shipment. What can I help you with today?");
+  }, 200);
+}
+
+// Initial greeting
+window.onload = () => {
+  setTimeout(() => {
+    addBubble('va', "Hi there! I'm here to help with your shipment. What can I help you with today?");
+  }, 400);
+};
+</script>
+</body>
+</html>
