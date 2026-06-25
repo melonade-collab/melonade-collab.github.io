@@ -385,6 +385,7 @@ const questions = [
 let qIndex = 0;
 let score = 0;
 let answered = false;
+let hadWrong = false;
 let order = [];
 
 function shuffle(arr) {
@@ -406,6 +407,7 @@ function buildStars() {
 function renderQuestion() {
   const q = questions[order[qIndex]];
   answered = false;
+  hadWrong = false;
 
   document.getElementById('questionLabel').textContent = `QUESTION ${qIndex+1} OF ${TOTAL}`;
   document.getElementById('qNum').textContent = `${qIndex+1} / ${TOTAL}`;
@@ -459,7 +461,7 @@ function handleAnswer(btn, isCorrect, q, allOptions, container) {
     btn.classList.add('correct');
     feedback.textContent = q.correctMsg;
     feedback.className = 'feedback-row show-correct';
-    score++;
+    if (!hadWrong) score++;
     document.getElementById('scoreNum').textContent = score;
     buildStars();
     const starEl = document.getElementById(`star${score-1}`);
@@ -472,6 +474,7 @@ function handleAnswer(btn, isCorrect, q, allOptions, container) {
     feedback.textContent = q.wrongMsg;
     feedback.className = 'feedback-row show-wrong';
     playWrong();
+    hadWrong = true;
     setTimeout(() => {
       btn.classList.remove('wrong');
       btn.disabled = true;
