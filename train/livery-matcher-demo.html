@@ -307,15 +307,11 @@ function selectPhoto(card, r) {
   selectedPhotoId = r.id;
   document.getElementById('hint').textContent = 'NOW TAP ITS RAILWAY NAME →';
 
-  const availableNames = currentPool
-    .filter(p => !document.querySelector(`.name-chip[data-id="${p.id}"]`)?.classList.contains('matched'))
-    .map(p => p.name);
-  speak(`Which railway is this? ${availableNames.join('. ')}.`);
 }
 
 function selectName(chip, r) {
+  speak(r.name);
   if (!selectedPhotoId) {
-    speak('Tap a train photo first!');
     document.getElementById('hint').textContent = 'TAP A TRAIN PHOTO FIRST ←';
     return;
   }
