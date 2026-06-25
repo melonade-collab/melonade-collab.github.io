@@ -163,76 +163,112 @@ h1 { font-size:clamp(1.4rem,5vw,2rem); font-weight:900; letter-spacing:3px; colo
 <script>
 const ALL_RAILWAYS = [
   {
-    id: 'cp',
-    name: 'Canadian Pacific',
+    id: 'cp', name: 'Canadian Pacific',
     image: 'https://images.unsplash.com/photo-1604257345076-d9943f0866dd?w=500&auto=format&fit=crop&q=60',
-    pos: 'center',
-    color: '#c41e1e',
-    fact: "Canadian Pacific's bright red and white colours have been on their engines since the 1950s! The red is so bold that train spotters can identify a CP locomotive from kilometres away."
+    pos: 'center', color: '#c41e1e',
+    facts: [
+      "Canadian Pacific's bright red and white colours have been on their engines since the 1950s! The red is so bold that train spotters can identify a CP locomotive from kilometres away.",
+      "Canadian Pacific built the very first railway to cross all of Canada from coast to coast — finished in 1885! Without CP, Canada as we know it might not even exist today.",
+      "CP's famous beaver logo has been part of the railway since the very beginning — the beaver is one of Canada's national symbols and represents hard work and determination, just like the railway builders!",
+      "CP operates one of the longest railways in North America, stretching over 20,000 kilometres of track — long enough to go halfway around the whole Earth!",
+      "Every December, CP runs its famous Holiday Train — decorated with thousands of twinkling lights — travelling across Canada and the US collecting food donations for families in need!"
+    ]
   },
   {
-    id: 'bnsf',
-    name: 'BNSF Railway',
+    id: 'bnsf', name: 'BNSF Railway',
     image: 'https://images.unsplash.com/photo-1628671044922-33ab6bb77b28?w=500&auto=format&fit=crop&q=60',
-    pos: 'center',
-    color: '#e87722',
-    fact: "BNSF's orange and yellow colours came from two railways that merged together — the green Burlington Northern and the red Santa Fe warbonnet! The mix became the bright orange-yellow seen all across America today."
+    pos: 'center', color: '#e87722',
+    facts: [
+      "BNSF's orange and yellow colours came from two railways that merged — the green Burlington Northern and the red Santa Fe warbonnet! The mix became the bright orange-yellow seen all across America today.",
+      "BNSF is one of the largest freight railways in North America, operating over 50,000 kilometres of track across 28 US states and 3 Canadian provinces!",
+      "The BNSF route through the Mojave Desert is one of the busiest freight corridors on Earth, with up to 100 trains passing through every single day!",
+      "BNSF hauls more grain than any other railway in America — enough to feed millions of people around the world! Huge trains loaded with wheat and corn roll from the prairies to the ports.",
+      "The famous Santa Fe 'warbonnet' — a swooping red and silver stripe along the locomotive — is one of the most iconic train designs in American history, even though it's no longer used today!"
+    ]
   },
   {
-    id: 'via',
-    name: 'VIA Rail',
+    id: 'via', name: 'VIA Rail',
     image: 'https://images.unsplash.com/photo-1593871005107-0a59cd0538d5?q=80&w=385&auto=format&fit=crop',
-    pos: 'center',
-    color: '#003da5',
-    fact: "VIA Rail's blue and yellow trains travel all the way across Canada! The blue represents Canada's sky and waterways, while the yellow stripe represents the golden wheat prairies in the middle of the country."
+    pos: 'center', color: '#003da5',
+    facts: [
+      "VIA Rail's blue and yellow trains travel all the way across Canada — a four-day journey of over 4,400 kilometres from Toronto to Vancouver!",
+      "VIA Rail's The Canadian passes through some of the most spectacular scenery on Earth, including the Canadian Shield, the prairies, and the Rocky Mountains — all from your train seat!",
+      "VIA Rail operates in both official Canadian languages — every announcement and menu is in English and French, no matter which train you're on!",
+      "The windows on VIA Rail's The Canadian are enormous so passengers can see the incredible landscape rolling by. Some passengers even sleep in special rooms with a window right beside their bed!",
+      "VIA Rail connects over 400 communities across Canada, including some remote northern towns that can only be reached by train — there are no roads to get there at all!"
+    ]
   },
   {
-    id: 'rm',
-    name: 'Rocky Mountaineer',
+    id: 'rm', name: 'Rocky Mountaineer',
     image: 'https://images.unsplash.com/photo-1758473439537-e5144e93782b?q=80&w=387&auto=format&fit=crop',
-    pos: 'center',
-    color: '#b8960c',
-    fact: "The Rocky Mountaineer's dark blue and gold coaches have huge glass domes on the roof so passengers can look straight up at the Rocky Mountain peaks while sitting inside! It's one of the most beautiful trains in the world."
+    pos: '50% 65%', color: '#b8960c',
+    facts: [
+      "The Rocky Mountaineer's dark blue and gold coaches have huge glass domes on the roof so passengers can look straight up at the Rocky Mountain peaks while sitting inside!",
+      "The Rocky Mountaineer only travels in daylight — the company guarantees passengers won't miss a single moment of scenery! The train stops each evening so everyone sleeps in a hotel.",
+      "The Rocky Mountaineer passes through the famous Spiral Tunnels — two corkscrew tunnels where you can look out the window and see the front of your own train emerging from the mountain above you!",
+      "Wildlife sightings are so common that the train carries onboard guides whose whole job is to spot animals — grizzly bears, elk, moose, mountain goats, and bald eagles are regularly seen from the windows!",
+      "The Rocky Mountaineer was rescued in 1990 after the government cut the passenger route. A private company turned it into one of the most celebrated luxury train journeys on Earth!"
+    ]
   },
   {
-    id: 'amtrak',
-    name: 'Amtrak',
+    id: 'amtrak', name: 'Amtrak',
     image: 'https://images.unsplash.com/photo-1660016902828-f490c2d1736c?q=80&w=870&auto=format&fit=crop',
-    pos: 'center',
-    color: '#1b4d8e',
-    fact: "Amtrak's red, white and blue colours were chosen in 1971 to represent all of America! Amtrak passenger trains travel to cities in 46 of America's 48 mainland states — almost everywhere you can think of."
+    pos: 'center', color: '#1b4d8e',
+    facts: [
+      "Amtrak's red, white and blue colours were chosen in 1971 to represent all of America! Amtrak trains travel to cities in 46 of America's 48 mainland states.",
+      "Amtrak's longest route is the California Zephyr, running from Chicago all the way to San Francisco — a journey of over 3,900 kilometres taking more than 50 hours!",
+      "Amtrak carries over 30 million passengers every year — that's almost the entire population of Canada riding Amtrak trains in a single year!",
+      "Amtrak's Acela is the fastest train in America, reaching speeds of up to 240 kilometres per hour along the Northeast Corridor between Boston, New York, and Washington!",
+      "Amtrak was created by the US government in 1971 to save passenger rail after most private railways stopped running passenger trains because they weren't making enough money!"
+    ]
   },
   {
-    id: 'ferromex',
-    name: 'Ferromex',
+    id: 'ferromex', name: 'Ferromex',
     image: 'https://images.unsplash.com/photo-1627674678760-59697663644f?q=80&w=387&auto=format&fit=crop',
-    pos: 'center',
-    color: '#006847',
-    fact: "Ferromex's yellow and red logo features an eagle — just like the Mexican flag! Ferromex is Mexico's biggest freight railway and carries goods from the US border all the way to the southern ports."
+    pos: 'center', color: '#006847',
+    facts: [
+      "Ferromex's yellow and red logo features an eagle — just like the Mexican flag! Ferromex is Mexico's biggest freight railway.",
+      "Ferromex operates over 8,000 kilometres of track all across Mexico, carrying goods from the US border all the way to the ports on the Pacific and Gulf coasts!",
+      "Ferromex hauls huge amounts of grain, cars, steel, and industrial goods across Mexico — without it, many Mexican factories and farms would struggle to move their products!",
+      "Ferromex is short for Ferrocarriles Mexicanos — which means Mexican Railways in Spanish! The company was privatised in 1997 after being run by the Mexican government for decades.",
+      "Some of Ferromex's routes climb high into the Sierra Madre mountains — passing through canyons that are even deeper than the Grand Canyon! It's one of the most dramatic train journeys in the world."
+    ]
   },
   {
-    id: 'cn',
-    name: 'Canadian National',
+    id: 'cn', name: 'Canadian National',
     image: 'https://images.unsplash.com/photo-1543256691-5d27cc7fbee0?w=400&auto=format&fit=crop&q=60',
-    pos: 'center',
-    color: '#cc0000',
-    fact: "Canadian National's black locomotives with bold red and white stripes run through both Canada AND the United States! CN is one of the only railways that stretches all the way from the Atlantic coast to the Gulf of Mexico."
+    pos: 'center', color: '#cc0000',
+    facts: [
+      "Canadian National's black locomotives with bold red and white stripes run through both Canada AND the United States — one of the only railways in North America that crosses both countries!",
+      "CN Rail stretches over 32,000 kilometres of track, reaching from the Atlantic coast in Nova Scotia all the way to the Gulf of Mexico in Louisiana!",
+      "CN was founded in 1919 as a government-owned railway, created by merging several struggling Canadian railways into one giant national network. It went private in 1995!",
+      "CN Rail moves enormous amounts of potash, grain, coal, and forest products — resources Canada is famous for. Much of what CN carries ends up on ships sailing to countries all around the world!",
+      "CN operates the only railway bridge across the Niagara River between Canada and the United States — trains roll right past Niagara Falls on their way between the two countries!"
+    ]
   },
   {
-    id: 'csx',
-    name: 'CSX',
+    id: 'csx', name: 'CSX',
     image: 'https://images.unsplash.com/photo-1586981597407-5e0998a489b1?w=400&auto=format&fit=crop&q=60',
-    pos: 'center',
-    color: '#1a5276',
-    fact: "CSX's dark blue and yellow locomotives are a common sight all along America's East Coast! CSX moves so much coal, grain, and containers that they say a CSX train is basically a portable warehouse rolling down the track."
+    pos: 'center', color: '#1a5276',
+    facts: [
+      "CSX's dark blue and yellow locomotives are a common sight all along America's East Coast! CSX operates over 33,000 kilometres of track across 26 states.",
+      "CSX moves so much cargo that if you used lorries instead, you'd need over 7 million lorry trips to carry the same amount — that's an enormous number of trucks saved off the roads!",
+      "One CSX train can carry as much cargo as 300 lorries! Moving freight by train uses far less fuel than by road, making CSX one of the more environmentally friendly ways to ship things.",
+      "CSX is famous for its 'How Tomorrow Moves' slogan — the company moves coal, grain, fertiliser, cars, and containers that help keep American cities running every single day.",
+      "CSX operates through some of America's most historic railway territory — including routes originally built before the American Civil War that are still carrying trains today, over 160 years later!"
+    ]
   },
   {
-    id: 'up',
-    name: 'Union Pacific',
+    id: 'up', name: 'Union Pacific',
     image: 'https://images.unsplash.com/photo-1628748429334-101a87a9357d?w=500&auto=format&fit=crop&q=60',
-    pos: 'center',
-    color: '#e8c200',
-    fact: "Union Pacific's bright yellow engines are nicknamed 'Yellow Monsters' by train fans! The yellow colour was chosen in the 1930s to look modern and powerful — and it has barely changed in almost 90 years."
+    pos: 'center', color: '#e8c200',
+    facts: [
+      "Union Pacific's bright yellow engines are nicknamed 'Yellow Monsters' by train fans! The yellow was chosen in the 1930s to look modern and powerful — and it has barely changed in almost 90 years.",
+      "Union Pacific finished the very first transcontinental railroad in America in 1869 — driving the famous golden spike that connected the East and West coasts of the United States by rail for the very first time!",
+      "Union Pacific operates over 51,000 kilometres of track crossing 23 states in the western United States — one of the longest railway networks in the world!",
+      "Union Pacific's biggest steam locomotives — the 'Big Boys' — were the largest steam engines ever built! They were so massive they needed an extra set of wheels in the middle just to go around corners.",
+      "Every day, Union Pacific moves enough freight to fill over 500,000 lorries — taking an enormous number of trucks off America's highways and helping the environment at the same time!"
+    ]
   },
 ];
 
@@ -294,11 +330,11 @@ function handleAnswer(btn, chosen, q) {
     if (!firstTryMisses[q.id]) score++;
     document.getElementById('starsRow').innerHTML = buildStars(score, SHOW);
     const fact = document.getElementById('factBubble');
-    fact.textContent = q.fact;
+    fact.textContent = q.facts[Math.floor(Math.random() * q.facts.length)];
     fact.classList.add('show');
     document.getElementById('nextBtn').classList.add('show');
     playChime();
-    setTimeout(() => speak(q.fact), 500);
+    setTimeout(() => speak(fact.textContent), 500);
   } else {
     btn.classList.add('wrong');
     firstTryMisses[q.id] = true;
