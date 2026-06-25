@@ -13,105 +13,116 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 60px 16px 48px;
+  padding: 60px 14px 48px;
 }
 .back-link { position:fixed; top:12px; left:14px; font-size:0.7rem; color:rgba(255,255,255,0.5); text-decoration:none; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; letter-spacing:2px; z-index:100; }
 
-h1 { font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 900; letter-spacing: 3px; color: #ffd700; text-shadow: 3px 3px 0 #6a4a00; text-align: center; margin-bottom: 6px; }
-.subtitle { font-size: 0.72rem; color: rgba(255,215,0,0.5); letter-spacing: 3px; margin-bottom: 14px; text-align: center; }
+h1 { font-size:clamp(1.4rem,5vw,2rem); font-weight:900; letter-spacing:3px; color:#ffd700; text-shadow:3px 3px 0 #6a4a00; text-align:center; margin-bottom:6px; }
+.subtitle { font-size:0.72rem; color:rgba(255,215,0,0.5); letter-spacing:3px; margin-bottom:14px; text-align:center; }
 
-.stars-row { display:flex; gap:6px; justify-content:center; margin-bottom:16px; min-height:2rem; }
-.star { font-size:1.6rem; transition:transform 0.3s; opacity:0.2; }
+.stars-row { display:flex; gap:6px; justify-content:center; margin-bottom:10px; min-height:2rem; }
+.star { font-size:1.6rem; opacity:0.2; transition:transform 0.3s; }
 .star.earned { opacity:1; animation:starPop 0.4s ease; }
 @keyframes starPop { 0%{transform:scale(0)} 60%{transform:scale(1.5)} 100%{transform:scale(1)} }
 
-.matcher-wrap {
-  width: 100%;
-  max-width: 480px;
-}
-.col-labels {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 6px;
-}
-.col-label { font-size:0.6rem; font-weight:700; letter-spacing:2px; color:rgba(255,255,255,0.3); text-align:center; }
+.progress { font-size:0.65rem; font-weight:700; letter-spacing:3px; color:rgba(255,255,255,0.3); text-align:center; margin-bottom:14px; }
 
-.pair-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.photo-card {
-  border-radius: 12px;
+.card {
+  background: white;
+  border-radius: 24px;
+  width: min(96vw, 540px);
+  box-shadow: 0 24px 70px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   overflow: hidden;
-  height: 90px;
-  cursor: pointer;
-  border: 3px solid transparent;
-  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.photo-wrap {
+  width: 100%;
+  height: clamp(220px, 42vw, 300px);
+  overflow: hidden;
   position: relative;
   flex-shrink: 0;
 }
-.photo-card img { width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
-.photo-card.selected { border-color:#ffd700; box-shadow:0 0 0 2px #ffd700; }
-.photo-card.matched { border-color:#4ade80; pointer-events:none; }
-.photo-card.wrong { animation:shake 0.4s ease; border-color:#f87171; }
-.match-check { display:none; position:absolute; top:5px; right:5px; background:#4ade80; color:#fff; width:22px; height:22px; border-radius:50%; font-size:13px; font-weight:900; align-items:center; justify-content:center; }
-.photo-card.matched .match-check { display:flex; }
-
-.name-chip {
-  border-radius: 12px;
-  height: 90px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: clamp(0.7rem, 2.5vw, 0.85rem);
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: center;
-  padding: 10px;
-  line-height: 1.3;
-  background: rgba(255,255,255,0.08);
-  border: 2px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.85);
+.photo-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s;
 }
-.name-chip:hover:not(.matched) { background:rgba(255,215,0,0.12); border-color:#ffd700; color:#ffd700; }
-.name-chip.selected { background:rgba(255,215,0,0.18); border-color:#ffd700; color:#ffd700; }
-.name-chip.matched { border-color:#4ade80; color:#4ade80; pointer-events:none; }
-.name-chip.wrong { animation:shake 0.4s ease; border-color:#f87171; color:#f87171; }
 
-@keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-7px)} 40%,80%{transform:translateX(7px)} }
+.question-label {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 4px;
+  color: #aaa; margin: 16px 0 4px; text-align: center;
+}
+.question-text {
+  font-size: clamp(1rem, 3.5vw, 1.25rem);
+  font-weight: 900; color: #1a1a2e;
+  text-align: center; margin-bottom: 14px;
+  padding: 0 16px;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  padding: 0 16px 18px;
+}
+.opt-btn {
+  background: #f4f4f4;
+  border: 2.5px solid #e0e0e0;
+  border-radius: 14px;
+  padding: 14px 10px;
+  font-size: clamp(0.75rem, 2.8vw, 0.9rem);
+  font-weight: 700;
+  font-family: inherit;
+  color: #1a1a2e;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1.3;
+  text-align: center;
+}
+.opt-btn:hover:not(:disabled) { background:#e8f0ff; border-color:#6699cc; }
+.opt-btn.correct { background:#d4edda; border-color:#28a745; color:#155724; }
+.opt-btn.wrong   { background:#f8d7da; border-color:#dc3545; color:#721c24; animation:shake 0.4s ease; }
+.opt-btn:disabled { cursor:default; }
+
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
 
 .fact-bubble {
-  width: 100%;
-  max-width: 480px;
-  margin-top: 14px;
-  background: rgba(255,215,0,0.1);
-  border: 1.5px solid rgba(255,215,0,0.25);
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.75);
+  margin: 0 16px 16px;
+  background: #fff8e1;
+  border: 1.5px solid #ffe082;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 0.82rem;
+  color: #5a4500;
   line-height: 1.6;
-  min-height: 56px;
-  transition: opacity 0.3s;
-  opacity: 0;
+  display: none;
+  width: calc(100% - 32px);
 }
-.fact-bubble.show { opacity: 1; }
+.fact-bubble.show { display: block; }
 
-.hint {
-  width: 100%;
-  max-width: 480px;
-  margin-top: 10px;
-  font-size: 0.7rem;
-  color: rgba(255,255,255,0.3);
-  text-align: center;
+.next-btn {
+  display: none;
+  background: #1a3a5c;
+  color: #ffd700;
+  border: none;
+  padding: 14px 36px;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 900;
+  font-family: inherit;
+  cursor: pointer;
   letter-spacing: 2px;
-  min-height: 1.2em;
+  margin: 0 16px 20px;
+  transition: transform 0.15s;
+  width: calc(100% - 32px);
 }
+.next-btn.show { display: block; }
+.next-btn:hover { transform: scale(1.03); }
 
 .win-screen { display:none; flex-direction:column; align-items:center; gap:18px; text-align:center; }
 .win-screen.show { display:flex; }
@@ -119,7 +130,7 @@ h1 { font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 900; letter-spacing: 3px;
 @keyframes pop { 0%{transform:scale(0)} 70%{transform:scale(1.3)} 100%{transform:scale(1)} }
 .win-title { font-size:1.6rem; font-weight:900; color:#ffd700; letter-spacing:3px; text-shadow:3px 3px 0 #6a4a00; }
 .win-score { font-size:0.85rem; color:rgba(255,255,255,0.5); letter-spacing:2px; }
-.play-again { background:#ffd700; color:#1a1a2e; border:none; padding:14px 32px; border-radius:14px; font-size:1rem; font-weight:900; cursor:pointer; letter-spacing:2px; transition:transform 0.15s; margin-top:4px; }
+.play-again { background:#ffd700; color:#1a1a2e; border:none; padding:14px 36px; border-radius:14px; font-size:1rem; font-weight:900; cursor:pointer; letter-spacing:2px; transition:transform 0.15s; }
 .play-again:hover { transform:scale(1.05); }
 </style>
 </head>
@@ -127,18 +138,18 @@ h1 { font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 900; letter-spacing: 3px;
 
 <a class="back-link" href="index.html">← Train World</a>
 <h1>🚂 LIVERY MATCHER</h1>
-<p class="subtitle">MATCH THE TRAIN TO ITS RAILWAY</p>
+<p class="subtitle">WHICH RAILWAY IS THIS?</p>
 
 <div class="stars-row" id="starsRow"></div>
+<p class="progress" id="progress"></p>
 
-<div id="gameArea" style="width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center;">
-  <div class="col-labels">
-    <p class="col-label">TRAINS</p>
-    <p class="col-label">RAILWAYS</p>
-  </div>
-  <div class="pair-grid" id="pairGrid" style="width:100%;"></div>
+<div class="card" id="gameCard">
+  <div class="photo-wrap"><img id="trainPhoto" src="" alt="Train"></div>
+  <p class="question-label">WHICH RAILWAY IS THIS?</p>
+  <p class="question-text">Tap the name — then tap it to hear it!</p>
+  <div class="options" id="options"></div>
   <div class="fact-bubble" id="factBubble"></div>
-  <p class="hint" id="hint">TAP A TRAIN TO HEAR THE OPTIONS!</p>
+  <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next →</button>
 </div>
 
 <div class="win-screen" id="winScreen">
@@ -226,10 +237,7 @@ const ALL_RAILWAYS = [
 ];
 
 const SHOW = 4;
-let selectedPhotoId = null;
-let matched = 0;
-let firstTryMisses = {};
-let currentPool = [];
+let order, current, score, firstTryMisses;
 
 function shuffle(arr) {
   const a = [...arr];
@@ -247,132 +255,77 @@ function buildStars(count, max) {
 }
 
 function initGame() {
-  selectedPhotoId = null;
-  matched = 0;
-  firstTryMisses = {};
-  currentPool = shuffle(ALL_RAILWAYS).slice(0, SHOW);
-
+  order = shuffle(ALL_RAILWAYS).slice(0, SHOW);
+  current = 0; score = 0; firstTryMisses = {};
   document.getElementById('winScreen').classList.remove('show');
-  document.getElementById('gameArea').style.display = '';
-  document.getElementById('factBubble').classList.remove('show');
-  document.getElementById('factBubble').textContent = '';
-  document.getElementById('hint').textContent = 'TAP A TRAIN TO HEAR THE OPTIONS!';
+  document.getElementById('gameCard').style.display = '';
   document.getElementById('starsRow').innerHTML = buildStars(0, SHOW);
-
-  const grid = document.getElementById('pairGrid');
-  grid.innerHTML = '';
-
-  // Build photo column and name column interleaved in grid
-  const photoOrder = shuffle([...currentPool]);
-  const nameOrder  = shuffle([...currentPool]);
-
-  // Grid has 2 columns; we want photos in col 1, names in col 2, 4 rows
-  // Use a wrapper approach: left div + right div inside the grid
-  const leftCol  = document.createElement('div');
-  const rightCol = document.createElement('div');
-  leftCol.style.cssText  = 'display:flex;flex-direction:column;gap:10px;';
-  rightCol.style.cssText = 'display:flex;flex-direction:column;gap:10px;';
-
-  photoOrder.forEach(r => {
-    const card = document.createElement('div');
-    card.className = 'photo-card';
-    card.dataset.id = r.id;
-    card.innerHTML = `<img src="${r.image}" alt="${r.name}" style="object-position:${r.pos}"><div class="match-check">✓</div>`;
-    card.onclick = () => selectPhoto(card, r);
-    leftCol.appendChild(card);
-  });
-
-  nameOrder.forEach(r => {
-    const chip = document.createElement('div');
-    chip.className = 'name-chip';
-    chip.dataset.id = r.id;
-    chip.textContent = r.name;
-    chip.onclick = () => selectName(chip, r);
-    rightCol.appendChild(chip);
-  });
-
-  grid.appendChild(leftCol);
-  grid.appendChild(rightCol);
-
-  // Read intro
-  speak('Match each train to its railway. Tap a train to hear the choices!');
+  renderQuestion();
 }
 
-function selectPhoto(card, r) {
-  if (card.classList.contains('matched')) return;
-  const alreadySelected = card.classList.contains('selected');
-  document.querySelectorAll('.photo-card.selected').forEach(c => c.classList.remove('selected'));
-  if (alreadySelected) { selectedPhotoId = null; document.getElementById('hint').textContent = 'TAP A TRAIN TO HEAR THE OPTIONS!'; return; }
-  card.classList.add('selected');
-  selectedPhotoId = r.id;
-  document.getElementById('hint').textContent = 'NOW TAP ITS RAILWAY NAME →';
+function renderQuestion() {
+  const q = order[current];
+  document.getElementById('progress').textContent = `QUESTION ${current+1} OF ${SHOW}`;
+  document.getElementById('trainPhoto').src = q.image;
+  document.getElementById('trainPhoto').style.objectPosition = q.pos;
+  document.getElementById('factBubble').classList.remove('show');
+  document.getElementById('nextBtn').classList.remove('show');
 
+  // 4 options: correct + 3 random wrong from full pool
+  const wrong = shuffle(ALL_RAILWAYS.filter(r => r.id !== q.id)).slice(0, 3);
+  const opts = shuffle([q, ...wrong]);
+
+  const optDiv = document.getElementById('options');
+  optDiv.innerHTML = '';
+  opts.forEach(r => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = r.name;
+    btn.onclick = () => handleAnswer(btn, r, q);
+    optDiv.appendChild(btn);
+  });
 }
 
-function selectName(chip, r) {
-  speak(r.name);
-  if (!selectedPhotoId) {
-    document.getElementById('hint').textContent = 'TAP A TRAIN PHOTO FIRST ←';
-    return;
-  }
-  if (chip.classList.contains('matched')) return;
+function handleAnswer(btn, chosen, q) {
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
 
-  if (selectedPhotoId === r.id) {
-    // Correct!
-    const photoCard = document.querySelector(`.photo-card[data-id="${r.id}"]`);
-    photoCard.classList.remove('selected');
-    photoCard.classList.add('matched');
-    chip.classList.add('matched');
-    chip.style.borderColor = r.color;
-    chip.style.color = r.color;
-    selectedPhotoId = null;
-    matched++;
-
-    // Update stars
-    const correctOnFirstTry = !firstTryMisses[r.id];
-    document.getElementById('starsRow').innerHTML = buildStars(
-      currentPool.filter(p => {
-        const c = document.querySelector(`.photo-card[data-id="${p.id}"]`);
-        return c?.classList.contains('matched') && !firstTryMisses[p.id];
-      }).length, SHOW
-    );
-
-    // Show fact
+  if (chosen.id === q.id) {
+    btn.classList.add('correct');
+    if (!firstTryMisses[q.id]) score++;
+    document.getElementById('starsRow').innerHTML = buildStars(score, SHOW);
     const fact = document.getElementById('factBubble');
-    fact.textContent = r.fact;
+    fact.textContent = q.fact;
     fact.classList.add('show');
-    document.getElementById('hint').textContent = matched < SHOW ? 'KEEP GOING!' : '';
+    document.getElementById('nextBtn').classList.add('show');
     playChime();
-    setTimeout(() => speak(r.fact), 600);
-
-    if (matched === SHOW) {
-      setTimeout(() => {
-        const perfectScore = currentPool.filter(p => !firstTryMisses[p.id]).length;
-        document.getElementById('winStars').innerHTML = buildStars(perfectScore, SHOW);
-        document.getElementById('winScore').textContent =
-          perfectScore === SHOW ? 'PERFECT ROUND!' : `${perfectScore} OF ${SHOW} ON FIRST TRY`;
-        document.getElementById('gameArea').style.display = 'none';
-        document.getElementById('winScreen').classList.add('show');
-        speak(perfectScore === SHOW
-          ? 'Perfect! You matched them all on the first try! Amazing!'
-          : `You matched all ${SHOW} trains! Great job!`
-        );
-      }, 1400);
-    }
+    setTimeout(() => speak(q.fact), 500);
   } else {
-    // Wrong
-    if (!firstTryMisses[selectedPhotoId]) firstTryMisses[selectedPhotoId] = true;
-    const photoCard = document.querySelector(`.photo-card[data-id="${selectedPhotoId}"]`);
-    photoCard.classList.add('wrong');
-    chip.classList.add('wrong');
-    speak('Not quite — try again!');
-    document.getElementById('hint').textContent = 'NOT QUITE — TRY AGAIN!';
+    btn.classList.add('wrong');
+    firstTryMisses[q.id] = true;
+    // Re-enable after shake so they can try again
     setTimeout(() => {
-      photoCard.classList.remove('wrong', 'selected');
-      chip.classList.remove('wrong');
-      selectedPhotoId = null;
-      document.getElementById('hint').textContent = 'TAP A TRAIN TO HEAR THE OPTIONS!';
-    }, 500);
+      document.querySelectorAll('.opt-btn').forEach(b => {
+        if (!b.classList.contains('correct')) b.disabled = false;
+      });
+      btn.classList.remove('wrong');
+    }, 600);
+  }
+}
+
+function nextQuestion() {
+  current++;
+  if (current < SHOW) {
+    renderQuestion();
+  } else {
+    document.getElementById('gameCard').style.display = 'none';
+    document.getElementById('winStars').innerHTML = buildStars(score, SHOW);
+    document.getElementById('winScore').textContent =
+      score === SHOW ? 'PERFECT ROUND!' : `${score} OF ${SHOW} ON FIRST TRY`;
+    document.getElementById('winScreen').classList.add('show');
+    speak(score === SHOW
+      ? 'Perfect! You got them all right on the first try! Amazing!'
+      : `You matched all ${SHOW} trains! Great job!`
+    );
   }
 }
 
@@ -398,6 +351,12 @@ function speak(text) {
   u.rate = 0.88; u.pitch = 1.1; u.volume = 1;
   window.speechSynthesis.speak(u);
 }
+
+// Speak name on button tap (before handleAnswer fires)
+document.getElementById('options').addEventListener('click', e => {
+  const btn = e.target.closest('.opt-btn');
+  if (btn && !btn.disabled) speak(btn.textContent);
+}, true);
 
 initGame();
 </script>
