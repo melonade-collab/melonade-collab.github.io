@@ -549,7 +549,7 @@
       if (city && province) line += ` You're writing in from ${city}, ${province}.`;
       else if (city) line += ` You're writing in from ${city}.`;
 
-      if (selectedRating !== null) line += ` You rated your experience ${selectedRating}/10.`;
+      if (selectedRating !== null) line += ` You rated your experience ${selectedRating}/10 — "${RATING_LABELS[selectedRating].replace('My experience was ', '')}".`;
 
       if (message) {
         const sentiment = analyseSentiment(message);
