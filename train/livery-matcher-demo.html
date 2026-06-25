@@ -146,7 +146,6 @@ h1 { font-size:clamp(1.4rem,5vw,2rem); font-weight:900; letter-spacing:3px; colo
 <div class="card" id="gameCard">
   <div class="photo-wrap"><img id="trainPhoto" src="" alt="Train"></div>
   <p class="question-label">WHICH RAILWAY IS THIS?</p>
-  <p class="question-text">Tap the name — then tap it to hear it!</p>
   <div class="options" id="options"></div>
   <div class="fact-bubble" id="factBubble"></div>
   <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next →</button>
@@ -187,7 +186,7 @@ const ALL_RAILWAYS = [
     ]
   },
   {
-    id: 'via', name: 'VIA Rail',
+    id: 'via', name: 'VIA Rail', speak: 'VEE-uh Rail',
     image: 'https://images.unsplash.com/photo-1593871005107-0a59cd0538d5?q=80&w=385&auto=format&fit=crop',
     pos: 'center', color: '#003da5',
     facts: [
@@ -317,6 +316,7 @@ function renderQuestion() {
     const btn = document.createElement('button');
     btn.className = 'opt-btn';
     btn.textContent = r.name;
+    btn.dataset.speak = r.speak || r.name;
     btn.onclick = () => handleAnswer(btn, r, q);
     optDiv.appendChild(btn);
   });
@@ -390,7 +390,7 @@ function speak(text) {
 // Speak name on button tap (before handleAnswer fires)
 document.getElementById('options').addEventListener('click', e => {
   const btn = e.target.closest('.opt-btn');
-  if (btn && !btn.disabled) speak(btn.textContent);
+  if (btn && !btn.disabled) speak(btn.dataset.speak || btn.textContent);
 }, true);
 
 initGame();
