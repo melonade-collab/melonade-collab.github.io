@@ -147,6 +147,26 @@ footer {
   color: rgba(255,255,255,0.3);
   letter-spacing: 4px;
 }
+.fact-btn {
+  background: #1a3a5c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-style: italic;
+  font-family: Georgia, serif;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.fact-btn:hover { background: #c41e1e; }
+.fact-btn:active { transform: scale(0.88); }
 </style>
 </head>
 <body>
@@ -164,7 +184,10 @@ footer {
     <div class="carries-text" id="carriesText">Grain, furniture, car parts</div>
     <div class="carries-emoji" id="carriesEmoji">🌾 📦 🚗</div>
   </div>
-  <div class="tap-hint">Tap the name to hear it! 🔊</div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="tap-hint">Tap the name to hear it! 🔊</div>
+    <button class="fact-btn" onclick="speakFact()" title="Fun fact">i</button>
+  </div>
   <div class="nav-row">
     <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">‹</button>
     <div class="dots" id="dots"></div>
@@ -210,58 +233,72 @@ function wheels() {
 const cars = [
   {
     name:'BOXCAR', carries:'Grain, furniture, car parts', emoji:'🌾 📦 🚗',
+    facts:['Boxcars are the most common freight car on the railroad! Their big sliding doors can be up to 10 feet wide — wide enough to drive a small car through.','A standard boxcar is about 60 feet long and can carry up to 100 tons of cargo.','Before refrigerated trucks became common, boxcars were the main way groceries traveled across the country.','Some boxcars have special cushioned floors to protect fragile cargo like glass and electronics from bumps on the track.','Boxcars got their name from their simple box shape — they look like a giant rectangular box on wheels!','Some boxcars have doors on both sides so they can be loaded and unloaded from either direction at a warehouse.'],
     draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><div xmlns="http://www.w3.org/1999/xhtml" style="width:500px;height:170px;overflow:hidden;border-radius:8px;display:flex;align-items:center;justify-content:center"><img src="https://images.unsplash.com/photo-1600148833996-7a426df62edf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGJveCUyMGNhciUyMHRyYWlufGVufDB8fDB8fHww" style="width:500px;height:170px;object-fit:cover;transform:scale(0.88);transform-origin:center"/></div></foreignObject>`;}
   },
   {
     name:'TANK CAR', carries:'Oil, milk, chemicals', emoji:'🛢️ 🥛 ⚗️',
+    facts:['Tank cars can hold up to 34,000 gallons of liquid — that is enough to fill more than 400 bathtubs!','Some tank cars carry orange juice — which is how most of the OJ you drink at breakfast gets from Florida to stores near you.','Tank cars are built with thick steel walls and special valves to safely carry dangerous chemicals without leaking.','A full tank car loaded with oil can weigh over 280,000 pounds — about as heavy as 20 elephants!','Some tank cars are insulated to keep their cargo warm or cold, just like a giant thermos bottle.','Tank cars that carry food are cleaned and inspected very carefully before they are allowed to carry anything edible again.'],
     draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1670660458119-59b0d1040cb8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8b2lsJTIwdGFuayUyMHRyYWlufGVufDB8fDB8fHww" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   },
   {
     name:'FLAT CAR', carries:'Lumber, machines, pipes', emoji:'🌲 🚜 🔧',
+    facts:['Flat cars are so versatile they can even carry other train cars when they need to be moved to a new location!','Some flat cars are over 80 feet long — longer than many houses!','Military flat cars have carried tanks, helicopters, and even rocket launchers during wartime.','Flat cars are one of the oldest types of freight cars — versions of them existed even before steam locomotives were invented.','Wind turbine blades are so long that they can only be transported by flat car — they are simply too big for roads.','Flat cars sometimes carry whole sections of pre-built bridges that are assembled on site after they arrive.'],
     draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1582044444283-e0dd8197e6e2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGZyZWlnaHQlMjB0cmFpbiUyMGZsYXQlMjBjYXJ8ZW58MHx8MHx8fDA%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   },
   {
     name:'OPEN-TOP HOPPER', carries:'Coal, sand, rock', emoji:'⚫ 🏖️ ⛏️',
+    facts:['Open-top hoppers have trapdoors on the bottom so they can dump their entire load without anyone having to shovel!','A single open-top hopper can carry over 100 tons of coal — enough to power a house for several years.','The angled sides inside the hopper are specially designed so coal and gravel slide out cleanly when the doors open.','Open-top hoppers are one of the most common cars on North American railroads — coal mines depend on them every single day.','Some hoppers are made of aluminum instead of steel to make them lighter and carry even more cargo per trip.','Hopper cars travel in long trains called unit trains that carry nothing but one type of cargo from mine to power plant.'],
     draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><img xmlns="http://www.w3.org/1999/xhtml" src="https://images.unsplash.com/photo-1725211874607-4193e918c350?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjE0fHxmcmVpZ2h0JTIwdHJhaW4lMjBob3BwZXIlMjBjYXJ8ZW58MHx8MHx8fDA%3D" style="width:500px;height:170px;object-fit:cover;object-position:50% 70%;display:block;border-radius:8px"/></foreignObject>`;}
   },
   {
     name:'COVERED HOPPER', carries:'Coal, sand, grain', emoji:'⚫ 🏖️ 🌾',
+    facts:['The covers on a covered hopper keep grain and cement bone dry — even in a heavy rainstorm!','Covered hoppers carry more grain across North America than any other type of freight car.','A full covered hopper loaded with grain weighs about the same as 15 large African elephants.','The hatch covers on top can be over a foot wide — workers climb up to open them and pour in the cargo.','Some covered hoppers are specially coated inside to stop food cargo like flour from sticking to the walls.','Covered hoppers replaced boxcars for grain hauling because they can be unloaded much faster using gravity.'],
     draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1632685384711-7f5608a02f32?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjk0fHxmcmVpZ2h0JTIwdHJhaW4lMjBjYXJzfGVufDB8fDB8fHww" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   },
   {
     name:'GONDOLA', carries:'Scrap metal, ore, coal', emoji:'⚙️ ⛏️ ⚫',
+    facts:['Gondola cars are named after the flat-bottomed boats in Venice, Italy — because they look very similar from above!','Gondolas are one of the most versatile freight cars — they can carry almost anything that fits inside their open top.','Steel mills depend on gondola cars every single day to deliver raw materials and ship out finished steel.','Some gondolas have removable sides so they can double as a flat car when the load is too tall to fit inside.','A gondola car full of scrap metal can weigh over 130 tons — that is heavier than 10 double-decker buses!','Gondola cars have been around since the 1800s and are one of the original designs still used on modern railroads.'],
     draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1669902081173-491f86bd6c91?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGZsYXQlMjBjYXIlMjB0cmFpbnxlbnwwfHwwfHx8MA%3D%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   },
   {
     name:'CENTRE BEAM', carries:'Drywall, lumber, railroad ties, fence posts', emoji:'🌲 🏗️ 🛤️',
+    facts:['The big steel beam down the middle acts like a spine, holding stacks of lumber and drywall tight on both sides of the car.','Centre beam cars replaced the old flat car for lumber because they can carry about 30 percent more wood per trip.','The cargo is strapped tightly to both sides with heavy steel bands to stop it from shifting on sharp corners.','A fully loaded centre beam car can carry enough lumber to frame an entire house!','Centre beam cars are so specialized that they are almost always seen carrying building materials — you rarely see them empty.','The beams that hold the cargo in place are strong enough to support the weight of several elephants stacked on top of each other.'],
     draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1630698309706-4b1fefcebb43?q=80&w=869&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   },
   {
-    name:'COIL CAR', carries:'Steel coils, wire rolls', emoji:'🔩 🪛 🏗️',
+    name:'COIL CAR', carries:'Steel coils, wire rolls', emoji:'🔩 🔧 🏗️',
+    facts:['Coil cars have special curved cradles called racks to stop heavy steel coils from rolling around during the journey.','A single steel coil can weigh up to 25 tons — as heavy as two full-grown male hippos!','The steel coils on a coil car will eventually become cars, fridges, bridges, and buildings.','Coil cars have a curved trough shape so coils naturally settle into the centre without needing to be bolted down.','Steel coils are too heavy and awkward for trucks to carry long distances, so trains are the main way they travel.','A coil car usually has a removable metal cover to protect the steel from rain and rust during the journey.'],
     draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><img xmlns="http://www.w3.org/1999/xhtml" src="https://images.unsplash.com/photo-1580064615388-1b1774707209?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" style="width:500px;height:170px;object-fit:cover;object-position:50% 65%;display:block;border-radius:8px"/></foreignObject>`;}
   },
   {
     name:'WELL CAR W/ INTERMODALS', carries:'Shipping containers', emoji:'📦 🚢 🌍',
+    facts:['Well cars sit so low to the ground that two shipping containers can be stacked on top of each other and still fit under bridges and tunnels!','The same container on a well car might have crossed the Pacific Ocean on a cargo ship before being loaded onto the train.','Well cars can travel in groups of five connected together, which speeds up loading and unloading at ports.','Intermodal shipping changed the world — goods can now travel from a factory in Asia to a store near you without ever being unpacked.','The well in a well car is about 12 inches lower than a regular flat car, which is exactly what makes double stacking possible.','One intermodal train can carry the same amount of freight as hundreds of transport trucks on the highway.'],
     draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><img xmlns="http://www.w3.org/1999/xhtml" src="https://images.unsplash.com/photo-1780607768528-822bfbe22364?q=80&w=876&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" style="width:500px;height:170px;object-fit:cover;object-position:50% 65%;display:block;border-radius:8px"/></foreignObject>`;}
   },
   {
-    name:'AUTORACK', carries:'Cars, trucks, SUVs', emoji:'🚗 🚐 🚛',
+    name:'AUTORACK', carries:'Cars, trucks, SUVs', emoji:'🚗 🚙 🚛',
+    facts:['Autoracks can carry up to 15 brand new vehicles stacked across three levels — that is a lot of cars rolling to dealerships!','The sides of an autorack are enclosed with metal mesh to protect the vehicles inside from rocks, branches, and vandals.','Most new cars you see at a dealership spent at least part of their journey riding on an autorack train.','Autorack cars are some of the tallest freight cars on the railroad — they can be over 20 feet high!','Workers drive every single vehicle onto the autorack by hand, one at a time, using ramps between the levels.','Some autoracks are specially designed for pickup trucks, which are too tall to fit on a standard three-level rack.'],
     draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1580862332890-bbfae435682f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjkzfHxmcmVpZ2h0JTIwdHJhaW4lMjBjYXJzfGVufDB8fDB8fHww" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   },
   {
     name:'REFRIGERATED BOXCAR', carries:'Vegetables, meat, ice cream', emoji:'🥦 🥩 🍦',
+    facts:['Refrigerated boxcars have their own cooling engines to keep food cold during the trip — like a giant fridge on wheels!','The first refrigerated rail cars used blocks of ice packed into compartments at each end, before mechanical cooling was invented.','A refrigerated boxcar can maintain temperatures as low as minus 20 degrees — cold enough to keep ice cream perfectly frozen.','Reefers, as rail workers call them, were invented in the 1800s and completely changed what food people could eat in winter.','Fresh fruit and vegetables travel thousands of miles in refrigerated boxcars before reaching your grocery store.','Some reefers are so well insulated that the temperature inside barely changes even when left sitting on a hot sunny track for hours.'],
     draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1697347070627-49d367e62fe8?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   },
   {
     name:'CABOOSE', carries:'The train crew!', emoji:'👷 🚂 🏠',
+    facts:['The caboose used to be home to the train crew on long trips. Most railroads stopped using them in the 1980s when new technology meant someone no longer needed to ride at the back.','The raised lookout cabin on top of a caboose is called a cupola — crew members climbed up there to watch for problems along the train.','Cabooses were painted bright red or orange so they were easy to spot from a long distance.','Before radio, the crew in the caboose communicated with the locomotive using a system of whistle signals.','Some cabooses had a small stove and bunk beds inside so the crew could eat and sleep on long overnight trips.','Today, a small electronic device called an end-of-train unit does the job the caboose crew used to do, but it is much less cozy!'],
     draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><img xmlns="http://www.w3.org/1999/xhtml" src="https://images.unsplash.com/photo-1760483467243-9cc10ccab328?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNhYm9vc2V8ZW58MHx8MHx8fDA%3D" style="width:500px;height:170px;object-fit:cover;object-position:50% 60%;display:block;border-radius:8px"/></foreignObject>`;}
   },
   {
     name:'STOCK CAR', carries:'Pigs, sheep, cattle', emoji:'🐷 🐑 🐄',
+    facts:['Stock cars have slatted sides with gaps so animals can breathe fresh air during their long journey across the country.','Before highways and trucks, stock cars were the only way to move cattle from ranches to meat packing plants in the city.','Stock cars often have hay inside for the animals to eat during the journey.','Laws require that animals traveling by train must be unloaded, fed, and given water at least every 28 hours.','At their peak in the 1920s, millions of cattle, hogs, and sheep traveled by stock car every single year across North America.','Stock cars are built with a non-slip floor so animals can keep their footing when the train goes around corners.'],
     draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><img xmlns="http://www.w3.org/1999/xhtml" src="https://images.unsplash.com/photo-1727580674819-e3c7822790de?q=80&w=1032&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" style="width:500px;height:170px;object-fit:cover;object-position:50% 50%;display:block;border-radius:8px"/></foreignObject>`;}
   },
   {
     name:'SCHNABEL CAR', carries:'Transformers, generators, boilers', emoji:'⚡ 🔌 🏭',
+    facts:['A schnabel car can carry loads weighing over one million pounds — that is heavier than 70 school buses all at once!','Schnabel cars get their name from the German word for beak — the two giant arms that grip the cargo look just like a beak!','Some schnabel cars are over 300 feet long when carrying a full load — longer than a football field!','Moving a transformer by schnabel car is so unusual that it can close roads and require police escorts at every level crossing.','The load itself becomes part of the car on a schnabel — the two end frames literally hang from the cargo as it travels.','There are fewer than 50 schnabel cars in the whole of North America because very few loads are ever big enough to need one.'],
     draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><img xmlns="http://www.w3.org/1999/xhtml" src="https://images.unsplash.com/photo-1722547858788-82f67b26fa9b?q=80&w=782&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" style="width:500px;height:170px;object-fit:cover;object-position:50% 65%;display:block;border-radius:8px"/></foreignObject>`;}
   }
 ];
@@ -296,6 +333,16 @@ function navigate(dir) {
 }
 
 function jumpTo(i) { current = i; render(); }
+
+function speakFact() {
+  if (!window.speechSynthesis) return;
+  const facts = cars[current].facts;
+  const fact = facts[Math.floor(Math.random() * facts.length)];
+  const msg = new SpeechSynthesisUtterance(fact);
+  msg.rate = 0.85; msg.pitch = 1.1; msg.volume = 1;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(msg);
+}
 
 function speak() {
   if (!window.speechSynthesis) return;
