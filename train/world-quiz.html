@@ -293,7 +293,7 @@ const QUESTIONS = [
   {
     country: 'Germany',
     image: 'https://images.unsplash.com/photo-1527295110-5145f6b148d0?q=80&w=1131&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    options: ['Germany', 'Austria', 'Belgium', 'Netherlands'],
+    options: ['Germany', 'Austria', 'Belgium', 'Poland'],
     bbox: '5.9,47.3,15.1,55.1', marker: '51.16,10.45',
     blurbs: [
       "Germany's ICE trains — which stands for InterCityExpress — are some of the fastest and smoothest in Europe! Germany has over 33,000 kilometres of railway, one of the biggest rail networks in the world, and over 40,000 trains run across it every single day.",
@@ -305,18 +305,15 @@ const QUESTIONS = [
   },
   {
     country: 'India',
-    emoji: '🚃',
-    bg: 'linear-gradient(160deg, #C2410C 0%, #7C2D12 100%)',
-    label: 'Express train · India',
-    // image: 'images/india-express.jpg',
+    image: 'https://images.unsplash.com/photo-1592844002373-a55ecd7af140?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     options: ['India', 'China', 'Brazil', 'Russia'],
-    bbox: '68.0,7.0,98.0,38.0', marker: '20.59,78.96',
+    bbox: '69.5,23.0,78.5,30.5', marker: '26.92,75.79',
     blurbs: [
-      "India has one of the biggest railway networks on the entire planet, with over 67,000 kilometres of track! Every single day, around 23 million people ride Indian trains. That's more people than live in the whole of Australia — all travelling by train in just one day!",
-      "Indian Railways employs over 1.3 million people, making it one of the largest employers in the world! If all of Indian Railways' workers lived in the same city, it would be one of the biggest cities in Canada.",
-      "The Darjeeling Himalayan Railway is nicknamed the 'Toy Train' because it's so small and cute! It chugs through the mountains at just 20 kilometres per hour and was built way back in 1881. It's now a UNESCO World Heritage Site!",
-      "India's longest train journey covers a whopping 4,235 kilometres — from the northeast corner of the country all the way down to the very southern tip. The journey takes about 72 hours. That's three whole days on a train!",
-      "The Fairy Queen steam locomotive is still running in India today, and it was built in 1855 — over 170 years ago! It still takes passengers on special heritage tours and holds the world record for being the oldest working steam locomotive."
+      "Rajasthan is home to one of the most magical train journeys in the world — the Palace on Wheels! This luxury train takes passengers through Rajasthan's royal cities, including Jaipur, Jodhpur, Udaipur, and Jaisalmer. The carriages are decorated like royal palaces, with silk curtains, carved wood panels, and a personal butler for every cabin!",
+      "Trains in Rajasthan cross the vast Thar Desert, one of the hottest and driest places on Earth! The railway line to Jaisalmer — the Golden City — runs right through the desert dunes, where temperatures can reach over 50 degrees Celsius in summer. It's one of the most dramatic train rides in all of India.",
+      "Jaipur, Rajasthan's famous Pink City, got its first railway in 1875 — built during the time of the Maharajas! The Maharaja of Jaipur helped fund the railway so that goods and travellers could reach his royal city more easily. Today Jaipur Junction is one of the busiest stations in all of northwestern India.",
+      "The Fairy Queen, one of the world's oldest working steam locomotives, runs a special heritage journey from Delhi into Rajasthan! Built in 1855, it holds a Guinness World Record. Passengers dress up in traditional Rajasthani clothes for the journey and are welcomed with music and dancing at the other end.",
+      "Rajasthan has a narrow gauge railway line — smaller than a normal railway — that winds through the Aravalli Hills. These little trains chug slowly through tiny villages and ancient forts that are too remote for roads to reach easily. It feels like stepping back in time by about a hundred years!"
     ]
   },
   {
@@ -336,19 +333,95 @@ const QUESTIONS = [
     ]
   },
   {
-    country: 'USA',
-    emoji: '🚂',
-    bg: 'linear-gradient(160deg, #1D4ED8 0%, #7C3AED 100%)',
-    label: 'Steam locomotive · USA',
-    // image: 'images/usa-steam-train.jpg',
-    options: ['USA', 'Canada', 'Australia', 'United Kingdom'],
-    bbox: '-128.0,23.0,-65.0,51.0', marker: '39.5,-98.4',
+    country: 'Netherlands',
+    image: 'https://plus.unsplash.com/premium_photo-1676122795719-6fa9374a46c5?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['Netherlands', 'Belgium', 'Denmark', 'Germany'],
+    bbox: '3.3,50.7,7.2,53.6', marker: '52.13,5.29',
     blurbs: [
-      "The United States has legendary railway history! In 1869, the Transcontinental Railroad connected the east and west coasts of America for the very first time. Workers celebrated by driving a Golden Spike at the joining point. Today, trains still cross vast deserts, mountain ranges, and wide open plains!",
-      "America's first passenger railway opened in 1830 in Baltimore — and the first train was pulled by a horse! When a steam locomotive raced a horse at the opening, the horse actually won. But steam trains quickly got much, much faster after that.",
-      "New York's Grand Central Terminal has 44 platforms — more than any other train station in the whole world! Over 750,000 people pass through it every single day. It's so famous it has appeared in hundreds of movies and TV shows.",
-      "Some freight trains in America are over 3 kilometres long — that's longer than 33 football fields lined up end to end! These massive trains carry coal, grain, and cars across the entire continent, day and night.",
-      "The California Zephyr travels from Chicago all the way to San Francisco — a journey of over 3,900 kilometres taking 51 hours! Along the way, you pass through the Rocky Mountains, the desert, and the Sierra Nevada mountain range."
+      "The Netherlands runs its entire national railway network on wind power — every single train! Dutch railways switched to 100% wind energy in 2017, making them one of the greenest rail networks on the planet. One minute of a Dutch windmill spinning is enough to power a train for one whole kilometre!",
+      "In the Netherlands, almost everyone owns a bicycle, and most train stations have enormous multi-storey bike parks so people can cycle to the train and back again! Utrecht's main station has parking for over 12,500 bicycles — that's the biggest bike park in the entire world.",
+      "The Netherlands is such a small country that no matter where you are, you're never far from a train station! There are over 400 stations across the country, and trains run so frequently that in busy areas you can catch one almost every few minutes.",
+      "Amsterdam Centraal station is one of the most beautiful railway stations in Europe — it looks more like a grand palace than a train station! It was built in 1889, and over 250,000 passengers pass through it every single day. Ferries to Amsterdam's harbour leave right from behind the station!",
+      "Dutch trains are so fast and convenient that many people travel from the Netherlands to Belgium or Germany for a day out and come back the same evening! The Intercity Direct connects Amsterdam to Brussels in under two hours, zipping through the flat Dutch countryside at up to 250 kilometres per hour."
+    ]
+  },
+  {
+    country: 'Canada',
+    image: 'https://images.unsplash.com/photo-1589196728426-4613a4992c42?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imgPosition: 'center 75%',
+    options: ['Canada', 'United States', 'Norway', 'New Zealand'],
+    bbox: '-118.0,49.5,-113.0,54.0', marker: '51.18,-115.57',
+    blurbs: [
+      "The Canadian Pacific Railway was built through Alberta in the 1880s, and workers had to cut through the Rocky Mountains — one of the most difficult engineering challenges in history! The last spike completing Canada's first transcontinental railway was driven in 1885. Before that, there was no easy way to cross the country at all.",
+      "In the Rocky Mountains of Alberta, there used to be a stretch of railway called the Big Hill — so steep that trains sometimes rolled backwards! In 1909, engineers solved the problem by drilling two giant spiral tunnels right through the mountains. Trains literally spiral inside the mountain to climb safely!",
+      "The Rocky Mountaineer is one of the most beautiful train journeys in the world! It travels through the Canadian Rockies in Alberta, passing glaciers, turquoise lakes, and wildlife like bears and elk. The train has giant glass-dome carriages so passengers can look up and see the mountain peaks towering all around them!",
+      "The city of Calgary in Alberta exists largely because of the railway! When Canadian Pacific Railway routed its tracks through the area in 1883, a small settlement grew into a booming town almost overnight. Today Calgary is one of Canada's largest cities — all because a train passed through!",
+      "Edmonton, Alberta's capital city, was once such an important railway hub that it was nicknamed 'Gateway to the North.' The High Level Bridge, built in 1913, carries both trains and road traffic across the North Saskatchewan River. When it was built, it was an absolute marvel of engineering!"
+    ]
+  },
+  {
+    country: 'United States',
+    image: 'https://images.unsplash.com/photo-1601999007938-f584b47324ac?q=80&w=435&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['United States', 'Canada', 'Australia', 'Ireland'],
+    bbox: '-72.6,42.7,-70.7,45.4', marker: '44.27,-71.30',
+    blurbs: [
+      "New Hampshire is home to the Mount Washington Cog Railway — the first mountain-climbing cog railway ever built in the western hemisphere! It opened in 1869 and uses a special toothed rack in the middle of the track to push trains up the incredibly steep mountain. It still runs today, over 150 years later!",
+      "Mount Washington in New Hampshire was once recorded as having the fastest wind speed ever measured on Earth — 372 kilometres per hour! The Cog Railway climbs right to the summit through fog, snow, and howling winds. Passengers sometimes arrive at the top in sunshine and step off into a blizzard!",
+      "The Conway Scenic Railroad runs heritage steam and diesel trains through New Hampshire's beautiful White Mountains. Passengers ride in restored vintage carriages through forests, river valleys, and some of the most stunning autumn leaf colours anywhere in the world.",
+      "New Hampshire got its very first railway in 1838 — one of the earliest in the entire United States! The Nashua and Lowell Railroad connected the mill towns of New Hampshire to Boston, helping goods and people travel faster than ever before in New England.",
+      "The Amtrak Downeaster train connects New Hampshire to Boston and Portland, Maine, running along the same coastal corridor that steam trains have used for nearly 200 years. It passes through some of New England's prettiest towns, and on clear days passengers can spot the Atlantic Ocean from the windows!"
+    ]
+  },
+  {
+    country: 'India',
+    image: 'https://images.unsplash.com/photo-1637995735729-c43250f1ef47?q=80&w=876&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['India', 'Sri Lanka', 'Bangladesh', 'Myanmar'],
+    bbox: '79.5,11.6,80.0,12.1', marker: '11.93,79.83',
+    blurbs: [
+      "Puducherry — also called Pondicherry — is a tiny seaside territory on India's southeastern coast that was a French colony for over 300 years! Its railway station is a charming heritage building, and the town still has French-style boulevards running alongside the Indian railway tracks. It's one of the most unique places to arrive by train in all of India.",
+      "The train journey along India's southeastern coast to Puducherry passes through lush green rice paddies, coconut palm groves, and fishing villages right beside the Bay of Bengal. It's one of the most beautiful coastal rail routes in southern India, and local passengers often travel with baskets of freshly caught fish!",
+      "Puducherry sits on the Villupuram–Puducherry branch railway line, a route that has been carrying passengers since the 1870s during the British colonial era. The line is only about 36 kilometres long — one of the shorter branch lines in India — but it connects the territory to the great Indian rail network beyond.",
+      "Southern India has some of the most colourful and lively railway stations anywhere in the world! Vendors sell fresh coconut water, jasmine garlands, and hot spiced chai right on the platforms. Trains arriving in this part of India are always full of colour, noise, and amazing smells from the food stalls.",
+      "The Nilgiri Mountain Railway, not far from Puducherry, is one of India's UNESCO World Heritage railways. It uses a special cog system to climb steep mountain slopes, just like Switzerland's mountain trains! The little blue train chugs through tea plantations and misty forests all the way up into the cool Nilgiri Hills."
+    ]
+  },
+  {
+    country: 'United States',
+    image: 'https://images.unsplash.com/flagged/photo-1550719723-8602e87f2dc8?q=80&w=725&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['United States', 'Canada', 'Mexico', 'Australia'],
+    bbox: '-124.5,32.5,-114.0,42.0', marker: '37.77,-122.42',
+    blurbs: [
+      "California is where the very first Transcontinental Railroad ended! In 1869, railway workers from the east and west finally met in the middle, connecting the whole of America by train for the first time. The western half was built starting from Sacramento, California, largely by Chinese immigrant workers who did some of the most dangerous construction work in history.",
+      "San Francisco's famous cable cars are a type of train — and they've been climbing the city's steep hills since 1873! Instead of an engine, they grip onto a moving underground cable that never stops running beneath the street. They're the last manually operated cable car system in the entire world and are a National Historic Landmark.",
+      "The Pacific Surfliner is one of the most scenic train routes in America, running along the California coast between San Luis Obispo and San Diego. For long stretches, the train travels right along the edge of the Pacific Ocean — passengers can watch surfers, dolphins, and crashing waves from their seats!",
+      "California is building a brand-new high-speed railway that will eventually connect Los Angeles and San Francisco in under three hours! The route runs through the middle of California's Central Valley, one of the most important farming regions in the world. When it's finished, it will be the first true high-speed rail line in the United States.",
+      "The Bay Area Rapid Transit — known as BART — opened in 1972 and was one of the most futuristic railways in the world at the time. Part of it runs under San Francisco Bay in a tunnel beneath the water! BART now carries over 400,000 passengers a day across the greater San Francisco area."
+    ]
+  },
+  {
+    country: 'Portugal',
+    image: 'https://images.unsplash.com/photo-1527839321757-ad3a2f2be351?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['Portugal', 'Spain', 'Italy', 'Greece'],
+    bbox: '-9.5,36.9,-6.2,42.2', marker: '39.50,-8.00',
+    blurbs: [
+      "Portugal has one of the most beautiful railway journeys in Europe — the Douro Valley line, which follows the Douro River through terraced hillsides covered in vineyards all the way to the Spanish border. The river glitters far below as the train winds around steep cliffsides, and passengers often spot eagles and herons along the way.",
+      "Lisbon's trams are as famous as the city itself! The iconic yellow Tram 28 has been climbing Lisbon's impossibly steep hills since 1914. The little trams are so old and narrow that they sometimes scrape past the washing lines hanging between buildings! They're a beloved part of the city that locals and visitors ride every day.",
+      "Porto's stunning São Bento railway station is decorated with over 20,000 hand-painted blue and white tiles — called azulejos — that tell the story of Portugal's history! Artists spent years painting scenes of royal processions, medieval battles, and harvests directly onto the station walls. It's one of the most beautiful train stations in the world.",
+      "Portugal built a high-speed rail line called the Alfa Pendular that tilts as it goes around corners — so passengers barely feel the bends! It travels between Lisbon and Porto in about two hours and fifteen minutes, running through rolling hills, cork oak forests, and ancient university towns.",
+      "The train from Lisbon to the Algarve coast in southern Portugal passes through cork oak forests that supply most of the world's wine corks! Portugal produces over half of all the cork in the world, and from the train window passengers can see workers stripping the bark by hand — a tradition that has been going on for centuries."
+    ]
+  },
+  {
+    country: 'United Kingdom',
+    image: 'https://images.unsplash.com/photo-1532105956626-9569c03602f6?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['United Kingdom', 'France', 'Australia', 'Germany'],
+    bbox: '-0.5,51.3,0.3,51.7', marker: '51.50,-0.12',
+    blurbs: [
+      "London is home to the oldest underground railway in the entire world! The London Underground — nicknamed the Tube — opened in 1863, when trains were still pulled by steam engines underground. Passengers had to sit in the smoky tunnels while the engine puffed away! Today the Tube has 11 lines and 272 stations.",
+      "The famous map of the London Underground was designed in 1931 by a man named Harry Beck, who was inspired by electrical circuit diagrams. Instead of drawing the lines geographically, he straightened them out to make them easy to read. His design was so brilliant that nearly every metro map in the world now copies his idea!",
+      "Every day, London's trains and Underground carry over five million passengers — that's more than the entire population of New Zealand travelling around one city in a single day! During rush hour, a Tube train arrives at some stations every 90 seconds.",
+      "St Pancras International station in London is where you board the Eurostar train to Paris or Brussels — and you arrive in the heart of Paris in just over two hours, travelling under the English Channel the whole way! The Channel Tunnel beneath the sea is 50 kilometres long.",
+      "London's Docklands Light Railway opened in 1987 and was one of the first fully automatic railways in the world — the trains have no driver at all! Passengers can sit right at the very front and feel like they're driving through the city, but there's nobody at the controls."
     ]
   },
 ];
@@ -377,6 +450,26 @@ function buildProgress() {
     const c = i < cur ? 'done' : i === cur ? 'current' : '';
     return `<div class="pdot ${c}"></div>`;
   }).join('');
+}
+
+function playCorrectSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [523.25, 659.25, 783.99].forEach((freq, i) => {
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const t = ctx.currentTime + i * 0.13;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.22, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+      osc.start(t);
+      osc.stop(t + 0.55);
+    });
+  } catch(e) {}
 }
 
 function celebrate() {
@@ -415,7 +508,7 @@ function startQ(idx) {
 
   const img = document.getElementById('trainImg');
   if (q.image) {
-    img.innerHTML = `<img src="${q.image}" alt="${q.country} train">`;
+    img.innerHTML = `<img src="${q.image}" alt="${q.country} train" style="object-position:${q.imgPosition||'center'}">`;
     img.style.background = '';
   } else {
     img.style.background = q.bg;
@@ -437,6 +530,7 @@ function pick(btn) {
     document.querySelectorAll('.opt').forEach(b => { if (b !== btn) b.disabled = true; });
     score++;
     document.getElementById('scoreNum').textContent = score;
+    playCorrectSound();
     celebrate();
     setTimeout(() => showResult(q), 950);
   } else {
