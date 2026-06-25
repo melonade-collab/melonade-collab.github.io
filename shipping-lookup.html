@@ -36,27 +36,25 @@
   }
 
   /* Case study layout */
-  .cs-back {
-    position: fixed; top: 14px; left: 16px;
-    font-size: 0.7rem; color: rgba(255,255,255,0.6);
-    text-decoration: none; background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(255,255,255,0.15);
-    padding: 4px 10px; border-radius: 6px; letter-spacing: 2px;
-    z-index: 100;
-  }
   .cs-header { background: #1E3D5C; padding: 64px 40px 48px; }
   .cs-header-inner { max-width: 800px; margin: 0 auto; }
   .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
   .cs-header h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
   .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.72); line-height: 1.7; max-width: 560px; }
   .cs-body { max-width: 800px; margin: 0 auto; padding: 48px 40px 80px; }
-  .cs-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; padding: 22px 26px; }
-  .cs-card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #1E3D5C; margin-bottom: 12px; }
-  .cs-card p { font-size: 0.875rem; color: #555; line-height: 1.7; }
-  .cs-card ul { padding-left: 18px; }
-  .cs-card li { font-size: 0.875rem; color: #555; line-height: 1.7; margin-bottom: 6px; }
   .mb16 { margin-bottom: 16px; }
   .mb40 { margin-bottom: 40px; }
+  .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+  .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+  .acc-header:hover { background: #fafafa; }
+  .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #1E3D5C; }
+  .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+  .acc-header.open .acc-chevron { transform: rotate(180deg); }
+  .acc-body { display: none; padding: 0 22px 20px; }
+  .acc-body.open { display: block; }
+  .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+  .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
+  .acc-body li { font-size: 0.875rem; color: #555; line-height: 1.7; margin-bottom: 6px; }
   .proto-stage { display: flex; flex-direction: column; align-items: center; background: var(--accent-light); border-radius: 16px; padding: 36px 20px 48px; }
   .proto-stage-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #1E3D5C; margin-bottom: 24px; }
 
@@ -449,8 +447,6 @@
 </head>
 <body>
 
-<a class="cs-back" href="index.html">← Portfolio</a>
-
 <div class="cs-header">
   <div class="cs-header-inner">
     <p class="eyebrow">Customer support · Consumer shipping</p>
@@ -460,19 +456,54 @@
 </div>
 
 <div class="cs-body">
-  <div class="cs-card mb16">
-    <p class="cs-card-label">Problem</p>
-    <p>Carriers handle high volumes of inbound calls from customers who only need a simple answer: how much will this cost, or how long will it take? There was no self-serve path. Customers had to phone in, navigate a menu tree, and wait for a live agent — for information that could be delivered instantly.</p>
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Carriers handle high volumes of inbound calls from customers who only need a simple answer: how much will this cost, or how long will it take? There was no self-serve path. Customers had to phone in, navigate a menu tree, and wait for a live agent — for information that could be delivered instantly.</p>
+    </div>
   </div>
 
-  <div class="cs-card mb40">
-    <p class="cs-card-label">Constraints</p>
-    <ul>
-      <li>No account creation or login — had to work for any customer without requiring sign-in</li>
-      <li>Had to feel conversational and natural, not like filling out a rate calculator form</li>
-      <li>Needed to handle rate lookups, delivery time questions, or both in one flow</li>
-      <li>Required a clear path to live agent handoff for customers with more complex needs</li>
-    </ul>
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Constraints</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>No account creation or login — had to work for any customer without requiring sign-in</li>
+        <li>Had to feel conversational and natural, not like filling out a rate calculator form</li>
+        <li>Needed to handle rate lookups, delivery time questions, or both in one flow</li>
+        <li>Required a clear path to live agent handoff for customers with more complex needs</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">How it worked</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Mapped the inbound call flow to identify what information agents actually needed to answer a rate or delivery time question — almost always just destination and parcel weight class</li>
+        <li>Designed a conversational flow that collected those two data points naturally, without presenting them as a form</li>
+        <li>Added a live agent handoff escape at the end of every path so customers with more complex needs always had a clear way forward</li>
+        <li>Built the prototype end-to-end with simulated rate tables so the experience could be demoed interactively rather than shown as static screens</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card acc-outcome mb40" style="border-color:#BAE6FD;">
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#F0F9FF;">
+      <p class="card-label" style="color:#0C4A6E;">Outcome</p>
+      <span class="acc-chevron" style="color:#0EA5E9;">▼</span>
+    </div>
+    <div class="acc-body" style="background:#F0F9FF;">
+      <p style="color:#0C4A6E;">The prototype validated the self-serve concept: every internal tester completed a rate or delivery time lookup in under 90 seconds with no instruction. The conversational format consistently felt more natural than a form — testers described it as "like asking a person." The agent handoff button at the end of every flow resolved the biggest stakeholder concern about dropping complex cases. Business case modelling suggested 15–20% of inbound rate and time queries could be deflected with this flow.</p>
+    </div>
   </div>
 
   <div class="proto-stage">
@@ -504,6 +535,11 @@
 </div><!-- /cs-body -->
 
 <script>
+function toggleAcc(hdr) {
+  hdr.classList.toggle('open');
+  hdr.nextElementSibling.classList.toggle('open');
+}
+
 const chatArea = document.getElementById('chatArea');
 const chips = document.getElementById('chips');
 const resetBtn = document.getElementById('resetBtn');
