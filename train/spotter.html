@@ -210,7 +210,7 @@ function wheels() {
 const cars = [
   {
     name:'BOXCAR', carries:'Grain, furniture, car parts', emoji:'🌾 📦 🚗',
-    draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1600148833996-7a426df62edf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGJveCUyMGNhciUyMHRyYWlufGVufDB8fDB8fHww" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
+    draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><div xmlns="http://www.w3.org/1999/xhtml" style="width:500px;height:170px;overflow:hidden;border-radius:8px;display:flex;align-items:center;justify-content:center"><img src="https://images.unsplash.com/photo-1600148833996-7a426df62edf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGJveCUyMGNhciUyMHRyYWlufGVufDB8fDB8fHww" style="width:500px;height:170px;object-fit:cover;transform:scale(0.88);transform-origin:center"/></div></foreignObject>`;}
   },
   {
     name:'TANK CAR', carries:'Oil, milk, chemicals', emoji:'🛢️ 🥛 ⚗️',
@@ -222,7 +222,7 @@ const cars = [
   },
   {
     name:'OPEN-TOP HOPPER', carries:'Coal, sand, rock', emoji:'⚫ 🏖️ ⛏️',
-    draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1725211874607-4193e918c350?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjE0fHxmcmVpZ2h0JTIwdHJhaW4lMjBob3BwZXIlMjBjYXJ8ZW58MHx8MHx8fDA%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMax slice" style="border-radius:8px"/>`;}
+    draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><img xmlns="http://www.w3.org/1999/xhtml" src="https://images.unsplash.com/photo-1725211874607-4193e918c350?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjE0fHxmcmVpZ2h0JTIwdHJhaW4lMjBob3BwZXIlMjBjYXJ8ZW58MHx8MHx8fDA%3D" style="width:500px;height:170px;object-fit:cover;object-position:50% 70%;display:block;border-radius:8px"/></foreignObject>`;}
   },
   {
     name:'COVERED HOPPER', carries:'Coal, sand, grain', emoji:'⚫ 🏖️ 🌾',
@@ -237,8 +237,12 @@ const cars = [
     draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1630698309706-4b1fefcebb43?q=80&w=869&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
   },
   {
+    name:'COIL CAR', carries:'Steel coils, wire rolls', emoji:'🔩 🪛 🏗️',
+    draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><img xmlns="http://www.w3.org/1999/xhtml" src="https://images.unsplash.com/photo-1580064615388-1b1774707209?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" style="width:500px;height:170px;object-fit:cover;object-position:50% 65%;display:block;border-radius:8px"/></foreignObject>`;}
+  },
+  {
     name:'WELL CAR W/ INTERMODALS', carries:'Shipping containers', emoji:'📦 🚢 🌍',
-    draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1645402221426-be61c1bff1e7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fGZyZWlnaHQlMjB0cmFpbnxlbnwwfHwwfHx8MA%3D%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
+    draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><img xmlns="http://www.w3.org/1999/xhtml" src="https://images.unsplash.com/photo-1780607768528-822bfbe22364?q=80&w=876&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" style="width:500px;height:170px;object-fit:cover;object-position:50% 65%;display:block;border-radius:8px"/></foreignObject>`;}
   },
   {
     name:'AUTORACK', carries:'Cars, trucks, SUVs', emoji:'🚗 🚐 🚛',
@@ -250,7 +254,15 @@ const cars = [
   },
   {
     name:'CABOOSE', carries:'The train crew!', emoji:'👷 🚂 🏠',
-    draw(svg){ svg.innerHTML = `<image href="https://images.unsplash.com/photo-1760483467243-9cc10ccab328?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNhYm9vc2V8ZW58MHx8MHx8fDA%3D" x="0" y="0" width="500" height="170" preserveAspectRatio="xMidYMid slice" style="border-radius:8px"/>`;}
+    draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><img xmlns="http://www.w3.org/1999/xhtml" src="https://images.unsplash.com/photo-1760483467243-9cc10ccab328?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNhYm9vc2V8ZW58MHx8MHx8fDA%3D" style="width:500px;height:170px;object-fit:cover;object-position:50% 60%;display:block;border-radius:8px"/></foreignObject>`;}
+  },
+  {
+    name:'STOCK CAR', carries:'Pigs, sheep, cattle', emoji:'🐷 🐑 🐄',
+    draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><img xmlns="http://www.w3.org/1999/xhtml" src="https://images.unsplash.com/photo-1727580674819-e3c7822790de?q=80&w=1032&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" style="width:500px;height:170px;object-fit:cover;object-position:50% 50%;display:block;border-radius:8px"/></foreignObject>`;}
+  },
+  {
+    name:'SCHNABEL CAR', carries:'Electrical transformers, turbine generators, industrial boilers', emoji:'⚡ 🔌 🏭',
+    draw(svg){ svg.innerHTML = `<foreignObject x="0" y="0" width="500" height="170"><img xmlns="http://www.w3.org/1999/xhtml" src="https://images.unsplash.com/photo-1722547858788-82f67b26fa9b?q=80&w=782&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" style="width:500px;height:170px;object-fit:cover;object-position:50% 50%;display:block;border-radius:8px"/></foreignObject>`;}
   }
 ];
 
