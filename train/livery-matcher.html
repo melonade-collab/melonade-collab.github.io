@@ -335,7 +335,6 @@ function renderQuestion() {
 }
 
 function handleAnswer(btn, chosen, q) {
-  speak(btn.dataset.speak || btn.textContent);
   document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
 
   if (chosen.id === q.id) {
@@ -349,6 +348,7 @@ function handleAnswer(btn, chosen, q) {
     playChime();
     setTimeout(() => speak(fact.textContent), 500);
   } else {
+    speak(btn.dataset.speak || btn.textContent);
     btn.classList.add('wrong');
     firstTryMisses[q.id] = true;
     setTimeout(() => {
