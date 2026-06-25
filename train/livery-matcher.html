@@ -335,6 +335,7 @@ function renderQuestion() {
 }
 
 function handleAnswer(btn, chosen, q) {
+  speak(btn.dataset.speak || btn.textContent);
   document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
 
   if (chosen.id === q.id) {
@@ -398,12 +399,6 @@ function speak(text) {
   u.rate = 0.88; u.pitch = 1.1; u.volume = 1;
   window.speechSynthesis.speak(u);
 }
-
-// Speak name on button tap (before handleAnswer fires)
-document.getElementById('options').addEventListener('click', e => {
-  const btn = e.target.closest('.opt-btn');
-  if (btn && !btn.disabled) speak(btn.dataset.speak || btn.textContent);
-}, true);
 
 initGame();
 </script>
