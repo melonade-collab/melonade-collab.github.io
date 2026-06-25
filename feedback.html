@@ -551,9 +551,14 @@
 
       if (selectedRating !== null) line += ` You rated your experience ${selectedRating}/10 — "${RATING_LABELS[selectedRating].replace('My experience was ', '')}".`;
 
+      let mismatch = null;
       if (message) {
         const sentiment = analyseSentiment(message);
         line += ` ${messagePhrases[sentiment]}: "${summarise(message)}"`;
+        if (selectedRating !== null) {
+          if (selectedRating >= 7 && sentiment === 'angry')  mismatch = '⚠️ Your rating seems high given the tone of your message.';
+          if (selectedRating <= 3 && sentiment === 'happy')  mismatch = '⚠️ Your rating seems low given the tone of your message.';
+        }
       } else {
         line += ' You haven\'t added a message yet.';
       }
@@ -563,7 +568,19 @@
       else if (phone) line += ` We'll follow up at ${phone}.`;
 
       document.getElementById('messageSummaryText').textContent = line;
-      document.getElementById('messageSummary').style.display = 'block';
+      const summaryEl = document.getElementById('messageSummary');
+      summaryEl.style.display = 'block';
+      summaryEl.style.borderLeft = mismatch ? '3px solid #e65100' : '';
+      summaryEl.style.background = mismatch ? '#fff8f1' : '';
+
+      let mismatchEl = document.getElementById('mismatchWarning');
+      if (!mismatchEl) {
+        mismatchEl = document.createElement('div');
+        mismatchEl.id = 'mismatchWarning';
+        mismatchEl.style.cssText = 'margin-top:6px;font-size:0.78rem;color:#e65100;font-weight:600;';
+        summaryEl.appendChild(mismatchEl);
+      }
+      mismatchEl.textContent = mismatch || '';
     }
 
     document.getElementById('message').addEventListener('input', function () {
@@ -763,13 +780,14 @@
       }
 
       if (!best) {
-        if (sentiment === 'angry')  return { team: 'Customer Experience', sla: 2, reason: 'negative feedback detected', priority: 'Normal' };
-        if (sentiment === 'happy')  return { team: 'Customer Success',    sla: 5, reason: 'positive feedback detected', priority: 'Low' };
+        if (sentiment === 'angry')  return { team: 'Customer Experience', sla: 2, reason: 'negative feedback detected',  priority: 'Normal' };
+        if (sentiment === 'happy')  return { team: 'Customer Success',    sla: 5, reason: 'positive feedback detected',  priority: 'Low' };
         return { team: 'Customer Experience', sla: 3, reason: 'general feedback', priority: 'Normal' };
       }
 
-      const priority = ((rating !== null && rating <= 4) || sentiment === 'angry') ? 'High'
-                     : ((rating !== null && rating >= 8) || sentiment === 'happy') ? 'Low'
+      const isPositive = best.team === 'Customer Success' || sentiment === 'happy';
+      const priority = isPositive ? 'Low'
+                     : ((rating !== null && rating <= 4) || sentiment === 'angry') ? 'High'
                      : 'Normal';
       return { team: best.team, sla: best.sla, reason: best.reason, priority };
     }
