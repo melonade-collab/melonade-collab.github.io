@@ -668,18 +668,19 @@
     }
 
     // ── Open case detection ──
-    let openCaseInfo = null, linkedCase = false, linkedCaseNo = null;
+    let openCaseInfo = null, linkedCase = false, linkedCaseNo = null, caseDecisionMade = false;
 
     function generateCaseNo() {
       return 'CAS-2026-' + String(Math.floor(10000 + Math.random() * 90000));
     }
 
     function checkForOpenCase() {
+      if (caseDecisionMade) return; // user already answered — don't re-ask
       const email       = emailInput.value.trim();
       const phoneDigits = phoneInput.value.replace(/\D/g, '');
       // Email takes priority; fall back to phone only if no valid email entered
       let hasContact = false, via = '';
-      if (email && isValidEmail(email))          { hasContact = true; via = 'this email address'; }
+      if (email && isValidEmail(email))             { hasContact = true; via = 'this email address'; }
       else if (!email && phoneDigits.length === 10) { hasContact = true; via = 'this phone number'; }
 
       const el = document.getElementById('caseDetect');
@@ -696,19 +697,22 @@
     }
 
     function resetCaseDetect() {
-      openCaseInfo = null; linkedCase = false; linkedCaseNo = null;
+      openCaseInfo = null; linkedCase = false; linkedCaseNo = null; caseDecisionMade = false;
       document.getElementById('caseDetect').style.display = 'none';
     }
 
     function linkToCase() {
-      linkedCase = true; linkedCaseNo = openCaseInfo.caseNo;
+      linkedCase = true; linkedCaseNo = openCaseInfo.caseNo; caseDecisionMade = true;
       const el = document.getElementById('caseDetect');
       el.style.background = '#ECFDF5'; el.style.borderColor = '#A7F3D0';
       document.getElementById('caseDetectMsg').innerHTML = `This submission will be linked to case <strong>${linkedCaseNo}</strong>.`;
       document.getElementById('caseDetectActions').style.display = 'none';
     }
 
-    function newCase() { resetCaseDetect(); }
+    function newCase() {
+      caseDecisionMade = true;
+      document.getElementById('caseDetect').style.display = 'none';
+    }
 
     emailInput.addEventListener('input', function () {
       const pos = this.selectionStart;
