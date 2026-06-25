@@ -234,6 +234,53 @@
     .data-json-wrap { margin-top: 16px; background: #1a237e; border-radius: 8px; padding: 14px; overflow-x: auto; }
     .data-json-wrap pre { font-family: "SF Mono","Fira Code",monospace; font-size: 0.75rem; line-height: 1.6; color: #c5cae9; white-space: pre-wrap; }
 
+    .agent-analysis {
+      padding: 8px 0 4px;
+    }
+    .agent-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      color: #aaa;
+      background: #f8f8fc;
+      margin-bottom: 6px;
+      transition: all 0.2s;
+    }
+    .agent-step::before {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #ddd;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .agent-step.active { color: #3949ab; background: #eff0fb; }
+    .agent-step.active::before { background: #3949ab; animation: ag-pulse 0.8s infinite alternate; }
+    .agent-step.done   { color: #2e7d32; background: #f1f8f1; }
+    .agent-step.done::before { background: #2e7d32; animation: none; }
+    @keyframes ag-pulse { from { opacity: 0.3; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+
+    .routing-card .routing-reason {
+      font-size: 0.75rem;
+      color: #7986cb;
+      margin-top: 6px;
+      font-style: italic;
+    }
+    .routing-card .routing-priority {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
     @media (max-width: 520px) {
       body {
         align-items: flex-start;
@@ -336,17 +383,6 @@
       </div>
 
       <div class="field">
-        <label for="prompted">What prompted this feedback? <span class="optional-hint">(optional)</span></label>
-        <select id="prompted" name="prompted">
-          <option value="" disabled selected>Select a reason</option>
-          <option value="purchase">A recent purchase</option>
-          <option value="support">A customer support interaction</option>
-          <option value="issue">A product issue</option>
-          <option value="general">My general experience</option>
-        </select>
-      </div>
-
-      <div class="field">
         <label style="display:flex;justify-content:space-between;align-items:center;">
           <span>Overall rating <span class="optional-hint">(optional)</span></span>
           <span id="ratingDesc" style="font-size:0.78rem;font-weight:600;color:#5c6bc0;"></span>
@@ -383,6 +419,13 @@
 
       <button type="submit">Submit feedback</button>
     </form>
+
+    <div class="agent-analysis" id="agentAnalysis" style="display:none">
+      <div class="agent-step" id="ag1">Reading your feedback…</div>
+      <div class="agent-step" id="ag2">Detecting category and intent…</div>
+      <div class="agent-step" id="ag3">Assessing priority…</div>
+      <div class="agent-step" id="ag4">Routing to the right team…</div>
+    </div>
 
     <div class="success" id="success">
       <h1>Thanks for your feedback!</h1>
@@ -480,12 +523,6 @@
       if (titled !== this.value) { this.value = titled; this.setSelectionRange(pos, pos); }
     });
 
-    const promptedLabels = {
-      purchase: 'a recent purchase',
-      support:  'a customer support interaction',
-      issue:    'a product issue',
-      general:  'your general experience',
-    };
     const messagePhrases = {
       happy:   'Your message about what we got right',
       angry:   'Your message about how we didn\'t meet your expectations',
@@ -499,18 +536,15 @@
       const city     = document.getElementById('city').value;
       const province = document.getElementById('province').value;
       const postal   = document.getElementById('postal').value.trim();
-      const prompted = document.getElementById('prompted').value;
       const message  = document.getElementById('message').value.trim();
 
-      if (!name && !city && !message && selectedRating === null && !prompted) {
+      if (!name && !city && !message && selectedRating === null) {
         document.getElementById('messageSummary').style.display = 'none';
         return;
       }
 
       let line = name ? `Thanks, ${name}! ` : '';
       line += 'Here\'s a summary of what you\'re about to send.';
-
-      if (prompted) line += ` You're submitting feedback about ${promptedLabels[prompted]}.`;
 
       if (city && province) line += ` You're writing in from ${city}, ${province}.`;
       else if (city) line += ` You're writing in from ${city}.`;
@@ -544,7 +578,7 @@
       buildFormSummary();
     });
 
-    ['name', 'email', 'phone', 'city', 'province', 'postal', 'prompted'].forEach(id => {
+    ['name', 'email', 'phone', 'city', 'province', 'postal'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', buildFormSummary);
     });
@@ -678,10 +712,12 @@
         { key: 'phone',     val: d.phone },
         { key: 'city',      val: d.city ? (d.province ? `${d.city}, ${d.province}` : d.city) : null },
         { key: 'postal',    val: d.postal },
-        { key: 'prompted',  val: d.prompted ? promptedLabels[d.prompted] : null },
         { key: 'rating',    val: d.rating !== null ? `${d.rating} / 10` : null },
         { key: 'sentiment', val: d.sentiment },
         { key: 'message',   val: d.message },
+        { key: 'ai → team',     val: d.routing ? d.routing.team : null },
+        { key: 'ai → priority', val: d.routing ? d.routing.priority : null },
+        { key: 'ai → reason',   val: d.routing ? d.routing.reason : null },
       ];
       document.getElementById('dataTable').innerHTML = fields.map(f =>
         `<div class="data-field-row">
@@ -692,39 +728,96 @@
       const payload = {
         name: d.name || null, email: d.email || null, phone: d.phone || null,
         city: d.city || null, province: d.province || null,
-        postalCode: d.postal || null, prompted: d.prompted || null,
+        postalCode: d.postal || null,
         rating: d.rating, sentiment: d.sentiment || null, message: d.message || null,
+        aiRouting: d.routing || null,
       };
       document.getElementById('dataJson').textContent = JSON.stringify(payload, null, 2);
       document.getElementById('dataView').style.display = 'block';
     }
 
-    const routingMap = {
-      purchase: { team: 'Customer Success',     sla: 3 },
-      support:  { team: 'Support',              sla: 1 },
-      issue:    { team: 'Product',              sla: 2 },
-      general:  { team: 'Customer Experience', sla: 5 },
+    function classifyFeedback(message, rating, sentiment) {
+      const lo = message.toLowerCase();
+      const INTENTS = [
+        { team: 'Billing',              sla: 1, reason: 'billing or payment issue',
+          keywords: ['charge','charged','bill','billing','payment','refund','invoice','overcharged','fee','subscription','money','credit','price','pricing','expensive','cost'] },
+        { team: 'Technical Support',    sla: 1, reason: 'technical issue',
+          keywords: ['error','crash','bug','broken','not working','slow','freeze','frozen','login','password','access','glitch','not loading','app','website','404','timeout'] },
+        { team: 'Fulfillment',          sla: 2, reason: 'shipping or order issue',
+          keywords: ['delivery','package','order','shipped','tracking','missing','lost','late','delay','shipping','courier','parcel','not delivered','arrived'] },
+        { team: 'Product',              sla: 3, reason: 'product feedback or feature request',
+          keywords: ['feature','suggest','idea','improve','wish','could you','should have','would be nice','add','update','design','interface','experience','ui','ux'] },
+        { team: 'Customer Success',     sla: 5, reason: 'positive feedback',
+          keywords: ['love','great','amazing','excellent','fantastic','wonderful','thank','appreciate','awesome','perfect','brilliant','outstanding','helpful','best'] },
+      ];
+
+      let best = null, bestScore = 0;
+      for (const intent of INTENTS) {
+        const score = intent.keywords.filter(kw => lo.includes(kw)).length;
+        if (score > bestScore) { bestScore = score; best = intent; }
+      }
+
+      // Escalate low rating + negative
+      if (rating !== null && rating <= 3 && sentiment === 'angry') {
+        return { team: 'Customer Experience', sla: 1, reason: 'low rating with negative feedback — escalated', priority: 'High' };
+      }
+
+      if (!best) {
+        if (sentiment === 'angry')  return { team: 'Customer Experience', sla: 2, reason: 'negative feedback detected', priority: 'Normal' };
+        if (sentiment === 'happy')  return { team: 'Customer Success',    sla: 5, reason: 'positive feedback detected', priority: 'Low' };
+        return { team: 'Customer Experience', sla: 3, reason: 'general feedback', priority: 'Normal' };
+      }
+
+      const priority = ((rating !== null && rating <= 4) || sentiment === 'angry') ? 'High'
+                     : ((rating !== null && rating >= 8) || sentiment === 'happy') ? 'Low'
+                     : 'Normal';
+      return { team: best.team, sla: best.sla, reason: best.reason, priority };
+    }
+
+    const priorityStyles = {
+      High:   { bg: '#fdecea', color: '#c0392b' },
+      Normal: { bg: '#fff8e1', color: '#e65100' },
+      Low:    { bg: '#e8f5e9', color: '#2e7d32' },
     };
 
-    function showRouting(prompted, email, phone) {
+    function showRouting(routing, email, phone) {
       const card = document.getElementById('routingCard');
-      const { team, sla } = routingMap[prompted] || routingMap.general;
-      const slaText = sla === 1 ? '1 business day' : `${sla} business days`;
+      const slaText = routing.sla === 1 ? '1 business day' : `${routing.sla} business days`;
       let contact = '';
       if (email && phone) contact = `at ${email} or ${phone}`;
       else if (email)     contact = `at ${email}`;
       else if (phone)     contact = `at ${phone}`;
+      const ps = priorityStyles[routing.priority] || priorityStyles.Normal;
 
       card.innerHTML = `
-        <p>Based on your feedback, your message has been routed to the <span class="routing-highlight">${team}</span> team.</p>
-        <p>You should hear back from us within <span class="routing-highlight">${slaText}</span>.</p>
+        <p>Your feedback has been routed to the <span class="routing-highlight">${routing.team}</span> team.
+          <span class="routing-priority" style="background:${ps.bg};color:${ps.color}">${routing.priority} priority</span>
+        </p>
+        <p>You should hear back within <span class="routing-highlight">${slaText}</span>.</p>
         ${contact ? `<p>We'll reach you ${contact}.</p>` : ''}
+        <p class="routing-reason">AI detected: ${routing.reason}</p>
       `;
       card.style.display = 'block';
     }
 
+    function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    async function runAgentSteps() {
+      const steps = ['ag1','ag2','ag3','ag4'];
+      const delays = [550, 650, 550, 650];
+      for (let i = 0; i < steps.length; i++) {
+        await wait(delays[i]);
+        if (i > 0) { document.getElementById(steps[i-1]).classList.remove('active'); document.getElementById(steps[i-1]).classList.add('done'); }
+        document.getElementById(steps[i]).classList.add('active');
+      }
+      await wait(600);
+      document.getElementById('ag4').classList.remove('active');
+      document.getElementById('ag4').classList.add('done');
+      await wait(200);
+    }
+
     // Submit
-    document.getElementById('feedbackForm').addEventListener('submit', function (e) {
+    document.getElementById('feedbackForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
       const name = toTitleCase(document.getElementById('name').value.trim());
@@ -743,33 +836,39 @@
         return;
       }
 
-      if (validatePhone()) {
-        phoneInput.focus();
-        return;
-      }
+      if (validatePhone()) { phoneInput.focus(); return; }
+      if (validatePostal()) { postalInput.focus(); return; }
 
-      if (validatePostal()) {
-        postalInput.focus();
-        return;
-      }
-
-      const phone    = document.getElementById('phone').value.trim();
-      const prompted = document.getElementById('prompted').value || null;
-
-      this.style.display = 'none';
-      document.querySelector('h1').style.display = 'none';
-      document.querySelector('.subtitle').style.display = 'none';
-      document.getElementById('success').style.display = 'block';
-      showRouting(prompted, email, phone);
-      populateDataView({
+      const phone     = document.getElementById('phone').value.trim();
+      const sentiment = message ? analyseSentiment(message) : 'neutral';
+      const formData  = {
         name, email, message, phone,
         city:      document.getElementById('city').value,
         province:  document.getElementById('province').value,
         postal:    document.getElementById('postal').value.trim(),
-        prompted,
         rating:    selectedRating,
-        sentiment: message ? { happy: 'positive', angry: 'negative', neutral: 'neutral' }[analyseSentiment(message)] : null,
-      });
+        sentiment: { happy: 'positive', angry: 'negative', neutral: 'neutral' }[sentiment],
+      };
+
+      // Hide form, show agent analysis
+      this.style.display = 'none';
+      document.querySelector('h1').style.display = 'none';
+      document.querySelector('.subtitle').style.display = 'none';
+      document.getElementById('agentAnalysis').style.display = 'block';
+
+      // Reset step states
+      ['ag1','ag2','ag3','ag4'].forEach(id => { document.getElementById(id).className = 'agent-step'; });
+
+      await runAgentSteps();
+
+      // Classify and show results
+      const routing = classifyFeedback(message, selectedRating, sentiment);
+      formData.routing = routing;
+
+      document.getElementById('agentAnalysis').style.display = 'none';
+      document.getElementById('success').style.display = 'block';
+      showRouting(routing, email, phone);
+      populateDataView(formData);
     });
   </script>
   <a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
