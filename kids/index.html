@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Change the title below to her name! e.g. "Emi's World" -->
+<title>🌸 Kawaii World</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+  background: linear-gradient(160deg, #FFE4F0 0%, #EDE4FF 50%, #E4F4FF 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 80px;
+}
+h1 {
+  font-size: clamp(2.2rem, 8vw, 3.8rem);
+  font-weight: 900;
+  color: #D63384;
+  text-shadow: 3px 3px 0 #FFB3CC;
+  text-align: center;
+  margin-bottom: 4px;
+  letter-spacing: 2px;
+}
+.sparkle-row {
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  text-align: center;
+  margin-bottom: 28px;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 480px;
+}
+.game-card {
+  background: white;
+  border-radius: 22px;
+  padding: 20px 22px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 8px 30px rgba(200, 150, 200, 0.2);
+  transition: transform 0.15s, box-shadow 0.15s;
+  border: 3px solid #FFB3CC;
+}
+.game-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 14px 40px rgba(200, 100, 180, 0.28); }
+.game-card:active { transform: scale(0.97); }
+.card-icon { font-size: 3.2rem; flex-shrink: 0; }
+.card-text h2 {
+  font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+  font-weight: 900;
+  color: #5B4E77;
+  margin-bottom: 3px;
+}
+.card-text p {
+  font-size: clamp(0.78rem, 2.2vw, 0.9rem);
+  color: #8B7BA8;
+  line-height: 1.35;
+  font-weight: 600;
+}
+.tag {
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  padding: 2px 10px;
+  border-radius: 20px;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+.footer {
+  position: fixed;
+  bottom: 14px;
+  left: 16px;
+  color: rgba(130, 80, 120, 0.4);
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  line-height: 1.8;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+}
+</style>
+</head>
+<body>
+
+<!-- Change the heading below to her name! e.g. "🌸 EMI'S WORLD 🌸" -->
+<h1>🌸 KAWAII WORLD 🌸</h1>
+<div class="sparkle-row">✨ ⭐ 🌟 ⭐ ✨</div>
+
+<div class="cards">
+
+  <a class="game-card" href="story.html" style="border-color:#FFB3CC;">
+    <div class="card-icon">📖</div>
+    <div class="card-text">
+      <div class="tag" style="background:#FFE4EE;color:#D63384;">STORY</div>
+      <h2>Mochi's Magic Door</h2>
+      <p>Help a little cat choose her adventure. 6 different endings to find!</p>
+    </div>
+  </a>
+
+  <a class="game-card" href="builder.html" style="border-color:#B5DEFF;">
+    <div class="card-icon">🧱</div>
+    <div class="card-text">
+      <div class="tag" style="background:#E4F0FF;color:#1A6ACC;">BUILD</div>
+      <h2>Pixel Builder</h2>
+      <p>Click to place colourful blocks and build anything you can imagine!</p>
+    </div>
+  </a>
+
+  <a class="game-card" href="puzzle.html" style="border-color:#C8B5FF;">
+    <div class="card-icon">🧩</div>
+    <div class="card-text">
+      <div class="tag" style="background:#EDE4FF;color:#6A28CC;">PUZZLE</div>
+      <h2>Sliding Puzzle</h2>
+      <p>Slide the tiles into the right order. Can you solve it?</p>
+    </div>
+  </a>
+
+  <a class="game-card" href="catcher.html" style="border-color:#B5EEDD;">
+    <div class="card-icon">✨</div>
+    <div class="card-text">
+      <div class="tag" style="background:#E0FFF4;color:#0A7A50;">CATCH</div>
+      <h2>Creature Catcher</h2>
+      <p>Tap the magical creatures before they disappear. Score as many as you can!</p>
+    </div>
+  </a>
+
+  <a class="game-card" href="words.html" style="border-color:#FFE0A0;">
+    <div class="card-icon">🔤</div>
+    <div class="card-text">
+      <div class="tag" style="background:#FFF8E1;color:#B07800;">WORD</div>
+      <h2>Word Scramble</h2>
+      <p>Unscramble the mixed-up word before time runs out!</p>
+    </div>
+  </a>
+
+  <a class="game-card" href="memory.html" style="border-color:#FFB3CC;">
+    <div class="card-icon">🃏</div>
+    <div class="card-text">
+      <div class="tag" style="background:#FFE4EE;color:#D63384;">MATCH</div>
+      <h2>Memory Match</h2>
+      <p>Flip cards and find all the matching pairs. How few moves can you do it in?</p>
+    </div>
+  </a>
+
+</div>
+
+<div class="footer">
+  <!-- Change "___" below to her name! -->
+  <div>For ___, built with love, by Mommy. 💕</div>
+  <div>© 2026 Melanie Wellington-Wiltshire</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixel Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+  background: linear-gradient(160deg, #E4F0FF 0%, #EDE4FF 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 12px 30px;
+}
+.back {
+  align-self: flex-start;
+  text-decoration: none;
+  color: #1A6ACC;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  padding: 6px 16px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.back:hover { background: #E4F0FF; }
+h1 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 900;
+  color: #1A6ACC;
+  text-shadow: 2px 2px 0 #B5DEFF;
+  margin-bottom: 12px;
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.palette {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 360px;
+  margin-bottom: 10px;
+}
+.swatch {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: transform 0.1s, border-color 0.1s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.swatch:hover { transform: scale(1.18); }
+.swatch.sel { border-color: #1A6ACC; transform: scale(1.22); }
+.btn {
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.1s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.btn:active { transform: scale(0.94); }
+.btn-erase { background: #EDE4FF; color: #6A28CC; }
+.btn-erase.on { background: #6A28CC; color: white; }
+.btn-clear { background: #FFE4EE; color: #D63384; }
+.grid-wrap {
+  border: 3px solid #B5DEFF;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(100, 150, 255, 0.18);
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+}
+.grid { display: grid; }
+.cell {
+  background: #F8FBFF;
+  border: 0.5px solid #E0EEFF;
+}
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← Back to Hub</a>
+<h1>🧱 Pixel Builder</h1>
+
+<div class="toolbar">
+  <button class="btn btn-erase" id="eraseBtn" onclick="toggleErase()">🩹 Eraser</button>
+  <button class="btn btn-clear" onclick="clearAll()">🗑️ Clear All</button>
+</div>
+
+<div class="palette" id="palette"></div>
+
+<div class="grid-wrap" id="wrap">
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+const COLS = 24, ROWS = 20;
+const SZ = Math.max(12, Math.min(20, Math.floor((Math.min(window.innerWidth - 32, 500)) / COLS)));
+
+const COLORS = [
+  '#FF6B6B','#FF9F43','#FECA57','#A3EB78',
+  '#48DBFB','#54A0FF','#A29BFE','#FD79A8',
+  '#FDCB6E','#55EFC4','#6C5CE7','#E84393',
+  '#DCDDE1','#B2BEC3','#636E72','#2D3436'
+];
+
+let cur = COLORS[0], erasing = false, down = false;
+
+const pal = document.getElementById('palette');
+COLORS.forEach((c, i) => {
+  const sw = document.createElement('div');
+  sw.className = 'swatch' + (i === 0 ? ' sel' : '');
+  sw.style.background = c;
+  sw.onclick = () => {
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('sel'));
+    sw.classList.add('sel');
+    cur = c;
+    erasing = false;
+    document.getElementById('eraseBtn').classList.remove('on');
+  };
+  pal.appendChild(sw);
+});
+
+const grid = document.getElementById('grid');
+grid.style.gridTemplateColumns = `repeat(${COLS}, ${SZ}px)`;
+
+for (let i = 0; i < COLS * ROWS; i++) {
+  const cell = document.createElement('div');
+  cell.className = 'cell';
+  cell.style.width = SZ + 'px';
+  cell.style.height = SZ + 'px';
+  grid.appendChild(cell);
+}
+
+function paint(el) {
+  if (!el.classList.contains('cell')) return;
+  if (erasing) {
+    el.style.background = '#F8FBFF';
+    el.style.border = '0.5px solid #E0EEFF';
+  } else {
+    el.style.background = cur;
+    el.style.border = '0.5px solid rgba(0,0,0,0.06)';
+  }
+}
+
+grid.addEventListener('mousedown', e => { down = true; paint(e.target); });
+grid.addEventListener('mouseover', e => { if (down) paint(e.target); });
+document.addEventListener('mouseup', () => down = false);
+
+grid.addEventListener('touchstart', e => {
+  e.preventDefault(); down = true;
+  const t = e.touches[0];
+  paint(document.elementFromPoint(t.clientX, t.clientY));
+}, { passive: false });
+grid.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (!down) return;
+  const t = e.touches[0];
+  paint(document.elementFromPoint(t.clientX, t.clientY));
+}, { passive: false });
+document.addEventListener('touchend', () => down = false);
+
+function toggleErase() {
+  erasing = !erasing;
+  document.getElementById('eraseBtn').classList.toggle('on', erasing);
+  if (erasing) document.querySelectorAll('.swatch').forEach(s => s.classList.remove('sel'));
+}
+
+function clearAll() {
+  document.querySelectorAll('.cell').forEach(c => {
+    c.style.background = '#F8FBFF';
+    c.style.border = '0.5px solid #E0EEFF';
+  });
+}
+</script>
+</body>
+</html>

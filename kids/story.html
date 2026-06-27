@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mochi's Magic Door</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+  background: linear-gradient(160deg, #FFE4F0 0%, #EDE4FF 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+}
+.back {
+  align-self: flex-start;
+  text-decoration: none;
+  color: #A78BFA;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+  padding: 6px 16px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.back:hover { background: #F5F0FF; }
+.story-card {
+  background: white;
+  border-radius: 28px;
+  padding: 30px 26px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 12px 40px rgba(180, 100, 200, 0.18);
+  text-align: center;
+  transition: background 0.4s;
+}
+.scene { font-size: 5rem; margin-bottom: 10px; display: block; }
+.progress {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #E8DEFF;
+  transition: background 0.3s;
+}
+.dot.on { background: #A78BFA; }
+.story-title {
+  font-size: clamp(1.4rem, 5vw, 1.9rem);
+  font-weight: 900;
+  color: #D63384;
+  margin-bottom: 14px;
+}
+.story-text {
+  font-size: clamp(0.95rem, 3vw, 1.08rem);
+  color: #5B4E77;
+  line-height: 1.7;
+  margin-bottom: 26px;
+}
+.choices { display: flex; flex-direction: column; gap: 12px; }
+.choice-btn {
+  background: linear-gradient(135deg, #FF85A1, #C97CF7);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 14px 20px;
+  font-size: clamp(0.9rem, 3vw, 1rem);
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+  box-shadow: 0 4px 12px rgba(200, 100, 220, 0.28);
+  line-height: 1.35;
+  text-align: left;
+}
+.choice-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(200, 100, 220, 0.38); }
+.choice-btn:active { transform: scale(0.96); }
+.badge {
+  display: inline-block;
+  background: #FFF0F8;
+  color: #D63384;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+.restart-btn {
+  background: white;
+  border: 3px solid #FF85A1;
+  color: #D63384;
+  border-radius: 16px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.15s;
+}
+.restart-btn:hover { background: #FFF0F8; }
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← Back to Hub</a>
+
+<div class="story-card" id="card">
+  <span class="scene" id="scene"></span>
+  <div class="progress" id="progress"></div>
+  <div class="story-title" id="title"></div>
+  <div class="story-text" id="text"></div>
+  <div class="choices" id="choices"></div>
+</div>
+
+<script>
+const S = {
+  start: {
+    scene:'🐱', depth:0,
+    title:'A Glowing Door!',
+    text:'Mochi is a small fluffy grey cat who loves adventures. One sunny morning, she finds a tiny glowing door in the garden wall — one she has never seen before! What does Mochi do?',
+    choices:[
+      {text:'🚪 Open it right away!', next:'a'},
+      {text:'✊ Knock politely first', next:'b'},
+      {text:'🔍 Look around for a key', next:'c'}
+    ]
+  },
+  a: {
+    scene:'🌳', depth:1, bg:'#F4FFF4',
+    title:'A Magical Forest!',
+    text:'The door swings open! Mochi steps into a sparkling forest where flowers are as tall as trees and fireflies float like tiny lanterns. A butterfly with rainbow wings flutters nearby!',
+    choices:[
+      {text:'🦋 Follow the rainbow butterfly', next:'end_a1'},
+      {text:'🌸 Climb up a giant flower', next:'end_a2'}
+    ]
+  },
+  b: {
+    scene:'🧙‍♀️', depth:1, bg:'#FFFBF0',
+    title:'A Friendly Witch!',
+    text:'The door opens and a friendly witch with sparkly purple hair peeks out! She has a tiny cat on her shoulder. "Oh! A visitor! Would you like to come in for tea?" she asks.',
+    choices:[
+      {text:'☕ Yes please, tea sounds lovely!', next:'end_b1'},
+      {text:'✨ Ask about the magic door', next:'end_b2'}
+    ]
+  },
+  c: {
+    scene:'🗺️', depth:1, bg:'#F4F0FF',
+    title:'A Treasure Map!',
+    text:'Mochi sniffs around and finds something even better than a key — a rolled-up treasure map! It has little drawings of flowers, a big oak tree, and a red X marked on it.',
+    choices:[
+      {text:'🏃 Follow the map right now!', next:'end_c1'},
+      {text:'👀 Study it very carefully first', next:'end_c2'}
+    ]
+  },
+  end_a1: {
+    scene:'👑', depth:2, ending:true, badge:'🌸 Ending 1 of 6',
+    title:'Queen of the Forest!',
+    text:'The butterfly leads Mochi to a glittering pond with a tiny island. On the island is a crown made of flowers! Mochi swims across and puts it on her head — and all the forest animals come running. They have been waiting for their queen! 🌸🌸🌸'
+  },
+  end_a2: {
+    scene:'🐉', depth:2, ending:true, badge:'🐉 Ending 2 of 6',
+    title:'Dragon Mum!',
+    text:'Mochi climbs the giant flower stem all the way to the top and finds a cosy nest! Inside are three tiny dragon eggs 🥚. They start to crack open and the baby dragons look up at Mochi — they think she is their mum! She now has the most unusual family ever. 🐉🐉🐉'
+  },
+  end_b1: {
+    scene:'⭐', depth:2, ending:true, badge:'⭐ Ending 3 of 6',
+    title:'A Magical New Friend!',
+    text:'Inside is the cosiest room Mochi has ever seen — bookshelves from floor to ceiling, a crackling fireplace, and three cats napping on soft cushions. The witch makes magical tea that tastes like strawberry and stars. "Come visit whenever you like!" she says warmly. ⭐'
+  },
+  end_b2: {
+    scene:'📚', depth:2, ending:true, badge:'📚 Ending 4 of 6',
+    title:'The Library of Everything!',
+    text:'"Oh THAT!" the witch laughs. "It goes anywhere you imagine — just whisper it!" Mochi whispers "the library." WHOOSH! She is in the most enormous library in the world, with books in every language, even cat language! 📚📚📚'
+  },
+  end_c1: {
+    scene:'🧭', depth:2, ending:true, badge:'🧭 Ending 5 of 6',
+    title:'The Adventure Compass!',
+    text:'Mochi runs off following the map — past the roses, around the pond, up the hill, to a big oak tree. She digs and digs at the X and finds a golden box! Inside is a tiny magical compass that always points toward the nearest adventure. She will never be bored again! 🧭'
+  },
+  end_c2: {
+    scene:'🎉', depth:2, ending:true, badge:'🎉 Ending 6 of 6',
+    title:'Surprise Party!',
+    text:'Mochi studies the map very carefully and notices the tiny drawings are actually tiny windows! She peeks through the tree drawing and sees miniature animals setting up party decorations. She finds the banner and reads the name on it: MOCHI! It was a surprise party for her all along! 🎉🎉🎉'
+  }
+};
+
+function render(key) {
+  const s = S[key];
+  document.getElementById('card').style.background = s.bg || 'white';
+  document.getElementById('scene').textContent = s.scene;
+  document.getElementById('title').textContent = s.title;
+  document.getElementById('text').textContent = s.text;
+
+  const prog = document.getElementById('progress');
+  prog.innerHTML = '';
+  for (let i = 0; i <= 2; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i <= s.depth ? ' on' : '');
+    prog.appendChild(d);
+  }
+
+  const ch = document.getElementById('choices');
+  ch.innerHTML = '';
+  if (s.ending) {
+    const badge = document.createElement('div');
+    badge.className = 'badge';
+    badge.textContent = s.badge;
+    ch.appendChild(badge);
+    const btn = document.createElement('button');
+    btn.className = 'restart-btn';
+    btn.textContent = '⭐ Try another path!';
+    btn.onclick = () => render('start');
+    ch.appendChild(btn);
+  } else {
+    s.choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = c.text;
+      btn.onclick = () => render(c.next);
+      ch.appendChild(btn);
+    });
+  }
+}
+
+render('start');
+</script>
+</body>
+</html>

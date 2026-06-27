@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory Match</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+  background: linear-gradient(160deg, #FFE4F0 0%, #EDE4FF 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 16px 40px;
+}
+.back {
+  align-self: flex-start;
+  text-decoration: none;
+  color: #D63384;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  padding: 6px 16px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.back:hover { background: #FFF0F8; }
+h1 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 900;
+  color: #D63384;
+  text-shadow: 2px 2px 0 #FFB3CC;
+  margin-bottom: 10px;
+}
+.stats {
+  display: flex; gap: 28px; margin-bottom: 14px;
+}
+.stat { text-align: center; }
+.stat-label { font-size: 0.7rem; font-weight: 900; letter-spacing: 2px; color: #C0A0C0; }
+.stat-val { font-size: 1.7rem; font-weight: 900; color: #5B4E77; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(6px, 2vw, 10px);
+  max-width: 380px;
+  width: 100%;
+}
+.card {
+  aspect-ratio: 1;
+  perspective: 600px;
+  cursor: pointer;
+}
+.inner {
+  width: 100%; height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.38s;
+}
+.card.flipped .inner,
+.card.matched .inner { transform: rotateY(180deg); }
+.face {
+  position: absolute; inset: 0;
+  border-radius: clamp(10px, 3vw, 16px);
+  display: flex; align-items: center; justify-content: center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.front {
+  background: linear-gradient(135deg, #A78BFA, #D63384);
+  font-size: clamp(1.4rem, 4.5vw, 1.9rem);
+  box-shadow: 0 4px 14px rgba(180,60,180,0.18);
+}
+.back-face {
+  background: white;
+  font-size: clamp(1.7rem, 5.5vw, 2.4rem);
+  transform: rotateY(180deg);
+  box-shadow: 0 4px 14px rgba(180,60,180,0.12);
+}
+.card.matched .back-face {
+  background: linear-gradient(135deg, #FFF0F8, #FFE4F0);
+}
+.btn {
+  margin-top: 18px;
+  padding: 11px 26px;
+  border-radius: 14px;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: linear-gradient(135deg, #FF85A1, #D63384);
+  color: white;
+  box-shadow: 0 4px 14px rgba(214,51,132,0.28);
+  transition: transform 0.1s;
+}
+.btn:active { transform: scale(0.94); }
+.win {
+  display: none;
+  background: white;
+  border-radius: 22px;
+  padding: 26px 32px;
+  text-align: center;
+  margin-top: 16px;
+  box-shadow: 0 8px 30px rgba(200,100,200,0.18);
+  max-width: 380px; width: 100%;
+}
+.win.show { display: block; }
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← Back to Hub</a>
+<h1>🃏 Memory Match</h1>
+
+<div class="stats">
+  <div class="stat"><div class="stat-label">MOVES</div><div class="stat-val" id="moves">0</div></div>
+  <div class="stat"><div class="stat-label">PAIRS</div><div class="stat-val" id="pairs">0 / 8</div></div>
+  <div class="stat"><div class="stat-label">BEST</div><div class="stat-val" id="best">—</div></div>
+</div>
+
+<div class="grid" id="grid"></div>
+<button class="btn" onclick="newGame()">🔀 New Game</button>
+
+<div class="win" id="win">
+  <div style="font-size:3rem">🎉</div>
+  <div style="font-size:1.8rem;font-weight:900;color:#D63384;margin:8px 0 4px">All matched!</div>
+  <div style="color:#8B7BA8;font-weight:700" id="winSub"></div>
+  <br>
+  <button class="btn" onclick="newGame()">🔀 Play Again</button>
+</div>
+
+<script>
+const EMOJIS = ['🐱','🐰','🦋','🌸','⭐','🍭','🌈','🦄'];
+let flipped = [], pairsFound = 0, moves = 0, best = null, locked = false;
+
+function newGame() {
+  const tiles = [...EMOJIS, ...EMOJIS];
+  for (let i = tiles.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+  }
+  flipped = []; pairsFound = 0; moves = 0; locked = false;
+  document.getElementById('moves').textContent = '0';
+  document.getElementById('pairs').textContent = '0 / 8';
+  document.getElementById('win').classList.remove('show');
+
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  tiles.forEach(emoji => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.emoji = emoji;
+    card.innerHTML = `
+      <div class="inner">
+        <div class="face front">✨</div>
+        <div class="face back-face">${emoji}</div>
+      </div>`;
+    card.addEventListener('click', () => flip(card));
+    grid.appendChild(card);
+  });
+}
+
+function flip(card) {
+  if (locked || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+  card.classList.add('flipped');
+  flipped.push(card);
+  if (flipped.length < 2) return;
+
+  moves++;
+  document.getElementById('moves').textContent = moves;
+  locked = true;
+
+  const [a, b] = flipped;
+  if (a.dataset.emoji === b.dataset.emoji) {
+    a.classList.add('matched'); b.classList.add('matched');
+    pairsFound++;
+    document.getElementById('pairs').textContent = `${pairsFound} / 8`;
+    flipped = []; locked = false;
+    if (pairsFound === 8) {
+      if (best === null || moves < best) best = moves;
+      document.getElementById('best').textContent = best;
+      document.getElementById('winSub').textContent =
+        `${moves} move${moves !== 1 ? 's' : ''}` + (best === moves ? ' 🏆 Best yet!' : '!');
+      setTimeout(() => document.getElementById('win').classList.add('show'), 400);
+    }
+  } else {
+    setTimeout(() => {
+      a.classList.remove('flipped'); b.classList.remove('flipped');
+      flipped = []; locked = false;
+    }, 900);
+  }
+}
+
+newGame();
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creature Catcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+  background: linear-gradient(160deg, #E0FFF4 0%, #E4F0FF 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 16px 20px;
+  overflow: hidden;
+}
+.back {
+  align-self: flex-start;
+  text-decoration: none;
+  color: #0A7A50;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  padding: 6px 16px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: relative; z-index: 10;
+}
+h1 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 900;
+  color: #0A7A50;
+  text-shadow: 2px 2px 0 #A0EED4;
+  margin-bottom: 8px;
+  position: relative; z-index: 10;
+}
+.hud {
+  display: flex; gap: 28px; margin-bottom: 12px;
+  position: relative; z-index: 10;
+}
+.hud-item { text-align: center; }
+.hud-label { font-size: 0.7rem; font-weight: 900; letter-spacing: 2px; color: #5BA888; }
+.hud-val { font-size: 1.9rem; font-weight: 900; color: #0A7A50; line-height: 1.1; }
+.arena {
+  width: min(440px, 96vw);
+  height: min(380px, 55vh);
+  background: white;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,100,80,0.14);
+  border: 3px solid #B5EEDD;
+}
+.arena-msg {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #A0D8C8;
+  font-size: 1rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+.creature {
+  position: absolute;
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  animation: appear 0.2s ease-out;
+}
+@keyframes appear { from{transform:scale(0)} to{transform:scale(1)} }
+.creature:active { transform: scale(0.8); }
+.c-emoji { font-size: 2.8rem; display: block; line-height: 1; }
+.c-name { font-size: 0.6rem; font-weight: 700; color: #5BA888; }
+.pop {
+  position: absolute;
+  font-weight: 900;
+  color: #D63384;
+  font-size: 1.3rem;
+  pointer-events: none;
+  animation: pop 0.7s forwards;
+}
+@keyframes pop {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-52px) scale(1.4); }
+}
+.btn {
+  margin-top: 14px;
+  padding: 12px 30px;
+  border-radius: 14px;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  background: linear-gradient(135deg, #34D399, #059669);
+  color: white;
+  box-shadow: 0 4px 14px rgba(5,150,105,0.28);
+  transition: transform 0.1s;
+  position: relative; z-index: 10;
+}
+.btn:active { transform: scale(0.94); }
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 50;
+  align-items: center; justify-content: center;
+}
+.overlay.show { display: flex; }
+.end-card {
+  background: white;
+  border-radius: 28px;
+  padding: 36px 40px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+  max-width: 300px; width: 88%;
+}
+.end-score { font-size: 3.5rem; font-weight: 900; color: #D63384; }
+.end-label { font-size: 0.9rem; color: #8B7BA8; font-weight: 600; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← Back to Hub</a>
+<h1>✨ Creature Catcher</h1>
+
+<div class="hud">
+  <div class="hud-item"><div class="hud-label">SCORE</div><div class="hud-val" id="score">0</div></div>
+  <div class="hud-item"><div class="hud-label">TIME</div><div class="hud-val" id="timer">60</div></div>
+  <div class="hud-item"><div class="hud-label">CAUGHT</div><div class="hud-val" id="caught">0</div></div>
+</div>
+
+<div class="arena" id="arena">
+  <div class="arena-msg" id="msg">Tap <strong>Start</strong> to play! ✨</div>
+</div>
+
+<button class="btn" id="startBtn" onclick="start()">⭐ Start Game!</button>
+
+<div class="overlay" id="overlay">
+  <div class="end-card">
+    <div style="font-size:3.5rem">🎉</div>
+    <div style="font-size:1.8rem;font-weight:900;color:#0A7A50;margin:8px 0 4px">Time's up!</div>
+    <div class="end-score" id="finalScore">0</div>
+    <div class="end-label">points scored!</div>
+    <button class="btn" style="margin-top:0" onclick="document.getElementById('overlay').classList.remove('show');start()">🔄 Play Again</button>
+  </div>
+</div>
+
+<script>
+const CREATURES = [
+  {emoji:'🦋', name:'Flutterby', pts:1},
+  {emoji:'🌸', name:'Blossom',   pts:1},
+  {emoji:'🍄', name:'Mushie',    pts:2},
+  {emoji:'🐸', name:'Hoppy',     pts:2},
+  {emoji:'🐰', name:'Bunbun',    pts:3},
+  {emoji:'🐼', name:'Panda',     pts:3},
+  {emoji:'⭐', name:'Sparkle',   pts:4},
+  {emoji:'🌟', name:'Twinkle',   pts:4},
+  {emoji:'🦄', name:'Starhorn',  pts:5},
+];
+
+let score = 0, caught = 0, timeLeft = 60;
+let spawnTimer, countTimer;
+
+function start() {
+  score = 0; caught = 0; timeLeft = 60;
+  document.getElementById('score').textContent = '0';
+  document.getElementById('caught').textContent = '0';
+  document.getElementById('timer').textContent = '60';
+  document.getElementById('startBtn').style.display = 'none';
+  document.getElementById('msg').style.display = 'none';
+  document.querySelectorAll('.creature,.pop').forEach(e => e.remove());
+
+  spawnTimer = setInterval(spawn, 1300);
+  countTimer = setInterval(() => {
+    timeLeft--;
+    document.getElementById('timer').textContent = timeLeft;
+    if (timeLeft <= 0) endGame();
+  }, 1000);
+}
+
+function spawn() {
+  const arena = document.getElementById('arena');
+  const aw = arena.clientWidth - 72, ah = arena.clientHeight - 72;
+  const c = CREATURES[Math.floor(Math.random() * CREATURES.length)];
+
+  const el = document.createElement('div');
+  el.className = 'creature';
+  el.style.left = (10 + Math.random() * aw) + 'px';
+  el.style.top  = (10 + Math.random() * ah) + 'px';
+  el.innerHTML = `<span class="c-emoji">${c.emoji}</span><span class="c-name">${c.name}</span>`;
+
+  el.onclick = e => {
+    e.stopPropagation();
+    score += c.pts; caught++;
+    document.getElementById('score').textContent = score;
+    document.getElementById('caught').textContent = caught;
+    const pop = document.createElement('div');
+    pop.className = 'pop';
+    pop.textContent = '+' + c.pts;
+    pop.style.left = el.style.left;
+    pop.style.top  = el.style.top;
+    arena.appendChild(pop);
+    setTimeout(() => pop.remove(), 700);
+    el.remove();
+  };
+
+  arena.appendChild(el);
+  setTimeout(() => { if (el.parentNode) el.remove(); }, 4000);
+}
+
+function endGame() {
+  clearInterval(spawnTimer); clearInterval(countTimer);
+  document.querySelectorAll('.creature').forEach(e => e.remove());
+  document.getElementById('startBtn').style.display = '';
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('overlay').classList.add('show');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Scramble</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+  background: linear-gradient(160deg, #FFF8E1 0%, #FFE4F0 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 16px 40px;
+}
+.back {
+  align-self: flex-start;
+  text-decoration: none;
+  color: #B07800;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  padding: 6px 16px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.back:hover { background: #FFF8E1; }
+h1 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 900;
+  color: #B07800;
+  text-shadow: 2px 2px 0 #FFE0A0;
+  margin-bottom: 12px;
+}
+.card {
+  background: white;
+  border-radius: 24px;
+  padding: 26px 22px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 8px 30px rgba(180,120,0,0.14);
+  text-align: center;
+}
+.hud { display: flex; justify-content: space-between; margin-bottom: 16px; }
+.hud-item { text-align: center; }
+.hud-label { font-size: 0.68rem; font-weight: 900; letter-spacing: 2px; color: #C0A860; }
+.hud-val { font-size: 1.6rem; font-weight: 900; color: #5B4E77; }
+.bar { height: 8px; background: #F0E8D0; border-radius: 4px; margin-bottom: 18px; overflow: hidden; }
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FBBF24, #F59E0B);
+  border-radius: 4px;
+  transition: width 1s linear;
+}
+.hint-box {
+  background: #FFF8E1;
+  border-radius: 12px;
+  padding: 8px 14px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: #8B6A00;
+  font-weight: 700;
+  min-height: 38px;
+  display: flex; align-items: center; justify-content: center;
+}
+.scrambled {
+  font-size: clamp(2rem, 7vw, 3rem);
+  font-weight: 900;
+  color: #D63384;
+  letter-spacing: 6px;
+  margin-bottom: 18px;
+  word-break: break-all;
+}
+input[type=text] {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  border: 3px solid #FFD580;
+  border-radius: 14px;
+  padding: 10px 14px;
+  width: 100%;
+  color: #5B4E77;
+  outline: none;
+  margin-bottom: 12px;
+  transition: border-color 0.2s, background 0.2s;
+}
+input:focus { border-color: #FBBF24; }
+input.ok   { border-color: #34D399; background: #E8FFF4; }
+input.err  { border-color: #FF6B6B; background: #FFF0F0; animation: shake 0.35s; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+.btns { display: flex; gap: 10px; justify-content: center; margin-bottom: 10px; }
+.btn {
+  padding: 9px 18px;
+  border-radius: 12px;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.btn:active { transform: scale(0.94); }
+.btn-hint { background: #FFF8E1; color: #B07800; border: 2px solid #FFD580; }
+.btn-skip { background: #FFF0F0; color: #CC3333; border: 2px solid #FFAAAA; }
+.result { font-size: 1.05rem; font-weight: 700; min-height: 26px; }
+.result.ok  { color: #059669; }
+.result.err { color: #DC2626; }
+.dots { font-size: 0.85rem; color: #C0A860; margin-top: 12px; font-weight: 700; letter-spacing: 2px; }
+.end-card {
+  background: white;
+  border-radius: 24px;
+  padding: 36px 28px;
+  max-width: 440px; width: 100%;
+  box-shadow: 0 8px 30px rgba(180,120,0,0.14);
+  text-align: center;
+  display: none;
+}
+.end-card.show { display: block; }
+.card.hide { display: none; }
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← Back to Hub</a>
+<h1>🔤 Word Scramble</h1>
+
+<div class="card" id="gameCard">
+  <div class="hud">
+    <div class="hud-item"><div class="hud-label">SCORE</div><div class="hud-val" id="score">0</div></div>
+    <div class="hud-item"><div class="hud-label">WORD</div><div class="hud-val" id="wordNum">1 / 10</div></div>
+    <div class="hud-item"><div class="hud-label">HINTS</div><div class="hud-val" id="hintsLeft">3</div></div>
+  </div>
+  <div class="bar"><div class="bar-fill" id="barFill" style="width:100%"></div></div>
+  <div class="hint-box" id="hintBox">💡 Tap the hint button for a clue!</div>
+  <div class="scrambled" id="scrambled"></div>
+  <input type="text" id="ans" placeholder="TYPE HERE"
+    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <div class="btns">
+    <button class="btn btn-hint" onclick="hint()">💡 Hint</button>
+    <button class="btn btn-skip" onclick="skip()">⏭ Skip</button>
+  </div>
+  <div class="result" id="result"></div>
+  <div class="dots" id="dots"></div>
+</div>
+
+<div class="end-card" id="endCard">
+  <div style="font-size:3.5rem">🌟</div>
+  <div style="font-size:2rem;font-weight:900;color:#B07800;margin:10px 0 4px">Well done!</div>
+  <div style="font-size:3rem;font-weight:900;color:#D63384" id="finalScore">0</div>
+  <div style="font-size:0.9rem;color:#8B7BA8;font-weight:700;margin-bottom:22px">points scored!</div>
+  <button class="btn" style="background:linear-gradient(135deg,#FBBF24,#F59E0B);color:white;padding:12px 28px;"
+    onclick="startGame()">🔄 Play Again</button>
+</div>
+
+<script>
+const WORDS = [
+  {word:'MAGIC',    hint:'Wizards use this ✨'},
+  {word:'DRAGON',   hint:'A fire-breathing creature 🐉'},
+  {word:'CASTLE',   hint:'Where a princess lives 🏰'},
+  {word:'KITTEN',   hint:'A baby cat 🐱'},
+  {word:'RAINBOW',  hint:'Appears after rain 🌈'},
+  {word:'LIBRARY',  hint:'Full of books 📚'},
+  {word:'UNICORN',  hint:'A magical horse 🦄'},
+  {word:'PUZZLE',   hint:'Pieces that fit together 🧩'},
+  {word:'FLOWER',   hint:'Pretty and smells nice 🌸'},
+  {word:'CRYSTAL',  hint:'A shiny gemstone 💎'},
+  {word:'BUBBLE',   hint:'Round and floats in the air 🫧'},
+  {word:'SPARKLE',  hint:'How stars look ⭐'},
+  {word:'COOKIE',   hint:'A sweet baked treat 🍪'},
+  {word:'PENGUIN',  hint:'A black and white bird 🐧'},
+  {word:'GARDEN',   hint:'Where flowers grow 🌷'},
+  {word:'LEGO',     hint:'Colourful building blocks 🧱'},
+  {word:'STORY',    hint:'Something you read in a book 📖'},
+  {word:'PRINCESS', hint:'She lives in a castle 👸'},
+  {word:'CHAPTER',  hint:'A section inside a book 📖'},
+  {word:'BUTTON',   hint:'Press it to make something happen 🔘'},
+];
+
+const TIME = 30;
+let queue = [], idx = 0, score = 0, hintsLeft = 3, tickTimer;
+
+function shuffle(a) {
+  const b = [...a];
+  for (let i = b.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [b[i], b[j]] = [b[j], b[i]];
+  }
+  return b;
+}
+
+function scramble(w) {
+  let arr = w.split(''), res, tries = 0;
+  do { res = shuffle(arr).join(''); tries++; } while (res === w && tries < 30);
+  return res;
+}
+
+function startGame() {
+  queue = shuffle(WORDS).slice(0, 10);
+  idx = 0; score = 0; hintsLeft = 3;
+  document.getElementById('score').textContent = '0';
+  document.getElementById('hintsLeft').textContent = '3';
+  document.getElementById('gameCard').classList.remove('hide');
+  document.getElementById('endCard').classList.remove('show');
+  loadWord();
+}
+
+function loadWord() {
+  if (idx >= queue.length) { endGame(); return; }
+  clearInterval(tickTimer);
+  let t = TIME;
+  const w = queue[idx];
+  document.getElementById('scrambled').textContent = scramble(w.word);
+  document.getElementById('ans').value = '';
+  document.getElementById('ans').className = '';
+  document.getElementById('result').textContent = '';
+  document.getElementById('result').className = 'result';
+  document.getElementById('hintBox').textContent = '💡 Tap hint for a clue!';
+  document.getElementById('wordNum').textContent = `${idx + 1} / 10`;
+  document.getElementById('score').textContent = score;
+  document.getElementById('barFill').style.width = '100%';
+  document.getElementById('dots').textContent =
+    queue.map((_, i) => i < idx ? '🟢' : i === idx ? '🟡' : '⬜').join('');
+  document.getElementById('ans').focus();
+
+  tickTimer = setInterval(() => {
+    t--;
+    document.getElementById('barFill').style.width = (t / TIME * 100) + '%';
+    if (t <= 0) { clearInterval(tickTimer); reveal(false, t); }
+  }, 1000);
+}
+
+function reveal(correct, t) {
+  clearInterval(tickTimer);
+  const w = queue[idx].word;
+  const inp = document.getElementById('ans');
+  const res = document.getElementById('result');
+  if (correct) {
+    const pts = Math.max(1, Math.ceil(t / 6));
+    score += pts;
+    inp.value = w; inp.className = 'ok';
+    res.textContent = `✅ +${pts} points!`; res.className = 'result ok';
+  } else {
+    inp.value = w; inp.className = 'err';
+    res.textContent = `The word was: ${w}`; res.className = 'result err';
+  }
+  document.getElementById('score').textContent = score;
+  setTimeout(() => { idx++; loadWord(); }, 1500);
+}
+
+function hint() {
+  if (hintsLeft <= 0) return;
+  hintsLeft--;
+  document.getElementById('hintsLeft').textContent = hintsLeft;
+  document.getElementById('hintBox').textContent = queue[idx].hint;
+}
+
+function skip() { reveal(false, 0); }
+
+function endGame() {
+  document.getElementById('gameCard').classList.add('hide');
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('endCard').classList.add('show');
+}
+
+document.getElementById('ans').addEventListener('input', () => {
+  const ans = document.getElementById('ans').value.trim().toUpperCase();
+  const word = queue[idx].word;
+  if (ans.length < word.length) return;
+  const t = Math.round((parseFloat(document.getElementById('barFill').style.width) / 100) * TIME);
+  if (ans === word) {
+    reveal(true, t);
+  } else {
+    const inp = document.getElementById('ans');
+    inp.classList.add('err');
+    setTimeout(() => inp.classList.remove('err'), 350);
+  }
+});
+
+startGame();
+</script>
+</body>
+</html>
