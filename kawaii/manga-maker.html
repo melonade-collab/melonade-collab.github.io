@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Manga Panel Maker 🎌</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Nunito', sans-serif; background: linear-gradient(160deg,#FFE4F0 0%,#EDE4FF 100%); min-height: 100vh; }
+
+.screen { display: none; min-height: 100vh; flex-direction: column; align-items: center; padding: 14px 12px 28px; }
+.screen.on { display: flex; }
+.back-btn { align-self: flex-start; text-decoration: none; background: white; color: #D63384; font-weight: 700; font-size: 0.9rem; padding: 6px 16px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: none; cursor: pointer; margin-bottom: 14px; }
+.back-btn:hover { background: #FFF0F8; }
+h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text-shadow: 2px 2px 0 #FFB3CC; margin-bottom: 14px; }
+
+/* LIBRARY */
+.lib-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; width: 100%; max-width: 460px; }
+.lib-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 16px rgba(200,100,180,0.15); cursor: pointer; transition: transform 0.15s; border: 3px solid #FFB3CC; }
+.lib-card:hover { transform: scale(1.03); }
+.lib-thumb { width: 100%; aspect-ratio: 3/4; background: #EDE4FF; position: relative; overflow: hidden; }
+.lib-info { padding: 7px 10px; }
+.lib-title { font-size: 0.82rem; font-weight: 900; color: #5B4E77; }
+.lib-date  { font-size: 0.6rem; color: #9B8AB8; font-weight: 700; }
+.lib-del { float: right; background: none; border: none; font-size: 1rem; cursor: pointer; color: #D63384; line-height: 1; }
+.new-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 160px; background: white; border-radius: 16px; border: 3px dashed #FFB3CC; cursor: pointer; color: #D63384; font-weight: 900; font-size: 0.88rem; transition: background 0.15s; }
+.new-card:hover { background: #FFF0F8; }
+.new-card-icon { font-size: 2.4rem; }
+.footer { position: fixed; bottom: 14px; left: 16px; color: rgba(130,80,120,0.35); font-size: 0.62rem; letter-spacing: 1.5px; line-height: 1.8; font-weight: 700; }
+
+/* SETUP */
+.layout-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; width: 100%; max-width: 380px; }
+.layout-card { aspect-ratio: 3/4; background: white; border-radius: 14px; border: 3px solid #FFB3CC; cursor: pointer; overflow: hidden; transition: transform 0.12s,border-color 0.12s; box-shadow: 0 3px 10px rgba(200,100,180,0.12); display: flex; flex-direction: column; }
+.layout-card:hover { transform: scale(1.05); border-color: #D63384; }
+.layout-preview { flex: 1; display: grid; gap: 3px; background: #111; margin: 7px; border-radius: 4px; overflow: hidden; }
+.lp-panel { background: #EDE4FF; }
+.layout-name { font-size: 0.65rem; font-weight: 900; color: #5B4E77; text-align: center; padding: 3px 0 6px; }
+
+/* EDITOR */
+#s-editor { position: fixed; inset: 0; min-height: unset; padding: 0; background: #1a0a2e; overflow: hidden; z-index: 50; }
+.editor-hdr { display: flex; align-items: center; gap: 8px; padding: 10px 12px 8px; background: rgba(0,0,0,0.4); flex-shrink: 0; }
+.editor-hdr .back-btn { margin-bottom: 0; flex-shrink: 0; }
+.page-title-input { flex: 1; background: none; border: none; outline: none; color: #FFB3CC; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem; min-width: 0; }
+.hdr-btn { padding: 5px 12px; border-radius: 14px; border: none; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.78rem; cursor: pointer; white-space: nowrap; }
+.btn-view { background: #D63384; color: white; }
+.editor-body { flex: 1; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; padding: 10px 10px 6px; }
+
+.manga-page { flex-shrink: 0; width: min(88vw,330px); aspect-ratio: 3/4; gap: 4px; background: #111; border: 4px solid #111; }
+.manga-panel { position: relative; overflow: hidden; background: #EDE4FF; background-size: cover; background-position: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.manga-panel.sel::after { content: ''; position: absolute; inset: 0; border: 3px solid #D63384; pointer-events: none; z-index: 20; }
+.empty-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(130,80,180,0.45); font-size: 0.62rem; font-weight: 700; pointer-events: none; text-align: center; padding: 4px; }
+
+.editor-toolbar { flex-shrink: 0; background: rgba(0,0,0,0.45); padding: 8px 8px 14px; display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.toolbar-hint { color: rgba(255,180,220,0.7); font-size: 0.72rem; font-weight: 700; text-align: center; }
+.toolbar-row { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
+.tool-btn { padding: 7px 11px; border-radius: 10px; border: none; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: transform 0.1s; white-space: nowrap; }
+.tool-btn:active { transform: scale(0.9); }
+.t-img      { background: #5B4E77; color: white; }
+.t-speech   { background: white; color: #111; border: 2px solid #aaa; }
+.t-thought  { background: white; color: #111; border: 2px dashed #aaa; }
+.t-shout    { background: #FFE920; color: #111; border: 2px solid #aaa; }
+.t-narration{ background: #1a1a2e; color: white; border: 2px solid #555; }
+
+/* BUBBLES */
+.bbl { position: absolute; cursor: pointer; user-select: none; touch-action: none; z-index: 10; max-width: 46%; }
+.bbl.sel { outline: 2.5px dashed #D63384; outline-offset: 3px; z-index: 15; }
+.bbl-txt { pointer-events: none; }
+
+.bbl-speech { background: white; border: 2.5px solid #111; border-radius: 14px; padding: 5px 9px; font-family: 'Comic Sans MS','Nunito',cursive; font-size: 0.68rem; font-weight: 700; line-height: 1.3; text-align: center; color: #111; filter: drop-shadow(1px 2px 0 rgba(0,0,0,0.1)); }
+.bbl-speech::before { content:''; position:absolute; bottom:-13px; left:10px; border:7px solid transparent; border-top-color:#111; }
+.bbl-speech::after  { content:''; position:absolute; bottom:-9px; left:12px; border:5px solid transparent; border-top-color:white; z-index:1; }
+
+.bbl-thought { background: white; border: 2.5px solid #111; border-radius: 50%; padding: 7px 11px; font-family: 'Comic Sans MS','Nunito',cursive; font-size: 0.68rem; font-weight: 700; line-height: 1.3; text-align: center; color: #111; min-width: 52px; min-height: 40px; display: flex; align-items: center; justify-content: center; }
+
+.bbl-shout { background: #FFE920; border: 2.5px solid #111; font-family: 'Nunito','Comic Sans MS',cursive; font-size: 0.72rem; font-weight: 900; line-height: 1.2; text-align: center; color: #111; min-width: 72px; min-height: 62px; display: flex; align-items: center; justify-content: center; padding: 22px 12px; clip-path: polygon(50% 0%,61% 34%,96% 19%,73% 48%,100% 63%,66% 67%,80% 98%,50% 80%,20% 98%,34% 67%,0% 63%,27% 48%,4% 19%,39% 34%); }
+
+.bbl-narration { background: #1a1a2e; border: 2px solid #111; padding: 4px 8px; font-family: 'Nunito',sans-serif; font-size: 0.62rem; font-weight: 700; line-height: 1.3; color: white; font-style: italic; text-align: left; width: 90%; }
+
+/* MODALS */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: flex-end; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal-sheet { background: white; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 18px 14px 32px; max-height: 82vh; overflow-y: auto; }
+.modal-title { font-size: 1rem; font-weight: 900; color: #5B4E77; margin-bottom: 12px; text-align: center; }
+.modal-close { float: right; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #D63384; line-height: 1; }
+
+.mimg-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
+.mimg-thumb { aspect-ratio: 4/3; border-radius: 10px; object-fit: cover; cursor: pointer; border: 3px solid transparent; transition: border-color 0.12s,transform 0.12s; width: 100%; }
+.mimg-thumb:hover,.mimg-bg:hover { transform: scale(1.04); }
+.mimg-thumb.sel,.mimg-bg.sel { border-color: #D63384; }
+.mimg-bg { aspect-ratio: 4/3; border-radius: 10px; cursor: pointer; border: 3px solid transparent; display: flex; align-items: center; justify-content: center; font-size: 0.62rem; font-weight: 700; color: rgba(0,0,0,0.5); text-align: center; padding: 4px; transition: border-color 0.12s,transform 0.12s; }
+
+.btype-row { display: flex; gap: 7px; margin-bottom: 12px; flex-wrap: wrap; }
+.btype-btn { flex: 1; padding: 7px 4px; border-radius: 10px; border: 2.5px solid transparent; font-family: 'Nunito',sans-serif; font-weight: 700; font-size: 0.75rem; cursor: pointer; text-align: center; min-width: 65px; transition: transform 0.1s; }
+.btype-btn:active { transform: scale(0.92); }
+.btype-btn.speech   { background: white; border-color: #bbb; color: #111; }
+.btype-btn.thought  { background: white; border-color: #bbb; border-style: dashed; color: #111; }
+.btype-btn.shout    { background: #FFE920; border-color: #bbb; color: #111; }
+.btype-btn.narration{ background: #1a1a2e; color: white; border-color: #555; }
+.btype-btn.active   { border-color: #D63384 !important; border-width: 3px; }
+
+.bbl-textarea { width: 100%; padding: 10px 12px; border-radius: 12px; border: 2.5px solid #FFB3CC; font-family: 'Nunito',sans-serif; font-size: 0.95rem; font-weight: 700; color: #5B4E77; outline: none; margin-bottom: 12px; resize: vertical; min-height: 68px; }
+.bbl-textarea:focus { border-color: #D63384; }
+.modal-actions { display: flex; gap: 10px; }
+.m-btn { flex: 1; padding: 11px; border-radius: 14px; border: none; font-family: 'Nunito',sans-serif; font-weight: 900; font-size: 0.9rem; cursor: pointer; transition: transform 0.1s; }
+.m-btn:active { transform: scale(0.94); }
+.m-done { background: linear-gradient(135deg,#FF85A1,#D63384); color: white; }
+.m-del  { background: #FFF0F0; color: #D63384; border: 2px solid #FFB3CC; }
+
+/* PREVIEW */
+#s-preview { background: #111; justify-content: center; }
+.preview-page { width: min(88vw,360px); aspect-ratio: 3/4; gap: 4px; background: #111; }
+.preview-close { position: fixed; top: 14px; left: 14px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 20px; padding: 6px 14px; font-family: 'Nunito',sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; z-index: 50; }
+</style>
+</head>
+<body>
+
+<!-- LIBRARY -->
+<div id="s-lib" class="screen on">
+  <a class="back-btn" href="index.html">← Back to Kawaii World</a>
+  <h1>🎌 Manga Maker</h1>
+  <div class="lib-grid" id="libGrid"></div>
+  <div class="footer">
+    <div>For Desirae, built with love, by Mommy. 💕</div>
+    <div>© 2026 Melanie Wellington-Wiltshire</div>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div id="s-setup" class="screen">
+  <button class="back-btn" onclick="show('s-lib')">← Back</button>
+  <h1>Pick a layout 🖼️</h1>
+  <div class="layout-grid" id="layoutGrid"></div>
+</div>
+
+<!-- EDITOR -->
+<div id="s-editor" class="screen">
+  <div class="editor-hdr">
+    <button class="back-btn" onclick="saveAndBack()">← Back</button>
+    <input class="page-title-input" id="titleInput" placeholder="My Manga Page">
+    <button class="hdr-btn btn-view" onclick="openPreview()">👁️ View</button>
+  </div>
+  <div class="editor-body">
+    <div class="manga-page" id="mangaPage"></div>
+  </div>
+  <div class="editor-toolbar">
+    <div class="toolbar-hint" id="toolbarHint">Tap a panel to edit ✨</div>
+    <div class="toolbar-row" id="toolbarRow"></div>
+  </div>
+</div>
+
+<!-- PREVIEW -->
+<div id="s-preview" class="screen">
+  <button class="preview-close" onclick="show('s-editor')">✕ Close</button>
+  <div class="preview-page" id="previewPage"></div>
+</div>
+
+<!-- MODAL: Image Picker -->
+<div class="modal-overlay" id="modalImg">
+  <div class="modal-sheet">
+    <button class="modal-close" onclick="closeModal('modalImg')">✕</button>
+    <div class="modal-title">Choose image 🌸</div>
+    <div class="mimg-grid" id="mimgGrid"></div>
+  </div>
+</div>
+
+<!-- MODAL: Bubble Edit -->
+<div class="modal-overlay" id="modalBbl">
+  <div class="modal-sheet">
+    <button class="modal-close" onclick="closeModal('modalBbl')">✕</button>
+    <div class="modal-title">Edit bubble ✏️</div>
+    <div class="btype-row" id="btypeRow"></div>
+    <textarea class="bbl-textarea" id="bblText" placeholder="Type what they say..."></textarea>
+    <div class="modal-actions">
+      <button class="m-btn m-del"  onclick="deleteBubble()">🗑️ Delete</button>
+      <button class="m-btn m-done" onclick="saveBubble()">✅ Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const IMAGES = [
+  {id:'falling',src:'https://images.unsplash.com/vector-1744442861923-aaeef319ac38?w=600&auto=format&fit=crop&q=80',label:'🌸 Falling'},
+  {id:'clouds', src:'https://images.unsplash.com/vector-1744442860865-0765bab8753c?w=600&auto=format&fit=crop&q=80',label:'☁️ Clouds'},
+  {id:'tulips', src:'https://plus.unsplash.com/premium_vector-1742668947361-739780396fb6?w=600&auto=format&fit=crop&q=80',label:'💙 Tulips'},
+  {id:'ramen',  src:'https://plus.unsplash.com/premium_vector-1731491694760-6f6372dd8bca?w=600&auto=format&fit=crop&q=80',label:'🍜 Ramen'},
+  {id:'street', src:'https://plus.unsplash.com/premium_vector-1732356540932-18564bf0783d?w=600&auto=format&fit=crop&q=80',label:'🌆 Street'},
+  {id:'redeye', src:'https://plus.unsplash.com/premium_vector-1689096623582-d6b204f320ac?w=600&auto=format&fit=crop&q=80',label:'👁️ Red Eye'},
+  {id:'eyes',   src:'https://plus.unsplash.com/premium_vector-1689096627500-db28ccd880b3?w=600&auto=format&fit=crop&q=80',label:'✨ Eyes'},
+  {id:'anime',  src:'https://images.unsplash.com/photo-1620428268482-cf1851a36764?w=600&auto=format&fit=crop&q=80',label:'🌸 Anime'},
+  {id:'pink',   bg:'linear-gradient(135deg,#FFE4F0,#EDE4FF)',label:'🌸 Pink Magic'},
+  {id:'night',  bg:'linear-gradient(180deg,#0a0a1a,#1a1060,#0d1a3a)',label:'🌙 Night Sky'},
+  {id:'gold',   bg:'linear-gradient(135deg,#FFF8E1,#FFD700,#FFA000)',label:'⭐ Golden'},
+  {id:'forest', bg:'linear-gradient(180deg,#1a4a1a,#2d7a2d,#6aaa40)',label:'🌿 Forest'},
+];
+
+const LAYOUTS = [
+  {id:'A',name:'Stack 2',   panels:2,css:{gtc:'',         gtr:'1fr 1fr'},         spans:[null,null]},
+  {id:'B',name:'Side x 2', panels:2,css:{gtc:'1fr 1fr',   gtr:''},                spans:[null,null]},
+  {id:'C',name:'Wide + 2', panels:3,css:{gtc:'1fr 1fr',   gtr:'1.2fr 1fr'},       spans:[null,null,{gc:'1/3'}]},
+  {id:'D',name:'4 Panels', panels:4,css:{gtc:'1fr 1fr',   gtr:'1fr 1fr'},         spans:[null,null,null,null]},
+  {id:'E',name:'Big + 2',  panels:3,css:{gtc:'1.4fr 1fr', gtr:'1fr 1fr'},         spans:[{gr:'1/3'},null,null]},
+];
+
+const BTYPES = [
+  {id:'speech',   icon:'💬',label:'Talk'},
+  {id:'thought',  icon:'💭',label:'Think'},
+  {id:'shout',    icon:'💥',label:'Shout!'},
+  {id:'narration',icon:'📦',label:'Caption'},
+];
+const BDEFAULTS = {speech:'...',thought:'Hmm...',shout:'WAAAH!',narration:'Meanwhile...'};
+
+const SK = 'kawaii_manga_v1';
+let pages = [];
+let cur = null;
+let selP = -1;
+let editPIdx = -1, editBId = null;
+
+function loadPages() { try { pages = JSON.parse(localStorage.getItem(SK)||'[]'); } catch { pages=[]; } }
+function savePages() { localStorage.setItem(SK, JSON.stringify(pages)); }
+function saveCur()   { const i=pages.findIndex(p=>p.id===cur.id); if(i>=0) pages[i]=cur; savePages(); }
+function show(id)    { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on')); document.getElementById(id).classList.add('on'); }
+function openModal(id)  { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function applyLayoutCss(el, L) {
+  el.style.display = 'grid';
+  if(L.css.gtc) el.style.gridTemplateColumns = L.css.gtc;
+  if(L.css.gtr) el.style.gridTemplateRows    = L.css.gtr;
+}
+function applySpan(el, L, i) {
+  const s = L.spans && L.spans[i];
+  if(!s) return;
+  if(s.gc) el.style.gridColumn = s.gc;
+  if(s.gr) el.style.gridRow    = s.gr;
+}
+
+// LIBRARY
+function renderLib() {
+  loadPages();
+  const g = document.getElementById('libGrid');
+  g.innerHTML = '';
+  const nc = document.createElement('div');
+  nc.className = 'new-card';
+  nc.innerHTML = '<div class="new-card-icon">✏️</div><div>New Manga Page</div>';
+  nc.onclick = () => show('s-setup');
+  g.appendChild(nc);
+  [...pages].reverse().forEach(pg => {
+    const card = document.createElement('div');
+    card.className = 'lib-card';
+    const thumb = document.createElement('div');
+    thumb.className = 'lib-thumb';
+    renderInto(thumb, pg, false);
+    card.appendChild(thumb);
+    const info = document.createElement('div');
+    info.className = 'lib-info';
+    info.innerHTML = `<button class="lib-del" data-id="${pg.id}">🗑️</button><div class="lib-title">${pg.title||'Untitled'}</div><div class="lib-date">${new Date(pg.created).toLocaleDateString()}</div>`;
+    info.querySelector('.lib-del').onclick = e => { e.stopPropagation(); if(confirm('Delete this manga page?')){ pages=pages.filter(p=>p.id!==pg.id); savePages(); renderLib(); } };
+    card.appendChild(info);
+    card.onclick = () => openEditor(pg.id);
+    g.appendChild(card);
+  });
+}
+
+// SETUP
+function renderSetup() {
+  const g = document.getElementById('layoutGrid');
+  g.innerHTML = '';
+  LAYOUTS.forEach(L => {
+    const card = document.createElement('div');
+    card.className = 'layout-card';
+    const prev = document.createElement('div');
+    prev.className = 'layout-preview';
+    applyLayoutCss(prev, L);
+    prev.style.gap = '3px';
+    for(let i=0;i<L.panels;i++){
+      const p=document.createElement('div'); p.className='lp-panel'; applySpan(p,L,i); prev.appendChild(p);
+    }
+    const nm=document.createElement('div'); nm.className='layout-name'; nm.textContent=L.name;
+    card.appendChild(prev); card.appendChild(nm);
+    card.onclick = () => createPage(L.id);
+    g.appendChild(card);
+  });
+}
+
+function createPage(layoutId) {
+  const L = LAYOUTS.find(l=>l.id===layoutId);
+  const pg = { id:'mg_'+Date.now(), title:'Manga '+(pages.length+1), created:Date.now(), layout:layoutId, panels:Array.from({length:L.panels},()=>({iid:'pink',bubbles:[]})) };
+  pages.push(pg); savePages(); openEditor(pg.id);
+}
+
+// EDITOR
+function openEditor(id) {
+  cur = JSON.parse(JSON.stringify(pages.find(p=>p.id===id)));
+  selP = -1;
+  document.getElementById('titleInput').value = cur.title||'';
+  renderEditor();
+  show('s-editor');
+}
+
+function saveAndBack() {
+  cur.title = document.getElementById('titleInput').value.trim()||'Untitled';
+  saveCur(); renderLib(); show('s-lib');
+}
+
+function renderEditor() {
+  const pg = document.getElementById('mangaPage');
+  renderInto(pg, cur, true);
+  updateToolbar();
+}
+
+function renderInto(container, pg, interactive) {
+  const L = LAYOUTS.find(l=>l.id===pg.layout);
+  container.innerHTML = '';
+  applyLayoutCss(container, L);
+  container.style.gap = '4px';
+  container.style.background = '#111';
+
+  pg.panels.forEach((panel, i) => {
+    const pEl = document.createElement('div');
+    pEl.className = 'manga-panel' + (interactive && i===selP ? ' sel' : '');
+    pEl.id = 'mp_'+i;
+    applySpan(pEl, L, i);
+    const img = IMAGES.find(x=>x.id===panel.iid);
+    if(img){ if(img.src){ pEl.style.backgroundImage=`url('${img.src}')`; pEl.style.backgroundSize='cover'; pEl.style.backgroundPosition='center'; } else if(img.bg){ pEl.style.background=img.bg; } }
+    if(interactive && panel.bubbles.length===0){ const h=document.createElement('div'); h.className='empty-hint'; h.textContent='tap to edit'; pEl.appendChild(h); }
+    if(interactive){
+      panel.bubbles.forEach(b=>addBubbleEl(b,pEl,i));
+      pEl.addEventListener('pointerdown', e=>{ if(!e.target.closest('.bbl')) selectPanel(i); });
+    }
+    container.appendChild(pEl);
+  });
+}
+
+function selectPanel(idx) {
+  selP = idx;
+  document.querySelectorAll('#mangaPage .manga-panel').forEach((p,i)=>{
+    p.classList.toggle('sel', i===idx);
+    const h=p.querySelector('.empty-hint'); if(h) h.style.display='none';
+  });
+  updateToolbar();
+}
+
+function updateToolbar() {
+  const hint = document.getElementById('toolbarHint');
+  const row  = document.getElementById('toolbarRow');
+  row.innerHTML = '';
+  if(selP<0){ hint.textContent='Tap a panel to edit ✨'; return; }
+  hint.textContent = `Panel ${selP+1} selected 🎨`;
+  [['🖼️ Image','tool-btn t-img',()=>openImgPicker()],
+   ...BTYPES.map(bt=>[bt.icon+' '+bt.label,'tool-btn t-'+bt.id,()=>addBubble(bt.id)])
+  ].forEach(([label,cls,fn])=>{ const b=document.createElement('button'); b.className=cls; b.textContent=label; b.onclick=fn; row.appendChild(b); });
+}
+
+// BUBBLE
+function addBubble(type) {
+  if(selP<0) return;
+  const bbl = { id:'b_'+Date.now(), type, text:BDEFAULTS[type], x:type==='narration'?5:15+Math.random()*40, y:type==='narration'?5:8+Math.random()*30 };
+  cur.panels[selP].bubbles.push(bbl);
+  saveCur();
+  const pEl = document.getElementById('mp_'+selP);
+  if(pEl){ const h=pEl.querySelector('.empty-hint'); if(h) h.remove(); addBubbleEl(bbl,pEl,selP); }
+}
+
+function addBubbleEl(bbl, panelEl, pIdx) {
+  const wrap = document.createElement('div');
+  wrap.className = 'bbl bbl-'+bbl.type;
+  wrap.id = 'bbl_'+bbl.id;
+  wrap.style.top = bbl.y+'%';
+  if(bbl.type==='narration'){ wrap.style.left='5%'; wrap.style.width='90%'; } else { wrap.style.left=bbl.x+'%'; }
+  const txt=document.createElement('div'); txt.className='bbl-txt'; txt.textContent=bbl.text; wrap.appendChild(txt);
+  if(bbl.type==='thought'){
+    [0,1,2].forEach(k=>{ const d=document.createElement('div'); const sz=7-k*1.8; Object.assign(d.style,{position:'absolute',bottom:(-8-k*7)+'px',left:(10+k*8)+'px',width:sz+'px',height:sz+'px',background:'white',border:'2px solid #111',borderRadius:'50%'}); wrap.appendChild(d); });
+  }
+  let sx,sy,sbx,sby,moved=false;
+  wrap.addEventListener('pointerdown',e=>{ e.stopPropagation(); wrap.setPointerCapture(e.pointerId); sx=e.clientX; sy=e.clientY; sbx=bbl.x; sby=bbl.y; moved=false; });
+  wrap.addEventListener('pointermove',e=>{ const dx=e.clientX-sx,dy=e.clientY-sy; if(!moved&&Math.abs(dx)+Math.abs(dy)<6) return; moved=true; const r=panelEl.getBoundingClientRect(); bbl.x=Math.max(0,Math.min(88,sbx+dx/r.width*100)); bbl.y=Math.max(0,Math.min(88,sby+dy/r.height*100)); if(bbl.type!=='narration') wrap.style.left=bbl.x+'%'; wrap.style.top=bbl.y+'%'; });
+  wrap.addEventListener('pointerup',e=>{ e.stopPropagation(); if(moved){ saveCur(); } else { openBubbleEdit(pIdx,bbl.id); } });
+  panelEl.appendChild(wrap);
+}
+
+function openBubbleEdit(pIdx, bId) {
+  const bbl=cur.panels[pIdx].bubbles.find(b=>b.id===bId);
+  if(!bbl) return;
+  editPIdx=pIdx; editBId=bId;
+  const row=document.getElementById('btypeRow');
+  row.innerHTML='';
+  BTYPES.forEach(bt=>{ const b=document.createElement('button'); b.className='btype-btn '+bt.id+(bbl.type===bt.id?' active':''); b.innerHTML=bt.icon+'<br><small>'+bt.label+'</small>'; b.onclick=()=>{ bbl.type=bt.id; row.querySelectorAll('.btype-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); }; row.appendChild(b); });
+  document.getElementById('bblText').value=bbl.text;
+  openModal('modalBbl');
+}
+
+function saveBubble() {
+  const bbl=cur.panels[editPIdx].bubbles.find(b=>b.id===editBId);
+  if(bbl) bbl.text=document.getElementById('bblText').value||'...';
+  saveCur(); closeModal('modalBbl'); renderEditor();
+}
+
+function deleteBubble() {
+  cur.panels[editPIdx].bubbles=cur.panels[editPIdx].bubbles.filter(b=>b.id!==editBId);
+  saveCur(); closeModal('modalBbl'); renderEditor();
+}
+
+function openImgPicker() {
+  const g=document.getElementById('mimgGrid');
+  g.innerHTML='';
+  const curIid=selP>=0?cur.panels[selP].iid:null;
+  IMAGES.forEach(img=>{ let el; if(img.src){ el=document.createElement('img'); el.src=img.src; el.alt=img.label; el.loading='lazy'; el.className='mimg-thumb'+(img.id===curIid?' sel':''); } else { el=document.createElement('div'); el.className='mimg-bg'+(img.id===curIid?' sel':''); el.style.background=img.bg; el.textContent=img.label; } el.onclick=()=>{ if(selP>=0){ cur.panels[selP].iid=img.id; saveCur(); closeModal('modalImg'); renderEditor(); } }; g.appendChild(el); });
+  openModal('modalImg');
+}
+
+function openPreview() {
+  const pg=document.getElementById('previewPage');
+  renderInto(pg, cur, false);
+  pg.style.border='4px solid #444';
+  show('s-preview');
+}
+
+loadPages(); renderSetup(); renderLib();
+</script>
+</body>
+</html>

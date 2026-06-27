@@ -207,10 +207,7 @@ function saveImage() {
       ctx.fillRect(c * PX, r * PX, PX, PX);
     }
   });
-  const a = document.createElement('a');
-  a.href = canvas.toDataURL('image/png');
-  a.download = 'pixel-art.png';
-  a.click();
+  window.open(canvas.toDataURL('image/png'), '_blank');
 }
 </script>
 </body>

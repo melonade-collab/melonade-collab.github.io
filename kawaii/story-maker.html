@@ -173,6 +173,20 @@ body {
 
 /* Word tray */
 .tray { flex-shrink: 0; background: white; border-top: 1px solid #F0E8FF; }
+.tray-custom {
+  display: flex; gap: 7px; padding: 6px 12px 10px; border-top: 1px solid #F0E8FF;
+}
+.tray-custom input {
+  flex: 1; padding: 6px 12px; border-radius: 20px; border: 2px solid #C8B5FF;
+  font-family: 'Nunito', sans-serif; font-size: 0.82rem; font-weight: 700;
+  color: #5B4E77; outline: none; min-width: 0;
+}
+.tray-custom input:focus { border-color: #D63384; }
+.tray-custom button {
+  flex-shrink: 0; background: linear-gradient(135deg,#FF85A1,#D63384);
+  color: white; border: none; border-radius: 20px; padding: 6px 14px;
+  font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.82rem; cursor: pointer;
+}
 .tray-tabs {
   display: flex; border-bottom: 1px solid #F0E8FF;
 }
@@ -297,6 +311,10 @@ body {
     <div class="tray">
       <div class="tray-tabs" id="tray-tabs"></div>
       <div class="tray-words" id="tray-words"></div>
+      <div class="tray-custom">
+        <input id="custom-text" type="text" placeholder="Type your own word...">
+        <button onclick="addCustomTile()">✨ Add</button>
+      </div>
     </div>
   </div>
 </div>
@@ -536,6 +554,20 @@ function renderWords() {
     `<button class="word-tile" onclick="addTile(this.textContent.trim())">${w}</button>`
   ).join('');
 }
+
+function addCustomTile() {
+  const inp = document.getElementById('custom-text');
+  const text = inp.value.trim();
+  if (!text) return;
+  addTile(text);
+  inp.value = '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('custom-text').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); addCustomTile(); }
+  });
+});
 
 function switchTab(t) {
   tab = t;

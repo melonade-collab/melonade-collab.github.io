@@ -52,7 +52,7 @@ h1 {
   margin-bottom: 18px;
 }
 .img-thumb {
-  aspect-ratio: 4/3;
+  aspect-ratio: 1/1;
   border-radius: 12px;
   object-fit: cover;
   cursor: pointer;
@@ -67,7 +67,7 @@ h1 {
   display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
 }
 .diff-btn {
-  padding: 12px 24px;
+  padding: 12px 22px;
   border-radius: 14px;
   border: 3px solid transparent;
   font-family: 'Nunito', sans-serif;
@@ -84,103 +84,126 @@ h1 {
 /* PUZZLE SCREEN */
 .puz-hdr {
   display: flex; align-items: center; gap: 12px;
-  margin-bottom: 12px; width: 100%;
+  margin-bottom: 10px; width: 100%;
 }
 .puz-counter {
-  font-size: 0.9rem; font-weight: 900; color: #6A28CC;
-  background: white; padding: 6px 14px; border-radius: 20px;
+  font-size: 0.88rem; font-weight: 900; color: #6A28CC;
+  background: white; padding: 5px 12px; border-radius: 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 .new-btn {
   margin-left: auto;
-  padding: 6px 16px;
+  padding: 5px 14px;
   border-radius: 20px; border: none;
   background: linear-gradient(135deg, #A78BFA, #7C3AED);
   color: white; font-family: 'Nunito', sans-serif;
-  font-weight: 700; font-size: 0.85rem;
+  font-weight: 700; font-size: 0.82rem;
   cursor: pointer; transition: transform 0.1s;
 }
 .new-btn:active { transform: scale(0.94); }
+.ref-btn {
+  padding: 5px 12px;
+  border-radius: 20px; border: none;
+  background: white; color: #6A28CC;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700; font-size: 0.82rem;
+  cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
 .board-wrap {
   background: #DDD0FF;
-  border-radius: 20px;
-  padding: 8px;
-  box-shadow: 0 10px 36px rgba(100,50,200,0.22);
-  margin-bottom: 14px;
+  border-radius: 18px;
+  padding: 6px;
+  box-shadow: 0 8px 30px rgba(100,50,200,0.22);
+  margin-bottom: 12px;
+  flex-shrink: 0;
 }
-.board { display: grid; gap: 4px; }
+.board { display: grid; gap: 2px; }
 .slot {
-  border-radius: 8px;
+  border-radius: 5px;
   cursor: pointer;
-  border: 2px dashed rgba(167,139,250,0.6);
-  background-color: #ede4ff;
+  border: 1.5px dashed rgba(167,139,250,0.55);
+  background: rgba(237,228,255,0.7);
   overflow: hidden;
-  transition: transform 0.1s;
+  transition: background 0.1s;
+  -webkit-tap-highlight-color: transparent;
 }
-.slot.has-piece { border: 2px solid transparent; cursor: default; }
+.slot.has-piece { border: 1.5px solid transparent; cursor: default; background: transparent; }
+.slot.sel-target { background: rgba(214,51,132,0.15); border-color: #D63384; }
 .slot.flash-wrong { animation: flash-red 0.4s; }
-.slot.flash-ok    { animation: flash-pop 0.4s; }
-@keyframes flash-red { 0%,100%{background:#ede4ff} 50%{background:#FFD0D0} }
-@keyframes flash-pop { 0%{transform:scale(1)} 50%{transform:scale(1.06)} 100%{transform:scale(1)} }
-.slot-inner {
+.slot.flash-ok    { animation: flash-pop 0.35s; }
+@keyframes flash-red { 0%,100%{background:rgba(237,228,255,0.7)} 50%{background:#FFD0D0} }
+@keyframes flash-pop { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
+.slot-placed {
   width: 100%; height: 100%;
   background-repeat: no-repeat;
-  border-radius: 6px;
 }
-.slot:not(.has-piece) .slot-inner { opacity: 0.2; }
 
 .pool-label {
-  font-size: 0.68rem; font-weight: 900; letter-spacing: 2px;
-  color: #9B8AB8; margin-bottom: 8px; align-self: flex-start;
+  font-size: 0.65rem; font-weight: 900; letter-spacing: 2px;
+  color: #9B8AB8; margin-bottom: 6px; align-self: flex-start;
+}
+.pool-wrap {
+  width: 100%;
+  background: rgba(255,255,255,0.5);
+  border-radius: 16px;
+  padding: 10px;
 }
 .pool {
-  display: flex; flex-wrap: wrap; gap: 8px;
+  display: flex; flex-wrap: wrap; gap: 6px;
   justify-content: center;
-  background: rgba(255,255,255,0.5);
-  border-radius: 18px;
-  padding: 12px;
-  width: 100%;
-  min-height: 60px;
+  max-height: 220px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .piece {
-  border-radius: 8px;
+  border-radius: 7px;
   cursor: pointer;
   border: 3px solid transparent;
   transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.14);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.14);
   background-repeat: no-repeat;
   flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 .piece:hover { transform: scale(1.06); }
 .piece.sel {
   border-color: #D63384;
-  box-shadow: 0 0 0 3px rgba(214,51,132,0.35), 0 4px 12px rgba(0,0,0,0.18);
-  transform: scale(1.08);
+  box-shadow: 0 0 0 3px rgba(214,51,132,0.35), 0 4px 12px rgba(0,0,0,0.2);
+  transform: scale(1.1);
+  z-index: 5;
 }
 .pool-empty {
   color: #C0A8D8; font-weight: 700; font-size: 0.9rem;
   padding: 8px; text-align: center; width: 100%;
 }
 
+/* HINT MODAL */
+.hint-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7); z-index: 80;
+  align-items: center; justify-content: center;
+}
+.hint-overlay.show { display: flex; }
+.hint-overlay img {
+  max-width: 85vw; max-height: 80vh;
+  border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
 /* WIN */
 .win-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(80,30,180,0.55);
-  z-index: 100;
+  display: none; position: fixed; inset: 0;
+  background: rgba(80,30,180,0.55); z-index: 100;
   align-items: center; justify-content: center;
 }
 .win-overlay.show { display: flex; }
 .win-card {
-  background: white;
-  border-radius: 28px;
-  padding: 38px 42px;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  background: white; border-radius: 28px; padding: 36px 40px;
+  text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
   max-width: 300px; width: 90%;
 }
 .win-card h2 { font-size: 2rem; color: #D63384; font-weight: 900; margin: 12px 0 6px; }
-.win-card p { color: #8B7BA8; font-weight: 700; margin-bottom: 22px; }
+.win-card p  { color: #8B7BA8; font-weight: 700; margin-bottom: 22px; }
 .big-btn {
   padding: 12px 30px; border-radius: 16px; border: none;
   font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem;
@@ -200,25 +223,31 @@ h1 {
 <div class="screen" id="s-pick">
   <div class="pick-title">Pick a picture 🖼️</div>
   <div class="img-grid" id="imgGrid"></div>
-  <div class="pick-title">Choose how many pieces 💪</div>
+  <div class="pick-title">Choose difficulty 💪</div>
   <div class="diff-row">
-    <button class="diff-btn easy"   onclick="startPuzzle('easy')">🟢 Easy<small>4 pieces</small></button>
-    <button class="diff-btn medium" onclick="startPuzzle('medium')">🟡 Medium<small>9 pieces</small></button>
-    <button class="diff-btn hard"   onclick="startPuzzle('hard')">🔴 Hard<small>16 pieces</small></button>
+    <button class="diff-btn easy"   onclick="startPuzzle('easy')">🟢 Easy<small>25 pieces</small></button>
+    <button class="diff-btn medium" onclick="startPuzzle('medium')">🟡 Medium<small>64 pieces</small></button>
+    <button class="diff-btn hard"   onclick="startPuzzle('hard')">🔴 Hard<small>100 pieces</small></button>
   </div>
 </div>
 
 <!-- PUZZLE SCREEN -->
 <div class="screen hidden" id="s-puzzle">
   <div class="puz-hdr">
-    <div class="puz-counter" id="puzCounter">0 / 9 placed</div>
+    <div class="puz-counter" id="puzCounter">0 / 25</div>
+    <button class="ref-btn" onclick="showHint()">🔍 Peek</button>
     <button class="new-btn" onclick="goBack()">🖼️ New Puzzle</button>
   </div>
   <div class="board-wrap">
     <div class="board" id="board"></div>
   </div>
-  <div class="pool-label">PIECES — tap one, then tap where it goes ↑</div>
-  <div class="pool" id="pool"></div>
+  <div class="pool-label">PIECES — tap one ✨ then tap where it goes on the board ↑</div>
+  <div class="pool-wrap"><div class="pool" id="pool"></div></div>
+</div>
+
+<!-- HINT OVERLAY -->
+<div class="hint-overlay" id="hintOverlay" onclick="hideHint()">
+  <img id="hintImg" src="" alt="Puzzle preview">
 </div>
 
 <!-- WIN OVERLAY -->
@@ -226,7 +255,7 @@ h1 {
   <div class="win-card">
     <div style="font-size:3.5rem">🎉</div>
     <h2>You did it!</h2>
-    <p id="winMsg">All pieces in place!</p>
+    <p id="winMsg">All pieces placed!</p>
     <button class="big-btn" onclick="goBack()">🖼️ Play Again</button>
   </div>
 </div>
@@ -243,16 +272,19 @@ const IMAGES = [
 ];
 
 const DIFFS = {
-  easy:   { cols: 2, rows: 2 },
-  medium: { cols: 3, rows: 3 },
-  hard:   { cols: 4, rows: 4 },
+  easy:   { cols: 5,  rows: 5  },
+  medium: { cols: 8,  rows: 8  },
+  hard:   { cols: 10, rows: 10 },
 };
 
-let selImg = IMAGES[0];
+const PP = 54; // pool piece display size (px), fixed for all difficulties
+
+let selImg   = IMAGES[0];
 let selPieceId = null;
-let pieces = [];
-let cfg = { cols: 3, rows: 3 };
-let PW, PH, BW, BH;
+let pieces   = [];
+let cfg      = { cols: 5, rows: 5 };
+let BSZ      = 300; // board square size in px
+let PW       = 60;  // board piece width
 let placedCount = 0;
 
 // Build image picker
@@ -272,17 +304,16 @@ IMAGES.forEach((img, i) => {
 });
 
 function calcDims() {
-  BW = Math.min(window.innerWidth - 56, 380);
-  BH = Math.round(BW * 3 / 4);
-  PW = Math.floor(BW / cfg.cols);
-  PH = Math.floor(BH / cfg.rows);
+  BSZ = Math.min(window.innerWidth - 52, 360);
+  PW  = Math.floor(BSZ / cfg.cols);
+  BSZ = PW * cfg.cols; // exact fit
 }
 
 function startPuzzle(diff) {
   cfg = { ...DIFFS[diff] };
   calcDims();
   placedCount = 0;
-  selPieceId = null;
+  selPieceId  = null;
 
   pieces = [];
   for (let r = 0; r < cfg.rows; r++) {
@@ -292,6 +323,7 @@ function startPuzzle(diff) {
   }
   shuffle(pieces);
 
+  document.getElementById('hintImg').src = selImg.src;
   renderBoard();
   renderPool();
   updateCounter();
@@ -306,6 +338,9 @@ function goBack() {
   document.getElementById('s-pick').classList.remove('hidden');
 }
 
+function showHint() { document.getElementById('hintOverlay').classList.add('show'); }
+function hideHint() { document.getElementById('hintOverlay').classList.remove('show'); }
+
 function renderBoard() {
   const board = document.getElementById('board');
   board.style.gridTemplateColumns = `repeat(${cfg.cols}, ${PW}px)`;
@@ -317,17 +352,7 @@ function renderBoard() {
       slot.className = 'slot';
       slot.id = `slot_${r}_${c}`;
       slot.style.width  = PW + 'px';
-      slot.style.height = PH + 'px';
-
-      const inner = document.createElement('div');
-      inner.className = 'slot-inner';
-      inner.style.width  = PW + 'px';
-      inner.style.height = PH + 'px';
-      inner.style.backgroundImage = `url('${selImg.src}')`;
-      inner.style.backgroundSize = `${BW}px ${BH}px`;
-      inner.style.backgroundPosition = `-${c * PW}px -${r * PH}px`;
-
-      slot.appendChild(inner);
+      slot.style.height = PW + 'px';
       slot.addEventListener('click', () => slotTapped(r, c, slot));
       board.appendChild(slot);
     }
@@ -342,15 +367,17 @@ function renderPool() {
     pool.innerHTML = '<div class="pool-empty">🌟 All pieces placed!</div>';
     return;
   }
+
+  const poolBgSz = PP * cfg.cols;
   unplaced.forEach(p => {
     const el = document.createElement('div');
     el.className = 'piece';
     el.id = `piece_${p.id}`;
-    el.style.width  = PW + 'px';
-    el.style.height = PH + 'px';
-    el.style.backgroundImage = `url('${selImg.src}')`;
-    el.style.backgroundSize = `${BW}px ${BH}px`;
-    el.style.backgroundPosition = `-${p.targetC * PW}px -${p.targetR * PH}px`;
+    el.style.width  = PP + 'px';
+    el.style.height = PP + 'px';
+    el.style.backgroundImage    = `url('${selImg.src}')`;
+    el.style.backgroundSize     = `${poolBgSz}px ${poolBgSz}px`;
+    el.style.backgroundPosition = `-${p.targetC * PP}px -${p.targetR * PP}px`;
     el.addEventListener('click', () => pieceTapped(p.id, el));
     pool.appendChild(el);
   });
@@ -360,11 +387,21 @@ function pieceTapped(id, el) {
   if (selPieceId === id) {
     selPieceId = null;
     el.classList.remove('sel');
+    clearSlotHighlights();
     return;
   }
   document.querySelectorAll('.piece.sel').forEach(e => e.classList.remove('sel'));
+  clearSlotHighlights();
   selPieceId = id;
   el.classList.add('sel');
+  highlightEmptySlots();
+}
+
+function highlightEmptySlots() {
+  document.querySelectorAll('.slot:not(.has-piece)').forEach(s => s.classList.add('sel-target'));
+}
+function clearSlotHighlights() {
+  document.querySelectorAll('.slot.sel-target').forEach(s => s.classList.remove('sel-target'));
 }
 
 function slotTapped(r, c, slotEl) {
@@ -376,12 +413,22 @@ function slotTapped(r, c, slotEl) {
   if (piece.targetR === r && piece.targetC === c) {
     piece.placed = true;
     placedCount++;
-    slotEl.classList.add('has-piece', 'flash-ok');
-    setTimeout(() => slotEl.classList.remove('flash-ok'), 400);
+    slotEl.classList.add('has-piece');
+    slotEl.classList.remove('sel-target');
+    slotEl.classList.add('flash-ok');
+    setTimeout(() => slotEl.classList.remove('flash-ok'), 350);
+
+    const inner = document.createElement('div');
+    inner.className = 'slot-placed';
+    inner.style.backgroundImage    = `url('${selImg.src}')`;
+    inner.style.backgroundSize     = `${BSZ}px ${BSZ}px`;
+    inner.style.backgroundPosition = `-${c * PW}px -${r * PW}px`;
+    slotEl.appendChild(inner);
 
     const pieceEl = document.getElementById(`piece_${selPieceId}`);
     if (pieceEl) pieceEl.remove();
     selPieceId = null;
+    clearSlotHighlights();
     updateCounter();
 
     if (placedCount === cfg.cols * cfg.rows) setTimeout(showWin, 600);
@@ -393,12 +440,7 @@ function slotTapped(r, c, slotEl) {
 
 function updateCounter() {
   const total = cfg.cols * cfg.rows;
-  document.getElementById('puzCounter').textContent = `${placedCount} / ${total} placed`;
-  const pool = document.getElementById('pool');
-  const unplaced = pieces.filter(p => !p.placed);
-  if (!unplaced.length && placedCount < total) {
-    pool.innerHTML = '<div class="pool-empty">🌟 All pieces placed!</div>';
-  }
+  document.getElementById('puzCounter').textContent = `${placedCount} / ${total}`;
 }
 
 function showWin() {
