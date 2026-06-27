@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trains of the World Quiz</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -177,7 +179,17 @@ body {
 }
 .result-correct { font-size: 1.2rem; font-weight: 900; color: #fff; }
 .result-country { font-size: 0.82rem; color: rgba(255,255,255,0.8); margin-top: 3px; }
-.result-map { width: 100%; height: 220px; border: none; display: block; }
+.result-map { width: 100%; height: 220px; display: block; }
+.map-wrap { position: relative; }
+.map-toggle {
+  position: absolute; top: 8px; right: 8px; z-index: 1000;
+  background: rgba(255,255,255,0.93); border: 1px solid #ccc;
+  border-radius: 20px; padding: 5px 12px;
+  font-size: 0.72rem; font-weight: 700; font-family: inherit;
+  cursor: pointer; box-shadow: 0 1px 5px rgba(0,0,0,0.22);
+  transition: background 0.1s;
+}
+.map-toggle:hover { background: #fff; }
 .result-body { padding: 18px 20px 22px; }
 .fact-tag {
   display: inline-block; font-size: 0.6rem; font-weight: 800;
@@ -250,7 +262,10 @@ body {
           <div class="result-country" id="rCountry"></div>
         </div>
       </div>
-      <iframe class="result-map" id="rMap" loading="lazy" title="Map"></iframe>
+      <div class="map-wrap">
+        <div class="result-map" id="rMap"></div>
+        <button class="map-toggle" id="mapToggle" onclick="toggleMapLayer()">🛰 Satellite</button>
+      </div>
       <div class="result-body">
         <span class="fact-tag">Fun fact</span>
         <div class="fact-text" id="rBlurb"></div>
@@ -364,7 +379,7 @@ const QUESTIONS = [
       "The famous Last Spike — the final nail that completed Canada's first transcontinental railway — was driven right here in British Columbia, at a tiny place called Craigellachie, in November 1885! A photograph taken at that moment shows dozens of workers crowded around as a company director drove in the plain iron spike. No golden spike for Canada — just a regular one, and a country connected coast to coast for the first time.",
       "Building the Canadian Pacific Railway through British Columbia's Fraser Canyon was so dangerous that it was considered the hardest railway construction job in North American history! Workers had to dangle in wicker baskets over sheer cliffs to drill holes for explosives, and the canyon walls dropped hundreds of metres straight into the raging river below. Hundreds of workers lost their lives building this stretch of track.",
       "The Kettle Valley Railway was blasted through the mountains of BC's interior in the early 1900s to connect the mining towns of the Kootenays to the coast. It crossed so many high trestles and tunnels through the Cascade Mountains that engineers called it 'McCulloch's Wonder' after its chief builder. Today the old railway bed is a famous cycling and hiking trail through stunning Okanagan scenery.",
-      "The Rocky Mountaineer luxury train runs entirely through British Columbia and Alberta in daylight hours — the company guarantees passengers will never miss any scenery by travelling through the night! The train stops each evening so passengers sleep in a hotel, then boards again in the morning for another day of mountains, canyons, and river valleys rolling past the glass-dome windows.",
+      "British Columbia's railway history is full of extraordinary engineering — the CP Rail route through the Fraser Canyon clings to cliffsides hundreds of metres above the raging river, crossing dozens of bridges and tunnels blasted through solid granite. Building this stretch in the 1880s was considered one of the most dangerous construction jobs in all of North American history.",
       "British Columbia's rugged mountains and deep river valleys made railway building so expensive and difficult that some lines cost more per kilometre than almost any railway ever built anywhere on Earth! Engineers had to design curves, tunnels, and spiral loops just to gain enough altitude to cross the mountain passes without the trains stalling on slopes too steep to climb."
     ]
   },
@@ -376,7 +391,7 @@ const QUESTIONS = [
     bbox: '-123.3,49.1,-122.9,49.4', marker: '49.28,-123.12',
     blurbs: [
       "Vancouver's SkyTrain is one of the longest fully automated driverless rapid transit systems in the entire world! There are no drivers at all — the trains are controlled entirely by computers. The Expo Line opened in 1985 for the World's Fair and now carries hundreds of thousands of passengers a day above and below the streets of Greater Vancouver.",
-      "The Rocky Mountaineer luxury train departs from Vancouver and winds through some of the most spectacular mountain scenery on Earth! The train climbs through the Fraser Canyon — where sheer rock walls rise hundreds of metres on either side — before reaching the Canadian Rockies. The glass-dome carriages mean every single passenger gets an unobstructed view of the mountains above.",
+      "Vancouver grew into a major city largely because the Canadian Pacific Railway chose it as its western terminus in 1887 — before that it was barely a sawmill town with a few hundred residents. The arrival of the transcontinental railway transformed it almost overnight into the busiest port city on Canada's Pacific coast, a role it still holds today.",
       "Vancouver is where VIA Rail's legendary cross-Canada train, The Canadian, begins and ends its four-day journey to Toronto. Pulling out of Vancouver, passengers cross the Fraser River delta, pass through tunnels in the Coast Mountains, and begin one of the greatest railway adventures on the continent — all 4,466 kilometres of it.",
       "The West Coast Express is a commuter train that carries workers from the Fraser Valley into Vancouver every morning along the north bank of the Fraser River. The route passes through dramatic river canyons and forested hillsides that most commuters in the world could only dream of seeing on their way to work!",
       "Vancouver's main railway station, Pacific Central, sits in a beautiful 1919 Beaux-Arts building that was once considered one of the grandest in western Canada. Vancouver grew into a major city largely because the Canadian Pacific Railway chose it as its western terminus in 1887 — before that, it was a tiny sawmill town with barely a few hundred residents."
@@ -394,6 +409,19 @@ const QUESTIONS = [
       "GO Transit is the massive commuter rail network that connects Toronto to cities all across the Greater Toronto Area! Double-decker trains carry workers from places like Hamilton, Oakville, and Oshawa into the city every morning — some passengers travel over 100 kilometres each way. GO trains are so popular that the network is being expanded to run all-day, every day.",
       "The UP Express — Union Pearson Express — is a dedicated airport train that whisks passengers from downtown Toronto to Pearson International Airport in just 25 minutes! It opened in 2015 and was the first dedicated airport rail link in Canada. Pearson handles over 50 million passengers a year, making it the busiest airport in the whole country.",
       "Toronto's rail network is growing faster than almost any other city in North America! The city is building new subway lines, extending existing ones, and adding light rail routes all at the same time. More people are moving to Toronto every year than almost any other city on the continent, and the trains are racing to keep up with them all!"
+    ]
+  },
+  {
+    country: 'Canada',
+    image: 'https://images.unsplash.com/photo-1667920980453-2f226d4fb762?q=80&w=760&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    options: ['Canada', 'United States', 'France', 'Belgium'],
+    bbox: '-80.0,43.2,-73.0,47.0', marker: '45.50,-73.57',
+    blurbs: [
+      "VIA Rail is Canada's national passenger railway, connecting cities and communities from coast to coast! Its blue and yellow trains serve over 400 destinations across the country, from big cities like Montreal, Toronto, and Vancouver to tiny remote communities that have no roads and rely on the train as their only link to the outside world.",
+      "VIA Rail's flagship route is The Canadian — a legendary four-day journey from Toronto to Vancouver covering 4,466 kilometres! The train winds through the Canadian Shield's ancient granite, across the vast prairies, and finally through the spectacular Rocky Mountains. Passengers sleep in private cabins, eat in a dining car, and watch the whole country roll past through enormous dome windows.",
+      "VIA Rail's Quebec City–Windsor corridor is the busiest passenger rail corridor in Canada, connecting Montreal, Ottawa, Toronto, and the cities between them. Trains run so frequently between Montreal and Toronto that many travellers choose the train over flying — no airport security, no baggage fees, and you arrive right in the heart of the city.",
+      "Some of VIA Rail's most important routes serve Indigenous and northern communities that have no road access at all! The Polar Bear Express in northern Ontario and the Winnipeg–Churchill route in Manitoba are lifelines for communities that depend entirely on the train for food, medicine, and travel. For these passengers, VIA Rail isn't just convenient — it's essential.",
+      "VIA Rail is introducing a fleet of brand-new trains for the Quebec–Windsor corridor — the first new passenger trains in Canada in decades! The new Siemens Venture coaches are more accessible, more comfortable, and faster than the old equipment. They're part of a bigger plan to make passenger rail in Canada faster and more attractive, encouraging more people to leave their cars at home and travel by train."
     ]
   },
   {
@@ -519,7 +547,7 @@ const QUESTIONS = [
     blurbs: [
       "The Canadian Pacific Railway was built through Alberta in the 1880s, and workers had to cut through the Rocky Mountains — one of the most difficult engineering challenges in history! The last spike completing Canada's first transcontinental railway was driven in 1885. Before that, there was no easy way to cross the country at all.",
       "In the Rocky Mountains of Alberta, there used to be a stretch of railway called the Big Hill — so steep that trains sometimes rolled backwards! In 1909, engineers solved the problem by drilling two giant spiral tunnels right through the mountains. Trains literally spiral inside the mountain to climb safely!",
-      "The Rocky Mountaineer is one of the most beautiful train journeys in the world! It travels through the Canadian Rockies in Alberta, passing glaciers, turquoise lakes, and wildlife like bears and elk. The train has giant glass-dome carriages so passengers can look up and see the mountain peaks towering all around them!",
+      "Alberta's railways transformed the prairies from a vast wilderness into one of the most productive farming regions on Earth! In the 1880s the Canadian Pacific Railway laid tracks across the flat grassland, and settlers poured in from across Europe and eastern Canada — turning empty prairie into wheat farms that helped feed the entire world.",
       "The city of Calgary in Alberta exists largely because of the railway! When Canadian Pacific Railway routed its tracks through the area in 1883, a small settlement grew into a booming town almost overnight. Today Calgary is one of Canada's largest cities — all because a train passed through!",
       "Edmonton, Alberta's capital city, was once such an important railway hub that it was nicknamed 'Gateway to the North.' The High Level Bridge, built in 1913, carries both trains and road traffic across the North Saskatchewan River. When it was built, it was an absolute marvel of engineering!"
     ]
@@ -561,7 +589,7 @@ const QUESTIONS = [
       "The Mojave Desert in California is one of the busiest freight railway corridors in all of North America! The BNSF and Union Pacific railways both run parallel tracks through the desert, carrying enormous trains loaded with goods from the ports of Los Angeles and Long Beach — the two busiest ports in America — inland to the rest of the country.",
       "Trains crossing the Mojave Desert face some of the most extreme conditions on the entire American rail network! Summer temperatures regularly soar above 50 degrees Celsius, which can cause the steel rails themselves to expand and buckle. Railway workers monitor the tracks constantly in summer, and trains sometimes have to slow down on the hottest days to keep everyone safe.",
       "The desert crossing was one of the most challenging stretches of the famous 1860s railway building era. Workers had to haul water, food, and all their supplies across vast waterless distances. Some sections of the Mojave had no water source for over 100 kilometres — every drop needed by the steam locomotives had to be brought in by train from elsewhere.",
-      "Some of the longest freight trains in the world roll through the Mojave Desert! Double-stack container trains — where shipping containers are stacked two high — can stretch for over three kilometres and carry the equivalent of hundreds of lorry loads in a single journey. Watching one pass a desert crossing can take several minutes from first locomotive to last wagon.",
+      "Some of the longest freight trains in the world roll through the Mojave Desert! Double-stack container trains — where shipping containers are stacked two high — can stretch for over three kilometres and carry the equivalent of hundreds of truckloads in a single journey. Watching one pass a desert crossing can take several minutes from first locomotive to last wagon.",
       "The Mojave Desert is also home to some of America's most historic railway ghost towns — settlements that sprang up as railway depots and water stops in the 1800s but were abandoned when steam locomotives were replaced by diesel engines that didn't need to stop for water every hundred kilometres. The desert has preserved many of these ghost stations almost perfectly.",
       "BNSF — Burlington Northern Santa Fe — is one of the largest freight railways in all of North America, operating over 32,000 kilometres of track across 28 US states and two Canadian provinces! It was formed in 1995 when two great railways merged, combining the old Santa Fe route through the Mojave with the Burlington Northern's vast northern network. Its famous orange and black locomotives are a familiar sight across the American West.",
       "BNSF's route through the Mojave Desert is part of its famous Transcon — short for Transcontinental — one of the single busiest freight railway corridors on Earth! Up to 100 trains a day thunder along this stretch of desert, carrying goods from the giant ports of Los Angeles to cities across America. BNSF moves more cargo by weight than any airline in the world — all on the ground, by train!"
@@ -684,7 +712,7 @@ const QUESTIONS = [
       "Harpers Ferry in West Virginia is one of the most historically important railway locations in all of America! The Baltimore and Ohio Railroad — one of the very first railways in the United States — crossed the Potomac River here in the 1830s. The bridge at Harpers Ferry sits at the dramatic meeting point of the Potomac and Shenandoah rivers, surrounded by steep cliffs and forested hills.",
       "CSX — the railway whose trains roll through Harpers Ferry today — is one of the largest freight railways in the eastern United States! It operates over 32,000 kilometres of track connecting cities and ports from Miami to Montreal. CSX trains carry coal, chemicals, cars, and containers through some of the most historic landscapes in America, including the beautiful Shenandoah Valley.",
       "The railway at Harpers Ferry was so strategically important during the American Civil War that both sides fought fiercely to control it! Whoever held the bridge controlled the movement of troops and supplies across the Potomac River. The bridge was destroyed and rebuilt multiple times during the war — armies raced to blow it up or repair it depending on which direction the fighting was going.",
-      "CSX is famous for its fuel efficiency — one CSX train can move a tonne of freight over 700 kilometres on just one litre of fuel! That makes trains roughly four times more fuel-efficient than lorries on the highway. CSX calculates that its network keeps millions of lorry journeys off American roads every single year, reducing traffic and cutting pollution across the eastern United States.",
+      "CSX is famous for its fuel efficiency — one CSX train can move a tonne of freight over 700 kilometres on just one litre of fuel! That makes trains roughly four times more fuel-efficient than trucks on the highway. CSX calculates that its network keeps millions of truck journeys off American roads every single year, reducing traffic and cutting pollution across the eastern United States.",
       "The B&O Railroad Museum in nearby Baltimore preserves the incredible history of the Baltimore and Ohio Railroad — the line that first passed through Harpers Ferry. The museum houses some of the oldest surviving locomotives in America, including engines that were already antiques before the Civil War began. It sits inside the original 1884 roundhouse where locomotives were once repaired and serviced."
     ]
   },
@@ -698,7 +726,7 @@ const QUESTIONS = [
       "Union Pacific's Big Boy locomotives are the largest steam engines ever built — anywhere on Earth! These enormous machines were constructed in the 1940s to haul heavy freight over the Rocky Mountains in Wyoming. Each one weighed over 540 tonnes and stretched nearly 40 metres long. Union Pacific has restored several Big Boys to working order and they still appear at special events today, drawing enormous crowds wherever they go.",
       "Union Pacific's headquarters has been in Omaha, Nebraska since the very beginning — over 160 years ago! Omaha grew from a frontier settlement into a major city largely because it was chosen as the starting point of the Transcontinental Railroad. Today Union Pacific operates over 32,000 kilometres of track across 23 American states, and its yellow and grey locomotives are one of the most recognised sights in the American West.",
       "Union Pacific's route over Sherman Hill in Wyoming climbs to over 2,400 metres above sea level — one of the highest points on the entire American rail network! In winter, powerful snow blowers and flangers work around the clock to keep the tracks clear. Trains sometimes need three or four locomotives just to push through the deep Wyoming snowdrifts and freezing mountain winds.",
-      "Every single day, Union Pacific moves enough freight to fill over 500,000 lorries — taking an enormous number of trucks off America's highways! The railway carries coal, grain, chemicals, cars, and container loads of imported goods from Pacific ports. Moving cargo by train uses far less fuel than by lorry, making Union Pacific one of the more environmentally friendly ways to shift goods across a continent."
+      "Every single day, Union Pacific moves enough freight to fill over 500,000 trucks — taking an enormous number of trucks off America's highways! The railway carries coal, grain, chemicals, cars, and container loads of imported goods from Pacific ports. Moving cargo by train uses far less fuel than by truck, making Union Pacific one of the more environmentally friendly ways to shift goods across a continent."
     ]
   },
   {
@@ -902,6 +930,40 @@ const QUESTIONS = [
 ];
 
 let gameQ = [], cur = 0, score = 0, selectedOpt = null;
+let leafletMap = null, activeLayer = null, isSatellite = false;
+
+function streetLayer() {
+  return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  });
+}
+function satLayer() {
+  return L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles © Esri',
+    maxZoom: 17
+  });
+}
+
+function initMap(bbox, markerStr) {
+  const [w, s, e, n] = bbox.split(',').map(Number);
+  const [lat, lng] = markerStr.split(',').map(Number);
+  if (leafletMap) { leafletMap.remove(); leafletMap = null; }
+  leafletMap = L.map('rMap');
+  activeLayer = (isSatellite ? satLayer() : streetLayer()).addTo(leafletMap);
+  leafletMap.fitBounds([[s, w], [n, e]]);
+  L.marker([lat, lng]).addTo(leafletMap);
+  document.getElementById('mapToggle').textContent = isSatellite ? '🗺 Map' : '🛰 Satellite';
+}
+
+function toggleMapLayer() {
+  isSatellite = !isSatellite;
+  if (leafletMap && activeLayer) {
+    leafletMap.removeLayer(activeLayer);
+    activeLayer = (isSatellite ? satLayer() : streetLayer()).addTo(leafletMap);
+  }
+  document.getElementById('mapToggle').textContent = isSatellite ? '🗺 Map' : '🛰 Satellite';
+}
 
 function speak(text) {
   if (!window.speechSynthesis) return;
@@ -1039,8 +1101,7 @@ function showResult(q) {
   document.getElementById('screenQ').style.display = 'none';
   document.getElementById('screenR').style.display = 'block';
   document.getElementById('rCountry').textContent = q.country;
-  document.getElementById('rMap').src =
-    `https://www.openstreetmap.org/export/embed.html?bbox=${q.bbox}&layer=mapnik&marker=${q.marker}`;
+  initMap(q.bbox, q.marker);
 
   const blurb = q.blurbs[Math.floor(Math.random() * q.blurbs.length)];
   document.getElementById('rBlurb').textContent = blurb;
