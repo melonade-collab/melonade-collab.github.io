@@ -111,6 +111,23 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
 #s-preview { background: #111; justify-content: center; }
 .preview-page { width: min(88vw,360px); aspect-ratio: 3/4; gap: 4px; background: #111; }
 .preview-close { position: fixed; top: 14px; left: 14px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 20px; padding: 6px 14px; font-family: 'Nunito',sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; z-index: 50; }
+.preview-save { position: fixed; top: 14px; right: 14px; background: rgba(214,51,132,0.9); color: white; border: none; border-radius: 20px; padding: 6px 14px; font-family: 'Nunito',sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; z-index: 50; }
+
+/* PRINT */
+#print-area { display: none; }
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  html, body { background: #111 !important; margin: 0; padding: 0; }
+  .screen { display: none !important; }
+  .preview-close, .preview-save { display: none !important; }
+  #print-area {
+    display: flex !important;
+    width: 100vw; height: 100vh;
+    align-items: center; justify-content: center;
+    background: #111 !important;
+  }
+  #print-area .manga-page { width: 72vmin !important; height: calc(72vmin * 4 / 3) !important; }
+}
 </style>
 </head>
 <body>
@@ -121,7 +138,7 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
   <h1>🎌 Manga Maker</h1>
   <div class="lib-grid" id="libGrid"></div>
   <div class="footer">
-    <div>For Desirae, built with love, by Mommy. 💕</div>
+    <div>For Desirae, built with love by Mommy. 💕</div>
     <div>© 2026 Melanie Wellington-Wiltshire</div>
   </div>
 </div>
@@ -138,6 +155,7 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
   <div class="editor-hdr">
     <button class="back-btn" onclick="saveAndBack()">← Back</button>
     <input class="page-title-input" id="titleInput" placeholder="My Manga Page">
+    <button class="hdr-btn btn-view" onclick="exportPage()" style="background:#A78BFA">📄</button>
     <button class="hdr-btn btn-view" onclick="openPreview()">👁️ View</button>
   </div>
   <div class="editor-body">
@@ -152,8 +170,11 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
 <!-- PREVIEW -->
 <div id="s-preview" class="screen">
   <button class="preview-close" onclick="show('s-editor')">✕ Close</button>
+  <button class="preview-save" onclick="exportPage()">📄 Save PDF</button>
   <div class="preview-page" id="previewPage"></div>
 </div>
+
+<div id="print-area"></div>
 
 <!-- MODAL: Image Picker -->
 <div class="modal-overlay" id="modalImg">
@@ -414,6 +435,18 @@ function openPreview() {
   renderInto(pg, cur, false);
   pg.style.border='4px solid #444';
   show('s-preview');
+}
+
+function exportPage() {
+  cur.title = document.getElementById('titleInput').value.trim() || 'Untitled';
+  saveCur();
+  const area = document.getElementById('print-area');
+  area.innerHTML = '';
+  const pg = document.createElement('div');
+  pg.className = 'manga-page';
+  renderInto(pg, cur, false);
+  area.appendChild(pg);
+  window.print();
 }
 
 loadPages(); renderSetup(); renderLib();
