@@ -407,7 +407,8 @@ function playChime() {
 function speak(text) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
+  const processed = text.replace(/\bVIA Rail\b/gi, 'VEE-uh Rail');
+  const u = new SpeechSynthesisUtterance(processed);
   u.rate = 0.88; u.pitch = 1.1; u.volume = 1;
   window.speechSynthesis.speak(u);
 }

@@ -130,12 +130,12 @@ h1 { font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 900; letter-spacing: 3px;
 
 <script>
 const railways = [
-  { id:'cp',   name:'Canadian Pacific',  emoji:'🇨🇦', color:'#c41e1e', image:'https://images.unsplash.com/photo-1544314105-71dc83e32865?q=80&w=728&auto=format&fit=crop', pos:'center 40%' },
-  { id:'bnsf', name:'BNSF Railway',      emoji:'🇺🇸', color:'#e87722', image:'https://images.unsplash.com/photo-1628671044922-33ab6bb77b28?q=80&w=500&auto=format&fit=crop', pos:'center' },
-  { id:'via',  name:'VIA Rail',          emoji:'🇨🇦', color:'#003da5', image:'https://images.unsplash.com/photo-1615652437548-dea5540d223f?q=80&w=870&auto=format&fit=crop', pos:'center' },
-  { id:'rm',   name:'Rocky Mountaineer', emoji:'🏔️', color:'#b8960c', image:'https://images.unsplash.com/photo-1758473439537-e5144e93782b?q=80&w=387&auto=format&fit=crop', pos:'center' },
-  { id:'amtrak', name:'Amtrak',          emoji:'🇺🇸', color:'#1b4d8e', image:'https://images.unsplash.com/photo-1660016902828-f490c2d1736c?q=80&w=870&auto=format&fit=crop', pos:'center' },
-  { id:'ferromex', name:'Ferromex',      emoji:'🇲🇽', color:'#006847', image:'https://images.unsplash.com/photo-1627674678760-59697663644f?q=80&w=387&auto=format&fit=crop', pos:'center' },
+  { id:'cp',       name:'Canadian Pacific',  speak:'Canadian Pacific',   emoji:'🇨🇦', color:'#c41e1e', image:'https://images.unsplash.com/photo-1544314105-71dc83e32865?q=80&w=728&auto=format&fit=crop', pos:'center 40%' },
+  { id:'bnsf',     name:'BNSF Railway',      speak:'B N S F Railway',    emoji:'🇺🇸', color:'#e87722', image:'https://images.unsplash.com/photo-1628671044922-33ab6bb77b28?q=80&w=500&auto=format&fit=crop', pos:'center' },
+  { id:'via',      name:'VIA Rail',           speak:'VEE-uh Rail',        emoji:'🇨🇦', color:'#003da5', image:'https://images.unsplash.com/photo-1615652437548-dea5540d223f?q=80&w=870&auto=format&fit=crop', pos:'center' },
+  { id:'rm',       name:'Rocky Mountaineer', speak:'Rocky Mountaineer',  emoji:'🏔️', color:'#b8960c', image:'https://images.unsplash.com/photo-1758473439537-e5144e93782b?q=80&w=387&auto=format&fit=crop', pos:'center' },
+  { id:'amtrak',   name:'Amtrak',            speak:'Amtrak',             emoji:'🇺🇸', color:'#1b4d8e', image:'https://images.unsplash.com/photo-1660016902828-f490c2d1736c?q=80&w=870&auto=format&fit=crop', pos:'center' },
+  { id:'ferromex', name:'Ferromex',          speak:'Ferro-mex',          emoji:'🇲🇽', color:'#006847', image:'https://images.unsplash.com/photo-1627674678760-59697663644f?q=80&w=387&auto=format&fit=crop', pos:'center' },
 ];
 
 let flipped = [], matched = 0, flips = 0, locked = false;
@@ -179,6 +179,7 @@ function initGame() {
       frontHTML = `<div class="card-front name-face" style="background:${c.r.color}dd;"><span class="rwy-emoji">${c.r.emoji}</span><span class="rwy-name">${c.r.name}</span></div>`;
     }
 
+    card.dataset.type = c.type;
     card.innerHTML = `<div class="card-inner"><div class="card-back"></div>${frontHTML}</div>`;
     card.onclick = () => flipCard(card);
     grid.appendChild(card);
@@ -188,6 +189,10 @@ function initGame() {
 function flipCard(card) {
   if (locked || card.classList.contains('flipped') || card.classList.contains('matched')) return;
   card.classList.add('flipped');
+  if (card.dataset.type === 'name') {
+    const rwy = railways.find(r => r.id === card.dataset.pair);
+    if (rwy) speak(rwy.speak || rwy.name);
+  }
   flipped.push(card);
   flips++;
   document.getElementById('flipsCount').textContent = flips;

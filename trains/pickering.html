@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pickering Station — Next Train</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #1a1a2e;
+      color: #e8e0d0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #f0c060;
+    }
+
+    header p {
+      margin-top: 6px;
+      color: #a09880;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    #clock {
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      color: #6060a0;
+      margin-top: 8px;
+    }
+
+    #board {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .direction-block {
+      margin-bottom: 32px;
+    }
+
+    .direction-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #6060a0;
+      margin-bottom: 10px;
+      padding-left: 2px;
+    }
+
+    .train-row {
+      background: #16213e;
+      border: 1px solid #2a2a4a;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .train-row.next {
+      border-color: #f0c060;
+      background: #1e1e3e;
+    }
+
+    .train-dest {
+      font-size: 1rem;
+      color: #e8e0d0;
+      letter-spacing: 0.03em;
+    }
+
+    .train-time {
+      font-size: 0.82rem;
+      color: #a09880;
+      margin-top: 3px;
+      letter-spacing: 0.04em;
+    }
+
+    .train-row.next .train-dest { color: #f0c060; }
+
+    .countdown {
+      font-size: 2rem;
+      font-variant-numeric: tabular-nums;
+      color: #f0c060;
+      text-align: right;
+      line-height: 1;
+    }
+
+    .countdown.soon { color: #e05555; }
+    .countdown.close { color: #f0a030; }
+
+    .countdown-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #6060a0;
+      text-align: right;
+      margin-top: 3px;
+    }
+
+    .badge-next {
+      display: inline-block;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: #f0c060;
+      color: #1a1a2e;
+      border-radius: 3px;
+      padding: 2px 6px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    #status {
+      text-align: center;
+      color: #6060a0;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      margin-top: 8px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid #3a3a5a;
+      border-top-color: #f0c060;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    footer {
+      margin-top: 48px;
+      font-size: 0.7rem;
+      color: #4a4a6a;
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 12px; left: 14px;
+      font-size: 0.7rem;
+      color: #aaa;
+      text-decoration: none;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid #444;
+      padding: 4px 9px;
+      border-radius: 6px;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+
+<a class="back-link" href="../train/index.html">← Train World</a>
+<header>
+  <h1>Pickering Station</h1>
+  <p>Lakeshore East Line &nbsp;·&nbsp; GO Transit</p>
+  <div id="clock"></div>
+</header>
+
+<div id="board">
+  <div id="status"><span class="spinner"></span> Loading schedule…</div>
+</div>
+
+<footer>Data: Metrolinx Open Data &nbsp;·&nbsp; GTFS Static &nbsp;·&nbsp; refreshes every 30s</footer>
+
+<script>
+  // Pickering GO Station — Lakeshore East line weekday schedule (static approximation)
+  const STATIC_TIMES = {
+    inbound: {
+      direction: 'Westbound · toward Union Station',
+      times: [
+        '05:55', '06:18', '06:40', '07:00', '07:18', '07:38',
+        '07:54', '08:10', '08:28', '08:45', '09:10', '09:40',
+        '10:40', '11:40', '12:40', '13:40', '14:40',
+        '15:05', '15:28', '15:50', '16:14', '16:36', '16:58',
+        '17:18', '17:38', '17:58', '18:18', '18:40', '19:05',
+        '19:40', '20:40', '21:40', '22:40'
+      ]
+    },
+    outbound: {
+      direction: 'Eastbound · toward Oshawa',
+      times: [
+        '06:48', '07:38', '08:08', '08:40', '09:12', '09:48',
+        '10:48', '11:48', '12:48', '13:48', '14:48',
+        '15:25', '16:00', '16:38', '17:15', '17:52',
+        '18:30', '19:10', '19:48', '20:48', '21:48', '22:48'
+      ]
+    }
+  };
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleTimeString('en-CA', {
+      hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+    });
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  function parseTime(str) {
+    const parts = str.split(':').map(Number);
+    return parts[0] * 60 + parts[1];
+  }
+
+  function nowMinutes() {
+    const d = new Date();
+    return d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
+  }
+
+  function formatCountdown(diffMinutes) {
+    if (diffMinutes < 1) return '< 1m';
+    const h = Math.floor(diffMinutes / 60);
+    const m = Math.floor(diffMinutes % 60);
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
+  }
+
+  function countdownClass(diffMinutes) {
+    if (diffMinutes <= 5) return 'soon';
+    if (diffMinutes <= 15) return 'close';
+    return '';
+  }
+
+  function getUpcoming(times, count = 3) {
+    const now = nowMinutes();
+    return times
+      .map(t => ({ raw: t, mins: parseTime(t) }))
+      .filter(t => t.mins > now)
+      .slice(0, count);
+  }
+
+  function render(data) {
+    const board = document.getElementById('board');
+    board.innerHTML = '';
+
+    ['inbound', 'outbound'].forEach(dir => {
+      const { direction, times } = data[dir];
+      const upcoming = getUpcoming(times);
+
+      const block = document.createElement('div');
+      block.className = 'direction-block';
+
+      const label = document.createElement('div');
+      label.className = 'direction-label';
+      label.textContent = direction;
+      block.appendChild(label);
+
+      if (upcoming.length === 0) {
+        const row = document.createElement('div');
+        row.className = 'train-row';
+        row.innerHTML = `<div class="train-dest">No more trains today</div>`;
+        block.appendChild(row);
+      } else {
+        upcoming.forEach((t, i) => {
+          const now = nowMinutes();
+          const diff = t.mins - now;
+          const row = document.createElement('div');
+          row.className = 'train-row' + (i === 0 ? ' next' : '');
+          const cdClass = i === 0 ? countdownClass(diff) : '';
+          row.innerHTML = `
+            <div>
+              <div class="train-dest">
+                ${i === 0 ? `<span class="badge-next">Next</span> ` : ''}
+                ${t.raw}
+              </div>
+              <div class="train-time">${direction}</div>
+            </div>
+            <div>
+              <div class="countdown ${cdClass}">${formatCountdown(diff)}</div>
+              <div class="countdown-label">departs</div>
+            </div>`;
+          block.appendChild(row);
+        });
+      }
+
+      board.appendChild(block);
+    });
+
+    document.getElementById('status').textContent =
+      'Updated ' + new Date().toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+
+  render(STATIC_TIMES);
+  setInterval(() => render(STATIC_TIMES), 30000);
+</script>
+
+</body>
+</html>

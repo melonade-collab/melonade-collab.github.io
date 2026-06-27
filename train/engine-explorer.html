@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engine Explorer — Train World</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  background: linear-gradient(160deg, #0d1a2e 0%, #1a2e4a 50%, #0a1218 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 100px;
+}
+
+.back-link {
+  position: fixed; top: 12px; left: 14px;
+  font-size: 0.7rem; color: rgba(255,255,255,0.5);
+  text-decoration: none; background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 4px 10px; border-radius: 6px;
+  letter-spacing: 2px; z-index: 100;
+}
+
+.page-title {
+  font-size: clamp(1rem, 4vw, 1.4rem);
+  font-weight: 900; letter-spacing: 3px;
+  color: rgba(255,215,0,0.6);
+  text-align: center;
+  margin: 56px 0 8px;
+}
+
+.card {
+  width: min(98vw, 560px);
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.6);
+  overflow: hidden;
+}
+
+/* Photo */
+.photo-wrap {
+  width: 100%;
+  height: clamp(220px, 48vw, 320px);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+.photo-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.3s;
+}
+
+/* Engine name banner */
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #1a3a5c;
+  width: 100%;
+}
+.name-speak-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  width: 100%;
+  text-align: left;
+}
+.name-speak-btn:active { opacity: 0.75; }
+.engine-name-text {
+  font-size: clamp(1.2rem, 4.5vw, 1.7rem);
+  font-weight: 900;
+  color: #ffd700;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 0 #4a3000;
+  flex: 1;
+}
+.name-speaker {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
+}
+
+/* Counter */
+.counter-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #f0f4ff;
+  border-bottom: 1px solid #dde4f0;
+}
+.counter-text {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #556;
+}
+.pips {
+  display: flex;
+  gap: 5px;
+}
+.pip {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #ccd;
+  transition: background 0.2s, transform 0.2s;
+}
+.pip.active { background: #1a3a5c; transform: scale(1.3); }
+
+/* Facts */
+.facts-header {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #aab;
+  text-align: center;
+  padding: 12px 16px 4px;
+  background: white;
+}
+.facts-list {
+  list-style: none;
+  padding: 4px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background: white;
+}
+.fact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #f9f9fc;
+  border: 1.5px solid #eaecf4;
+  border-radius: 14px;
+  padding: 10px 12px 10px 6px;
+  transition: background 0.15s;
+}
+.fact-speak-btn {
+  background: #1a3a5c;
+  border: none;
+  border-radius: 50%;
+  width: 42px; height: 42px;
+  min-width: 42px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s, background 0.15s;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+.fact-speak-btn:active { transform: scale(0.88); background: #ffd700; }
+.fact-speak-btn.speaking { background: #ffd700; }
+.fact-text {
+  font-size: clamp(0.82rem, 2.8vw, 0.95rem);
+  color: #1a1a2e;
+  line-height: 1.55;
+  padding-top: 2px;
+}
+
+/* Nav bar */
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #f4f4f8;
+  border-top: 1px solid #dde;
+  gap: 12px;
+}
+.nav-btn {
+  background: #1a3a5c;
+  color: #ffd700;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 28px;
+  font-size: 1.1rem;
+  font-weight: 900;
+  font-family: inherit;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: transform 0.15s, opacity 0.2s;
+}
+.nav-btn:hover { transform: scale(1.05); }
+.nav-btn:active { transform: scale(0.95); }
+.nav-btn:disabled { opacity: 0.25; cursor: default; transform: none; }
+</style>
+</head>
+<body>
+
+<a class="back-link" href="index.html">← Train World</a>
+<p class="page-title">🚂 ENGINE EXPLORER</p>
+
+<div class="card">
+  <div class="photo-wrap">
+    <img id="enginePhoto" src="" alt="Train">
+  </div>
+
+  <div class="name-row">
+    <button class="name-speak-btn" onclick="speakName()" title="Hear engine name">
+      <span class="engine-name-text" id="engineName">Loading…</span>
+      <span class="name-speaker">🔊</span>
+    </button>
+  </div>
+
+  <div class="counter-row">
+    <span class="counter-text" id="counterText">ENGINE 1 OF 10</span>
+    <div class="pips" id="pips"></div>
+  </div>
+
+  <p class="facts-header">5 COOL FACTS · TAP 🔊 TO HEAR</p>
+  <ul class="facts-list" id="factsList"></ul>
+
+  <div class="nav-bar">
+    <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">← PREV</button>
+    <button class="nav-btn" id="nextBtn" onclick="navigate(1)">NEXT →</button>
+  </div>
+</div>
+
+<script>
+const ENGINES = [
+  {
+    id: 'cp',
+    name: 'Canadian Pacific',
+    image: 'https://images.unsplash.com/photo-1604257345076-d9943f0866dd?w=600&auto=format&fit=crop&q=70',
+    pos: 'center',
+    facts: [
+      "Canadian Pacific's bold red and white colours have been painted on their engines since the 1950s — train spotters can identify a CP locomotive from kilometres away!",
+      "Canadian Pacific built the very first railway to cross all of Canada from coast to coast, finishing in 1885. Without CP Rail, Canada as we know it might not even exist!",
+      "CP's famous beaver logo represents hard work and determination — just like the thousands of workers who built the railway through mountains, prairies, and forests!",
+      "CP operates over 20,000 kilometres of track — long enough to wrap halfway around the entire Earth!",
+      "Every December, CP runs its famous Holiday Train, decorated with thousands of twinkling lights, collecting food for families in need across Canada and the United States!",
+      "British Columbia only agreed to join Canada if the government built a railway to connect it — that's why Canadian Pacific was built!",
+      "It took over 15,000 workers to build the CP railway across Canada, many of them immigrants from China who did extremely dangerous work blasting through the Rocky Mountains.",
+      "CP trains helped open the Canadian prairies to settlers in the 1880s and 1890s, bringing thousands of families to new homesteads!",
+      "In 2023, CP merged with Kansas City Southern to create CPKC — the first and only railway connecting Canada, the United States, and Mexico!",
+      "During World War Two, CP trains carried hundreds of thousands of Canadian soldiers across the country to ports where they sailed off to fight in Europe!",
+      "CP's Spiral Tunnels in the Rocky Mountains let trains spiral inside a mountain like a corkscrew, so they can climb very steep grades without sliding backwards!",
+      "A single CP freight train can weigh over 10,000 tonnes — that's heavier than the Eiffel Tower in Paris!",
+      "CP's famous Stoney Creek Bridge in British Columbia was once the highest railway bridge in the entire world!",
+      "CP trains run 24 hours a day, 7 days a week, 365 days a year — the railway never, ever sleeps!",
+      "The Château Frontenac hotel in Quebec City, one of the most photographed hotels on Earth, was built by Canadian Pacific Railway!",
+      "CP built beautiful hotels along its route so train passengers would have places to stay — including the iconic Banff Springs Hotel in the Rocky Mountains!",
+      "CP locomotives sometimes pull trains over a kilometre and a half long — longer than 15 football fields lined up end to end!",
+      "Snow in the Rogers Pass can fall so deep that CP has to run special snow-clearing trains called rotary plows to keep the tracks open!",
+      "When the last spike was driven to complete CP's transcontinental railway in 1885, people across Canada celebrated with fireworks and parties in every city and town!",
+      "CP's red locomotives are so distinctive that children across Canada learn to recognise them — many kids count how many red engines they can spot on road trips!",
+      "A beaver on CP's logo isn't just a cute animal — the beaver was one of the original symbols of Canada because the fur trade helped build the country!",
+      "CP mail trains once delivered letters and packages to almost every community in Canada, including remote villages with no roads — the train was the only connection to the outside world!",
+    ]
+  },
+  {
+    id: 'bnsf',
+    name: 'BNSF Railway',
+    image: 'https://images.unsplash.com/photo-1628671044922-33ab6bb77b28?w=600&auto=format&fit=crop&q=70',
+    pos: 'center',
+    facts: [
+      "BNSF's orange and yellow colours were created when the green Burlington Northern and the red Santa Fe railways merged together in 1995!",
+      "BNSF is one of the largest freight railways in the world, operating over 50,000 kilometres of track across 28 US states and 3 Canadian provinces!",
+      "The BNSF route through the Mojave Desert is one of the busiest freight corridors on Earth, with up to 100 trains passing through every single day!",
+      "BNSF hauls more grain than any other railway in America — enough to feed millions of people around the world every year!",
+      "The famous Santa Fe warbonnet — a swooping red and silver stripe on the locomotive — is one of the most iconic train designs in American history!",
+      "BNSF carries enough freight each year that if you used trucks instead, you'd need millions of truck trips to move the same amount!",
+      "BNSF's Marias Pass in Montana is the lowest crossing of the Rocky Mountains on any railway north of New Mexico — Lewis and Clark searched for it all the way back in 1806!",
+      "BNSF operates one of the world's biggest fleets of locomotives — over 8,000 engines painted in that distinctive orange and yellow!",
+      "The BNSF Transcon route across the American Southwest connects Los Angeles to Chicago, the busiest intermodal corridor in North America!",
+      "BNSF hauls coal from the Powder River Basin in Wyoming — one of the largest coal deposits in the world — in trains over 2 kilometres long!",
+      "Every day, BNSF trains roll past iconic American landmarks including the Mississippi River, the Rocky Mountains, and the Cascade Range!",
+      "BNSF is so large that its routes pass through some of the most remote places in America — deserts, mountain ranges, and vast prairies with almost no people!",
+      "The Burlington Northern part of BNSF began as the Chicago, Burlington and Quincy Railroad — one of America's oldest railways, founded in 1849!",
+      "BNSF has invested billions of dollars in positive train control — a safety system that can automatically stop a train if the crew is unable to!",
+      "BNSF's orange colour is officially called Heritage Orange — it's a very specific shade that shows up on over 8,000 locomotives across North America!",
+      "Some BNSF trains are powered by as many as six locomotives all working together at the front, pulling trains so long you can barely see the end!",
+      "In winter, BNSF trains sometimes have to push through massive snowdrifts in Wyoming and Montana — special rotary snowplows clear the way!",
+      "Railroads like BNSF are up to four times more fuel-efficient than trucks — one train can move a tonne of freight over 500 kilometres on just one litre of fuel!",
+      "BNSF trains are so long that when crossing a road at grade, the barrier arms can stay down for five to ten minutes while the entire train passes!",
+      "Warren Buffett, one of the most famous investors in the world, bought BNSF in 2009 because he believed railways are the backbone of the American economy!",
+      "The merger of Burlington Northern and Santa Fe Railways in 1995 was one of the largest business mergers in American history up to that time!",
+      "BNSF carries over a billion litres of ethanol fuel each year — a cleaner type of fuel made from corn and other crops!",
+    ]
+  },
+  {
+    id: 'via',
+    name: 'VIA Rail',
+    speak: 'VEE-uh Rail',
+    image: 'https://images.unsplash.com/photo-1593871005107-0a59cd0538d5?q=80&w=600&auto=format&fit=crop',
+    pos: 'center',
+    facts: [
+      "VIA Rail's blue and yellow trains travel all the way across Canada — a four-day journey of over 4,400 kilometres from Toronto to Vancouver on a single train called The Canadian!",
+      "VIA Rail operates in both official Canadian languages — every announcement, menu, and sign is in English and French, no matter which train you're riding!",
+      "The windows on VIA Rail's The Canadian are enormous so passengers can see spectacular landscape rolling by — some rooms even have a window right beside the bed!",
+      "VIA Rail connects over 400 communities across Canada, including some remote northern towns that can only be reached by train — there are no roads to get there at all!",
+      "VIA Rail's busiest route is between Quebec City and Windsor, Ontario — called the Quebec City to Windsor Corridor — with dozens of trains every single day!",
+      "VIA Rail was created in 1977 when the government decided to take over passenger trains from CP and CN railways so Canadians would always have train service!",
+      "VIA Rail's famous The Canadian route passes through the Canadian Shield — a massive ancient rock formation that is over 2 billion years old!",
+      "Some communities in northern Ontario and Manitoba have no roads — the only way in or out is by VIA Rail train or floatplane!",
+      "On The Canadian, VIA Rail serves meals freshly prepared by an onboard chef using ingredients from the regions the train passes through!",
+      "VIA Rail trains pass through the Canadian Rockies and the Selkirk Mountains — some of the most dramatically beautiful mountain scenery on Earth!",
+      "In winter, VIA Rail trains sometimes have to push through deep snow drifts in the Canadian prairies, where blizzards can dump snow right across the tracks!",
+      "VIA Rail's train from Winnipeg to Churchill, Manitoba carries not just passengers but also food and supplies to remote northern communities!",
+      "You can see the Northern Lights — the aurora borealis — from VIA Rail train windows in winter on the northern routes through Manitoba!",
+      "VIA Rail announced plans to build a new high-frequency rail line between Quebec City, Montreal, Ottawa, and Toronto — one of the most ambitious rail projects in Canadian history!",
+      "The Canadian takes about 86 hours — more than three and a half days — to travel from Toronto to Vancouver, crossing four different time zones!",
+      "VIA Rail's economy coaches have large reclining seats, while private rooms include a sofa that folds into a bed and a private toilet and sink!",
+      "Hundreds of moose, bears, wolves, deer, and eagles are spotted from VIA Rail's windows each year — the wilderness routes pass through pristine Canadian wilderness!",
+      "VIA Rail trains travel over trestle bridges spanning deep river gorges in the Rocky Mountains — some trestle bridges are over 100 years old and still used every single day!",
+      "The most remote stop on VIA Rail's network is Longlac, Ontario — a small town that can only be reached by train or small plane!",
+      "VIA Rail has been designing new stainless-steel passenger cars built specifically for Canadian conditions, including Arctic temperatures and enormous distances between stops!",
+      "Passengers on VIA Rail's Corridor trains between Toronto and Montreal can use high-speed internet and arrive right in the heart of the city — no airport check-in needed!",
+      "VIA Rail's The Canadian crosses more than 1,000 bridges and passes through dozens of tunnels on its journey from Toronto to Vancouver!",
+    ]
+  },
+  {
+    id: 'rm',
+    name: 'Rocky Mountaineer',
+    image: 'https://images.unsplash.com/photo-1758473439537-e5144e93782b?q=80&w=600&auto=format&fit=crop',
+    pos: '50% 65%',
+    facts: [
+      "The Rocky Mountaineer's dark blue and gold coaches have huge glass domes on the roof — passengers can look straight up at the Rocky Mountain peaks while sitting comfortably inside!",
+      "The Rocky Mountaineer only travels in daylight — the company guarantees passengers won't miss a single moment of mountain scenery! Everyone sleeps in a hotel each evening.",
+      "The Rocky Mountaineer passes through the famous Spiral Tunnels — two corkscrew tunnels built into a mountain where you can look out the window and see the front of your own train coming out above you!",
+      "Wildlife sightings are so common that the train carries onboard guides whose whole job is to spot animals — grizzly bears, elk, moose, mountain goats, and bald eagles are regularly seen!",
+      "The Rocky Mountaineer was rescued in 1990 after the government cut the passenger route — a private company turned it into one of the most celebrated luxury train journeys on Earth!",
+      "Rocky Mountaineer has four different routes through the Canadian and American Rockies — from Vancouver all the way to Denver, Colorado!",
+      "Gourmet meals are served on board the Rocky Mountaineer, featuring locally sourced British Columbia wines, salmon, and other west coast specialties!",
+      "The Rocky Mountaineer crosses the Fraser River Canyon in British Columbia — one of the most breathtaking stretches of railway in the world, carved into the cliff face above the roaring river!",
+      "The Kicking Horse Canyon in British Columbia is so steep and narrow that engineers once considered it nearly impossible to build a railway through!",
+      "Passengers on the Rocky Mountaineer have spotted bears fishing for salmon in rivers right beside the tracks — some of the best wildlife viewing in Canada!",
+      "The Rocky Mountaineer's GoldLeaf Service features a two-level dome car with panoramic windows — the upper level is almost entirely glass so passengers feel like they're outside!",
+      "The Fraser River Canyon route follows the same path that First Nations people used as a trading route for thousands of years before the railway was built!",
+      "The Rocky Mountaineer won the World's Leading Luxury Train award at the World Travel Awards multiple times — recognised as the most luxurious train experience on Earth!",
+      "Rocky Mountaineer employs hundreds of onboard hosts, chefs, and guides — creating one of the most personal travel experiences available anywhere in the world!",
+      "The train passes over dramatic wooden trestle bridges hanging over rushing mountain rivers — some of these bridges are original structures from over 100 years ago!",
+      "During the fall season, the Rocky Mountaineer travels through forests ablaze with orange, red, and yellow leaves — some passengers say autumn is the most beautiful time to travel!",
+      "The Rocky Mountaineer expanded to the American Southwest in 2021, with a route from Denver, Colorado through the canyons and deserts of the United States!",
+      "Before the Rocky Mountaineer was saved in 1990, many people worried that no passenger trains would ever again cross the Rocky Mountains!",
+      "The train's guides know the history, geology, wildlife, and Indigenous peoples of every single place the train passes through — they bring the landscape to life with amazing stories!",
+      "Children on the Rocky Mountaineer are given special activity kits and can earn a Junior Conductor certificate at the end of the journey!",
+      "The Connaught Tunnel, which the Rocky Mountaineer passes through in the Selkirk Mountains, is over 8 kilometres long — the longest railway tunnel in the Americas when it was built!",
+      "Some passengers travel on the Rocky Mountaineer as part of an Alaskan cruise — the train is the perfect way to explore the mountains before or after sailing through Alaska!",
+    ]
+  },
+  {
+    id: 'amtrak',
+    name: 'Amtrak',
+    image: 'https://images.unsplash.com/photo-1660016902828-f490c2d1736c?q=80&w=600&auto=format&fit=crop',
+    pos: 'center',
+    facts: [
+      "Amtrak's red, white, and blue colours were chosen in 1971 to represent all of America! Amtrak trains travel to cities in 46 of the 48 mainland US states.",
+      "Amtrak's longest route is the California Zephyr, running from Chicago all the way to San Francisco — a journey of over 3,900 kilometres taking more than 50 hours!",
+      "Amtrak carries over 30 million passengers every year — that's almost as many people as the entire population of Canada!",
+      "Amtrak's Acela is the fastest train in America, reaching speeds of up to 240 kilometres per hour along the Northeast Corridor between Boston, New York, and Washington!",
+      "Amtrak was created by the US government in 1971 to save passenger rail after private railways stopped running passenger trains because they weren't profitable enough!",
+      "Amtrak's Empire Builder route from Chicago to Seattle is one of the most scenic train journeys in America, crossing the Great Plains and the Cascade Mountains!",
+      "New York's Penn Station, one of Amtrak's busiest stations, handles over 600,000 passengers on its busiest days — more than any airport in America!",
+      "Amtrak's Southwest Chief crosses the American Southwest through Texas, New Mexico, Arizona, and Colorado — passing near Native American pueblos and the Grand Canyon!",
+      "Amtrak's Auto Train lets passengers drive their car onto a flatbed train car and then ride in a passenger coach — arriving at the destination with their own vehicle ready to drive!",
+      "Amtrak uses beautiful old art deco stations in many American cities — some over 100 years old, with soaring ceilings, marble floors, and stunning architecture!",
+      "Amtrak trains have a dining car where passengers can enjoy hot meals while watching the American landscape roll by — from deserts to mountains to coastlines!",
+      "The Northeast Corridor that Amtrak uses between Boston, New York, and Washington is the most heavily used piece of railway in the entire United States!",
+      "Amtrak has sleeping cars on its long-distance trains where passengers can close the door, make a bed, and sleep while the train rolls through the night!",
+      "When Amtrak's California Zephyr crosses the Rocky Mountains in Colorado, it climbs to over 2,800 metres elevation — high enough that the air gets noticeably thinner!",
+      "Amtrak's famous Coast Starlight runs along the spectacular Pacific coastline of California, offering views of the ocean and beaches right from the train window!",
+      "Some Amtrak routes pass through national parks — passengers can see the Rocky Mountains, Glacier National Park, and other natural wonders right from their seat!",
+      "The US President has a special Amtrak private car — President Biden was known for taking Amtrak between Washington and his home so often that he was nicknamed Amtrak Joe!",
+      "Amtrak's train names are famous across America — the Cardinal, the Crescent, the Silver Star, the Lake Shore Limited — each name tells a story about the route and the landscape!",
+      "Amtrak's Sunset Limited travels from New Orleans to Los Angeles — the most southerly transcontinental route in America, passing through bayous, deserts, and mountains!",
+      "Amtrak is getting brand new Airo train cars — they'll be much more comfortable, with bigger windows, better internet, and space for bicycles!",
+      "The Amtrak Acela can go so fast that it creates a noticeable wind when passing through stations — platforms have yellow safety lines to keep people at a safe distance!",
+      "Many of Amtrak's routes go places that are difficult or impossible to reach by plane — small towns, scenic wilderness areas, and coastal regions with no nearby airports!",
+    ]
+  },
+  {
+    id: 'ferromex',
+    name: 'Ferromex',
+    image: 'https://images.unsplash.com/photo-1627674678760-59697663644f?q=80&w=600&auto=format&fit=crop',
+    pos: 'center',
+    facts: [
+      "Ferromex's yellow and red logo features an eagle — just like the Mexican national flag! Ferromex is Mexico's biggest freight railway.",
+      "Ferromex operates over 8,000 kilometres of track all across Mexico, carrying goods from the US border down to ports on the Pacific and Gulf coasts!",
+      "Ferromex hauls huge amounts of grain, cars, steel, and industrial goods — without it, many Mexican factories and farms would struggle to move their products!",
+      "Some of Ferromex's routes climb high into the Sierra Madre mountains — passing through canyons even deeper than the Grand Canyon! It's one of the most dramatic railway journeys in the world.",
+      "Ferromex is short for Ferrocarril Mexicano — which means Mexican Railway in Spanish! The company was privatised in 1997 after being run by the Mexican government for decades.",
+      "The Copper Canyon in the Sierra Madre — which Ferromex's network reaches — is one of the most spectacular geological wonders on Earth, four times larger than the Grand Canyon!",
+      "Ferromex connects Mexico to the United States at several border crossings, handling enormous amounts of cross-border trade every single day!",
+      "Ferromex carries millions of new cars manufactured in Mexico to ports and border crossings for export — Mexico is one of the world's biggest car-producing countries!",
+      "Ferromex trains cross some of the most remote areas of Mexico, including dry Sonoran Desert, tropical lowlands, and cloud-covered mountain ranges!",
+      "The Ferrocarril Chihuahua al Pacífico railway, which winds through the Copper Canyon, is considered one of the greatest engineering achievements in railway history!",
+      "Ferromex moves enormous quantities of sugar, corn, wheat, and soybeans grown in Mexico's fertile agricultural valleys to population centres and ports!",
+      "Ferromex hauls huge amounts of minerals mined from Mexico's Sierra Madre mountains, including copper, silver, zinc, and gold!",
+      "Ferromex plays a crucial role in keeping Mexico's manufacturing sector — especially car factories and steel mills — supplied with the raw materials they need!",
+      "Some of Ferromex's mountain routes were built by hand by thousands of workers in the late 1800s and early 1900s — blasting through solid rock with very limited equipment!",
+      "The Ferromex line through the mountains uses more bridges and tunnels per kilometre than almost any other railway in North America!",
+      "In some remote mountain areas of Mexico, Ferromex trains are the only reliable way to move heavy goods — the roads are too steep, narrow, or unpaved for large trucks!",
+      "Ferromex's locomotives often wear special decorations for Mexican Independence Day on September 16th, celebrating the birth of the Mexican nation!",
+      "The railway through Mexico's mountains was so difficult to build that engineers had to design special switchbacks — where the train zigzags up the mountainside, going forward and then backward!",
+      "Ferromex works closely with BNSF and Union Pacific in the United States to move goods seamlessly between Mexico, the US, and Canada without reloading everything at the border!",
+      "Ferromex is part of Grupo México, one of the largest mining and railway companies in Latin America — a company that touches almost every part of Mexico's economy!",
+      "Ferromex trains cross some of the most ancient indigenous lands in North America — the railway passes near villages where people have lived for thousands of years!",
+      "At the highest mountain stations on Ferromex's routes, the air is so thin that the engines have to work extra hard to pull their heavy freight trains up the steep grades!",
+    ]
+  },
+  {
+    id: 'cn',
+    name: 'Canadian National',
+    image: 'https://images.unsplash.com/photo-1543256691-5d27cc7fbee0?w=600&auto=format&fit=crop&q=70',
+    pos: 'center',
+    facts: [
+      "Canadian National's sleek black locomotives with bold red and white stripes run through both Canada and the United States — one of the only railways in North America that truly crosses both countries!",
+      "CN Rail stretches over 32,000 kilometres of track, reaching from the Atlantic coast in Nova Scotia all the way to the Gulf of Mexico in Louisiana!",
+      "CN was founded in 1919 as a government-owned railway, created by merging several struggling Canadian railways into one giant national network. It went private in 1995!",
+      "CN Rail moves enormous amounts of potash, grain, coal, and forest products — resources Canada is famous for — and much of what CN carries ends up on ships sailing all around the world!",
+      "CN operates the only railway bridge across the Niagara River between Canada and the United States — trains roll right past Niagara Falls on their way between the two countries!",
+      "CN was the first major railway in North America to use GPS technology to track every single locomotive in its network in real time!",
+      "The CN Tower in Toronto — once the world's tallest free-standing structure — was actually built by Canadian National Railways, not the city of Toronto!",
+      "CN hauls over 300 million tonnes of freight every year — if you stacked all that cargo in boxes, the pile would reach to the moon and back!",
+      "CN was one of the first railways to operate diesel locomotives in Canada, phasing out old steam engines in the 1950s and 1960s!",
+      "CN's route through northern Ontario crosses some of the most challenging terrain in the world — ancient rock, countless lakes, and brutal winter weather!",
+      "When CN went private in 1995, it was one of the largest privatisations in Canadian history — the government sold the railway to private investors for billions of dollars!",
+      "CN's network reaches all the major grain ports on the Pacific and Atlantic coasts — allowing Canadian farmers to ship their harvests directly to world markets!",
+      "Some of CN's freight trains are over 3 kilometres long — pulling over 200 train cars loaded with grain, coal, or containers — among the longest trains in the world!",
+      "CN's route through the prairies is so long and straight that you can sometimes see for 40 kilometres in a single direction from the train window!",
+      "CN trains cross the famous Quebec Bridge over the St. Lawrence River — a bridge that took decades to build and was the longest cantilever bridge in the world when it was completed!",
+      "CN runs one of the world's most sophisticated rail traffic control centres in Edmonton, Alberta — managing thousands of train movements every single day!",
+      "CN has the lowest carbon footprint of any major freight transportation method — moving goods by train is far more environmentally friendly than by truck!",
+      "The merger of CN with other railways over the decades created one of the most efficient freight networks in the world — a true coast-to-coast, border-to-border system!",
+      "CN's most famous locomotive in the steam era was streamlined to look like a bullet and could reach speeds over 160 kilometres per hour — incredibly fast for the time!",
+      "CN's network connects Canada's largest cities — Halifax, Montreal, Toronto, Winnipeg, Edmonton, and Vancouver — all on a single continuous rail network!",
+      "Without CN Rail, many of Canada's remote mining and forestry communities would be cut off from the rest of the country — the railway is their lifeline!",
+      "CN trains carry new cars from factories in Ontario to dealerships all across Canada — almost every new car bought in Canada arrives partly by CN Rail!",
+    ]
+  },
+  {
+    id: 'csx',
+    name: 'CSX',
+    image: 'https://images.unsplash.com/photo-1586981597407-5e0998a489b1?w=600&auto=format&fit=crop&q=70',
+    pos: 'center',
+    facts: [
+      "CSX's dark blue and yellow locomotives are a common sight all along America's East Coast! CSX operates over 33,000 kilometres of track across 26 states.",
+      "One CSX train can carry as much cargo as 300 trucks — moving freight by train uses far less fuel than by road, making CSX one of the more environmentally friendly ways to ship things.",
+      "CSX is famous for its 'How Tomorrow Moves' slogan — the company moves coal, grain, fertiliser, cars, and containers that help keep American cities and factories running every day.",
+      "CSX operates through some of America's most historic railway territory, including routes originally built before the American Civil War that are still carrying trains today — over 160 years later!",
+      "CSX moves so much cargo that if you used trucks instead, you'd need over 7 million truck trips per year to carry the same amount — that's an enormous number of trucks kept off the roads!",
+      "CSX's network covers the entire eastern United States, from the Great Lakes to the Gulf of Mexico, from the Mississippi River to the Atlantic Ocean!",
+      "CSX hauls enormous quantities of coal from the Appalachian Mountains to power plants along the East Coast — coal that keeps electricity flowing to millions of American homes!",
+      "CSX has been investing billions of dollars in replacing diesel locomotives with cleaner technology, including battery-electric and hydrogen-powered engines!",
+      "The name CSX came from a merger of Chessie System and Seaboard System railways in 1986 — two railway giants combining to create one massive network!",
+      "CSX maintains over 4,000 bridges and nearly 60 tunnels on its network — including tunnels drilled through the Appalachian Mountains over a century ago that are still used daily!",
+      "Many of the fresh fruits and vegetables sold in East Coast supermarkets arrived there on a CSX train — cold storage cars keep the food fresh during the long journey!",
+      "CSX trains carry new cars from factories in the Midwest and South to dealerships all up and down the East Coast — over a million vehicles per year!",
+      "CSX's track runs right along the shoreline of Chesapeake Bay in Maryland — one of the most scenic stretches of East Coast railway!",
+      "In the 19th century, the Baltimore and Ohio Railroad — which eventually became part of CSX — was the first common-carrier railway in the United States!",
+      "CSX handles almost every type of freight imaginable — from chemicals and plastics to grain and lumber to automotive parts and consumer electronics!",
+      "CSX moved nearly 3 million intermodal containers and trailers in a single year — those are the big metal boxes you see stacked on ships, trains, and trucks!",
+      "CSX operates one of the biggest locomotive repair facilities in the world in Huntington, West Virginia — where hundreds of locomotives are maintained and repaired every year!",
+      "The steel rails that CSX trains roll on can be over a kilometre long — special trains called rail trains carry new rails to replace worn-out sections of track!",
+      "CSX passes through some of America's most beautiful mountain scenery in the Appalachians — cutting through valleys, over rivers, and through tunnels carved from solid rock!",
+      "CSX trains pass through the suburbs of New York, Philadelphia, Baltimore, Washington, Atlanta, and Miami — one railway touching almost every major East Coast city!",
+      "CSX is one of the largest private landowners in the eastern United States — owning thousands of kilometres of right-of-way that has been railway property for over 150 years!",
+      "During the American Civil War, railways like the lines that became CSX were so important that both the Union and Confederate armies fought to control them — trains moved troops and supplies faster than anything else!",
+    ]
+  },
+  {
+    id: 'go',
+    name: 'GO Transit',
+    image: 'https://images.unsplash.com/photo-1723637375861-6c73ac92af9d?w=600&auto=format&fit=crop&q=70',
+    pos: 'center',
+    facts: [
+      "GO Transit's bright green and white trains are iconic across the Greater Toronto Area — the bold green makes them instantly recognisable at busy stations all around the region!",
+      "GO stands for Government of Ontario — GO Transit was created in 1967 to help the growing number of people living outside Toronto travel into the city for work and school!",
+      "GO trains use massive double-decker coaches — passengers can ride on the upper level and look out over the city from above! They're some of the tallest commuter train coaches in North America.",
+      "GO Transit runs the busiest commuter railway in Canada, carrying hundreds of thousands of passengers every single day across the Greater Toronto and Hamilton Area!",
+      "GO Transit is expanding with plans to run trains every 15 minutes all day long on many routes — making it easier than ever to travel around the region without a car!",
+      "GO trains can carry over 1,800 passengers in a single train — that's like fitting the entire population of a small town into one train!",
+      "GO Transit operates not just trains but also buses — connecting communities that don't have railway stations to the rest of the network!",
+      "The GO Transit BiLevel coaches — those tall double-decker cars — were specially designed and built in Canada for GO Transit and have become famous around the world!",
+      "GO Transit's Union Station in downtown Toronto is the busiest railway station in Canada, with over 250,000 people passing through on the busiest weekday mornings!",
+      "GO Transit uses a special push-pull system — the locomotive can push from the back or pull from the front, so the train doesn't need to turn around at the end of the line!",
+      "During a Toronto Blue Jays baseball game, extra GO trains run to bring fans to and from the stadium — sometimes carrying over 30,000 fans in a single evening!",
+      "GO Transit was one of the first commuter railways in the world to introduce a GPS-based real-time train tracking app, letting passengers see exactly where their train is!",
+      "GO trains travel on 9 different rail lines fanning out from Union Station in all directions — east to Oshawa, west to Hamilton, north to Barrie, and many places in between!",
+      "GO Transit trains are some of the most punctual commuter trains in North America — the railway tracks its on-time performance obsessively to keep passengers happy!",
+      "When there's a major winter snowstorm in Toronto, GO trains often keep running when roads are completely impassable — helping essential workers get to hospitals and emergency services!",
+      "GO Transit is being electrified — future GO trains will run on electric power instead of diesel, making them faster, quieter, and much better for the environment!",
+      "GO Transit's Lakeshore route offers passengers beautiful views of Lake Ontario — especially gorgeous at sunrise when commuters head into Toronto on early morning trains!",
+      "Many GO stations have thousands of parking spaces — commuters drive from the suburbs to the station, park their car, and take the train into the city!",
+      "GO Transit was revolutionary when it launched in 1967 — it was one of the first commuter rail systems in Canada to use modern bi-level coaches and was immediately enormously popular!",
+      "GO Transit's green and white colour scheme was chosen to be fresh, clean, and easy to spot — and more than 55 years later, it's still the same iconic colours!",
+      "The newest GO trains are so smooth and quiet that passengers can have conversations at a normal speaking volume even at full speed — a remarkable improvement over older trains!",
+      "GO Transit has its own app that tells passengers when the next train is coming, which platform to go to, and even how crowded the train is likely to be!",
+    ]
+  },
+  {
+    id: 'up',
+    name: 'Union Pacific',
+    image: 'https://images.unsplash.com/photo-1628748429334-101a87a9357d?w=600&auto=format&fit=crop&q=70',
+    pos: 'center',
+    facts: [
+      "Union Pacific's bright yellow engines are nicknamed 'Yellow Monsters' by train fans! The distinctive yellow colour was chosen in the 1930s to look modern and powerful.",
+      "Union Pacific finished the very first transcontinental railroad in America in 1869 — driving the famous golden spike that connected the East and West coasts of the United States for the very first time!",
+      "Union Pacific operates over 51,000 kilometres of track crossing 23 states in the western United States — one of the longest railway networks in the world!",
+      "Union Pacific's biggest steam locomotives — the 'Big Boys' — were the largest steam engines ever built! They were so massive they needed an extra set of wheels in the middle just to go around corners.",
+      "Every day, Union Pacific moves enough freight to fill over 500,000 trucks — taking an enormous number of vehicles off America's highways and helping the environment!",
+      "The golden spike driven to complete America's first transcontinental railway on May 10, 1869, connected Union Pacific from the east with Central Pacific from the west — a moment that changed America forever!",
+      "Union Pacific's famous steam locomotive number 4014 — called Big Boy 4014 — was fully restored and now tours the country, drawing enormous crowds wherever it goes!",
+      "The famous Donner Pass route used by Union Pacific trains crosses the Sierra Nevada at over 2,100 metres elevation — an area famous for brutal winters and very deep snow!",
+      "Union Pacific's longest locomotive is Big Boy — over 40 metres long and weighing more than 540 tonnes! It's so big that special 14-wheel swivelling trucks were needed to carry it.",
+      "Union Pacific's network covers the entire American West, from the Mississippi River to the Pacific Ocean, and from the Canadian border all the way to the Mexican border!",
+      "Union Pacific is headquartered in Omaha, Nebraska — the same city where it started laying track westward in 1865 to build the transcontinental railway!",
+      "Union Pacific trains travel through some of the most spectacular scenery in America — including Donner Pass, the Rocky Mountains, the Utah desert, and the Pacific coastline!",
+      "The building of the transcontinental railway by Union Pacific required years of work, thousands of workers, and incredible bravery blasting through mountains and crossing deserts!",
+      "Union Pacific hauls enormous amounts of intermodal containers — those big metal boxes from ships — from the ports of Los Angeles and Long Beach to cities all across America!",
+      "The famous transcontinental railroad that Union Pacific completed in 1869 shrank the journey from the East Coast to the West Coast from six months to just six days!",
+      "Union Pacific's freight trains are sometimes over 3 kilometres long — when you see one crossing a road, you might wait 5 minutes for the whole train to pass!",
+      "Some of Union Pacific's oldest routes follow paths originally used by covered wagon pioneers on the Oregon Trail, the California Trail, and the Mormon Trail!",
+      "Union Pacific's locomotive shops in North Platte, Nebraska — called Bailey Yard — are the largest rail classification yard in the world, sorting over 14,000 train cars every single day!",
+      "On foggy or stormy days, Union Pacific's yellow locomotives are especially important for visibility — that bright yellow can be seen much farther away than darker colours!",
+      "Union Pacific's yellow colour is so iconic that it has appeared in movies, video games, and toys — it might be the most recognised locomotive colour in American history!",
+      "Union Pacific played a key role in settling the American West — the railway brought millions of settlers, farmers, and miners to new lands in the 1870s, 1880s, and 1890s!",
+      "Union Pacific uses some of the world's most advanced GPS and computer systems to track every locomotive, every freight car, and every shipment across its enormous network!",
+    ]
+  }
+];
+
+const FACTS_PER_PAGE = 5;
+let engineOrder = [];
+let currentIndex = 0;
+let activeSpeakBtn = null;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function init() {
+  engineOrder = shuffle(ENGINES);
+  currentIndex = 0;
+  renderEngine();
+}
+
+function renderEngine() {
+  const e = engineOrder[currentIndex];
+  const total = engineOrder.length;
+
+  document.getElementById('enginePhoto').src = e.image;
+  document.getElementById('enginePhoto').style.objectPosition = e.pos || 'center';
+  document.getElementById('engineName').textContent = e.name;
+  document.getElementById('counterText').textContent = `ENGINE ${currentIndex + 1} OF ${total}`;
+
+  // pips
+  const pipsEl = document.getElementById('pips');
+  pipsEl.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const pip = document.createElement('div');
+    pip.className = 'pip' + (i === currentIndex ? ' active' : '');
+    pipsEl.appendChild(pip);
+  }
+
+  // prev / next buttons
+  document.getElementById('prevBtn').disabled = currentIndex === 0;
+  document.getElementById('nextBtn').disabled = currentIndex === total - 1;
+
+  // pick 10 random facts, shuffled
+  const shuffledFacts = shuffle(e.facts).slice(0, FACTS_PER_PAGE);
+
+  const list = document.getElementById('factsList');
+  list.innerHTML = '';
+  shuffledFacts.forEach((fact, i) => {
+    const li = document.createElement('li');
+    li.className = 'fact-item';
+
+    const btn = document.createElement('button');
+    btn.className = 'fact-speak-btn';
+    btn.textContent = '🔊';
+    btn.title = 'Hear this fact';
+    btn.onclick = () => speakFact(fact, btn);
+
+    const text = document.createElement('span');
+    text.className = 'fact-text';
+    text.textContent = fact;
+
+    li.appendChild(btn);
+    li.appendChild(text);
+    list.appendChild(li);
+  });
+
+  // auto-read engine name after a short delay
+  setTimeout(() => speakName(), 350);
+}
+
+function navigate(dir) {
+  stopSpeaking();
+  currentIndex = Math.max(0, Math.min(engineOrder.length - 1, currentIndex + dir));
+  renderEngine();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function speakName() {
+  const e = engineOrder[currentIndex];
+  speak(e.speak || e.name);
+}
+
+function speakFact(text, btn) {
+  if (activeSpeakBtn && activeSpeakBtn !== btn) {
+    activeSpeakBtn.classList.remove('speaking');
+  }
+  activeSpeakBtn = btn;
+  btn.classList.add('speaking');
+  speak(text, () => btn.classList.remove('speaking'));
+}
+
+function stopSpeaking() {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  if (activeSpeakBtn) {
+    activeSpeakBtn.classList.remove('speaking');
+    activeSpeakBtn = null;
+  }
+}
+
+function speak(text, onEnd) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const processed = text.replace(/\bVIA Rail\b/gi, 'VEE-uh Rail');
+  const u = new SpeechSynthesisUtterance(processed);
+  u.rate = 0.88; u.pitch = 1.05; u.volume = 1;
+  if (onEnd) u.onend = onEnd;
+  window.speechSynthesis.speak(u);
+}
+
+init();
+</script>
+</body>
+</html>
