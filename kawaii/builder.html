@@ -95,7 +95,7 @@ h1 {
 </style>
 </head>
 <body>
-<a class="back" href="index.html">← Back to Kawaii World</a>
+<a class="back" href="index.html">← Kawaii World</a>
 <h1>🧱 Pixel Builder</h1>
 
 <div class="toolbar">
@@ -215,9 +215,22 @@ function saveImage() {
   img.src = canvas.toDataURL('image/png');
   img.style.cssText = 'max-width:90vw;max-height:78vh;image-rendering:pixelated;border-radius:8px;box-shadow:0 0 40px rgba(0,0,0,0.6)';
 
-  const hint = document.createElement('div');
-  hint.textContent = '📸 Take a screenshot now!';
-  hint.style.cssText = 'color:white;font-family:Nunito,sans-serif;font-weight:700;font-size:1rem;opacity:0.7;text-align:center';
+  const hint = document.createElement('button');
+  hint.textContent = '📸 Save my drawing!';
+  hint.style.cssText = 'color:white;font-family:Nunito,sans-serif;font-weight:700;font-size:1rem;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.5);border-radius:20px;padding:10px 24px;cursor:pointer';
+  hint.onclick = () => {
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'my-kawaii-drawing.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'My Kawaii Drawing' });
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'my-kawaii-drawing.png';
+        a.click();
+      }
+    }, 'image/png');
+  };
 
   const close = document.createElement('button');
   close.textContent = '✕ Back to drawing';
