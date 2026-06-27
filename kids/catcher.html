@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Creature Catcher</title>
+<title>Character Catcher</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -47,7 +47,7 @@ h1 {
 .hud-val { font-size: 1.9rem; font-weight: 900; color: #0A7A50; line-height: 1.1; }
 .arena {
   width: min(440px, 96vw);
-  height: min(380px, 55vh);
+  height: min(380px, 52vh);
   background: white;
   border-radius: 24px;
   position: relative;
@@ -63,18 +63,42 @@ h1 {
   font-size: 1rem;
   font-weight: 700;
   pointer-events: none;
+  line-height: 1.6;
 }
 .creature {
   position: absolute;
   cursor: pointer;
   user-select: none;
   text-align: center;
-  animation: appear 0.2s ease-out;
+  animation: appear 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 2;
 }
-@keyframes appear { from{transform:scale(0)} to{transform:scale(1)} }
-.creature:active { transform: scale(0.8); }
-.c-emoji { font-size: 2.8rem; display: block; line-height: 1; }
-.c-name { font-size: 0.6rem; font-weight: 700; color: #5BA888; }
+@keyframes appear { from{transform:scale(0) rotate(-10deg)} to{transform:scale(1) rotate(0deg)} }
+.creature:active { transform: scale(0.82); }
+.creature img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 14px;
+  display: block;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+  pointer-events: none;
+}
+.c-name {
+  font-size: 0.62rem;
+  font-weight: 900;
+  color: #0A7A50;
+  margin-top: 3px;
+  text-shadow: 0 1px 3px rgba(255,255,255,0.9);
+}
+.sparkle-ring {
+  position: absolute;
+  top: -8px; right: -8px;
+  font-size: 1rem;
+  animation: twinkle 0.9s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes twinkle { from{opacity:1;transform:scale(1)} to{opacity:0.5;transform:scale(1.3)} }
 .pop {
   position: absolute;
   font-weight: 900;
@@ -82,10 +106,11 @@ h1 {
   font-size: 1.3rem;
   pointer-events: none;
   animation: pop 0.7s forwards;
+  z-index: 5;
 }
 @keyframes pop {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-52px) scale(1.4); }
+  0%  { opacity: 1; transform: translateY(0) scale(1); }
+  100%{ opacity: 0; transform: translateY(-52px) scale(1.4); }
 }
 .btn {
   margin-top: 14px;
@@ -125,7 +150,7 @@ h1 {
 </head>
 <body>
 <a class="back" href="index.html">← Back to Kawaii World</a>
-<h1>✨ Creature Catcher</h1>
+<h1>✨ Character Catcher</h1>
 
 <div class="hud">
   <div class="hud-item"><div class="hud-label">SCORE</div><div class="hud-val" id="score">0</div></div>
@@ -134,7 +159,7 @@ h1 {
 </div>
 
 <div class="arena" id="arena">
-  <div class="arena-msg" id="msg">Tap <strong>Start</strong> to play! ✨</div>
+  <div class="arena-msg" id="msg">Tap <strong>Start</strong> to play! ✨<br>Catch the characters<br>before they disappear!</div>
 </div>
 
 <button class="btn" id="startBtn" onclick="start()">⭐ Start Game!</button>
@@ -151,52 +176,75 @@ h1 {
 
 <script>
 const CREATURES = [
-  {emoji:'🦋', name:'Flutterby', pts:1},
-  {emoji:'🌸', name:'Blossom',   pts:1},
-  {emoji:'🍄', name:'Mushie',    pts:2},
-  {emoji:'🐸', name:'Hoppy',     pts:2},
-  {emoji:'🐰', name:'Bunbun',    pts:3},
-  {emoji:'🐼', name:'Panda',     pts:3},
-  {emoji:'⭐', name:'Sparkle',   pts:4},
-  {emoji:'🌟', name:'Twinkle',   pts:4},
-  {emoji:'🦄', name:'Starhorn',  pts:5},
+  { src:'https://images.unsplash.com/vector-1744442861923-aaeef319ac38?w=120&auto=format&fit=crop&q=60', name:'Starlight', pts:3 },
+  { src:'https://images.unsplash.com/vector-1744442860865-0765bab8753c?w=120&auto=format&fit=crop&q=60', name:'Sky Girl',  pts:2 },
+  { src:'https://plus.unsplash.com/premium_vector-1742668947361-739780396fb6?w=120&auto=format&fit=crop&q=60', name:'Blossom',   pts:2 },
+  { src:'https://plus.unsplash.com/premium_vector-1731491694760-6f6372dd8bca?w=120&auto=format&fit=crop&q=60', name:'Ramen!',    pts:1 },
+  { src:'https://plus.unsplash.com/premium_vector-1732356540932-18564bf0783d?w=120&auto=format&fit=crop&q=60', name:'City Girl', pts:2 },
+  { src:'https://plus.unsplash.com/premium_vector-1689096623582-d6b204f320ac?w=120&auto=format&fit=crop&q=60', name:'Red Eye',   pts:3 },
+  { src:'https://plus.unsplash.com/premium_vector-1689096627500-db28ccd880b3?w=120&auto=format&fit=crop&q=60', name:'Sparkle',   pts:4 },
+  { src:'https://images.unsplash.com/photo-1620428268482-cf1851a36764?w=120&auto=format&fit=crop&q=60', name:'Anime Scene', pts:5 },
 ];
+
+// Preload images
+CREATURES.forEach(c => { const i = new Image(); i.src = c.src; });
 
 let score = 0, caught = 0, timeLeft = 60;
 let spawnTimer, countTimer;
 
 function start() {
   score = 0; caught = 0; timeLeft = 60;
-  document.getElementById('score').textContent = '0';
+  document.getElementById('score').textContent  = '0';
   document.getElementById('caught').textContent = '0';
-  document.getElementById('timer').textContent = '60';
+  document.getElementById('timer').textContent  = '60';
   document.getElementById('startBtn').style.display = 'none';
   document.getElementById('msg').style.display = 'none';
   document.querySelectorAll('.creature,.pop').forEach(e => e.remove());
 
-  spawnTimer = setInterval(spawn, 1300);
-  countTimer = setInterval(() => {
-    timeLeft--;
-    document.getElementById('timer').textContent = timeLeft;
-    if (timeLeft <= 0) endGame();
-  }, 1000);
+  spawnTimer  = setInterval(spawn, 1300);
+  countTimer  = setInterval(tick, 1000);
+}
+
+function tick() {
+  timeLeft--;
+  document.getElementById('timer').textContent = timeLeft;
+  if (timeLeft <= 0) endGame();
 }
 
 function spawn() {
   const arena = document.getElementById('arena');
-  const aw = arena.clientWidth - 72, ah = arena.clientHeight - 72;
+  const aw = arena.clientWidth - 100, ah = arena.clientHeight - 100;
   const c = CREATURES[Math.floor(Math.random() * CREATURES.length)];
 
   const el = document.createElement('div');
   el.className = 'creature';
-  el.style.left = (10 + Math.random() * aw) + 'px';
-  el.style.top  = (10 + Math.random() * ah) + 'px';
-  el.innerHTML = `<span class="c-emoji">${c.emoji}</span><span class="c-name">${c.name}</span>`;
+  const x = 10 + Math.random() * aw;
+  const y = 10 + Math.random() * ah;
+  el.style.left = x + 'px';
+  el.style.top  = y + 'px';
 
-  el.onclick = e => {
-    e.stopPropagation();
-    score += c.pts; caught++;
-    document.getElementById('score').textContent = score;
+  const ring = document.createElement('span');
+  ring.className = 'sparkle-ring';
+  ring.textContent = c.pts >= 4 ? '⭐' : '✨';
+
+  const img = document.createElement('img');
+  img.src = c.src;
+  img.alt = c.name;
+  img.loading = 'lazy';
+
+  const name = document.createElement('div');
+  name.className = 'c-name';
+  name.textContent = c.name + (c.pts > 1 ? ` +${c.pts}` : '');
+
+  el.appendChild(ring);
+  el.appendChild(img);
+  el.appendChild(name);
+
+  el.onclick = ev => {
+    ev.stopPropagation();
+    score  += c.pts;
+    caught++;
+    document.getElementById('score').textContent  = score;
     document.getElementById('caught').textContent = caught;
     const pop = document.createElement('div');
     pop.className = 'pop';
@@ -209,7 +257,7 @@ function spawn() {
   };
 
   arena.appendChild(el);
-  setTimeout(() => { if (el.parentNode) el.remove(); }, 4000);
+  setTimeout(() => { if (el.parentNode) el.remove(); }, 3500);
 }
 
 function endGame() {

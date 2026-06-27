@@ -36,6 +36,22 @@ h1 {
   text-shadow: 2px 2px 0 #C8B5FF;
   margin-bottom: 10px;
 }
+.mode-row {
+  display: flex; gap: 10px; margin-bottom: 12px;
+}
+.mode-btn {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: 3px solid transparent;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900; font-size: 0.88rem;
+  cursor: pointer; transition: transform 0.1s;
+}
+.mode-btn:active { transform: scale(0.94); }
+.mode-btn.easy  { background: #E0FFF4; color: #0A7A50; border-color: #B5EEDD; }
+.mode-btn.hard  { background: #FFE4EE; color: #D63384; border-color: #FFB3CC; }
+.mode-btn.on.easy  { background: #0A7A50; color: white; }
+.mode-btn.on.hard  { background: #D63384; color: white; }
 .stats {
   display: flex; gap: 28px; margin-bottom: 14px;
 }
@@ -51,22 +67,19 @@ h1 {
   text-align: center;
 }
 .goal-label { font-size: 0.65rem; font-weight: 900; letter-spacing: 2px; color: #9B8AB8; margin-bottom: 6px; }
-.goal-tiles { display: flex; gap: 5px; justify-content: center; font-size: 1.5rem; }
+.goal-tiles { display: flex; gap: 5px; justify-content: center; font-size: 1.4rem; flex-wrap: wrap; }
 .board {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 8px;
   background: #DDD0FF;
   border-radius: 22px;
   padding: 12px;
   box-shadow: 0 10px 36px rgba(100,50,200,0.22);
 }
 .tile {
-  width: clamp(78px, 24vw, 96px);
-  height: clamp(78px, 24vw, 96px);
-  border-radius: 16px;
+  border-radius: 14px;
   display: flex; align-items: center; justify-content: center;
-  font-size: clamp(2rem, 6vw, 2.6rem);
+  font-size: clamp(1.8rem, 5.5vw, 2.4rem);
   background: white;
   cursor: pointer;
   user-select: none;
@@ -116,6 +129,11 @@ h1 {
 <a class="back" href="index.html">← Back to Kawaii World</a>
 <h1>🧩 Sliding Puzzle</h1>
 
+<div class="mode-row">
+  <button class="mode-btn easy on" id="easyBtn" onclick="setMode('easy')">🟢 Easy</button>
+  <button class="mode-btn hard"    id="hardBtn" onclick="setMode('hard')">🔴 Hard</button>
+</div>
+
 <div class="stats">
   <div class="stat"><div class="stat-label">MOVES</div><div class="stat-val" id="moves">0</div></div>
   <div class="stat"><div class="stat-label">BEST</div><div class="stat-val" id="best">—</div></div>
@@ -139,28 +157,65 @@ h1 {
 </div>
 
 <script>
-const TILES = ['🌸','🦋','⭐','🌙','🐱','🌈','🍭','🌺'];
-// board[pos] = tile number 1-8 or 0 (empty). Solved = [1,2,3,4,5,6,7,8,0]
-let board = [1,2,3,4,5,6,7,8,0];
-let moves = 0, best = null, done = false;
+const ALL_TILES = ['🌸','🦋','⭐','🌙','🐱','🌈','🍭','🌺'];
 
-document.getElementById('goalTiles').innerHTML = TILES.map(t => `<span>${t}</span>`).join('');
+const MODES = {
+  easy: { cols: 3, rows: 2, tiles: ALL_TILES.slice(0, 5), tileSize: 88 },
+  hard: { cols: 3, rows: 3, tiles: ALL_TILES,              tileSize: 82 },
+};
+
+let mode = 'easy';
+let cfg = MODES[mode];
+let TILES = cfg.tiles;
+let NTILES = TILES.length;
+let COLS = cfg.cols;
+let ROWS = cfg.rows;
+
+let board = [];
+let moves = 0;
+let best = { easy: null, hard: null };
+let done = false;
+
+function setMode(m) {
+  mode = m;
+  cfg = MODES[mode];
+  TILES = cfg.tiles;
+  NTILES = TILES.length;
+  COLS = cfg.cols;
+  ROWS = cfg.rows;
+
+  document.getElementById('easyBtn').classList.toggle('on', m === 'easy');
+  document.getElementById('hardBtn').classList.toggle('on', m === 'hard');
+  document.getElementById('best').textContent = best[mode] !== null ? best[mode] : '—';
+  document.getElementById('win').classList.remove('show');
+  renderGoal();
+  shuffle();
+}
+
+function renderGoal() {
+  document.getElementById('goalTiles').innerHTML =
+    TILES.map(t => `<span>${t}</span>`).join('');
+}
 
 function neighbors(pos) {
-  const r = Math.floor(pos / 3), c = pos % 3, n = [];
-  if (r > 0) n.push(pos - 3);
-  if (r < 2) n.push(pos + 3);
+  const r = Math.floor(pos / COLS), c = pos % COLS, n = [];
+  if (r > 0) n.push(pos - COLS);
+  if (r < ROWS - 1) n.push(pos + COLS);
   if (c > 0) n.push(pos - 1);
-  if (c < 2) n.push(pos + 1);
+  if (c < COLS - 1) n.push(pos + 1);
   return n;
 }
 
 function render() {
+  const sz = Math.max(70, Math.min(cfg.tileSize, Math.floor((Math.min(window.innerWidth - 64, 400)) / COLS) - 10));
   const el = document.getElementById('board');
+  el.style.gridTemplateColumns = `repeat(${COLS}, ${sz}px)`;
   el.innerHTML = '';
   board.forEach((val, pos) => {
     const t = document.createElement('div');
     t.className = 'tile' + (val === 0 ? ' empty' : '');
+    t.style.width = sz + 'px';
+    t.style.height = sz + 'px';
     t.textContent = val === 0 ? '' : TILES[val - 1];
     if (val !== 0) t.onclick = () => move(pos);
     el.appendChild(t);
@@ -179,13 +234,13 @@ function move(pos) {
 }
 
 function checkWin() {
-  if (board.every((v, i) => i < 8 ? v === i + 1 : v === 0)) {
+  if (board.every((v, i) => i < NTILES ? v === i + 1 : v === 0)) {
     done = true;
-    if (best === null || moves < best) best = moves;
-    document.getElementById('best').textContent = best;
+    if (best[mode] === null || moves < best[mode]) best[mode] = moves;
+    document.getElementById('best').textContent = best[mode];
     document.getElementById('winSub').textContent =
       `You did it in ${moves} move${moves !== 1 ? 's' : ''}!` +
-      (best === moves ? ' 🏆 New best!' : '');
+      (best[mode] === moves ? ' 🏆 New best!' : '');
     document.getElementById('win').classList.add('show');
   }
 }
@@ -193,9 +248,10 @@ function checkWin() {
 function shuffle() {
   done = false; moves = 0;
   document.getElementById('win').classList.remove('show');
-  board = [1,2,3,4,5,6,7,8,0];
-  let e = 8;
-  for (let i = 0; i < 300; i++) {
+  board = [...Array(NTILES).keys()].map(i => i + 1).concat([0]);
+  let e = NTILES;
+  const steps = mode === 'easy' ? 150 : 300;
+  for (let i = 0; i < steps; i++) {
     const nb = neighbors(e);
     const next = nb[Math.floor(Math.random() * nb.length)];
     [board[e], board[next]] = [board[next], board[e]];
@@ -204,6 +260,7 @@ function shuffle() {
   render();
 }
 
+renderGoal();
 shuffle();
 </script>
 </body>

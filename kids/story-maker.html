@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Story Maker 🌸</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #FFE4F0;
+  height: 100dvh; overflow: hidden;
+  user-select: none; -webkit-user-select: none;
+  display: flex; flex-direction: column;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; flex-direction: column; height: 100dvh; overflow: hidden; }
+.screen.on { display: flex; }
+
+/* ── HEADER ── */
+.hdr {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; background: white; flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(200,100,200,0.12);
+}
+.hdr-back {
+  text-decoration: none; color: #A78BFA; font-weight: 700;
+  font-size: 0.82rem; padding: 6px 12px; border-radius: 20px;
+  white-space: nowrap; background: #F5F0FF; flex-shrink: 0;
+}
+.hdr-back:hover { background: #EDE4FF; }
+.hdr-title { font-size: 1rem; font-weight: 900; color: #D63384; flex: 1; text-align: center; }
+.hdr-btn {
+  background: none; border: none; cursor: pointer;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
+  font-size: 0.82rem; padding: 6px 12px; border-radius: 20px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.hdr-btn.ghost { color: #A78BFA; background: #F5F0FF; }
+.hdr-btn.ghost:hover { background: #EDE4FF; }
+.hdr-btn.solid { background: linear-gradient(135deg,#FF85A1,#D63384); color: white; }
+.hdr-btn.solid:hover { opacity: 0.9; }
+
+/* ── LIST ── */
+#s-list { background: #FFE4F0; }
+.list-scroll { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.story-card {
+  background: white; border-radius: 20px; overflow: hidden;
+  box-shadow: 0 6px 24px rgba(200,100,200,0.14); cursor: pointer;
+  transition: transform 0.12s;
+}
+.story-card:active { transform: scale(0.97); }
+.story-thumb {
+  width: 100%; aspect-ratio: 4/3; overflow: hidden;
+  position: relative;
+}
+.story-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.story-info {
+  padding: 12px 16px; display: flex;
+  align-items: center; justify-content: space-between; gap: 8px;
+}
+.story-name { font-weight: 900; color: #5B4E77; font-size: 0.95rem; }
+.story-meta { font-size: 0.72rem; color: #B8A0C0; font-weight: 700; }
+.story-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.s-btn {
+  background: #F5F0FF; border: none; cursor: pointer; border-radius: 10px;
+  padding: 5px 10px; font-size: 0.9rem;
+}
+.s-btn:hover { background: #EDE4FF; }
+.empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: #C8A0C0; font-weight: 700; gap: 8px; text-align: center;
+}
+.empty .big { font-size: 3.5rem; }
+.btn-new {
+  margin: 0 16px 20px; padding: 14px;
+  background: linear-gradient(135deg,#FF85A1,#D63384);
+  color: white; border: none; border-radius: 20px;
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.1rem;
+  cursor: pointer; flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(214,51,132,0.3);
+  transition: transform 0.1s;
+}
+.btn-new:active { transform: scale(0.96); }
+
+/* ── EDITOR ── */
+#s-editor { background: #F5F0FF; }
+.ed-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* Panel canvas */
+.panel-wrap {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  background: #EDE4FF; overflow: hidden; touch-action: none;
+}
+.panel-canvas {
+  position: relative; width: 100%; aspect-ratio: 4/3;
+  max-height: 100%; overflow: hidden;
+}
+.panel-bg { position: absolute; inset: 0; background: #C8B5FF; }
+.panel-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tile-layer { position: absolute; inset: 0; touch-action: none; }
+.no-panel-msg {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  color: rgba(255,255,255,0.7); font-weight: 700; pointer-events: none;
+}
+.no-panel-msg .big { font-size: 3rem; }
+
+/* Placed tiles */
+.ptile {
+  position: absolute; transform: translate(-50%,-50%);
+  font-family: 'Nunito', sans-serif; font-weight: 900;
+  font-size: clamp(0.8rem, 2.4vw, 1.05rem);
+  line-height: 1.25; white-space: nowrap;
+  cursor: grab; touch-action: none;
+}
+.ptile.sel { z-index: 50; }
+.ptile.sel .ptile-text { outline: 2px dashed rgba(255,255,255,0.9); outline-offset: 3px; border-radius: 4px; }
+/* Styles */
+.ptile.s0 .ptile-text { color: white; text-shadow: 1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000; }
+.ptile.s1 .ptile-text { background: rgba(0,0,0,0.65); color: white; padding: 3px 10px; border-radius: 16px; }
+.ptile.s2 .ptile-text { background: rgba(214,51,132,0.88); color: white; padding: 3px 10px; border-radius: 16px; }
+.ptile.s3 .ptile-text { color: #FFE000; text-shadow: 1px 1px 0 #333,-1px -1px 0 #333; font-size: clamp(1rem,3vw,1.3rem); }
+/* Tile controls */
+.ptile-ctrl {
+  display: none; position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%); margin-top: 5px; gap: 4px;
+  background: white; border-radius: 12px; padding: 3px 6px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2); z-index: 100;
+  white-space: nowrap;
+}
+.ptile.sel .ptile-ctrl { display: flex; }
+.tc {
+  background: none; border: none; cursor: pointer;
+  font-size: 0.95rem; padding: 3px 6px; border-radius: 8px;
+  font-family: 'Nunito', sans-serif;
+}
+.tc:hover { background: #F0E8FF; }
+
+/* Panel strip */
+.strip {
+  flex-shrink: 0; height: 74px; display: flex;
+  align-items: center; gap: 8px; padding: 5px 10px;
+  background: white; overflow-x: auto;
+  border-top: 1px solid #F0E8FF;
+  -webkit-overflow-scrolling: touch;
+}
+.sthumb {
+  flex-shrink: 0; width: 84px; height: 63px; border-radius: 10px;
+  overflow: hidden; cursor: pointer; border: 3px solid transparent;
+  position: relative; background: #C8B5FF;
+}
+.sthumb.active { border-color: #D63384; }
+.sthumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sthumb-del {
+  display: none; position: absolute; top: 2px; right: 2px;
+  background: rgba(0,0,0,0.6); color: white; border: none;
+  border-radius: 50%; width: 17px; height: 17px; font-size: 0.55rem;
+  cursor: pointer; align-items: center; justify-content: center;
+}
+.sthumb:hover .sthumb-del { display: flex; }
+.strip-add {
+  flex-shrink: 0; width: 63px; height: 63px; border-radius: 10px;
+  border: 3px dashed #C8B5FF; background: #F5F0FF; color: #A78BFA;
+  font-size: 1.8rem; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  transition: background 0.12s; font-family: 'Nunito', sans-serif;
+}
+.strip-add:hover { background: #EDE4FF; }
+
+/* Word tray */
+.tray { flex-shrink: 0; background: white; border-top: 1px solid #F0E8FF; }
+.tray-tabs {
+  display: flex; border-bottom: 1px solid #F0E8FF;
+}
+.tray-tab {
+  flex: 1; padding: 8px 0; background: none; border: none;
+  font-size: 1.1rem; cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: border-color 0.15s;
+}
+.tray-tab.active { border-bottom-color: #D63384; }
+.tray-words {
+  display: flex; gap: 7px; padding: 8px 12px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.word-tile {
+  flex-shrink: 0; background: #F5F0FF; color: #5B4E77;
+  border: 2px solid #C8B5FF; border-radius: 20px;
+  padding: 7px 14px; font-size: 0.83rem; font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+  font-family: 'Nunito', sans-serif; touch-action: manipulation;
+  transition: background 0.1s, transform 0.1s;
+}
+.word-tile:active { background: #EDE4FF; transform: scale(0.93); }
+
+/* ── READER ── */
+#s-reader { background: black; }
+.r-panel { flex: 1; position: relative; overflow: hidden; }
+.r-bg { position: absolute; inset: 0; }
+.r-bg img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.r-tiles { position: absolute; inset: 0; pointer-events: none; }
+.r-nav {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  gap: 24px; padding: 12px; background: rgba(0,0,0,0.8);
+}
+.r-btn {
+  background: rgba(255,255,255,0.15); color: white; border: none;
+  border-radius: 50%; width: 48px; height: 48px; font-size: 1.9rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-family: 'Nunito', sans-serif; transition: background 0.12s;
+}
+.r-btn:hover { background: rgba(255,255,255,0.25); }
+.r-btn:disabled { opacity: 0.25; cursor: default; }
+.r-count { color: white; font-weight: 700; font-size: 0.9rem; min-width: 64px; text-align: center; }
+.r-close {
+  position: absolute; top: 12px; right: 12px; z-index: 10;
+  background: rgba(0,0,0,0.6); color: white; border: none;
+  border-radius: 20px; padding: 6px 14px; cursor: pointer;
+  font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.82rem;
+}
+
+/* ── PICKER MODAL ── */
+.modal {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 200;
+  align-items: center; justify-content: center;
+}
+.modal.open { display: flex; }
+.modal-box {
+  background: white; border-radius: 24px; max-width: 480px;
+  width: 94vw; max-height: 80vh; overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.modal-hdr {
+  padding: 14px 18px; border-bottom: 1px solid #F0E8FF;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-hdr span { font-weight: 900; color: #D63384; font-size: 1rem; }
+.modal-x { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: #B0A0C0; padding: 4px 8px; }
+.img-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 8px; padding: 12px; overflow-y: auto;
+}
+.img-opt {
+  border-radius: 12px; overflow: hidden; cursor: pointer;
+  aspect-ratio: 4/3; position: relative; border: 3px solid transparent;
+  transition: transform 0.12s, border-color 0.12s;
+}
+.img-opt:active { transform: scale(0.93); }
+.img-opt img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-opt .ig-bg { width: 100%; height: 100%; display: block; }
+.img-lbl {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,0.55); color: white;
+  font-size: 0.62rem; font-weight: 700; padding: 3px 5px; text-align: center;
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LIST ══ -->
+<div id="s-list" class="screen on">
+  <div class="hdr">
+    <a class="hdr-back" href="index.html">← Kawaii World</a>
+    <span class="hdr-title">📖 Story Maker</span>
+    <div style="width:90px"></div>
+  </div>
+  <div class="list-scroll" id="list-scroll"></div>
+  <button class="btn-new" onclick="newStory()">✨ New Story</button>
+</div>
+
+<!-- ══ EDITOR ══ -->
+<div id="s-editor" class="screen">
+  <div class="hdr">
+    <button class="hdr-btn ghost" onclick="goList()">← Stories</button>
+    <span class="hdr-title" id="ed-title">My Story</span>
+    <button class="hdr-btn solid" onclick="goReader()">▶ Read</button>
+  </div>
+  <div class="ed-body">
+    <div class="panel-wrap" id="panel-wrap">
+      <div class="panel-canvas" id="panel-canvas">
+        <div class="panel-bg" id="panel-bg">
+          <div class="no-panel-msg" id="no-panel-msg">
+            <div class="big">🌸</div>
+            <div>Tap + to add a scene</div>
+          </div>
+        </div>
+        <div class="tile-layer" id="tile-layer"></div>
+      </div>
+    </div>
+    <div class="strip" id="strip"></div>
+    <div class="tray">
+      <div class="tray-tabs" id="tray-tabs"></div>
+      <div class="tray-words" id="tray-words"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ READER ══ -->
+<div id="s-reader" class="screen">
+  <div class="r-panel">
+    <div class="r-bg" id="r-bg"></div>
+    <div class="r-tiles" id="r-tiles"></div>
+  </div>
+  <div class="r-nav">
+    <button class="r-btn" id="r-prev" onclick="rPrev()">‹</button>
+    <div class="r-count" id="r-count"></div>
+    <button class="r-btn" id="r-next" onclick="rNext()">›</button>
+  </div>
+  <button class="r-close" onclick="goEditor()">✕ Edit</button>
+</div>
+
+<!-- ══ IMAGE PICKER ══ -->
+<div class="modal" id="picker">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <span>Pick a scene 🌸</span>
+      <button class="modal-x" onclick="closePicker()">✕</button>
+    </div>
+    <div class="img-grid" id="img-grid"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// IMAGES
+// ════════════════════════════════════════
+const IMAGES = [
+  { id:'street',  src:'https://plus.unsplash.com/premium_vector-1732356540932-18564bf0783d?w=800&auto=format&fit=crop&q=80',  label:'🌆 Street' },
+  { id:'redeye',  src:'https://plus.unsplash.com/premium_vector-1689096623582-d6b204f320ac?w=800&auto=format&fit=crop&q=80',  label:'👁 Red Eye' },
+  { id:'falling', src:'https://images.unsplash.com/vector-1744442861923-aaeef319ac38?w=800&auto=format&fit=crop&q=80',        label:'🌸 Girl Falling' },
+  { id:'eyes',    src:'https://plus.unsplash.com/premium_vector-1689096627500-db28ccd880b3?w=800&auto=format&fit=crop&q=80',  label:'✨ Eyes' },
+  { id:'tulips',  src:'https://plus.unsplash.com/premium_vector-1742668947361-739780396fb6?w=800&auto=format&fit=crop&q=80',  label:'💙 Blue Tulips' },
+  { id:'clouds',  src:'https://images.unsplash.com/vector-1744442860865-0765bab8753c?w=800&auto=format&fit=crop&q=80',        label:'☁️ Girl & Clouds' },
+  { id:'ramen',   src:'https://plus.unsplash.com/premium_vector-1731491694760-6f6372dd8bca?w=800&auto=format&fit=crop&q=80',  label:'🍜 Ramen' },
+  { id:'pink',    bg:'linear-gradient(135deg,#FFE4F0,#EDE4FF)',                label:'🌸 Pink Magic' },
+  { id:'night',   bg:'linear-gradient(180deg,#0a0a1a,#1a1060,#0d1a3a)',       label:'🌙 Night Sky' },
+  { id:'gold',    bg:'linear-gradient(135deg,#FFF8E1,#FFD700,#FFA000)',        label:'⭐ Golden' },
+  { id:'forest',  bg:'linear-gradient(180deg,#1a4a1a,#2d7a2d,#6aaa40)',       label:'🌿 Forest' },
+  { id:'ocean',   bg:'linear-gradient(180deg,#87CEEB,#48C0E0,#0099CC,#006699)',label:'🌊 Ocean' },
+];
+
+// ════════════════════════════════════════
+// WORD TILES
+// ════════════════════════════════════════
+const WORDS = {
+  '📖': ['Once upon a time...','One day...','Long long ago...','Suddenly!','And then...','Meanwhile...','But wait!','At last!','To be continued...','The End! 🌸','happily ever after!','The next day...'],
+  '👸': ['she','he','they','the princess','the dragon','the witch','the hero','the cat','the fairy','the knight','the wizard','her friend','the stranger','everyone','the little girl','the mysterious one'],
+  '⚡': ['flew','ran','discovered','found','smiled','whispered','cried','fought','helped','hid','watched','opened','followed','saved','called out','never gave up','looked for','arrived at'],
+  '🏰': ['in the forest','at the castle','in the sky','in the garden','in the cave','among the stars','at home','far away','in a hidden place','on a long journey','at the top','in the city','under the moon'],
+  '💕': ['was happy','was scared','was brave','was magical','was surprised','was sad','felt powerful','felt lost','felt hopeful','was in love','felt free','was amazed','felt alone','was curious'],
+};
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+const KEY = 'kawaii_stories_v2';
+let stories = [];
+let cur = null;
+let pidx = 0;
+let selId = null;
+let drag = null;
+let tab = '📖';
+let ridx = 0;
+
+// ════════════════════════════════════════
+// PERSIST
+// ════════════════════════════════════════
+function load() { try { stories = JSON.parse(localStorage.getItem(KEY)) || []; } catch { stories = []; } }
+function persist() { localStorage.setItem(KEY, JSON.stringify(stories)); }
+
+// ════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+
+function goList() { persist(); show('s-list'); renderList(); }
+function goEditor() { show('s-editor'); renderEditor(); }
+function goReader() {
+  if (!cur || !cur.panels.length) return;
+  ridx = 0; show('s-reader'); renderReader();
+}
+
+// ════════════════════════════════════════
+// LIST
+// ════════════════════════════════════════
+function renderList() {
+  const el = document.getElementById('list-scroll');
+  if (!stories.length) {
+    el.innerHTML = `<div class="empty"><div class="big">📖</div><div>No stories yet!</div><div style="font-size:0.82rem">Tap the button below to make one.</div></div>`;
+    return;
+  }
+  el.innerHTML = stories.map(s => {
+    const p0 = s.panels[0];
+    const img = p0 ? getImg(p0.iid) : null;
+    const bgS = img ? (img.src ? 'background:#111' : `background:${img.bg}`) : 'background:#EDE4FF';
+    const imgTag = img?.src ? `<img src="${img.src}" alt="" loading="lazy">` : '';
+    const tileHTML = (p0?.tiles || []).slice(0, 3).map(t =>
+      `<div class="ptile s${t.s}" style="left:${t.x}%;top:${t.y}%;position:absolute;transform:translate(-50%,-50%)"><span class="ptile-text">${t.text}</span></div>`
+    ).join('');
+    const d = new Date(s.created).toLocaleDateString('en-CA', { month:'short', day:'numeric' });
+    return `<div class="story-card" onclick="openStory('${s.id}')">
+      <div class="story-thumb" style="${bgS}">${imgTag}<div style="position:absolute;inset:0">${tileHTML}</div></div>
+      <div class="story-info">
+        <div><div class="story-name">${s.title}</div><div class="story-meta">${s.panels.length} scene${s.panels.length !== 1 ? 's' : ''} · ${d}</div></div>
+        <div class="story-actions">
+          <button class="s-btn" title="Read" onclick="event.stopPropagation();quickRead('${s.id}')">▶</button>
+          <button class="s-btn" title="Delete" onclick="event.stopPropagation();delStory('${s.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function newStory() {
+  cur = { id: 'st_' + Date.now(), title: 'Story ' + (stories.length + 1), created: new Date().toISOString(), panels: [] };
+  stories.unshift(cur);
+  pidx = 0; selId = null;
+  persist();
+  show('s-editor'); renderEditor();
+}
+
+function openStory(id) {
+  cur = stories.find(s => s.id === id);
+  pidx = 0; selId = null;
+  show('s-editor'); renderEditor();
+}
+
+function quickRead(id) {
+  cur = stories.find(s => s.id === id);
+  ridx = 0; show('s-reader'); renderReader();
+}
+
+function delStory(id) {
+  if (!confirm('Delete this story? This cannot be undone.')) return;
+  stories = stories.filter(s => s.id !== id);
+  persist(); renderList();
+}
+
+// ════════════════════════════════════════
+// EDITOR
+// ════════════════════════════════════════
+function renderEditor() {
+  document.getElementById('ed-title').textContent = cur.title;
+  renderStrip(); renderPanel(); renderTray();
+}
+
+function renderStrip() {
+  const el = document.getElementById('strip');
+  const thumbs = cur.panels.map((p, i) => {
+    const img = getImg(p.iid);
+    const bgS = img ? (img.src ? 'background:#111' : `background:${img.bg}`) : 'background:#C8B5FF';
+    const imgTag = img?.src ? `<img src="${img.src}" alt="" loading="lazy">` : '';
+    return `<div class="sthumb${i === pidx ? ' active' : ''}" style="${bgS}" onclick="selPanel(${i})">
+      ${imgTag}
+      <button class="sthumb-del" onclick="event.stopPropagation();delPanel(${i})">✕</button>
+    </div>`;
+  }).join('');
+  el.innerHTML = thumbs + `<button class="strip-add" onclick="openPicker()">+</button>`;
+}
+
+function renderPanel() {
+  const bg = document.getElementById('panel-bg');
+  const msg = document.getElementById('no-panel-msg');
+  const layer = document.getElementById('tile-layer');
+
+  if (!cur.panels.length || pidx >= cur.panels.length) {
+    bg.style.cssText = 'background:#C8B5FF';
+    bg.innerHTML = `<div class="no-panel-msg"><div class="big">🌸</div><div>Tap + to add a scene</div></div>`;
+    layer.innerHTML = '';
+    return;
+  }
+
+  const p = cur.panels[pidx];
+  const img = getImg(p.iid);
+  bg.innerHTML = '';
+  if (img?.src) {
+    bg.style.background = '#111';
+    bg.innerHTML = `<img src="${img.src}" alt="">`;
+  } else if (img?.bg) {
+    bg.style.background = img.bg;
+  } else {
+    bg.style.background = '#C8B5FF';
+  }
+
+  renderTiles(p);
+}
+
+function renderTiles(panel) {
+  const layer = document.getElementById('tile-layer');
+  layer.innerHTML = '';
+  (panel.tiles || []).forEach(t => {
+    const el = document.createElement('div');
+    el.className = `ptile s${t.s}${t.id === selId ? ' sel' : ''}`;
+    el.id = 'pt_' + t.id;
+    el.style.left = t.x + '%';
+    el.style.top = t.y + '%';
+
+    const span = document.createElement('span');
+    span.className = 'ptile-text';
+    span.textContent = t.text;
+    el.appendChild(span);
+
+    const ctrl = document.createElement('div');
+    ctrl.className = 'ptile-ctrl';
+    ctrl.innerHTML = `<button class="tc" title="Change colour">🎨</button><button class="tc" title="Delete">✕</button>`;
+    ctrl.addEventListener('pointerdown', e => e.stopPropagation());
+    ctrl.children[0].addEventListener('click', () => cycleStyle(t.id));
+    ctrl.children[1].addEventListener('click', () => delTile(t.id));
+    el.appendChild(ctrl);
+
+    el.addEventListener('pointerdown', e => startDrag(e, t.id));
+    layer.appendChild(el);
+  });
+}
+
+function renderTray() {
+  const tabs = document.getElementById('tray-tabs');
+  tabs.innerHTML = Object.keys(WORDS).map(k =>
+    `<button class="tray-tab${k === tab ? ' active' : ''}" onclick="switchTab('${k}')">${k}</button>`
+  ).join('');
+  renderWords();
+}
+
+function renderWords() {
+  const el = document.getElementById('tray-words');
+  el.innerHTML = (WORDS[tab] || []).map(w =>
+    `<button class="word-tile" onclick="addTile(this.textContent.trim())">${w}</button>`
+  ).join('');
+}
+
+function switchTab(t) {
+  tab = t;
+  document.querySelectorAll('.tray-tab').forEach(b => b.classList.toggle('active', b.textContent === t));
+  renderWords();
+}
+
+// ── Panel ops ──
+function selPanel(i) { pidx = i; selId = null; renderStrip(); renderPanel(); }
+
+function delPanel(i) {
+  cur.panels.splice(i, 1);
+  if (pidx >= cur.panels.length) pidx = Math.max(0, cur.panels.length - 1);
+  persist(); renderStrip(); renderPanel();
+}
+
+// ── Tile ops ──
+function addTile(text) {
+  if (!cur.panels.length) return;
+  const p = cur.panels[pidx];
+  if (!p.tiles) p.tiles = [];
+  const n = p.tiles.length;
+  const t = { id: 'ti_' + Date.now(), text, x: 30 + (n % 4) * 14, y: 25 + Math.floor(n / 4) * 20, s: 0 };
+  p.tiles.push(t);
+  selId = t.id;
+  persist(); renderTiles(p);
+}
+
+function cycleStyle(id) {
+  const p = cur.panels[pidx];
+  const t = p.tiles.find(t => t.id === id);
+  if (!t) return;
+  t.s = (t.s + 1) % 4;
+  persist(); renderTiles(p);
+}
+
+function delTile(id) {
+  const p = cur.panels[pidx];
+  p.tiles = p.tiles.filter(t => t.id !== id);
+  selId = null; persist(); renderTiles(p);
+}
+
+// ── Drag ──
+function startDrag(e, tileId) {
+  e.preventDefault(); e.stopPropagation();
+  const p = cur.panels[pidx];
+  const t = p.tiles.find(t => t.id === tileId);
+  if (!t) return;
+  const canvas = document.getElementById('panel-canvas');
+  const rect = canvas.getBoundingClientRect();
+  const cx = e.touches ? e.touches[0].clientX : e.clientX;
+  const cy = e.touches ? e.touches[0].clientY : e.clientY;
+  drag = { tileId, sx: cx, sy: cy, ox: t.x, oy: t.y, rect, moved: false };
+  selId = tileId;
+  renderTiles(p);
+  document.addEventListener('pointermove', onMove, { passive: false });
+  document.addEventListener('pointerup', onUp);
+}
+
+function onMove(e) {
+  if (!drag) return;
+  e.preventDefault();
+  const cx = e.touches ? e.touches[0].clientX : e.clientX;
+  const cy = e.touches ? e.touches[0].clientY : e.clientY;
+  const dx = cx - drag.sx, dy = cy - drag.sy;
+  if (Math.abs(dx) > 3 || Math.abs(dy) > 3) drag.moved = true;
+  if (!drag.moved) return;
+  const p = cur.panels[pidx];
+  const t = p.tiles.find(t => t.id === drag.tileId);
+  if (!t) return;
+  t.x = Math.max(4, Math.min(96, drag.ox + dx / drag.rect.width * 100));
+  t.y = Math.max(4, Math.min(96, drag.oy + dy / drag.rect.height * 100));
+  const el = document.getElementById('pt_' + drag.tileId);
+  if (el) { el.style.left = t.x + '%'; el.style.top = t.y + '%'; }
+}
+
+function onUp() {
+  document.removeEventListener('pointermove', onMove);
+  document.removeEventListener('pointerup', onUp);
+  if (drag) { persist(); drag = null; }
+}
+
+// Tap background to deselect
+document.getElementById('panel-wrap').addEventListener('pointerdown', e => {
+  if (!e.target.closest('.ptile')) {
+    selId = null;
+    if (cur?.panels[pidx]) renderTiles(cur.panels[pidx]);
+  }
+});
+
+// ════════════════════════════════════════
+// PICKER
+// ════════════════════════════════════════
+function openPicker() {
+  const grid = document.getElementById('img-grid');
+  grid.innerHTML = IMAGES.map(img => {
+    const content = img.src
+      ? `<img src="${img.src}" alt="${img.label}" loading="lazy">`
+      : `<div class="ig-bg" style="background:${img.bg}"></div>`;
+    return `<div class="img-opt" onclick="pickImg('${img.id}')">${content}<div class="img-lbl">${img.label}</div></div>`;
+  }).join('');
+  document.getElementById('picker').classList.add('open');
+}
+
+function closePicker() { document.getElementById('picker').classList.remove('open'); }
+
+function pickImg(iid) {
+  closePicker();
+  cur.panels.push({ iid, tiles: [] });
+  pidx = cur.panels.length - 1;
+  selId = null; persist(); renderStrip(); renderPanel();
+}
+
+// ════════════════════════════════════════
+// READER
+// ════════════════════════════════════════
+function renderReader() {
+  const p = cur.panels[ridx];
+  const img = p ? getImg(p.iid) : null;
+  const bg = document.getElementById('r-bg');
+  bg.innerHTML = '';
+  if (img?.src) { bg.style.background = '#000'; bg.innerHTML = `<img src="${img.src}" alt="">`; }
+  else if (img?.bg) { bg.style.background = img.bg; }
+  else { bg.style.background = '#111'; }
+
+  document.getElementById('r-tiles').innerHTML = (p?.tiles || []).map(t =>
+    `<div class="ptile s${t.s}" style="left:${t.x}%;top:${t.y}%"><span class="ptile-text">${t.text}</span></div>`
+  ).join('');
+
+  document.getElementById('r-count').textContent = `${ridx + 1} / ${cur.panels.length}`;
+  document.getElementById('r-prev').disabled = ridx === 0;
+  document.getElementById('r-next').disabled = ridx === cur.panels.length - 1;
+}
+
+function rPrev() { if (ridx > 0) { ridx--; renderReader(); } }
+function rNext() { if (ridx < cur.panels.length - 1) { ridx++; renderReader(); } }
+
+// ════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════
+function getImg(id) { return IMAGES.find(i => i.id === id) || null; }
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+load();
+renderList();
+</script>
+</body>
+</html>

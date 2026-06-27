@@ -77,6 +77,7 @@ h1 {
 .btn-erase { background: #EDE4FF; color: #6A28CC; }
 .btn-erase.on { background: #6A28CC; color: white; }
 .btn-clear { background: #FFE4EE; color: #D63384; }
+.btn-save  { background: #E0FFF4; color: #0A7A50; }
 .grid-wrap {
   border: 3px solid #B5DEFF;
   border-radius: 14px;
@@ -100,6 +101,7 @@ h1 {
 <div class="toolbar">
   <button class="btn btn-erase" id="eraseBtn" onclick="toggleErase()">🩹 Eraser</button>
   <button class="btn btn-clear" onclick="clearAll()">🗑️ Clear All</button>
+  <button class="btn btn-save"  onclick="saveImage()">💾 Save Image</button>
 </div>
 
 <div class="palette" id="palette"></div>
@@ -186,6 +188,29 @@ function clearAll() {
     c.style.background = '#F8FBFF';
     c.style.border = '0.5px solid #E0EEFF';
   });
+}
+
+function saveImage() {
+  const PX = 20;
+  const canvas = document.createElement('canvas');
+  canvas.width  = COLS * PX;
+  canvas.height = ROWS * PX;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#F8FBFF';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  document.querySelectorAll('.cell').forEach((cell, i) => {
+    const r = Math.floor(i / COLS);
+    const c = i % COLS;
+    const bg = cell.style.background;
+    if (bg && bg !== '#F8FBFF') {
+      ctx.fillStyle = bg;
+      ctx.fillRect(c * PX, r * PX, PX, PX);
+    }
+  });
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = 'pixel-art.png';
+  a.click();
 }
 </script>
 </body>
