@@ -48,6 +48,9 @@ h1 {
   padding: 7px 14px; font-family: 'Trebuchet MS', Arial, sans-serif; font-weight: 700;
   font-size: 0.75rem; cursor: pointer; white-space: nowrap; flex-shrink: 0;
 }
+.del-btn { background:none; border:none; color:rgba(255,255,255,0.3); font-size:1.2rem; cursor:pointer; padding:2px 4px; flex-shrink:0; line-height:1; }
+.del-btn:hover { color:#ff6b6b; }
+.resume-list { display:flex; flex-direction:column; gap:8px; }
 
 .img-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;
@@ -168,14 +171,7 @@ footer { position: fixed; bottom: 10px; left: 14px; color: rgba(255,255,255,0.18
   <h1>🧩 TRAIN JIGSAW</h1>
 
   <div class="resume-section" id="resumeSection">
-    <div class="resume-card" onclick="resumeGame()">
-      <img class="resume-thumb" id="resumeThumb" src="" alt="">
-      <div class="resume-info">
-        <div class="resume-title">CONTINUE PUZZLE</div>
-        <div class="resume-label" id="resumeInfo"></div>
-      </div>
-      <button class="resume-btn">Resume →</button>
-    </div>
+    <div class="resume-list" id="resumeList"></div>
   </div>
 
   <div class="section-label">CHOOSE DIFFICULTY</div>
@@ -242,7 +238,8 @@ const DIFFS = {
 };
 
 const PP = 52;
-const SAVE_KEY = 'train_jigsaw_v1';
+const SAVE_KEY = 'train_jigsaw_slots';
+let curSlot = -1;
 
 let selImg      = IMAGES[0];
 let selPieceId  = null;
@@ -272,61 +269,85 @@ function shuffle(arr) {
   }
 }
 
+function getSlots() {
+  try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || [null,null,null]; } catch(e) { return [null,null,null]; }
+}
+function saveSlots(s) { localStorage.setItem(SAVE_KEY, JSON.stringify(s)); }
+
 function saveProgress() {
-  if (!selImg || !pieces.length) return;
+  if (!selImg || !pieces.length || curSlot === -1) return;
   const placed = pieces.filter(p => p.placed).map(p => p.id);
   if (!placed.length) return;
-  localStorage.setItem(SAVE_KEY, JSON.stringify({ imgId: selImg.id, diff: curDiff, placed }));
+  const slots = getSlots();
+  slots[curSlot] = { imgId: selImg.id, diff: curDiff, placed, savedAt: Date.now() };
+  saveSlots(slots);
 }
 
-function clearSave() {
-  localStorage.removeItem(SAVE_KEY);
+function clearCurrentSave() {
+  if (curSlot === -1) return;
+  const slots = getSlots();
+  slots[curSlot] = null;
+  saveSlots(slots);
+  curSlot = -1;
 }
 
-function loadSave() {
-  const raw = localStorage.getItem(SAVE_KEY);
-  if (!raw) return;
-  try {
-    const data = JSON.parse(raw);
-    const img = IMAGES.find(i => i.id === data.imgId);
-    if (!img || !data.placed?.length || !DIFFS[data.diff]) return;
-    document.getElementById('resumeSection').classList.add('show');
-    document.getElementById('resumeThumb').src = img.src;
-    const total = DIFFS[data.diff].cols * DIFFS[data.diff].rows;
-    document.getElementById('resumeInfo').textContent = `${img.label} · ${data.diff.toUpperCase()} · ${data.placed.length}/${total} pieces`;
-  } catch(e) {}
+function deleteSlot(idx) {
+  const slots = getSlots();
+  slots[idx] = null;
+  saveSlots(slots);
+  renderSlots();
 }
 
-function resumeGame() {
-  const raw = localStorage.getItem(SAVE_KEY);
-  if (!raw) return;
-  try {
-    const data = JSON.parse(raw);
-    const img = IMAGES.find(i => i.id === data.imgId);
-    if (!img || !DIFFS[data.diff]) return;
-    selImg = img;
-    curDiff = data.diff;
-    document.querySelectorAll('.img-opt').forEach((el, i) => {
-      el.classList.toggle('sel', IMAGES[i].id === img.id);
-    });
-    cfg = { ...DIFFS[curDiff] };
-    PW = Math.floor(Math.min(window.innerWidth * 0.92, 420) / cfg.cols);
-    selPieceId = null; placedCount = 0; pieces = [];
-    for (let r = 0; r < cfg.rows; r++)
-      for (let c = 0; c < cfg.cols; c++)
-        pieces.push({ id:`p_${r}_${c}`, targetR:r, targetC:c, placed:false });
-    data.placed.forEach(id => {
-      const p = pieces.find(p => p.id === id);
-      if (p) { p.placed = true; placedCount++; }
-    });
-    shuffle(pieces);
-    renderBoard();
-    renderSavedPlacements();
-    renderPool();
-    updateCounter();
-    document.getElementById('s-pick').classList.remove('on');
-    document.getElementById('s-puzzle').classList.add('on');
-  } catch(e) {}
+function renderSlots() {
+  const slots = getSlots();
+  const section = document.getElementById('resumeSection');
+  const list = document.getElementById('resumeList');
+  const any = slots.some(Boolean);
+  section.classList.toggle('show', any);
+  if (!any) { list.innerHTML = ''; return; }
+  list.innerHTML = slots.map((s, i) => {
+    if (!s) return '';
+    const img = IMAGES.find(im => im.id === s.imgId);
+    if (!img || !DIFFS[s.diff]) return '';
+    const total = DIFFS[s.diff].cols * DIFFS[s.diff].rows;
+    return `<div class="resume-card">
+      <img class="resume-thumb" src="${img.src}" alt="">
+      <div class="resume-info">
+        <div class="resume-title">CONTINUE PUZZLE</div>
+        <div class="resume-label">${img.label} · ${s.diff.toUpperCase()} · ${s.placed.length}/${total} pieces</div>
+      </div>
+      <button class="resume-btn" onclick="resumeSlot(${i})">Resume →</button>
+      <button class="del-btn" onclick="deleteSlot(${i})">×</button>
+    </div>`;
+  }).join('');
+}
+
+function resumeSlot(idx) {
+  const slots = getSlots();
+  const data = slots[idx];
+  if (!data) return;
+  const img = IMAGES.find(im => im.id === data.imgId);
+  if (!img || !DIFFS[data.diff]) return;
+  curSlot = idx;
+  selImg = img; curDiff = data.diff;
+  document.querySelectorAll('.img-opt').forEach((el, i) => el.classList.toggle('sel', IMAGES[i].id === img.id));
+  cfg = { ...DIFFS[curDiff] };
+  PW = Math.floor(Math.min(window.innerWidth * 0.92, 420) / cfg.cols);
+  selPieceId = null; placedCount = 0; pieces = [];
+  for (let r = 0; r < cfg.rows; r++)
+    for (let c = 0; c < cfg.cols; c++)
+      pieces.push({ id:`p_${r}_${c}`, targetR:r, targetC:c, placed:false });
+  data.placed.forEach(id => {
+    const p = pieces.find(p => p.id === id);
+    if (p) { p.placed = true; placedCount++; }
+  });
+  shuffle(pieces);
+  renderBoard();
+  renderSavedPlacements();
+  renderPool();
+  updateCounter();
+  document.getElementById('s-pick').classList.remove('on');
+  document.getElementById('s-puzzle').classList.add('on');
 }
 
 function renderSavedPlacements() {
@@ -345,7 +366,11 @@ function renderSavedPlacements() {
 
 function startPuzzle(diff) {
   curDiff = diff;
-  clearSave();
+  const _sl = getSlots();
+  let si = _sl.findIndex(s => s && s.imgId === selImg.id && s.diff === diff);
+  if (si === -1) si = _sl.findIndex(s => !s);
+  if (si === -1) { si = 0; for (let i = 1; i < _sl.length; i++) if (_sl[i] && _sl[i].savedAt < _sl[si].savedAt) si = i; }
+  curSlot = si;
   cfg = { ...DIFFS[diff] };
   PW = Math.floor(Math.min(window.innerWidth * 0.92, 420) / cfg.cols);
   selPieceId = null;
@@ -467,12 +492,12 @@ function updateCounter() {
 }
 
 function showWin() {
-  clearSave();
+  clearCurrentSave();
   document.getElementById('winSub').textContent = `You completed the ${selImg.label} puzzle! 🚂`;
   document.getElementById('winOverlay').classList.add('show');
 }
 
-loadSave();
+renderSlots();
 </script>
 </body>
 </html>

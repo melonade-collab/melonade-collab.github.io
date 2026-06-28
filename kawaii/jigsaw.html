@@ -218,6 +218,9 @@ h1 {
 .resume-title { font-size: 0.75rem; font-weight: 900; color: #5B4E77; }
 .resume-sub   { font-size: 0.63rem; color: #9B8AB8; font-weight: 700; margin-top: 2px; }
 .resume-btn   { background: linear-gradient(135deg,#A78BFA,#7C3AED); color: white; border: none; border-radius: 10px; padding: 6px 12px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.72rem; cursor:pointer; white-space:nowrap; flex-shrink:0; }
+.del-slot { background:none; border:none; color:rgba(91,78,119,0.3); font-size:1.2rem; cursor:pointer; padding:2px 4px; flex-shrink:0; line-height:1; }
+.del-slot:hover { color:#D63384; }
+.resume-list { display:flex; flex-direction:column; gap:8px; }
 </style>
 </head>
 <body>
@@ -229,14 +232,7 @@ h1 {
 <div class="screen" id="s-pick">
   <div class="resume-section" id="resumeSection">
     <div class="pick-title" style="margin-bottom:8px">Continue? 🎮</div>
-    <div class="resume-card" onclick="resumeGame()">
-      <img class="resume-thumb" id="resumeThumb" src="" alt="">
-      <div class="resume-info">
-        <div class="resume-title" id="resumeTitle"></div>
-        <div class="resume-sub"  id="resumeSub"></div>
-      </div>
-      <button class="resume-btn">Resume ▶</button>
-    </div>
+    <div class="resume-list" id="resumeList"></div>
   </div>
   <div class="pick-title">Choose difficulty 💪</div>
   <div class="diff-row">
@@ -310,7 +306,8 @@ let BSZ      = 300;
 let PW       = 60;
 let placedCount = 0;
 let curDiff  = 'easy';
-const SAVE_KEY = 'kawaii_jigsaw_v1';
+const SAVE_KEY = 'kawaii_jigsaw_slots';
+let curSlot = -1;
 
 // Build image picker
 const imgGrid = document.getElementById('imgGrid');
@@ -335,7 +332,11 @@ function calcDims() {
 }
 
 function startPuzzle(diff) {
-  clearSave();
+  const _sl = getSlots();
+  let si = _sl.findIndex(s => s && s.imgId === selImg.id && s.diff === diff);
+  if (si === -1) si = _sl.findIndex(s => !s);
+  if (si === -1) { si = 0; for (let i = 1; i < _sl.length; i++) if (_sl[i] && _sl[i].savedAt < _sl[si].savedAt) si = i; }
+  curSlot = si;
   curDiff = diff;
   cfg = { ...DIFFS[diff] };
   calcDims();
@@ -358,31 +359,67 @@ function startPuzzle(diff) {
   document.getElementById('s-puzzle').classList.remove('hidden');
 }
 
-function saveProgress() {
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ imgId: selImg.id, diff: curDiff, pieces })); } catch(e) {}
+function getSlots() {
+  try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || [null,null,null]; } catch(e) { return [null,null,null]; }
 }
-function clearSave() { localStorage.removeItem(SAVE_KEY); }
+function saveSlots(s) { localStorage.setItem(SAVE_KEY, JSON.stringify(s)); }
 
-function loadSave() {
+function saveProgress() {
+  if (curSlot === -1) return;
   try {
-    const save = JSON.parse(localStorage.getItem(SAVE_KEY));
-    if (!save) return;
-    const img = IMAGES.find(i => i.id === save.imgId);
-    if (!img || !save.diff || !save.pieces) return;
-    const placed = save.pieces.filter(p => p.placed).length;
-    if (placed === save.pieces.length) { clearSave(); return; }
-    document.getElementById('resumeThumb').src = img.src;
-    document.getElementById('resumeTitle').textContent = img.label + ' · ' + save.diff.toUpperCase();
-    document.getElementById('resumeSub').textContent = `${placed} of ${save.pieces.length} pieces placed`;
-    document.getElementById('resumeSection').classList.add('show');
+    const slots = getSlots();
+    slots[curSlot] = { imgId: selImg.id, diff: curDiff, pieces, savedAt: Date.now() };
+    saveSlots(slots);
   } catch(e) {}
 }
 
-function resumeGame() {
+function clearCurrentSave() {
+  if (curSlot === -1) return;
+  const slots = getSlots();
+  slots[curSlot] = null;
+  saveSlots(slots);
+  curSlot = -1;
+}
+
+function deleteSlot(idx) {
+  const slots = getSlots();
+  slots[idx] = null;
+  saveSlots(slots);
+  renderSlots();
+}
+
+function renderSlots() {
+  const slots = getSlots();
+  const section = document.getElementById('resumeSection');
+  const list = document.getElementById('resumeList');
+  const any = slots.some(Boolean);
+  section.classList.toggle('show', any);
+  if (!any) { list.innerHTML = ''; return; }
+  list.innerHTML = slots.map((s, i) => {
+    if (!s) return '';
+    const img = IMAGES.find(im => im.id === s.imgId);
+    if (!img || !DIFFS[s.diff] || !s.pieces) return '';
+    const placed = s.pieces.filter(p => p.placed).length;
+    return `<div class="resume-card">
+      <img class="resume-thumb" src="${img.src}" alt="">
+      <div class="resume-info">
+        <div class="resume-title">${img.label} · ${s.diff.toUpperCase()}</div>
+        <div class="resume-sub">${placed} of ${s.pieces.length} pieces placed</div>
+      </div>
+      <button class="resume-btn" onclick="resumeSlot(${i})">Resume ▶</button>
+      <button class="del-slot" onclick="deleteSlot(${i})">×</button>
+    </div>`;
+  }).join('');
+}
+
+function resumeSlot(idx) {
   try {
-    const save = JSON.parse(localStorage.getItem(SAVE_KEY));
+    const slots = getSlots();
+    const save = slots[idx];
+    if (!save) return;
     const img = IMAGES.find(i => i.id === save.imgId);
     if (!img) return;
+    curSlot = idx;
     selImg = img; curDiff = save.diff;
     cfg = { ...DIFFS[save.diff] };
     calcDims();
@@ -536,13 +573,13 @@ function updateCounter() {
 }
 
 function showWin() {
-  clearSave();
+  clearCurrentSave();
   const total = cfg.cols * cfg.rows;
   document.getElementById('winMsg').textContent = `All ${total} pieces in place! 🌸`;
   document.getElementById('winOverlay').classList.add('show');
 }
 
-loadSave();
+renderSlots();
 
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
