@@ -147,16 +147,16 @@ footer { position: fixed; bottom: 10px; left: 14px; color: rgba(255,255,255,0.18
   <div class="img-grid" id="imgGrid"></div>
   <div class="section-label">CHOOSE DIFFICULTY</div>
   <div class="diff-row">
-    <button class="diff-btn easy"   onclick="startPuzzle('easy')">🟢 Easy<small>12 pieces</small></button>
-    <button class="diff-btn medium" onclick="startPuzzle('medium')">🟡 Medium<small>20 pieces</small></button>
-    <button class="diff-btn hard"   onclick="startPuzzle('hard')">🔴 Hard<small>30 pieces</small></button>
+    <button class="diff-btn easy"   onclick="startPuzzle('easy')">🟢 Easy<small>4 pieces</small></button>
+    <button class="diff-btn medium" onclick="startPuzzle('medium')">🟡 Medium<small>8 pieces</small></button>
+    <button class="diff-btn hard"   onclick="startPuzzle('hard')">🔴 Hard<small>12 pieces</small></button>
   </div>
 </div>
 
 <!-- PUZZLE SCREEN -->
 <div class="screen" id="s-puzzle">
   <div class="puz-hdr">
-    <div class="puz-counter" id="puzCounter">0 / 12</div>
+    <div class="puz-counter" id="puzCounter">0 / 4</div>
     <button class="ref-btn" onclick="toggleHint()">🔍 Peek</button>
     <button class="new-btn" onclick="goBack()">🖼️ New</button>
   </div>
@@ -199,9 +199,9 @@ const IMAGES = [
 ];
 
 const DIFFS = {
-  easy:   { cols: 4, rows: 3 },
-  medium: { cols: 5, rows: 4 },
-  hard:   { cols: 6, rows: 5 },
+  easy:   { cols: 2, rows: 2 },
+  medium: { cols: 4, rows: 2 },
+  hard:   { cols: 4, rows: 3 },
 };
 
 const PP = 52;
