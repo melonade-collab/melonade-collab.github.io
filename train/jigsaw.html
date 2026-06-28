@@ -32,6 +32,23 @@ h1 {
   color: rgba(255,215,0,0.55); margin-bottom: 8px; align-self: flex-start;
 }
 
+/* RESUME */
+.resume-section { width: 100%; max-width: 420px; margin-bottom: 14px; display: none; }
+.resume-section.show { display: block; }
+.resume-card {
+  background: rgba(255,215,0,0.1); border-radius: 14px; border: 2px solid #ffd700;
+  padding: 10px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+}
+.resume-thumb { width: 58px; height: 44px; border-radius: 7px; object-fit: cover; flex-shrink: 0; }
+.resume-info { flex: 1; min-width: 0; }
+.resume-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; color: #ffd700; margin-bottom: 3px; }
+.resume-label { font-size: 0.78rem; font-weight: 700; color: white; }
+.resume-btn {
+  background: #ffd700; color: #1a1a2e; border: none; border-radius: 20px;
+  padding: 7px 14px; font-family: 'Trebuchet MS', Arial, sans-serif; font-weight: 700;
+  font-size: 0.75rem; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+}
+
 .img-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;
   width: 100%; max-width: 420px; margin-bottom: 20px;
@@ -73,6 +90,12 @@ h1 {
   padding: 5px 13px; border-radius: 20px; border: 1px solid #555;
   background: rgba(255,255,255,0.1); color: white;
   font-family: 'Trebuchet MS', Arial, sans-serif; font-weight: 700; font-size: 0.78rem; cursor: pointer;
+}
+.puz-back {
+  padding: 5px 11px; border-radius: 20px; border: 1px solid #444;
+  background: rgba(0,0,0,0.4); color: #aaa;
+  font-family: 'Trebuchet MS', Arial, sans-serif; font-weight: 700; font-size: 0.72rem; cursor: pointer;
+  text-decoration: none; display: inline-flex; align-items: center;
 }
 
 .board-wrap {
@@ -143,19 +166,33 @@ footer { position: fixed; bottom: 10px; left: 14px; color: rgba(255,255,255,0.18
 <div class="screen on" id="s-pick">
   <a class="back-link" href="index.html">← Train World</a>
   <h1>🧩 TRAIN JIGSAW</h1>
-  <div class="section-label">CHOOSE AN IMAGE</div>
-  <div class="img-grid" id="imgGrid"></div>
+
+  <div class="resume-section" id="resumeSection">
+    <div class="resume-card" onclick="resumeGame()">
+      <img class="resume-thumb" id="resumeThumb" src="" alt="">
+      <div class="resume-info">
+        <div class="resume-title">CONTINUE PUZZLE</div>
+        <div class="resume-label" id="resumeInfo"></div>
+      </div>
+      <button class="resume-btn">Resume →</button>
+    </div>
+  </div>
+
   <div class="section-label">CHOOSE DIFFICULTY</div>
-  <div class="diff-row">
+  <div class="diff-row" style="margin-bottom:20px;">
     <button class="diff-btn easy"   onclick="startPuzzle('easy')">🟢 Easy<small>4 pieces</small></button>
     <button class="diff-btn medium" onclick="startPuzzle('medium')">🟡 Medium<small>8 pieces</small></button>
     <button class="diff-btn hard"   onclick="startPuzzle('hard')">🔴 Hard<small>12 pieces</small></button>
   </div>
+
+  <div class="section-label">CHOOSE AN IMAGE</div>
+  <div class="img-grid" id="imgGrid"></div>
 </div>
 
 <!-- PUZZLE SCREEN -->
 <div class="screen" id="s-puzzle">
   <div class="puz-hdr">
+    <a class="puz-back" href="index.html">← Train World</a>
     <div class="puz-counter" id="puzCounter">0 / 4</div>
     <button class="ref-btn" onclick="toggleHint()">🔍 Peek</button>
     <button class="new-btn" onclick="goBack()">🖼️ New</button>
@@ -205,6 +242,7 @@ const DIFFS = {
 };
 
 const PP = 52;
+const SAVE_KEY = 'train_jigsaw_v1';
 
 let selImg      = IMAGES[0];
 let selPieceId  = null;
@@ -212,6 +250,7 @@ let pieces      = [];
 let cfg         = { cols: 4, rows: 3 };
 let PW          = 80;
 let placedCount = 0;
+let curDiff     = 'easy';
 
 // Build image picker
 IMAGES.forEach((img, i) => {
@@ -233,7 +272,80 @@ function shuffle(arr) {
   }
 }
 
+function saveProgress() {
+  if (!selImg || !pieces.length) return;
+  const placed = pieces.filter(p => p.placed).map(p => p.id);
+  if (!placed.length) return;
+  localStorage.setItem(SAVE_KEY, JSON.stringify({ imgId: selImg.id, diff: curDiff, placed }));
+}
+
+function clearSave() {
+  localStorage.removeItem(SAVE_KEY);
+}
+
+function loadSave() {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    const img = IMAGES.find(i => i.id === data.imgId);
+    if (!img || !data.placed?.length || !DIFFS[data.diff]) return;
+    document.getElementById('resumeSection').classList.add('show');
+    document.getElementById('resumeThumb').src = img.src;
+    const total = DIFFS[data.diff].cols * DIFFS[data.diff].rows;
+    document.getElementById('resumeInfo').textContent = `${img.label} · ${data.diff.toUpperCase()} · ${data.placed.length}/${total} pieces`;
+  } catch(e) {}
+}
+
+function resumeGame() {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    const img = IMAGES.find(i => i.id === data.imgId);
+    if (!img || !DIFFS[data.diff]) return;
+    selImg = img;
+    curDiff = data.diff;
+    document.querySelectorAll('.img-opt').forEach((el, i) => {
+      el.classList.toggle('sel', IMAGES[i].id === img.id);
+    });
+    cfg = { ...DIFFS[curDiff] };
+    PW = Math.floor(Math.min(window.innerWidth * 0.92, 420) / cfg.cols);
+    selPieceId = null; placedCount = 0; pieces = [];
+    for (let r = 0; r < cfg.rows; r++)
+      for (let c = 0; c < cfg.cols; c++)
+        pieces.push({ id:`p_${r}_${c}`, targetR:r, targetC:c, placed:false });
+    data.placed.forEach(id => {
+      const p = pieces.find(p => p.id === id);
+      if (p) { p.placed = true; placedCount++; }
+    });
+    shuffle(pieces);
+    renderBoard();
+    renderSavedPlacements();
+    renderPool();
+    updateCounter();
+    document.getElementById('s-pick').classList.remove('on');
+    document.getElementById('s-puzzle').classList.add('on');
+  } catch(e) {}
+}
+
+function renderSavedPlacements() {
+  pieces.filter(p => p.placed).forEach(p => {
+    const slot = document.getElementById(`slot_${p.targetR}_${p.targetC}`);
+    if (!slot) return;
+    slot.classList.add('has-piece');
+    const inner = document.createElement('div');
+    inner.className = 'slot-placed';
+    inner.style.backgroundImage    = `url('${selImg.src}')`;
+    inner.style.backgroundSize     = `${PW * cfg.cols}px ${PW * cfg.rows}px`;
+    inner.style.backgroundPosition = `-${p.targetC * PW}px -${p.targetR * PW}px`;
+    slot.appendChild(inner);
+  });
+}
+
 function startPuzzle(diff) {
+  curDiff = diff;
+  clearSave();
   cfg = { ...DIFFS[diff] };
   PW = Math.floor(Math.min(window.innerWidth * 0.92, 420) / cfg.cols);
   selPieceId = null;
@@ -341,6 +453,7 @@ function slotTapped(r, c, slotEl) {
     selPieceId = null;
     clearSlotHighlights();
     updateCounter();
+    saveProgress();
     renderPool();
     if (placedCount === pieces.length) setTimeout(showWin, 500);
   } else {
@@ -354,9 +467,12 @@ function updateCounter() {
 }
 
 function showWin() {
+  clearSave();
   document.getElementById('winSub').textContent = `You completed the ${selImg.label} puzzle! 🚂`;
   document.getElementById('winOverlay').classList.add('show');
 }
+
+loadSave();
 </script>
 </body>
 </html>

@@ -205,6 +205,19 @@ h1 {
   box-shadow: 0 6px 18px rgba(100,50,200,0.3);
 }
 .big-btn:active { transform: scale(0.94); }
+.resume-section { width: 100%; max-width: 480px; margin-bottom: 14px; display: none; }
+.resume-section.show { display: block; }
+.resume-card {
+  background: white; border-radius: 14px; border: 3px solid #A78BFA;
+  padding: 10px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 4px 14px rgba(100,50,200,0.15); transition: transform 0.12s;
+}
+.resume-card:hover { transform: scale(1.02); }
+.resume-thumb { width: 58px; height: 44px; border-radius: 7px; object-fit: cover; flex-shrink: 0; }
+.resume-info { flex: 1; min-width: 0; }
+.resume-title { font-size: 0.75rem; font-weight: 900; color: #5B4E77; }
+.resume-sub   { font-size: 0.63rem; color: #9B8AB8; font-weight: 700; margin-top: 2px; }
+.resume-btn   { background: linear-gradient(135deg,#A78BFA,#7C3AED); color: white; border: none; border-radius: 10px; padding: 6px 12px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.72rem; cursor:pointer; white-space:nowrap; flex-shrink:0; }
 </style>
 </head>
 <body>
@@ -214,14 +227,25 @@ h1 {
 
 <!-- PICK SCREEN -->
 <div class="screen" id="s-pick">
-  <div class="pick-title">Pick a picture 🖼️</div>
-  <div class="img-grid" id="imgGrid"></div>
+  <div class="resume-section" id="resumeSection">
+    <div class="pick-title" style="margin-bottom:8px">Continue? 🎮</div>
+    <div class="resume-card" onclick="resumeGame()">
+      <img class="resume-thumb" id="resumeThumb" src="" alt="">
+      <div class="resume-info">
+        <div class="resume-title" id="resumeTitle"></div>
+        <div class="resume-sub"  id="resumeSub"></div>
+      </div>
+      <button class="resume-btn">Resume ▶</button>
+    </div>
+  </div>
   <div class="pick-title">Choose difficulty 💪</div>
   <div class="diff-row">
     <button class="diff-btn easy"   onclick="startPuzzle('easy')">🟢 Easy<small>25 pieces</small></button>
     <button class="diff-btn medium" onclick="startPuzzle('medium')">🟡 Medium<small>64 pieces</small></button>
     <button class="diff-btn hard"   onclick="startPuzzle('hard')">🔴 Hard<small>100 pieces</small></button>
   </div>
+  <div class="pick-title">Pick a picture 🖼️</div>
+  <div class="img-grid" id="imgGrid"></div>
 </div>
 
 <!-- PUZZLE SCREEN -->
@@ -282,9 +306,11 @@ let selImg   = IMAGES[0];
 let selPieceId = null;
 let pieces   = [];
 let cfg      = { cols: 5, rows: 5 };
-let BSZ      = 300; // board square size in px
-let PW       = 60;  // board piece width
+let BSZ      = 300;
+let PW       = 60;
 let placedCount = 0;
+let curDiff  = 'easy';
+const SAVE_KEY = 'kawaii_jigsaw_v1';
 
 // Build image picker
 const imgGrid = document.getElementById('imgGrid');
@@ -309,6 +335,8 @@ function calcDims() {
 }
 
 function startPuzzle(diff) {
+  clearSave();
+  curDiff = diff;
   cfg = { ...DIFFS[diff] };
   calcDims();
   placedCount = 0;
@@ -328,6 +356,60 @@ function startPuzzle(diff) {
 
   document.getElementById('s-pick').classList.add('hidden');
   document.getElementById('s-puzzle').classList.remove('hidden');
+}
+
+function saveProgress() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ imgId: selImg.id, diff: curDiff, pieces })); } catch(e) {}
+}
+function clearSave() { localStorage.removeItem(SAVE_KEY); }
+
+function loadSave() {
+  try {
+    const save = JSON.parse(localStorage.getItem(SAVE_KEY));
+    if (!save) return;
+    const img = IMAGES.find(i => i.id === save.imgId);
+    if (!img || !save.diff || !save.pieces) return;
+    const placed = save.pieces.filter(p => p.placed).length;
+    if (placed === save.pieces.length) { clearSave(); return; }
+    document.getElementById('resumeThumb').src = img.src;
+    document.getElementById('resumeTitle').textContent = img.label + ' · ' + save.diff.toUpperCase();
+    document.getElementById('resumeSub').textContent = `${placed} of ${save.pieces.length} pieces placed`;
+    document.getElementById('resumeSection').classList.add('show');
+  } catch(e) {}
+}
+
+function resumeGame() {
+  try {
+    const save = JSON.parse(localStorage.getItem(SAVE_KEY));
+    const img = IMAGES.find(i => i.id === save.imgId);
+    if (!img) return;
+    selImg = img; curDiff = save.diff;
+    cfg = { ...DIFFS[save.diff] };
+    calcDims();
+    pieces = save.pieces;
+    placedCount = pieces.filter(p => p.placed).length;
+    selPieceId = null;
+    renderBoard();
+    renderSavedPlacements();
+    renderPool();
+    updateCounter();
+    document.getElementById('s-pick').classList.add('hidden');
+    document.getElementById('s-puzzle').classList.remove('hidden');
+  } catch(e) {}
+}
+
+function renderSavedPlacements() {
+  pieces.filter(p => p.placed).forEach(p => {
+    const slotEl = document.getElementById(`slot_${p.targetR}_${p.targetC}`);
+    if (!slotEl) return;
+    slotEl.classList.add('has-piece');
+    const inner = document.createElement('div');
+    inner.className = 'slot-placed';
+    inner.style.backgroundImage    = `url('${selImg.src}')`;
+    inner.style.backgroundSize     = `${BSZ}px ${BSZ}px`;
+    inner.style.backgroundPosition = `-${p.targetC * PW}px -${p.targetR * PW}px`;
+    slotEl.appendChild(inner);
+  });
 }
 
 function goBack() {
@@ -439,6 +521,7 @@ function slotTapped(r, c, slotEl) {
     selPieceId = null;
     clearSlotHighlights();
     updateCounter();
+    saveProgress();
 
     if (placedCount === cfg.cols * cfg.rows) setTimeout(showWin, 600);
   } else {
@@ -453,10 +536,13 @@ function updateCounter() {
 }
 
 function showWin() {
+  clearSave();
   const total = cfg.cols * cfg.rows;
   document.getElementById('winMsg').textContent = `All ${total} pieces in place! 🌸`;
   document.getElementById('winOverlay').classList.add('show');
 }
+
+loadSave();
 
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
