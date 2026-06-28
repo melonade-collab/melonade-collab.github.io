@@ -178,6 +178,23 @@ h1 {
   font-weight: 600;
   margin-top: 10px;
 }
+.lb-wrap {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,215,0,0.25);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-top: 14px;
+  width: min(90vw, 340px);
+  text-align: left;
+}
+.lb-title { font-size: 0.62rem; font-weight: 700; letter-spacing: 3px; color: rgba(255,215,0,0.55); margin-bottom: 10px; text-align: center; }
+.lb-row { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
+.lb-row:last-child { border-bottom: none; }
+.lb-medal { font-size: 1.1rem; width: 24px; text-align: center; flex-shrink: 0; }
+.lb-dist { font-size: 0.9rem; font-weight: 900; color: #ffd700; flex: 1; }
+.lb-tag { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; background: rgba(255,215,0,0.2); color: #ffd700; border-radius: 6px; padding: 2px 7px; flex-shrink: 0; }
+.lb-comp { font-size: 0.62rem; color: rgba(255,255,255,0.45); }
+.lb-empty { font-size: 0.75rem; color: rgba(255,255,255,0.3); text-align: center; padding: 6px; }
 .length-display {
   text-align: center;
   color: rgba(255,215,0,0.85);
@@ -329,7 +346,12 @@ h1 {
 <div class="celebration" id="celebration">
   <div class="celeb-emoji">🚂</div>
   <div class="celeb-text">CHUGGA CHUGGA<br>CHOO CHOO!</div>
-  <div style="color:white;font-size:1.1rem;letter-spacing:2px;">YOUR TRAIN IS ON THE MOVE!</div>
+  <div style="color:white;font-size:1.1rem;letter-spacing:2px;margin-bottom:4px">YOUR TRAIN IS ON THE MOVE!</div>
+  <div style="color:rgba(255,215,0,0.8);font-size:0.82rem;font-weight:700;letter-spacing:1px" id="celebLength"></div>
+  <div class="lb-wrap">
+    <div class="lb-title">🏆 LONGEST TRAINS</div>
+    <div id="lbRows"></div>
+  </div>
   <button class="celeb-btn" onclick="resetAfterGo()">BUILD AGAIN!</button>
 </div>
 
@@ -806,11 +828,50 @@ function clearTrain() {
   showEnginePicker();
 }
 
+const LB_KEY = 'train_builder_top_lengths';
+
+function getLengths() {
+  try { return JSON.parse(localStorage.getItem(LB_KEY)) || []; } catch(e) { return []; }
+}
+
+function saveLength(m) {
+  const arr = getLengths();
+  arr.push(m);
+  arr.sort((a, b) => b - a);
+  localStorage.setItem(LB_KEY, JSON.stringify(arr.slice(0, 5)));
+}
+
+function renderLb(newM) {
+  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+  const arr = getLengths();
+  const el = document.getElementById('lbRows');
+  if (!arr.length) { el.innerHTML = '<div class="lb-empty">No records yet!</div>'; return; }
+  let markedNew = false;
+  el.innerHTML = arr.map((m, i) => {
+    const dist = m >= 1000 ? `${(m/1000).toFixed(2)} km` : `${m} m`;
+    const isNew = !markedNew && m === newM;
+    if (isNew) markedNew = true;
+    return `<div class="lb-row">
+      <span class="lb-medal">${medals[i]}</span>
+      <div style="flex:1">
+        <div class="lb-dist">${dist}</div>
+        <div class="lb-comp">${trainComparison(m)}</div>
+      </div>
+      ${isNew ? '<span class="lb-tag">YOU</span>' : ''}
+    </div>`;
+  }).join('');
+}
+
 function goTrain() {
   if (train.length === 0) return;
+  const m = trainLengthMetres();
+  saveLength(m);
+  const dist = m >= 1000 ? `${(m/1000).toFixed(2)} km` : `${m} m`;
+  document.getElementById('celebLength').textContent = `📏 ${dist} — ${trainComparison(m)}`;
+  renderLb(m);
+
   const wrapper = document.getElementById('trackWrapper');
   const display = document.getElementById('trainDisplay');
-  // Scroll to locomotive (front) so the child can watch it pull away
   wrapper.scrollTo({ left: 0, behavior: 'smooth' });
   setTimeout(() => {
     const width = display.scrollWidth + 300;
