@@ -124,6 +124,19 @@ input.err  { border-color: #FF6B6B; background: #FFF0F0; animation: shake 0.35s;
 }
 .end-card.show { display: block; }
 .card.hide { display: none; }
+.lb-section { margin-top: 22px; border-top: 2px solid #FFE0A0; padding-top: 16px; }
+.lb-title { font-size: 0.68rem; font-weight: 900; letter-spacing: 2px; color: #C0A860; margin-bottom: 10px; }
+.lb-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 12px; border-radius: 10px; margin-bottom: 5px;
+  background: #FFF8E1;
+}
+.lb-row.new { background: #FFFBDD; border: 2px solid #FBBF24; }
+.lb-rank { font-size: 1rem; width: 26px; text-align: center; flex-shrink: 0; }
+.lb-pts { font-size: 1.05rem; font-weight: 900; color: #5B4E77; flex: 1; text-align: right; }
+.lb-tag { font-size: 0.65rem; font-weight: 900; letter-spacing: 1px; color: #B07800;
+  background: #FFE0A0; border-radius: 6px; padding: 2px 7px; flex-shrink: 0; }
+.lb-empty { font-size: 0.85rem; color: #C0A860; font-weight: 700; padding: 8px; }
 </style>
 </head>
 <body>
@@ -156,6 +169,10 @@ input.err  { border-color: #FF6B6B; background: #FFF0F0; animation: shake 0.35s;
   <div style="font-size:0.9rem;color:#8B7BA8;font-weight:700;margin-bottom:22px">points scored!</div>
   <button class="btn" style="background:linear-gradient(135deg,#FBBF24,#F59E0B);color:white;padding:12px 28px;"
     onclick="startGame()">🔄 Play Again</button>
+  <div class="lb-section">
+    <div class="lb-title">🏆 TOP SCORES</div>
+    <div id="lbRows"></div>
+  </div>
 </div>
 
 <script>
@@ -262,9 +279,44 @@ function hint() {
 
 function skip() { reveal(false, 0); }
 
+const SCORE_KEY = 'words_top_scores';
+
+function getScores() {
+  try { return JSON.parse(localStorage.getItem(SCORE_KEY)) || []; } catch(e) { return []; }
+}
+
+function saveScore(s) {
+  const scores = getScores();
+  scores.push(s);
+  scores.sort((a, b) => b - a);
+  localStorage.setItem(SCORE_KEY, JSON.stringify(scores.slice(0, 5)));
+}
+
+function renderLeaderboard(newScore) {
+  const scores = getScores();
+  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+  const el = document.getElementById('lbRows');
+  if (!scores.length) {
+    el.innerHTML = '<div class="lb-empty">No scores yet — you\'re first!</div>';
+    return;
+  }
+  let markedNew = false;
+  el.innerHTML = scores.map((s, i) => {
+    const isNew = !markedNew && s === newScore;
+    if (isNew) markedNew = true;
+    return `<div class="lb-row${isNew ? ' new' : ''}">
+      <span class="lb-rank">${medals[i]}</span>
+      <span class="lb-pts">${s} pts</span>
+      ${isNew ? '<span class="lb-tag">YOU</span>' : ''}
+    </div>`;
+  }).join('');
+}
+
 function endGame() {
+  saveScore(score);
   document.getElementById('gameCard').classList.add('hide');
   document.getElementById('finalScore').textContent = score;
+  renderLeaderboard(score);
   document.getElementById('endCard').classList.add('show');
 }
 
