@@ -180,9 +180,9 @@ footer { position: fixed; bottom: 10px; left: 14px; color: rgba(255,255,255,0.18
 
   <div class="section-label">CHOOSE DIFFICULTY</div>
   <div class="diff-row" style="margin-bottom:20px;">
-    <button class="diff-btn easy"   onclick="startPuzzle('easy')">🟢 Easy<small>4 pieces</small></button>
-    <button class="diff-btn medium" onclick="startPuzzle('medium')">🟡 Medium<small>8 pieces</small></button>
-    <button class="diff-btn hard"   onclick="startPuzzle('hard')">🔴 Hard<small>12 pieces</small></button>
+    <button class="diff-btn easy"   onclick="startPuzzle('easy')">🟢 Easy<small>12 pieces</small></button>
+    <button class="diff-btn medium" onclick="startPuzzle('medium')">🟡 Medium<small>16 pieces</small></button>
+    <button class="diff-btn hard"   onclick="startPuzzle('hard')">🔴 Hard<small>20 pieces</small></button>
   </div>
 
   <div class="section-label">CHOOSE AN IMAGE</div>
@@ -236,9 +236,9 @@ const IMAGES = [
 ];
 
 const DIFFS = {
-  easy:   { cols: 2, rows: 2 },
-  medium: { cols: 4, rows: 2 },
-  hard:   { cols: 4, rows: 3 },
+  easy:   { cols: 4, rows: 3 },
+  medium: { cols: 4, rows: 4 },
+  hard:   { cols: 5, rows: 4 },
 };
 
 const PP = 52;
