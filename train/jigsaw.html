@@ -76,6 +76,9 @@ h1 {
 .diff-btn.medium { border-color: #ffd700; }
 .diff-btn.hard   { border-color: #c41e1e; }
 .diff-btn:hover  { background: rgba(255,255,255,0.15); }
+.diff-btn.easy.sel   { background: #4CAF50; color: white; }
+.diff-btn.medium.sel { background: #ffd700; color: #1a1a2e; }
+.diff-btn.hard.sel   { background: #c41e1e; color: white; }
 
 /* PUZZLE SCREEN */
 #s-puzzle { padding: 0; justify-content: flex-start; }
@@ -176,12 +179,12 @@ footer { position: fixed; bottom: 10px; left: 14px; color: rgba(255,255,255,0.18
 
   <div class="section-label">CHOOSE DIFFICULTY</div>
   <div class="diff-row" style="margin-bottom:20px;">
-    <button class="diff-btn easy"   onclick="startPuzzle('easy')">🟢 Easy<small>12 pieces</small></button>
-    <button class="diff-btn medium" onclick="startPuzzle('medium')">🟡 Medium<small>16 pieces</small></button>
-    <button class="diff-btn hard"   onclick="startPuzzle('hard')">🔴 Hard<small>20 pieces</small></button>
+    <button class="diff-btn easy"   onclick="selectDiff('easy')">🟢 Easy<small>12 pieces</small></button>
+    <button class="diff-btn medium" onclick="selectDiff('medium')">🟡 Medium<small>16 pieces</small></button>
+    <button class="diff-btn hard"   onclick="selectDiff('hard')">🔴 Hard<small>20 pieces</small></button>
   </div>
 
-  <div class="section-label">CHOOSE AN IMAGE</div>
+  <div class="section-label">CHOOSE AN IMAGE TO START</div>
   <div class="img-grid" id="imgGrid"></div>
 </div>
 
@@ -252,14 +255,19 @@ let curDiff     = 'easy';
 IMAGES.forEach((img, i) => {
   const el = document.createElement('img');
   el.src = img.src; el.alt = img.label; el.loading = 'lazy';
-  el.className = 'img-opt' + (i === 0 ? ' sel' : '');
+  el.className = 'img-opt';
   el.onclick = () => {
-    document.querySelectorAll('.img-opt').forEach(e => e.classList.remove('sel'));
-    el.classList.add('sel');
     selImg = img;
+    startPuzzle(curDiff);
   };
   document.getElementById('imgGrid').appendChild(el);
 });
+
+function selectDiff(diff) {
+  curDiff = diff;
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('sel'));
+  document.querySelector(`.diff-btn.${diff}`).classList.add('sel');
+}
 
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
@@ -497,6 +505,7 @@ function showWin() {
 }
 
 renderSlots();
+selectDiff('easy');
 </script>
 </body>
 </html>

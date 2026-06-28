@@ -80,6 +80,9 @@ h1 {
 .diff-btn.easy   { background: #E0FFF4; color: #0A7A50; border-color: #B5EEDD; }
 .diff-btn.medium { background: #FFF8E1; color: #B07800; border-color: #FFE0A0; }
 .diff-btn.hard   { background: #FFE4EE; color: #D63384; border-color: #FFB3CC; }
+.diff-btn.easy.sel   { background: #0A7A50; color: white; border-color: #0A7A50; }
+.diff-btn.medium.sel { background: #B07800; color: white; border-color: #B07800; }
+.diff-btn.hard.sel   { background: #D63384; color: white; border-color: #D63384; }
 
 /* PUZZLE SCREEN */
 .puz-hdr {
@@ -236,11 +239,11 @@ h1 {
   </div>
   <div class="pick-title">Choose difficulty 💪</div>
   <div class="diff-row">
-    <button class="diff-btn easy"   onclick="startPuzzle('easy')">🟢 Easy<small>~25 pieces</small></button>
-    <button class="diff-btn medium" onclick="startPuzzle('medium')">🟡 Medium<small>~64 pieces</small></button>
-    <button class="diff-btn hard"   onclick="startPuzzle('hard')">🔴 Hard<small>~100 pieces</small></button>
+    <button class="diff-btn easy"   onclick="selectDiff('easy')">🟢 Easy<small>~25 pieces</small></button>
+    <button class="diff-btn medium" onclick="selectDiff('medium')">🟡 Medium<small>~64 pieces</small></button>
+    <button class="diff-btn hard"   onclick="selectDiff('hard')">🔴 Hard<small>~100 pieces</small></button>
   </div>
-  <div class="pick-title">Pick a picture 🖼️</div>
+  <div class="pick-title">Pick a picture to start 🖼️</div>
   <div class="img-grid" id="imgGrid"></div>
 </div>
 
@@ -315,9 +318,8 @@ IMAGES.forEach((img, i) => {
   el.loading = 'lazy';
   el.onload = () => { img.ratio = el.naturalWidth / el.naturalHeight; };
   el.onclick = () => {
-    document.querySelectorAll('.img-thumb').forEach(t => t.classList.remove('sel'));
-    el.classList.add('sel');
     selImg = img;
+    startPuzzle(curDiff);
   };
   imgGrid.appendChild(el);
 });
@@ -354,6 +356,12 @@ function calcDims() {
   }
 
   PP_H = Math.max(1, Math.round(PP * PH / PW));
+}
+
+function selectDiff(diff) {
+  curDiff = diff;
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('sel'));
+  document.querySelector(`.diff-btn.${diff}`).classList.add('sel');
 }
 
 function startPuzzle(diff) {
@@ -608,6 +616,7 @@ function showWin() {
 }
 
 renderSlots();
+selectDiff('easy');
 
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
