@@ -178,6 +178,16 @@ h1 {
   font-weight: 600;
   margin-top: 10px;
 }
+.length-display {
+  text-align: center;
+  color: rgba(255,215,0,0.85);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-top: 6px;
+  min-height: 1.3em;
+  padding: 0 12px;
+}
 .celebration {
   display: none;
   position: fixed;
@@ -308,6 +318,7 @@ h1 {
   <button class="ctrl-btn" id="goBtn" onclick="goTrain()" disabled>GO! 🚂</button>
 </div>
 <div class="count-display" id="countDisplay">ADD SOME CARS TO GET STARTED</div>
+<div class="length-display" id="lengthDisplay"></div>
 
 <div class="engine-picker" id="enginePicker">
   <div class="engine-picker-title">PICK YOUR ENGINE!</div>
@@ -324,7 +335,7 @@ h1 {
 
 <script>
 const carDefs = [
-  { name:'BOXCAR', color:'#c4541a', detail:'#a83010',
+  { name:'BOXCAR', len:18, color:'#c4541a', detail:'#a83010',
     svgBody: () => `
       <rect x="5" y="12" width="100" height="35" fill="#c4541a" rx="2"/>
       <rect x="5" y="12" width="100" height="6" fill="#a83010" rx="2"/>
@@ -333,7 +344,7 @@ const carDefs = [
       <rect x="48" y="28" width="14" height="4" fill="#ffd700" rx="2"/>
     `
   },
-  { name:'TANK CAR', color:'#c0c0d0', detail:'#9090a8',
+  { name:'TANK CAR', len:16, color:'#c0c0d0', detail:'#9090a8',
     svgBody: () => `
       <rect x="20" y="32" width="8" height="15" fill="#3a3a3a"/>
       <rect x="82" y="32" width="8" height="15" fill="#3a3a3a"/>
@@ -346,7 +357,7 @@ const carDefs = [
       <rect x="48" y="8" width="14" height="7" fill="#8888a0" rx="2"/>
     `
   },
-  { name:'FLAT CAR', color:'#6b4520', detail:'#4a2e12',
+  { name:'FLAT CAR', len:15, color:'#6b4520', detail:'#4a2e12',
     svgBody: () => `
       <rect x="5" y="38" width="100" height="8" fill="#6b4520" rx="1"/>
       <line x1="28" y1="38" x2="28" y2="46" stroke="#4a2e12" stroke-width="2"/>
@@ -360,7 +371,7 @@ const carDefs = [
       <ellipse cx="80" cy="23" rx="18" ry="7" fill="#8b5228"/>
     `
   },
-  { name:'LOG CAR', color:'#5a3a1a', detail:'#3a200e',
+  { name:'LOG CAR', len:15, color:'#5a3a1a', detail:'#3a200e',
     svgBody: () => `
       <rect x="5" y="39" width="100" height="7" fill="#5a3a1a" rx="1"/>
       <rect x="7" y="20" width="5" height="20" fill="#3a200e" rx="1"/>
@@ -383,7 +394,7 @@ const carDefs = [
       <line x1="72" y1="14" x2="72" y2="44" stroke="#3a3a3a" stroke-width="1.5"/>
     `
   },
-  { name:'HOPPER', color:'#8b1a1a', detail:'#5a0808',
+  { name:'HOPPER', len:15, color:'#8b1a1a', detail:'#5a0808',
     svgBody: () => `
       <polygon points="8,12 102,12 92,47 18,47" fill="#8b1a1a"/>
       <rect x="6" y="8" width="98" height="6" fill="#6a1010" rx="1"/>
@@ -394,7 +405,7 @@ const carDefs = [
       <polygon points="12,24 98,24 90,38 20,38" fill="#1a1a1a"/>
     `
   },
-  { name:'STOCK CAR', color:'#8a4a18', detail:'#5a2e08',
+  { name:'STOCK CAR', len:15, color:'#8a4a18', detail:'#5a2e08',
     svgBody: () => `
       <rect x="5" y="13" width="100" height="34" fill="#8a4a18" rx="2"/>
       <rect x="5" y="13" width="100" height="5" fill="#5a2e08" rx="2"/>
@@ -420,7 +431,7 @@ const carDefs = [
       <rect x="75" y="39" width="24" height="2" fill="#2a0c00"/>
     `
   },
-  { name:'GONDOLA', color:'#2c2c3e', detail:'#1a1a28',
+  { name:'GONDOLA', len:16, color:'#2c2c3e', detail:'#1a1a28',
     svgBody: () => `
       <rect x="5" y="18" width="100" height="30" fill="#2c2c3e"/>
       <rect x="10" y="20" width="90" height="26" fill="#1e1e2c"/>
@@ -431,7 +442,7 @@ const carDefs = [
       <polygon points="20,48 35,30 48,40 62,26 74,38 90,48" fill="#444"/>
     `
   },
-  { name:'REEFER', color:'#e8e8f0', detail:'#c8c8d8',
+  { name:'REEFER', len:18, color:'#e8e8f0', detail:'#c8c8d8',
     svgBody: () => `
       <rect x="5" y="12" width="100" height="35" fill="#e8e8f0" rx="2"/>
       <rect x="5" y="12" width="100" height="6" fill="#c8c8d8" rx="2"/>
@@ -449,7 +460,7 @@ const carDefs = [
       <text x="55" y="34" text-anchor="middle" font-size="12">❄️</text>
     `
   },
-  { name:'CABOOSE', color:'#cc1111', detail:'#880000',
+  { name:'CABOOSE', len:12, color:'#cc1111', detail:'#880000',
     svgBody: () => `
       <rect x="12" y="24" width="86" height="24" fill="#cc1111" rx="2"/>
       <rect x="10" y="20" width="90" height="6" fill="#aa0000" rx="1"/>
@@ -463,7 +474,7 @@ const carDefs = [
       <rect x="96" y="34" width="9" height="3" fill="#aa0000" rx="1"/>
     `
   },
-  { name:'AUTORACK', color:'#4a4a5a', detail:'#3a3a4a',
+  { name:'AUTORACK', len:26, color:'#4a4a5a', detail:'#3a3a4a',
     svgBody: () => `
       <rect x="5" y="40" width="100" height="6" fill="#4a4a5a" rx="1"/>
       <rect x="8" y="10" width="4" height="30" fill="#3a3a4a"/>
@@ -493,7 +504,7 @@ const carDefs = [
       <rect x="85" y="12" width="10" height="11" fill="rgba(0,0,0,0.35)"/>
     `
   },
-  { name:'PASSENGER', color:'#1e3d7c', detail:'#162e62',
+  { name:'PASSENGER', len:26, color:'#1e3d7c', detail:'#162e62',
     svgBody: () => `
       <rect x="5" y="12" width="100" height="34" fill="#1e3d7c" rx="2"/>
       <rect x="5" y="12" width="100" height="6" fill="#162e62" rx="2"/>
@@ -508,7 +519,7 @@ const carDefs = [
       <rect x="50" y="30" width="10" height="16" fill="#162e62" rx="1"/>
     `
   },
-  { name:'DBLDECKR', spoken:'Double Decker', color:'#d0d4dc', detail:'#1a3a6a',
+  { name:'DBLDECKR', spoken:'Double Decker', len:26, color:'#d0d4dc', detail:'#1a3a6a',
     svgBody: () => `
       <rect x="5" y="6" width="100" height="40" fill="#d0d4dc" rx="2"/>
       <rect x="5" y="6" width="100" height="5" fill="#a8aab8" rx="2"/>
@@ -530,7 +541,7 @@ const carDefs = [
       <rect x="47" y="35" width="12" height="11" fill="#a8aab8" rx="1"/>
     `
   },
-  { name:'MIDBEAM', color:'#5a5028', detail:'#3a3318',
+  { name:'MIDBEAM', len:23, color:'#5a5028', detail:'#3a3318',
     svgBody: () => `
       <rect x="5" y="38" width="100" height="6" fill="#5a5028" rx="1"/>
       <rect x="51" y="10" width="8" height="30" fill="#3a3318"/>
@@ -666,9 +677,9 @@ function bulletLocoSvg() {
 }
 
 const ENGINES = [
-  { name: '🚂  STEAM',  svgFn: steamLocoSvg  },
-  { name: '🚃  DIESEL', svgFn: dieselLocoSvg },
-  { name: '🚄  BULLET', svgFn: bulletLocoSvg },
+  { name: '🚂  STEAM',  len: 27, svgFn: steamLocoSvg  },
+  { name: '🚃  DIESEL', len: 22, svgFn: dieselLocoSvg },
+  { name: '🚄  BULLET', len: 25, svgFn: bulletLocoSvg },
 ];
 let currentEngine = 0;
 
@@ -730,9 +741,12 @@ function renderTrain() {
   const count = document.getElementById('countDisplay');
   const goBtn = document.getElementById('goBtn');
 
+  const lengthEl = document.getElementById('lengthDisplay');
+
   if (train.length === 0) {
     display.innerHTML = '<div class="empty-track" id="emptyMsg">TAP CARS ABOVE TO BUILD YOUR TRAIN!</div>';
     count.textContent = 'ADD SOME CARS TO GET STARTED';
+    lengthEl.textContent = '';
     goBtn.disabled = true;
     return;
   }
@@ -753,8 +767,39 @@ function renderTrain() {
   count.textContent = `${n} ${carWord} — READY TO ROLL!`;
   goBtn.disabled = false;
 
+  const m = trainLengthMetres();
+  const dist = m >= 1000 ? `${(m / 1000).toFixed(2)} km` : `${m} m`;
+  lengthEl.textContent = `📏 ${dist} long — ${trainComparison(m)}`;
+
   const wrapper = document.getElementById('trackWrapper');
   setTimeout(() => { wrapper.scrollLeft = wrapper.scrollWidth; }, 50);
+}
+
+function trainLengthMetres() {
+  let m = ENGINES[currentEngine].len;
+  train.forEach(i => { m += carDefs[i].len; });
+  return m;
+}
+
+function trainComparison(m) {
+  if (m < 12)      return "shorter than a school bus 🚌";
+  if (m < 26)      return "about the length of a blue whale 🐋";
+  if (m < 51)      return "about as long as an Olympic swimming pool 🏊";
+  if (m < 100)     return "about the length of a football field 🏈";
+  if (m < 138)     return "about as tall as the Statue of Liberty lying on its side 🗽";
+  if (m < 240)     return "about the length of two football fields 🏈🏈";
+  if (m < 390)     return "about the height of the Empire State Building tipped over 🏙️";
+  if (m < 553)     return "about as tall as the CN Tower laid on its side 🏙️";
+  if (m < 900)     return "about the length of Central Park in New York 🌳";
+  if (m < 1609)    return "almost a whole kilometre — that's a serious train! 🚂";
+  if (m < 3000)    return "about the length of a real North American freight train 🚂";
+  if (m < 5000)    return "about the width of downtown Toronto 🏙️";
+  if (m < 12000)   return "about the width of Lake Simcoe 🏞️";
+  if (m < 68000)   return "about the distance from Toronto to Hamilton 🏙️";
+  if (m < 130000)  return "about the distance from Toronto to Niagara Falls 🌊";
+  if (m < 450000)  return "about the distance from Toronto to Ottawa 🍁";
+  if (m < 800000)  return "about the distance from Toronto to Québec City ⚜️";
+  return                  "about the distance from Toronto to Winnipeg 🌾";
 }
 
 function clearTrain() {
