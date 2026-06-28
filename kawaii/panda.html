@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dress the Panda!</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+  background: linear-gradient(160deg, #FFE4F0 0%, #EDE4FF 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 16px 48px;
+}
+.back {
+  align-self: flex-start;
+  text-decoration: none;
+  color: #D63384;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  padding: 6px 16px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.back:hover { background: #FFF0F8; }
+h1 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 900;
+  color: #D63384;
+  text-shadow: 2px 2px 0 #FFB3CC;
+  margin-bottom: 14px;
+}
+.panda-wrap {
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 8px 30px rgba(200,100,200,0.18);
+  padding: 12px 12px 4px;
+  margin-bottom: 18px;
+  width: min(290px, 88vw);
+}
+#pandaSvg { width: 100%; height: auto; display: block; }
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #C0A0C0;
+  margin-bottom: 9px;
+  text-align: center;
+}
+.color-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.color-btn {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.12s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+}
+.color-btn:hover { transform: scale(1.18); }
+.color-btn.active { border-color: #D63384; transform: scale(1.2); }
+.acc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  max-width: 320px;
+  width: 100%;
+  margin-bottom: 18px;
+}
+.acc-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  border-radius: 16px;
+  border: 3px solid transparent;
+  background: white;
+  cursor: pointer;
+  transition: all 0.14s;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.76rem;
+  color: #8B6BAE;
+  box-shadow: 0 2px 10px rgba(180,100,200,0.1);
+}
+.acc-btn .icon { font-size: 1.75rem; line-height: 1; }
+.acc-btn:hover { transform: scale(1.06); }
+.acc-btn.active { border-color: #D63384; background: #FFF0F8; color: #D63384; }
+.reset-btn {
+  padding: 10px 28px;
+  border-radius: 14px;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: #F3E8FF;
+  color: #7C3AED;
+  box-shadow: 0 2px 10px rgba(124,58,237,0.15);
+  transition: transform 0.1s;
+}
+.reset-btn:active { transform: scale(0.94); }
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← Kawaii World</a>
+<h1>🐼 Dress the Panda!</h1>
+
+<div class="panda-wrap">
+<svg id="pandaSvg" viewBox="0 0 300 345" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Body -->
+  <ellipse cx="150" cy="248" rx="78" ry="88" fill="white" stroke="#E8E8E8" stroke-width="1.5"/>
+
+  <!-- Arms -->
+  <ellipse cx="66" cy="234" rx="27" ry="50" fill="#1a1a1a" transform="rotate(12, 66, 234)"/>
+  <ellipse cx="234" cy="234" rx="27" ry="50" fill="#1a1a1a" transform="rotate(-12, 234, 234)"/>
+
+  <!-- Feet -->
+  <ellipse cx="108" cy="320" rx="40" ry="21" fill="#1a1a1a"/>
+  <ellipse cx="192" cy="320" rx="40" ry="21" fill="#1a1a1a"/>
+
+  <!-- Scarf — before head so head clips over it naturally -->
+  <g id="acc-scarf" style="display:none">
+    <ellipse cx="150" cy="215" rx="76" ry="17" fill="#FF6B9D"/>
+    <path d="M116,228 L107,280 Q105,289 114,287 Q122,285 120,276 L129,232 Z" fill="#FF6B9D"/>
+    <ellipse cx="150" cy="210" rx="76" ry="6" fill="#D63384" opacity="0.4"/>
+    <ellipse cx="150" cy="221" rx="75" ry="6" fill="#D63384" opacity="0.4"/>
+  </g>
+
+  <!-- Bowtie — before head so it tucks under chin -->
+  <g id="acc-bowtie" style="display:none">
+    <path d="M126,207 Q111,199 108,210 Q111,221 126,215 Z" fill="#A78BFA"/>
+    <path d="M174,207 Q189,199 192,210 Q189,221 174,215 Z" fill="#A78BFA"/>
+    <ellipse cx="150" cy="211" rx="13" ry="9" fill="#7C3AED"/>
+    <circle cx="150" cy="211" r="5" fill="#C4B5FD"/>
+  </g>
+
+  <!-- Ears (before head so head overlaps base) -->
+  <circle cx="97" cy="64" r="32" fill="#1a1a1a"/>
+  <circle cx="203" cy="64" r="32" fill="#1a1a1a"/>
+  <circle cx="97" cy="64" r="18" fill="#2e2e2e"/>
+  <circle cx="203" cy="64" r="18" fill="#2e2e2e"/>
+
+  <!-- Head -->
+  <circle cx="150" cy="128" r="80" fill="white" stroke="#E8E8E8" stroke-width="1.5"/>
+
+  <!-- Tummy -->
+  <ellipse id="tummy" cx="150" cy="253" rx="50" ry="63" fill="#F5F5F5"/>
+
+  <!-- Eye patches -->
+  <ellipse cx="121" cy="124" rx="27" ry="25" fill="#1a1a1a"/>
+  <ellipse cx="179" cy="124" rx="27" ry="25" fill="#1a1a1a"/>
+
+  <!-- Eyes -->
+  <circle cx="121" cy="122" r="16" fill="white"/>
+  <circle cx="179" cy="122" r="16" fill="white"/>
+
+  <!-- Pupils -->
+  <circle cx="124" cy="126" r="9" fill="#1a1a1a"/>
+  <circle cx="182" cy="126" r="9" fill="#1a1a1a"/>
+
+  <!-- Shine dots -->
+  <circle cx="119" cy="120" r="5" fill="white"/>
+  <circle cx="177" cy="120" r="5" fill="white"/>
+  <circle cx="129" cy="130" r="2.5" fill="white"/>
+  <circle cx="187" cy="130" r="2.5" fill="white"/>
+
+  <!-- Nose -->
+  <ellipse cx="150" cy="150" rx="9" ry="7" fill="#1a1a1a"/>
+  <!-- Nose shine -->
+  <ellipse cx="147" cy="148" rx="4" ry="2.5" fill="#444" opacity="0.5"/>
+
+  <!-- Mouth -->
+  <path d="M138,163 Q150,175 162,163" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- ── ACCESSORIES (on top of face) ── -->
+
+  <!-- Blush -->
+  <g id="acc-blush" style="display:none">
+    <ellipse cx="94" cy="152" rx="24" ry="15" fill="#FFB0CC" opacity="0.62"/>
+    <ellipse cx="206" cy="152" rx="24" ry="15" fill="#FFB0CC" opacity="0.62"/>
+  </g>
+
+  <!-- Glasses -->
+  <g id="acc-glasses" style="display:none">
+    <circle cx="121" cy="122" r="24" fill="#FFD6EE" opacity="0.45"/>
+    <circle cx="121" cy="122" r="24" fill="none" stroke="#FF69B4" stroke-width="3"/>
+    <circle cx="179" cy="122" r="24" fill="#FFD6EE" opacity="0.45"/>
+    <circle cx="179" cy="122" r="24" fill="none" stroke="#FF69B4" stroke-width="3"/>
+    <line x1="145" y1="122" x2="155" y2="122" stroke="#FF69B4" stroke-width="3"/>
+    <line x1="97" y1="122" x2="88" y2="117" stroke="#FF69B4" stroke-width="3"/>
+    <line x1="203" y1="122" x2="212" y2="117" stroke="#FF69B4" stroke-width="3"/>
+  </g>
+
+  <!-- Crown -->
+  <g id="acc-crown" style="display:none">
+    <polygon points="107,70 121,45 136,62 150,34 164,62 179,45 193,70" fill="#FFD700"/>
+    <rect x="107" y="68" width="86" height="13" fill="#FFD700" rx="2"/>
+    <rect x="107" y="68" width="86" height="13" fill="none" stroke="#E6B800" stroke-width="1.5" rx="2"/>
+    <circle cx="150" cy="50" r="7" fill="#FF4081"/>
+    <circle cx="127" cy="64" r="5" fill="#9C27B0"/>
+    <circle cx="173" cy="64" r="5" fill="#2196F3"/>
+  </g>
+
+  <!-- Bow on right ear -->
+  <g id="acc-bow" style="display:none">
+    <ellipse cx="186" cy="52" rx="20" ry="12" fill="#FF85A1" transform="rotate(-22, 186, 52)"/>
+    <ellipse cx="222" cy="52" rx="20" ry="12" fill="#FF6B9D" transform="rotate(22, 222, 52)"/>
+    <circle cx="204" cy="52" r="10" fill="#D63384"/>
+    <circle cx="204" cy="52" r="5" fill="#FFB0CC"/>
+  </g>
+
+  <!-- Flower on left ear -->
+  <g id="acc-flower" style="display:none">
+    <circle cx="80" cy="49" r="13" fill="#FF85A1"/>
+    <circle cx="97" cy="42" r="13" fill="#FF6B9D"/>
+    <circle cx="114" cy="49" r="13" fill="#FF85A1"/>
+    <circle cx="115" cy="66" r="13" fill="#FF6B9D"/>
+    <circle cx="98" cy="73" r="13" fill="#FF85A1"/>
+    <circle cx="80" cy="66" r="13" fill="#FF6B9D"/>
+    <circle cx="97" cy="58" r="16" fill="#FFD700"/>
+    <circle cx="97" cy="58" r="9" fill="#FFA500"/>
+  </g>
+
+  <!-- Party hat -->
+  <g id="acc-hat" style="display:none">
+    <polygon points="116,75 184,75 150,17" fill="#FF85A1"/>
+    <polygon points="116,75 184,75 150,17" fill="none" stroke="#D63384" stroke-width="2"/>
+    <circle cx="138" cy="58" r="5" fill="white" opacity="0.8"/>
+    <circle cx="156" cy="47" r="4" fill="white" opacity="0.8"/>
+    <circle cx="145" cy="67" r="4" fill="white" opacity="0.7"/>
+    <circle cx="163" cy="63" r="3" fill="white" opacity="0.7"/>
+    <circle cx="150" cy="13" r="11" fill="#FFD700"/>
+    <path d="M116,75 Q150,87 184,75" fill="#D63384"/>
+  </g>
+
+  <!-- Star wand (held in right paw) -->
+  <g id="acc-wand" style="display:none">
+    <line x1="224" y1="288" x2="246" y2="158" stroke="#C4B5FD" stroke-width="7" stroke-linecap="round"/>
+    <polygon points="246,140 251,155 267,155 254,164 259,179 246,170 233,179 238,164 225,155 241,155" fill="#FFD700" stroke="#E6A800" stroke-width="1.5"/>
+    <circle cx="263" cy="147" r="4" fill="#FFD700" opacity="0.85"/>
+    <circle cx="256" cy="168" r="3" fill="#C4B5FD"/>
+    <circle cx="270" cy="163" r="3" fill="#FFD700" opacity="0.7"/>
+  </g>
+
+</svg>
+</div>
+
+<div class="section-label">OUTFIT COLOUR</div>
+<div class="color-row">
+  <button class="color-btn active" style="background:#F5F5F5" onclick="setColor('#F5F5F5',this)" title="White"></button>
+  <button class="color-btn" style="background:#FFD6E8" onclick="setColor('#FFD6E8',this)" title="Pink"></button>
+  <button class="color-btn" style="background:#D6EEFF" onclick="setColor('#D6EEFF',this)" title="Blue"></button>
+  <button class="color-btn" style="background:#E8D6FF" onclick="setColor('#E8D6FF',this)" title="Lavender"></button>
+  <button class="color-btn" style="background:#D6FFE8" onclick="setColor('#D6FFE8',this)" title="Mint"></button>
+  <button class="color-btn" style="background:#FFE8D6" onclick="setColor('#FFE8D6',this)" title="Peach"></button>
+</div>
+
+<div class="section-label">ACCESSORIES</div>
+<div class="acc-grid">
+  <button class="acc-btn" id="btn-blush"  onclick="toggle('blush')"><span class="icon">🌸</span><span>Blush</span></button>
+  <button class="acc-btn" id="btn-glasses" onclick="toggle('glasses')"><span class="icon">👓</span><span>Glasses</span></button>
+  <button class="acc-btn" id="btn-crown"  onclick="toggle('crown')"><span class="icon">👑</span><span>Crown</span></button>
+  <button class="acc-btn" id="btn-bow"    onclick="toggle('bow')"><span class="icon">🎀</span><span>Bow</span></button>
+  <button class="acc-btn" id="btn-flower" onclick="toggle('flower')"><span class="icon">🌺</span><span>Flower</span></button>
+  <button class="acc-btn" id="btn-hat"    onclick="toggle('hat')"><span class="icon">🎉</span><span>Party Hat</span></button>
+  <button class="acc-btn" id="btn-scarf"  onclick="toggle('scarf')"><span class="icon">🧣</span><span>Scarf</span></button>
+  <button class="acc-btn" id="btn-bowtie" onclick="toggle('bowtie')"><span class="icon">🪢</span><span>Bow Tie</span></button>
+  <button class="acc-btn" id="btn-wand"   onclick="toggle('wand')"><span class="icon">⭐</span><span>Star Wand</span></button>
+</div>
+
+<button class="reset-btn" onclick="resetAll()">✕ Reset All</button>
+
+<script>
+const ACCS = ['blush','glasses','crown','bow','flower','hat','scarf','bowtie','wand'];
+
+function toggle(id) {
+  const el  = document.getElementById('acc-' + id);
+  const btn = document.getElementById('btn-' + id);
+  const show = el.style.display === 'none';
+  el.style.display = show ? '' : 'none';
+  btn.classList.toggle('active', show);
+}
+
+function setColor(color, btn) {
+  document.getElementById('tummy').setAttribute('fill', color);
+  document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function resetAll() {
+  ACCS.forEach(id => {
+    document.getElementById('acc-' + id).style.display = 'none';
+    document.getElementById('btn-' + id).classList.remove('active');
+  });
+  document.getElementById('tummy').setAttribute('fill', '#F5F5F5');
+  document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.color-btn').classList.add('active');
+}
+</script>
+</body>
+</html>
