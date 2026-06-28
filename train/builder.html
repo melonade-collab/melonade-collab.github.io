@@ -508,7 +508,7 @@ const carDefs = [
       <rect x="50" y="30" width="10" height="16" fill="#162e62" rx="1"/>
     `
   },
-  { name:'DBLDECKR', color:'#d0d4dc', detail:'#1a3a6a',
+  { name:'DBLDECKR', spoken:'Double Decker', color:'#d0d4dc', detail:'#1a3a6a',
     svgBody: () => `
       <rect x="5" y="6" width="100" height="40" fill="#d0d4dc" rx="2"/>
       <rect x="5" y="6" width="100" height="5" fill="#a8aab8" rx="2"/>
@@ -707,7 +707,7 @@ function addCar(i) {
   train.push(i);
   renderTrain();
   playClick();
-  const spoken = carDefs[i].name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+  const spoken = carDefs[i].spoken || carDefs[i].name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
   speak(spoken);
 }
 
