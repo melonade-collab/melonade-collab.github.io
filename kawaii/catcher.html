@@ -146,6 +146,34 @@ h1 {
 }
 .end-score { font-size: 3.5rem; font-weight: 900; color: #D63384; }
 .end-label { font-size: 0.9rem; color: #8B7BA8; font-weight: 600; margin-bottom: 20px; }
+.scores-section {
+  margin-top: 18px;
+  width: 100%;
+  max-width: 340px;
+  background: white;
+  border-radius: 20px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 20px rgba(0,100,80,0.1);
+}
+.scores-title {
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #5BA888;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.scores-table { width: 100%; border-collapse: collapse; }
+.scores-table td {
+  padding: 5px 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #2D3436;
+}
+.scores-table td:first-child { color: #A0D8C8; width: 28px; }
+.scores-table td:last-child { text-align: right; color: #D63384; }
+.scores-table tr.new-score td { color: #0A7A50; }
+.scores-table tr.new-score td:last-child { color: #D63384; }
 </style>
 </head>
 <body>
@@ -164,6 +192,11 @@ h1 {
 
 <button class="btn" id="startBtn" onclick="start()">⭐ Start Game!</button>
 
+<div class="scores-section" id="scoresSection" style="display:none">
+  <div class="scores-title">TOP SCORES</div>
+  <table class="scores-table" id="scoresTable"></table>
+</div>
+
 <div class="overlay" id="overlay">
   <div class="end-card">
     <div style="font-size:3.5rem">🎉</div>
@@ -175,31 +208,47 @@ h1 {
 </div>
 
 <script>
-const CREATURES = [
-  { src:'https://plus.unsplash.com/premium_vector-1719015253440-ccedd0c117c3?w=120&auto=format&fit=crop&q=60', name:'Neko',   pts:2 },
-  { src:'https://plus.unsplash.com/premium_vector-1725979450926-f7980a4e770f?w=120&auto=format&fit=crop&q=60', name:'Mochi',  pts:3 },
-  { src:'https://plus.unsplash.com/premium_vector-1724332538954-3a2cfb31224c?w=120&auto=format&fit=crop&q=60', name:'Suki',   pts:2 },
-  { src:'https://plus.unsplash.com/premium_vector-1723923225784-f28dca7855ce?w=120&auto=format&fit=crop&q=60', name:'Yuki',   pts:1 },
-  { src:'https://plus.unsplash.com/premium_vector-1719609638996-20981200cd3a?w=120&auto=format&fit=crop&q=60', name:'Hana',   pts:3 },
-  { src:'https://plus.unsplash.com/premium_vector-1724548059355-954dd4917a97?w=120&auto=format&fit=crop&q=60', name:'Luna',   pts:4 },
-  { src:'https://images.unsplash.com/vector-1741847236185-27b1ff478511?w=120&auto=format&fit=crop&q=60',         name:'Mimi',   pts:2 },
-  { src:'https://images.unsplash.com/vector-1741958963243-7aef2a2ec15b?w=120&auto=format&fit=crop&q=60',         name:'Kiki',   pts:5 },
-];
+renderScores(null);
 
-// Preload images
-CREATURES.forEach(c => { const i = new Image(); i.src = c.src; });
+const NAMES = ['Neko','Mochi','Suki','Yuki','Hana','Luna','Mimi','Kiki','Sora','Hoshi'];
+const PTS   = [2, 3, 2, 1, 3, 4, 2, 5, 3, 2];
+let CREATURES = [];
+
+async function loadCreatures() {
+  try {
+    const res  = await fetch('https://nekos.best/api/v2/neko?amount=8');
+    const data = await res.json();
+    CREATURES  = data.results.map((r, i) => ({
+      src:  r.url,
+      name: NAMES[i],
+      pts:  PTS[i]
+    }));
+  } catch(e) {
+    CREATURES = [
+      { src:'https://plus.unsplash.com/premium_vector-1719015253440-ccedd0c117c3?w=120&auto=format&fit=crop&q=60', name:'Neko', pts:2 },
+      { src:'https://plus.unsplash.com/premium_vector-1725979450926-f7980a4e770f?w=120&auto=format&fit=crop&q=60', name:'Mochi', pts:3 },
+      { src:'https://images.unsplash.com/vector-1741847236185-27b1ff478511?w=120&auto=format&fit=crop&q=60', name:'Mimi', pts:2 },
+      { src:'https://images.unsplash.com/vector-1741958963243-7aef2a2ec15b?w=120&auto=format&fit=crop&q=60', name:'Kiki', pts:5 },
+    ];
+  }
+}
 
 let score = 0, caught = 0, timeLeft = 60;
 let spawnTimer, countTimer;
 
-function start() {
+async function start() {
   score = 0; caught = 0; timeLeft = 60;
   document.getElementById('score').textContent  = '0';
   document.getElementById('caught').textContent = '0';
   document.getElementById('timer').textContent  = '60';
   document.getElementById('startBtn').style.display = 'none';
-  document.getElementById('msg').style.display = 'none';
+  const msg = document.getElementById('msg');
+  msg.style.display = '';
+  msg.innerHTML = 'Loading characters… ✨';
   document.querySelectorAll('.creature,.pop').forEach(e => e.remove());
+
+  await loadCreatures();
+  msg.style.display = 'none';
 
   spawnTimer  = setInterval(spawn, 1300);
   countTimer  = setInterval(tick, 1000);
@@ -260,12 +309,38 @@ function spawn() {
   setTimeout(() => { if (el.parentNode) el.remove(); }, 3500);
 }
 
+function saveScore(s) {
+  const key = 'catcher_scores';
+  const scores = JSON.parse(localStorage.getItem(key) || '[]');
+  scores.push(s);
+  scores.sort((a, b) => b - a);
+  scores.splice(5);
+  localStorage.setItem(key, JSON.stringify(scores));
+  return scores;
+}
+
+function renderScores(latestScore) {
+  const scores = JSON.parse(localStorage.getItem('catcher_scores') || '[]');
+  if (!scores.length) return;
+  const medals = ['🥇','🥈','🥉','4.','5.'];
+  const table = document.getElementById('scoresTable');
+  table.innerHTML = scores.map((s, i) => `
+    <tr class="${s === latestScore ? 'new-score' : ''}">
+      <td>${medals[i]}</td>
+      <td>${s === latestScore && i === scores.indexOf(latestScore) ? '✨ You!' : ''}</td>
+      <td>${s} pts</td>
+    </tr>`).join('');
+  document.getElementById('scoresSection').style.display = '';
+}
+
 function endGame() {
   clearInterval(spawnTimer); clearInterval(countTimer);
   document.querySelectorAll('.creature').forEach(e => e.remove());
   document.getElementById('startBtn').style.display = '';
   document.getElementById('finalScore').textContent = score;
   document.getElementById('overlay').classList.add('show');
+  saveScore(score);
+  renderScores(score);
 }
 </script>
 </body>
