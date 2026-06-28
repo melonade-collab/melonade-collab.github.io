@@ -184,6 +184,7 @@ function toggleErase() {
 }
 
 function clearAll() {
+  if (!confirm('Clear all pixels? This cannot be undone.')) return;
   document.querySelectorAll('.cell').forEach(c => {
     c.style.background = '#F8FBFF';
     c.style.border = '0.5px solid #E0EEFF';
