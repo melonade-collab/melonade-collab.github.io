@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Colour by Number 🎨</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(160deg, #EDE4FF 0%, #FFE4F0 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 12px 40px;
+  user-select: none;
+}
+.back {
+  align-self: flex-start;
+  text-decoration: none; color: #6A28CC; font-weight: 700; font-size: 0.9rem;
+  margin-bottom: 14px; padding: 6px 16px;
+  background: white; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+h1 {
+  font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 900;
+  color: #6A28CC; text-shadow: 2px 2px 0 #C8B5FF;
+  margin-bottom: 6px; text-align: center;
+}
+.subtitle { font-size: 0.78rem; color: #9B8AB8; font-weight: 700; letter-spacing: 1px; margin-bottom: 14px; text-align: center; }
+
+/* PALETTE */
+.palette-wrap { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; max-width: 480px; }
+.swatch {
+  width: 48px; height: 48px; border-radius: 12px; cursor: pointer;
+  border: 3px solid transparent; display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 900; color: rgba(0,0,0,0.5);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.18); transition: transform 0.12s, border-color 0.12s;
+  flex-shrink: 0;
+}
+.swatch:hover { transform: scale(1.1); }
+.swatch.sel { border-color: #333; transform: scale(1.15); box-shadow: 0 0 0 4px rgba(0,0,0,0.25), 0 3px 10px rgba(0,0,0,0.18); }
+
+/* CANVAS */
+.canvas-wrap {
+  background: white; border-radius: 22px;
+  box-shadow: 0 8px 30px rgba(100,50,200,0.18);
+  padding: 10px; max-width: 480px; width: 100%;
+}
+#artwork { width: 100%; height: auto; display: block; }
+
+/* Regions */
+.region {
+  cursor: pointer;
+  transition: filter 0.1s;
+  stroke: #222; stroke-width: 2;
+}
+.region:hover { filter: brightness(0.9); }
+.region.filled { stroke: #222; stroke-width: 1.5; }
+.region.shake  { animation: shake 0.3s ease; }
+@keyframes shake { 0%,100%{transform:translate(0)} 25%{transform:translate(-3px,0)} 75%{transform:translate(3px,0)} }
+
+/* number labels (shown when unfilled) */
+.num-label { pointer-events: none; font-size: 13px; font-weight: 900; fill: #555; font-family: 'Nunito', sans-serif; }
+.num-label.hidden { display: none; }
+
+/* Controls */
+.controls { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; justify-content: center; }
+.ctrl-btn {
+  padding: 10px 22px; border-radius: 14px; border: none; cursor: pointer;
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.88rem;
+  transition: transform 0.1s;
+}
+.ctrl-btn:active { transform: scale(0.94); }
+.btn-reset { background: white; color: #6A28CC; border: 2px solid #C8B5FF; }
+.btn-reveal { background: linear-gradient(135deg, #A78BFA, #7C3AED); color: white; }
+
+/* Progress */
+.progress-bar-wrap { width: 100%; max-width: 480px; background: rgba(255,255,255,0.5); border-radius: 20px; height: 10px; margin: 14px 0 4px; overflow: hidden; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, #A78BFA, #D63384); border-radius: 20px; transition: width 0.4s ease; }
+.progress-label { font-size: 0.72rem; color: #9B8AB8; font-weight: 700; text-align: center; margin-bottom: 10px; }
+
+/* WIN */
+.win-overlay { display: none; position: fixed; inset: 0; background: rgba(80,30,180,0.55); z-index: 100; align-items: center; justify-content: center; }
+.win-overlay.show { display: flex; }
+.win-card { background: white; border-radius: 28px; padding: 36px 40px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 300px; width: 90%; }
+.win-card h2 { font-size: 2rem; color: #D63384; font-weight: 900; margin: 12px 0 6px; }
+.win-card p  { color: #8B7BA8; font-weight: 700; margin-bottom: 22px; }
+.big-btn { padding: 12px 30px; border-radius: 16px; border: none; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem; cursor: pointer; background: linear-gradient(135deg, #A78BFA, #7C3AED); color: white; }
+</style>
+</head>
+<body>
+
+<a class="back" href="index.html">← Anime World</a>
+<h1>🎨 Colour by Number</h1>
+<p class="subtitle">Pick a colour, then tap a matching number!</p>
+
+<div class="palette-wrap" id="palette"></div>
+
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="progress-label" id="progressLabel">0 of 20 regions filled</div>
+
+<div class="canvas-wrap">
+  <svg id="artwork" viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- ═══════════ REGIONS ═══════════ -->
+
+    <!-- 1 · Outer face / head -->
+    <ellipse class="region" data-region="1" cx="200" cy="230" rx="160" ry="155" fill="#ffffff"/>
+    <text class="num-label" data-label="1" x="200" y="155" text-anchor="middle">1</text>
+
+    <!-- 2 · Left ear outer -->
+    <polygon class="region" data-region="2" points="60,100 100,160 30,170" fill="#ffffff"/>
+    <text class="num-label" data-label="2" x="62" y="148" text-anchor="middle">2</text>
+
+    <!-- 3 · Right ear outer -->
+    <polygon class="region" data-region="3" points="340,100 300,160 370,170" fill="#ffffff"/>
+    <text class="num-label" data-label="3" x="338" y="148" text-anchor="middle">3</text>
+
+    <!-- 4 · Left ear inner -->
+    <polygon class="region" data-region="4" points="68,108 99,155 42,162" fill="#ffffff"/>
+    <text class="num-label" data-label="4" x="69" y="148" text-anchor="middle">4</text>
+
+    <!-- 5 · Right ear inner -->
+    <polygon class="region" data-region="5" points="332,108 301,155 358,162" fill="#ffffff"/>
+    <text class="num-label" data-label="5" x="329" y="148" text-anchor="middle">5</text>
+
+    <!-- 6 · Left eye white -->
+    <ellipse class="region" data-region="6" cx="148" cy="220" rx="38" ry="30" fill="#ffffff"/>
+    <text class="num-label" data-label="6" x="148" y="224" text-anchor="middle">6</text>
+
+    <!-- 7 · Right eye white -->
+    <ellipse class="region" data-region="7" cx="252" cy="220" rx="38" ry="30" fill="#ffffff"/>
+    <text class="num-label" data-label="7" x="252" y="224" text-anchor="middle">7</text>
+
+    <!-- 8 · Left iris -->
+    <ellipse class="region" data-region="8" cx="148" cy="222" rx="22" ry="22" fill="#ffffff"/>
+    <text class="num-label" data-label="8" x="148" y="226" text-anchor="middle">8</text>
+
+    <!-- 9 · Right iris -->
+    <ellipse class="region" data-region="9" cx="252" cy="222" rx="22" ry="22" fill="#ffffff"/>
+    <text class="num-label" data-label="9" x="252" y="226" text-anchor="middle">9</text>
+
+    <!-- 10 · Left pupil -->
+    <circle class="region" data-region="10" cx="148" cy="224" r="10" fill="#ffffff"/>
+    <text class="num-label" data-label="10" x="148" y="228" text-anchor="middle">10</text>
+
+    <!-- 11 · Right pupil -->
+    <circle class="region" data-region="11" cx="252" cy="224" r="10" fill="#ffffff"/>
+    <text class="num-label" data-label="11" x="252" y="228" text-anchor="middle">11</text>
+
+    <!-- 12 · Nose -->
+    <ellipse class="region" data-region="12" cx="200" cy="278" rx="18" ry="12" fill="#ffffff"/>
+    <text class="num-label" data-label="12" x="200" y="282" text-anchor="middle">12</text>
+
+    <!-- 13 · Mouth / smile -->
+    <path class="region" data-region="13" d="M175,295 Q200,320 225,295 Q210,308 200,310 Q190,308 175,295Z" fill="#ffffff"/>
+    <text class="num-label" data-label="13" x="200" y="312" text-anchor="middle">13</text>
+
+    <!-- 14 · Left cheek blush -->
+    <ellipse class="region" data-region="14" cx="120" cy="272" rx="30" ry="18" fill="#ffffff"/>
+    <text class="num-label" data-label="14" x="120" y="276" text-anchor="middle">14</text>
+
+    <!-- 15 · Right cheek blush -->
+    <ellipse class="region" data-region="15" cx="280" cy="272" rx="30" ry="18" fill="#ffffff"/>
+    <text class="num-label" data-label="15" x="280" y="276" text-anchor="middle">15</text>
+
+    <!-- 16 · Left whisker area -->
+    <ellipse class="region" data-region="16" cx="105" cy="285" rx="42" ry="16" fill="#ffffff" transform="rotate(-10,105,285)"/>
+    <text class="num-label" data-label="16" x="105" y="292" text-anchor="middle">16</text>
+
+    <!-- 17 · Right whisker area -->
+    <ellipse class="region" data-region="17" cx="295" cy="285" rx="42" ry="16" fill="#ffffff" transform="rotate(10,295,285)"/>
+    <text class="num-label" data-label="17" x="295" y="292" text-anchor="middle">17</text>
+
+    <!-- 18 · Bow top-left petal -->
+    <ellipse class="region" data-region="18" cx="165" cy="390" rx="28" ry="18" fill="#ffffff" transform="rotate(-30,165,390)"/>
+    <text class="num-label" data-label="18" x="157" y="394" text-anchor="middle">18</text>
+
+    <!-- 19 · Bow top-right petal -->
+    <ellipse class="region" data-region="19" cx="235" cy="390" rx="28" ry="18" fill="#ffffff" transform="rotate(30,235,390)"/>
+    <text class="num-label" data-label="19" x="242" y="394" text-anchor="middle">19</text>
+
+    <!-- 20 · Bow centre knot -->
+    <circle class="region" data-region="20" cx="200" cy="394" r="12" fill="#ffffff"/>
+    <text class="num-label" data-label="20" x="200" y="399" text-anchor="middle">20</text>
+
+    <!-- Outline details (non-interactive) -->
+    <!-- Eye shine dots -->
+    <circle cx="138" cy="213" r="5" fill="white" opacity="0.7" pointer-events="none"/>
+    <circle cx="242" cy="213" r="5" fill="white" opacity="0.7" pointer-events="none"/>
+    <!-- Whisker lines -->
+    <line x1="65" y1="278" x2="155" y2="282" stroke="#555" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
+    <line x1="65" y1="288" x2="155" y2="290" stroke="#555" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
+    <line x1="65" y1="298" x2="155" y2="294" stroke="#555" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
+    <line x1="335" y1="278" x2="245" y2="282" stroke="#555" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
+    <line x1="335" y1="288" x2="245" y2="290" stroke="#555" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
+    <line x1="335" y1="298" x2="245" y2="294" stroke="#555" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
+  </svg>
+</div>
+
+<div class="controls">
+  <button class="ctrl-btn btn-reset" onclick="resetAll()">🔄 Reset</button>
+  <button class="ctrl-btn btn-reveal" onclick="revealAll()">✨ Reveal</button>
+</div>
+
+<div class="win-overlay" id="winOverlay">
+  <div class="win-card">
+    <div style="font-size:3.5rem">🌸</div>
+    <h2>Beautiful!</h2>
+    <p>You coloured the whole picture!</p>
+    <button class="big-btn" onclick="resetAll(); document.getElementById('winOverlay').classList.remove('show')">🎨 Play Again</button>
+  </div>
+</div>
+
+<script>
+const PALETTE = [
+  { n:1,  color:'#F9C5D8', label:'1', desc:'Soft Pink'    },
+  { n:2,  color:'#F4A0B4', label:'2', desc:'Pink'         },
+  { n:3,  color:'#F4A0B4', label:'3', desc:'Pink'         },
+  { n:4,  color:'#FFC0CB', label:'4', desc:'Blush'        },
+  { n:5,  color:'#FFC0CB', label:'5', desc:'Blush'        },
+  { n:6,  color:'#FFFFFF', label:'6', desc:'White'        },
+  { n:7,  color:'#FFFFFF', label:'7', desc:'White'        },
+  { n:8,  color:'#7DD3FC', label:'8', desc:'Sky Blue'     },
+  { n:9,  color:'#7DD3FC', label:'9', desc:'Sky Blue'     },
+  { n:10, color:'#1E3A5F', label:'10', desc:'Dark Blue'   },
+  { n:11, color:'#1E3A5F', label:'11', desc:'Dark Blue'   },
+  { n:12, color:'#FFB6C1', label:'12', desc:'Light Pink'  },
+  { n:13, color:'#E07090', label:'13', desc:'Rose'        },
+  { n:14, color:'#FFD6E7', label:'14', desc:'Blush Pink'  },
+  { n:15, color:'#FFD6E7', label:'15', desc:'Blush Pink'  },
+  { n:16, color:'#FFF0F5', label:'16', desc:'Pale'        },
+  { n:17, color:'#FFF0F5', label:'17', desc:'Pale'        },
+  { n:18, color:'#C084FC', label:'18', desc:'Lavender'    },
+  { n:19, color:'#C084FC', label:'19', desc:'Lavender'    },
+  { n:20, color:'#9333EA', label:'20', desc:'Purple'      },
+];
+
+// Map region number → colour
+const REGION_COLORS = {};
+PALETTE.forEach(p => { REGION_COLORS[p.n] = p.color; });
+
+// Unique swatches (by colour value, grouped)
+const UNIQUE_COLORS = [
+  { color:'#F9C5D8', regions:[1],         label:'1'  },
+  { color:'#F4A0B4', regions:[2,3],       label:'2·3'},
+  { color:'#FFC0CB', regions:[4,5],       label:'4·5'},
+  { color:'#FFFFFF', regions:[6,7],       label:'6·7'},
+  { color:'#7DD3FC', regions:[8,9],       label:'8·9'},
+  { color:'#1E3A5F', regions:[10,11],     label:'10·11', textColor:'white'},
+  { color:'#FFB6C1', regions:[12],        label:'12' },
+  { color:'#E07090', regions:[13],        label:'13' },
+  { color:'#FFD6E7', regions:[14,15],     label:'14·15'},
+  { color:'#FFF0F5', regions:[16,17],     label:'16·17', border:'#ddd'},
+  { color:'#C084FC', regions:[18,19],     label:'18·19'},
+  { color:'#9333EA', regions:[20],        label:'20', textColor:'white'},
+];
+
+let selColor = null;
+let filled = {};
+
+function buildPalette() {
+  const wrap = document.getElementById('palette');
+  UNIQUE_COLORS.forEach(u => {
+    const sw = document.createElement('div');
+    sw.className = 'swatch';
+    sw.style.background = u.color;
+    sw.style.color = u.textColor || 'rgba(0,0,0,0.5)';
+    if (u.border) sw.style.borderColor = u.border;
+    sw.textContent = u.label;
+    sw.title = u.desc || '';
+    sw.onclick = () => selectColor(u, sw);
+    u._el = sw;
+    wrap.appendChild(sw);
+  });
+}
+
+function selectColor(u, sw) {
+  selColor = u;
+  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('sel'));
+  sw.classList.add('sel');
+}
+
+document.querySelectorAll('.region').forEach(el => {
+  el.addEventListener('click', () => {
+    const n = parseInt(el.dataset.region);
+    if (!selColor) {
+      el.classList.add('shake');
+      setTimeout(() => el.classList.remove('shake'), 300);
+      return;
+    }
+    const correctColor = REGION_COLORS[n];
+    if (selColor.regions.includes(n)) {
+      el.style.fill = correctColor;
+      el.classList.add('filled');
+      filled[n] = true;
+      document.querySelector(`.num-label[data-label="${n}"]`)?.classList.add('hidden');
+      updateProgress();
+    } else {
+      el.classList.add('shake');
+      setTimeout(() => el.classList.remove('shake'), 300);
+    }
+  });
+});
+
+function updateProgress() {
+  const total = 20;
+  const done = Object.keys(filled).length;
+  const pct = Math.round(done / total * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${done} of ${total} regions filled`;
+  if (done === total) setTimeout(() => document.getElementById('winOverlay').classList.add('show'), 600);
+}
+
+function resetAll() {
+  filled = {};
+  selColor = null;
+  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('sel'));
+  document.querySelectorAll('.region').forEach(el => {
+    el.style.fill = '#ffffff';
+    el.classList.remove('filled');
+  });
+  document.querySelectorAll('.num-label').forEach(el => el.classList.remove('hidden'));
+  updateProgress();
+}
+
+function revealAll() {
+  document.querySelectorAll('.region').forEach(el => {
+    const n = parseInt(el.dataset.region);
+    el.style.fill = REGION_COLORS[n];
+    el.classList.add('filled');
+    filled[n] = true;
+    document.querySelector(`.num-label[data-label="${n}"]`)?.classList.add('hidden');
+  });
+  updateProgress();
+}
+
+buildPalette();
+</script>
+</body>
+</html>
