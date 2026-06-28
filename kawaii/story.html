@@ -130,65 +130,201 @@ const S = {
     choices:[
       {text:'🚪 Open it right away!', next:'a'},
       {text:'✊ Knock politely first', next:'b'},
-      {text:'🔍 Look around for a key', next:'c'}
+      {text:'🔍 Look around for a key', next:'c'},
+      {text:'🌙 Wait until nightfall', next:'d'}
     ]
   },
+
+  /* ── BRANCH A: Forest ── */
   a: {
     scene:'🌳', depth:1, bg:'#F4FFF4',
     title:'A Magical Forest!',
-    text:'The door swings open! Mochi steps into a sparkling forest where flowers are as tall as trees and fireflies float like tiny lanterns. A butterfly with rainbow wings flutters nearby!',
+    text:'The door swings open! Mochi steps into a sparkling forest where flowers are as tall as trees and fireflies float like tiny lanterns. A butterfly with rainbow wings flutters nearby. Further along the path, a ring of glowing mushrooms pulses softly in the green light.',
     choices:[
       {text:'🦋 Follow the rainbow butterfly', next:'end_a1'},
-      {text:'🌸 Climb up a giant flower', next:'end_a2'}
+      {text:'🌸 Climb up a giant flower', next:'end_a2'},
+      {text:'🍄 Explore the mushroom ring', next:'a3'}
     ]
   },
-  b: {
-    scene:'🧙‍♀️', depth:1, bg:'#FFFBF0',
-    title:'A Friendly Witch!',
-    text:'The door opens and a friendly witch with sparkly purple hair peeks out! She has a tiny cat on her shoulder. "Oh! A visitor! Would you like to come in for tea?" she asks.',
+  a3: {
+    scene:'🍄', depth:2, bg:'#F0FFF0',
+    title:'A Tiny Elf!',
+    text:'Mochi tiptoes into the mushroom ring and finds a tiny elf with bright blue boots sitting on the largest cap, strumming a teeny guitar. He looks up and grins a very wide grin. "Oh! An audience at last! Do you want to dance — or shall I play you my very best song?"',
     choices:[
-      {text:'☕ Yes please, tea sounds lovely!', next:'end_b1'},
-      {text:'✨ Ask about the magic door', next:'end_b2'}
-    ]
-  },
-  c: {
-    scene:'🗺️', depth:1, bg:'#F4F0FF',
-    title:'A Treasure Map!',
-    text:'Mochi sniffs around and finds something even better than a key — a rolled-up treasure map! It has little drawings of flowers, a big oak tree, and a red X marked on it.',
-    choices:[
-      {text:'🏃 Follow the map right now!', next:'end_c1'},
-      {text:'👀 Study it very carefully first', next:'end_c2'}
+      {text:'💃 Dance!', next:'end_a3a'},
+      {text:'🎵 Hear the song', next:'end_a3b'}
     ]
   },
   end_a1: {
-    scene:'👑', depth:2, ending:true, badge:'🌸 Ending 1 of 6',
+    scene:'👑', depth:2, ending:true, badge:'🌸 Ending 1 of 18',
     title:'Queen of the Forest!',
-    text:'The butterfly leads Mochi to a glittering pond with a tiny island. On the island is a crown made of flowers! Mochi swims across and puts it on her head — and all the forest animals come running. They have been waiting for their queen! 🌸🌸🌸'
+    text:'The butterfly leads Mochi to a glittering pond with a tiny island in the middle. On the island sits a crown woven from flowers! Mochi swims across and places it on her head — and the moment she does, every forest animal comes running. They have been waiting for their queen. 🌸🌸🌸'
   },
   end_a2: {
-    scene:'🐉', depth:2, ending:true, badge:'🐉 Ending 2 of 6',
+    scene:'🐉', depth:2, ending:true, badge:'🐉 Ending 2 of 18',
     title:'Dragon Mum!',
-    text:'Mochi climbs the giant flower stem all the way to the top and finds a cosy nest! Inside are three tiny dragon eggs 🥚. They start to crack open and the baby dragons look up at Mochi — they think she is their mum! She now has the most unusual family ever. 🐉🐉🐉'
+    text:'Mochi climbs the giant flower stem all the way to the very top — and finds a cosy nest! Inside are three tiny dragon eggs 🥚. They crack open and three baby dragons peer up at Mochi with adoring eyes. They think she is their mum. She now has the most unusual and wonderful family in the world. 🐉🐉🐉'
+  },
+  end_a3a: {
+    scene:'🎶', depth:3, ending:true, badge:'🎶 Ending 3 of 18',
+    title:'The Greatest Dancer!',
+    text:'The elf strikes up the bounciest music Mochi has ever heard. She leaps and twirls and cannot stop! One by one, rabbits, foxes, squirrels, and owls appear at the edge of the clearing to watch — then they start dancing too! By the time the music ends the whole forest is spinning and laughing. The elf takes a deep bow. "You," he declares, "are the greatest dancer the magical world has ever seen." 🎶🎶🎶'
+  },
+  end_a3b: {
+    scene:'🌼', depth:3, ending:true, badge:'🌼 Ending 4 of 18',
+    title:'The Magic Harp!',
+    text:'The elf plays a melody so gentle and lovely that flowers begin blooming all around Mochi\'s paws — pink ones, yellow ones, tiny blue ones shaped like stars. When he finishes, he holds out a golden harp no bigger than Mochi\'s paw. "Every time you play it, flowers will grow." Mochi walks home through the forest leaving a trail of blossoms with every step. 🌼🌼🌼'
+  },
+
+  /* ── BRANCH B: Witch ── */
+  b: {
+    scene:'🧙‍♀️', depth:1, bg:'#FFFBF0',
+    title:'A Friendly Witch!',
+    text:'The door opens and a friendly witch with sparkly purple hair peeks out! She has a tiny cat perched on her shoulder. "Oh! A visitor! Would you like to come in for tea?" she asks warmly. The tiny cat stares at Mochi with enormous golden eyes.',
+    choices:[
+      {text:'☕ Yes please, tea sounds lovely!', next:'end_b1'},
+      {text:'✨ Ask about the magic door', next:'end_b2'},
+      {text:'🐱 Ask about the tiny cat', next:'b3'}
+    ]
+  },
+  b3: {
+    scene:'🐾', depth:2, bg:'#FFF8F8',
+    title:'Mimi Can Talk!',
+    text:'The witch beams and lifts the tiny cat from her shoulder. "This is Mimi — and she has been VERY curious about you!" Mimi fixes Mochi with her enormous golden eyes and says, in a clear little voice: "I have been watching you from the window, Mochi. You are braver than you think." Mochi\'s mouth falls open. "How do you know my name?"',
+    choices:[
+      {text:'🔮 Ask what Mimi means', next:'end_b3a'},
+      {text:'🌈 Invite Mimi on an adventure', next:'end_b3b'}
+    ]
   },
   end_b1: {
-    scene:'⭐', depth:2, ending:true, badge:'⭐ Ending 3 of 6',
+    scene:'⭐', depth:2, ending:true, badge:'⭐ Ending 5 of 18',
     title:'A Magical New Friend!',
-    text:'Inside is the cosiest room Mochi has ever seen — bookshelves from floor to ceiling, a crackling fireplace, and three cats napping on soft cushions. The witch makes magical tea that tastes like strawberry and stars. "Come visit whenever you like!" she says warmly. ⭐'
+    text:'Inside is the cosiest room Mochi has ever seen — bookshelves from floor to ceiling, a crackling fireplace, and three cats napping on soft cushions. The witch makes tea that tastes like strawberry and stars. "Come visit whenever you like!" she says warmly. Mochi already plans to visit tomorrow. ⭐'
   },
   end_b2: {
-    scene:'📚', depth:2, ending:true, badge:'📚 Ending 4 of 6',
+    scene:'📚', depth:2, ending:true, badge:'📚 Ending 6 of 18',
     title:'The Library of Everything!',
-    text:'"Oh THAT!" the witch laughs. "It goes anywhere you imagine — just whisper it!" Mochi whispers "the library." WHOOSH! She is in the most enormous library in the world, with books in every language, even cat language! 📚📚📚'
+    text:'"Oh THAT!" the witch laughs. "It goes anywhere you imagine — just whisper it!" Mochi closes her eyes and whispers "the library." WHOOSH! She lands in the most enormous library in the world, with books in every language — even cat language! 📚📚📚'
+  },
+  end_b3a: {
+    scene:'🦜', depth:3, ending:true, badge:'🦜 Ending 7 of 18',
+    title:'The Language Gift!',
+    text:'Mimi smiles and presses one small paw gently to Mochi\'s forehead. A warm golden glow spreads from nose to tail-tip. Suddenly Mochi can understand EVERY animal — the sparrow arguing with the caterpillar, the beetle humming to itself, even the snail thinking very slowly about lunch. She hurries home and spends all afternoon having the most fascinating conversations the garden has ever heard. 🦜🌟🌟'
+  },
+  end_b3b: {
+    scene:'🌈', depth:3, ending:true, badge:'🌈 Ending 8 of 18',
+    title:'Best Friends on a Rainbow!',
+    text:'Mimi\'s eyes go wide and bright. "YES. I thought you\'d never ask!" She springs onto Mochi\'s shoulder and together they dash back through the glowing door — and tumble out onto a rainbow arching across the sky. They slide all the way down it, laughing the whole way, land in a soft heap of cloud, and immediately climb back up to go again. By sunset they are the very best of friends. 🌈🌈🌈'
+  },
+
+  /* ── BRANCH C: Map ── */
+  c: {
+    scene:'🗺️', depth:1, bg:'#F4F0FF',
+    title:'A Treasure Map!',
+    text:'Mochi sniffs around and finds something even better than a key — a rolled-up treasure map! It has drawings of flowers, a big oak tree, and a red X. A small bluebird hops over and tilts its head, peering at the map with one bright eye.',
+    choices:[
+      {text:'🏃 Follow the map right now!', next:'end_c1'},
+      {text:'👀 Study it very carefully first', next:'end_c2'},
+      {text:'🐦 Ask the bluebird for help', next:'c3'}
+    ]
+  },
+  c3: {
+    scene:'🐦', depth:2, bg:'#F0F4FF',
+    title:'A Helpful Bluebird!',
+    text:'"Oh! I know this spot!" the bird chirps, hopping excitedly. "I flew right over it this morning — it\'s on the other side of the big garden hedge. I could guide you there right now, or I could whisper you a very useful secret clue."',
+    choices:[
+      {text:'🏃 Go with the bird now!', next:'end_c3a'},
+      {text:'🤫 Ask for the secret clue', next:'end_c3b'}
+    ]
   },
   end_c1: {
-    scene:'🧭', depth:2, ending:true, badge:'🧭 Ending 5 of 6',
+    scene:'🧭', depth:2, ending:true, badge:'🧭 Ending 9 of 18',
     title:'The Adventure Compass!',
-    text:'Mochi runs off following the map — past the roses, around the pond, up the hill, to a big oak tree. She digs and digs at the X and finds a golden box! Inside is a tiny magical compass that always points toward the nearest adventure. She will never be bored again! 🧭'
+    text:'Mochi runs off following the map — past the roses, around the pond, up the hill, to the big oak tree. She digs at the X and finds a golden box! Inside is a tiny compass that always points toward the nearest adventure. She will never be bored again. 🧭🌟🌟'
   },
   end_c2: {
-    scene:'🎉', depth:2, ending:true, badge:'🎉 Ending 6 of 6',
+    scene:'🎉', depth:2, ending:true, badge:'🎉 Ending 10 of 18',
     title:'Surprise Party!',
-    text:'Mochi studies the map very carefully and notices the tiny drawings are actually tiny windows! She peeks through the tree drawing and sees miniature animals setting up party decorations. She finds the banner and reads the name on it: MOCHI! It was a surprise party for her all along! 🎉🎉🎉'
+    text:'Mochi studies the map very carefully and notices the tiny drawings are actually tiny windows! She peeks through the tree drawing and sees miniature animals setting up decorations and a banner. She leans in to read the name on it: MOCHI! It was a surprise party for her all along. 🎉🎉🎉'
+  },
+  end_c3a: {
+    scene:'🌅', depth:3, ending:true, badge:'🌅 Ending 11 of 18',
+    title:'A Hill Full of Love!',
+    text:'The bluebird leads Mochi through the hedge, across a meadow, and up a golden hill just as the sun starts to set. At the very top, Mochi digs at the X and finds a glass jar. Inside are dozens of tiny folded notes. She opens one: "You are brave." Another: "You are kind." Every single note was written for her. Mochi curls up on the hilltop and reads them all until the stars come out. 🌅🌟🌟'
+  },
+  end_c3b: {
+    scene:'🪞', depth:3, ending:true, badge:'🪞 Ending 12 of 18',
+    title:'The Mirror Knows!',
+    text:'The bird leans close and whispers: "Count seven roses, find the old oak roots — but the real treasure is NOT in the box." Mochi counts carefully, finds the box, opens it — and inside is a small mirror. Her own reflection smiles, waves, and whispers back: "You already have everything you need." Mochi walks home feeling warm and full of light, all the way to the tip of her tail. 🪞🌟'
+  },
+
+  /* ── BRANCH D: Night ── */
+  d: {
+    scene:'🌙', depth:1, bg:'#EEEAFF',
+    title:'A Night Full of Magic!',
+    text:'Mochi decides to wait. As the stars come out one by one, the little door glows brighter and brighter — pulsing softly like a tiny heartbeat. A note appears on it that was not there before: "This door only opens its very best surprises after dark." Just then, three extraordinary things happen all at once...',
+    choices:[
+      {text:'🌠 Chase a falling star', next:'d1'},
+      {text:'🦊 Talk to a glowing fox', next:'d2'},
+      {text:'✨ The door opens by itself!', next:'d3'}
+    ]
+  },
+  d1: {
+    scene:'🌠', depth:2, bg:'#EDE8FF',
+    title:'Star Catcher!',
+    text:'Mochi leaps! The falling star is tiny — no bigger than a marble — and she catches it right in her paws. It warms her pads and glows pink and gold. Then a gentle voice rises up from inside it: "Make a wish, little cat. Any wish at all." Mochi closes her eyes tightly. What does she wish for?',
+    choices:[
+      {text:'🐶 A best friend', next:'end_d1a'},
+      {text:'🧁 Treats that never run out', next:'end_d1b'}
+    ]
+  },
+  d2: {
+    scene:'🦊', depth:2, bg:'#FFF4E8',
+    title:'The Fox Who Remembers!',
+    text:'The fox turns. Its fur glows warm amber, like a little lantern in the dark. "I have been watching this door for a very long time," it says quietly. "Years ago, a small brave cat just like you stood right here. She stepped through and became a legend." Its golden eyes glow softly. "Now it is your turn." Mochi lifts her chin. What does she do?',
+    choices:[
+      {text:'🌌 Step through bravely!', next:'end_d2a'},
+      {text:'📜 Ask what the legend says', next:'end_d2b'}
+    ]
+  },
+  d3: {
+    scene:'✨', depth:2, bg:'#FFF0FA',
+    title:'The Door Opens By Itself!',
+    text:'With a soft creak, the door swings open — but instead of leading somewhere, it is filled with floating picture-doors, each one showing a different world! Glowing cities, candy-coloured skies, cloud kingdoms drifting in golden light. A tiny sign reads: CHOOSE YOUR DREAM.',
+    choices:[
+      {text:'🍬 The candy-coloured world', next:'end_d3a'},
+      {text:'☁️ The cloud kingdom', next:'end_d3b'}
+    ]
+  },
+  end_d1a: {
+    scene:'🐶', depth:3, ending:true, badge:'🐶 Ending 13 of 18',
+    title:'A Friendship Wish!',
+    text:'The star winks out — and from behind the rosebush bounds a small fluffy puppy, wagging its tail so hard its whole back end wiggles. It has a tiny ribbon around its neck. Mochi leans in to read it: MOCHI\'S BEST FRIEND. They spend the whole night exploring the moonlit garden together, and every night after that too. 🐶🌙🌟'
+  },
+  end_d1b: {
+    scene:'🧁', depth:3, ending:true, badge:'🧁 Ending 14 of 18',
+    title:'Treats Forever!',
+    text:'The star blinks and dissolves into sparkling dust — and every morning from that day on, a tiny basket appears by the glowing door. Strawberry fish cakes. Cream puffs. Moon-shaped biscuits. Mochi starts sharing with all the garden animals, and she quickly becomes the most beloved, happiest, best-fed cat in the whole neighbourhood. 🧁🌟🌟'
+  },
+  end_d2a: {
+    scene:'🌌', depth:3, ending:true, badge:'🌌 Ending 15 of 18',
+    title:'Mochi the Legend!',
+    text:'Mochi takes one deep breath and steps through. She finds herself in a sky full of stars — except she is not falling. She is walking on them! Galaxies swirl softly beneath her paws like rugs. And far ahead, written in silver starlight on the biggest star of all: MOCHI WAS HERE. She already was the legend, all along. 🌌🌌🌌'
+  },
+  end_d2b: {
+    scene:'📜', depth:3, ending:true, badge:'📜 Ending 16 of 18',
+    title:'Write Your Own Ending!',
+    text:'The fox closes its eyes and recites in a singing voice: "She danced with stars and swam with clouds. She outran the wind and laughed out loud. She found the door, she found the key — she found the bravest part of me." Then it opens its eyes. "But the very best part?" it whispers. "The legend has no ending yet. That part belongs to you." Mochi runs home and writes it in the garden soil, under the moonlight. 📜🌙🌟'
+  },
+  end_d3a: {
+    scene:'🎨', depth:3, ending:true, badge:'🎨 Ending 17 of 18',
+    title:'The Painting World!',
+    text:'Mochi steps through into a world painted in swirling, joyful colours — bubblegum-pink skies, mint-green rivers, clouds made of cotton-candy fluff. And the most wonderful thing: wherever Mochi\'s tail touches the ground, new colours bloom like flowers! She spends the whole night painting the most beautiful picture she has ever made — of herself, happy and free and glowing. 🎨🌈🌟'
+  },
+  end_d3b: {
+    scene:'☁️', depth:3, ending:true, badge:'☁️ Ending 18 of 18',
+    title:'Cloud Keeper!',
+    text:'Mochi floats up into a kingdom made entirely of clouds — cloud castles, cloud gardens, cloud fountains that spray tiny perfectly-shaped snowflakes. On a fluffy throne sits an older cat with silver whiskers and kind eyes. "We have been expecting you," she says. "You are the new Cloud Keeper. Your job is to make sure every cloud has a silver lining." Mochi starts straight away. ☁️🌟🌟'
   }
 };
 
@@ -201,7 +337,7 @@ function render(key) {
 
   const prog = document.getElementById('progress');
   prog.innerHTML = '';
-  for (let i = 0; i <= 2; i++) {
+  for (let i = 0; i <= 3; i++) {
     const d = document.createElement('div');
     d.className = 'dot' + (i <= s.depth ? ' on' : '');
     prog.appendChild(d);
