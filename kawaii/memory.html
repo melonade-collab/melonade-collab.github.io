@@ -44,9 +44,9 @@ h1 {
 .stat-val { font-size: 1.7rem; font-weight: 900; color: #5B4E77; }
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: clamp(6px, 2vw, 10px);
-  max-width: 380px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: clamp(5px, 1.8vw, 8px);
+  max-width: 480px;
   width: 100%;
 }
 .card {
@@ -76,9 +76,16 @@ h1 {
 }
 .back-face {
   background: white;
-  font-size: clamp(1.7rem, 5.5vw, 2.4rem);
+  font-size: clamp(1.4rem, 4vw, 2rem);
   transform: rotateY(180deg);
   box-shadow: 0 4px 14px rgba(180,60,180,0.12);
+  overflow: hidden;
+}
+.back-face img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  pointer-events: none;
 }
 .card.matched .back-face {
   background: linear-gradient(135deg, #FFF0F8, #FFE4F0);
@@ -117,7 +124,7 @@ h1 {
 
 <div class="stats">
   <div class="stat"><div class="stat-label">MOVES</div><div class="stat-val" id="moves">0</div></div>
-  <div class="stat"><div class="stat-label">PAIRS</div><div class="stat-val" id="pairs">0 / 8</div></div>
+  <div class="stat"><div class="stat-label">PAIRS</div><div class="stat-val" id="pairs">0 / 12</div></div>
   <div class="stat"><div class="stat-label">BEST</div><div class="stat-val" id="best">—</div></div>
 </div>
 
@@ -133,30 +140,51 @@ h1 {
 </div>
 
 <script>
-const EMOJIS = ['🐱','🐰','🦋','🌸','⭐','🍭','🌈','🦄'];
+const TOTAL_PAIRS = 12;
+const FALLBACK = ['🐱','🐰','🦋','🌸','⭐','🍭','🌈','🦄','🎀','🍓','🌙','🐸'];
+let IMAGES = [];
 let flipped = [], pairsFound = 0, moves = 0, best = null, locked = false;
 
-function newGame() {
-  const tiles = [...EMOJIS, ...EMOJIS];
+async function loadImages() {
+  try {
+    const res  = await fetch(`https://nekos.best/api/v2/neko?amount=${TOTAL_PAIRS}`);
+    const data = await res.json();
+    IMAGES = data.results.map(r => r.url);
+  } catch(e) {
+    IMAGES = FALLBACK;
+  }
+}
+
+async function newGame() {
+  flipped = []; pairsFound = 0; moves = 0; locked = false;
+  document.getElementById('moves').textContent = '0';
+  document.getElementById('pairs').textContent = `0 / ${TOTAL_PAIRS}`;
+  document.getElementById('win').classList.remove('show');
+
+  const grid = document.getElementById('grid');
+  grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:30px;color:#C0A0C0;font-weight:700">Loading… ✨</div>`;
+
+  await loadImages();
+
+  const tiles = [];
+  IMAGES.forEach((src, i) => { tiles.push({ src, id: i }); tiles.push({ src, id: i }); });
   for (let i = tiles.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
   }
-  flipped = []; pairsFound = 0; moves = 0; locked = false;
-  document.getElementById('moves').textContent = '0';
-  document.getElementById('pairs').textContent = '0 / 8';
-  document.getElementById('win').classList.remove('show');
 
-  const grid = document.getElementById('grid');
   grid.innerHTML = '';
-  tiles.forEach(emoji => {
+  tiles.forEach(tile => {
     const card = document.createElement('div');
     card.className = 'card';
-    card.dataset.emoji = emoji;
+    card.dataset.id = tile.id;
+    const face = tile.src.startsWith('http')
+      ? `<img src="${tile.src}" alt="character">`
+      : tile.src;
     card.innerHTML = `
       <div class="inner">
         <div class="face front">✨</div>
-        <div class="face back-face">${emoji}</div>
+        <div class="face back-face">${face}</div>
       </div>`;
     card.addEventListener('click', () => flip(card));
     grid.appendChild(card);
@@ -174,12 +202,12 @@ function flip(card) {
   locked = true;
 
   const [a, b] = flipped;
-  if (a.dataset.emoji === b.dataset.emoji) {
+  if (a.dataset.id === b.dataset.id) {
     a.classList.add('matched'); b.classList.add('matched');
     pairsFound++;
-    document.getElementById('pairs').textContent = `${pairsFound} / 8`;
+    document.getElementById('pairs').textContent = `${pairsFound} / ${TOTAL_PAIRS}`;
     flipped = []; locked = false;
-    if (pairsFound === 8) {
+    if (pairsFound === TOTAL_PAIRS) {
       if (best === null || moves < best) best = moves;
       document.getElementById('best').textContent = best;
       document.getElementById('winSub').textContent =
