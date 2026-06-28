@@ -105,6 +105,28 @@ h1 {
   transition: transform 0.1s;
 }
 .btn:active { transform: scale(0.94); }
+.scores-section {
+  margin-top: 18px;
+  width: 100%;
+  max-width: 480px;
+  background: white;
+  border-radius: 20px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 20px rgba(200,100,200,0.12);
+}
+.scores-title {
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #C0A0C0;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.scores-table { width: 100%; border-collapse: collapse; }
+.scores-table td { padding: 5px 6px; font-size: 0.9rem; font-weight: 700; color: #5B4E77; }
+.scores-table td:first-child { color: #C0A0C0; width: 28px; }
+.scores-table td:last-child { text-align: right; color: #D63384; }
+.scores-table tr.new-score td { color: #D63384; }
 .win {
   display: none;
   background: white;
@@ -130,6 +152,11 @@ h1 {
 
 <div class="grid" id="grid"></div>
 <button class="btn" onclick="newGame()">🔀 New Game</button>
+
+<div class="scores-section" id="scoresSection" style="display:none">
+  <div class="scores-title">TOP SCORES</div>
+  <table class="scores-table" id="scoresTable"></table>
+</div>
 
 <div class="win" id="win">
   <div style="font-size:3rem">🎉</div>
@@ -212,6 +239,8 @@ function flip(card) {
       document.getElementById('best').textContent = best;
       document.getElementById('winSub').textContent =
         `${moves} move${moves !== 1 ? 's' : ''}` + (best === moves ? ' 🏆 Best yet!' : '!');
+      saveScore(moves);
+      renderScores(moves);
       setTimeout(() => document.getElementById('win').classList.add('show'), 400);
     }
   } else {
@@ -222,6 +251,30 @@ function flip(card) {
   }
 }
 
+function saveScore(m) {
+  const key = 'memory_scores';
+  const scores = JSON.parse(localStorage.getItem(key) || '[]');
+  scores.push(m);
+  scores.sort((a, b) => a - b);
+  scores.splice(5);
+  localStorage.setItem(key, JSON.stringify(scores));
+}
+
+function renderScores(latestScore) {
+  const scores = JSON.parse(localStorage.getItem('memory_scores') || '[]');
+  if (!scores.length) return;
+  const medals = ['🥇','🥈','🥉','4.','5.'];
+  const firstMatch = latestScore !== null ? scores.indexOf(latestScore) : -1;
+  document.getElementById('scoresTable').innerHTML = scores.map((s, i) => `
+    <tr class="${i === firstMatch ? 'new-score' : ''}">
+      <td>${medals[i]}</td>
+      <td>${i === firstMatch ? '✨ You!' : ''}</td>
+      <td>${s} move${s !== 1 ? 's' : ''}</td>
+    </tr>`).join('');
+  document.getElementById('scoresSection').style.display = '';
+}
+
+renderScores(null);
 newGame();
 </script>
 </body>
