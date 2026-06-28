@@ -450,8 +450,8 @@ function renderInto(container, pg, interactive) {
     const img = IMAGES.find(x=>x.id===panel.iid);
     if(img){ if(img.src){ pEl.style.backgroundImage=`url('${img.src}')`; pEl.style.backgroundSize='cover'; pEl.style.backgroundPosition='center'; } else if(img.bg){ pEl.style.background=img.bg; } }
     if(interactive && panel.bubbles.length===0){ const h=document.createElement('div'); h.className='empty-hint'; h.textContent='tap to edit'; pEl.appendChild(h); }
+    panel.bubbles.forEach(b=>addBubbleEl(b,pEl,i,interactive));
     if(interactive){
-      panel.bubbles.forEach(b=>addBubbleEl(b,pEl,i));
       pEl.addEventListener('pointerdown', e=>{ if(!e.target.closest('.bbl')) selectPanel(i); });
     }
     container.appendChild(pEl);
@@ -488,7 +488,7 @@ function addBubble(type) {
   if(pEl){ const h=pEl.querySelector('.empty-hint'); if(h) h.remove(); addBubbleEl(bbl,pEl,selP); }
 }
 
-function addBubbleEl(bbl, panelEl, pIdx) {
+function addBubbleEl(bbl, panelEl, pIdx, interactive=true) {
   const wrap = document.createElement('div');
   wrap.className = 'bbl bbl-'+bbl.type;
   wrap.id = 'bbl_'+bbl.id;
@@ -498,10 +498,12 @@ function addBubbleEl(bbl, panelEl, pIdx) {
   if(bbl.type==='thought'){
     [0,1,2].forEach(k=>{ const d=document.createElement('div'); const sz=7-k*1.8; Object.assign(d.style,{position:'absolute',bottom:(-8-k*7)+'px',left:(10+k*8)+'px',width:sz+'px',height:sz+'px',background:'white',border:'2px solid #111',borderRadius:'50%'}); wrap.appendChild(d); });
   }
-  let sx,sy,sbx,sby,moved=false;
-  wrap.addEventListener('pointerdown',e=>{ e.stopPropagation(); wrap.setPointerCapture(e.pointerId); sx=e.clientX; sy=e.clientY; sbx=bbl.x; sby=bbl.y; moved=false; });
-  wrap.addEventListener('pointermove',e=>{ const dx=e.clientX-sx,dy=e.clientY-sy; if(!moved&&Math.abs(dx)+Math.abs(dy)<6) return; moved=true; const r=panelEl.getBoundingClientRect(); bbl.x=Math.max(0,Math.min(88,sbx+dx/r.width*100)); bbl.y=Math.max(0,Math.min(88,sby+dy/r.height*100)); if(bbl.type!=='narration') wrap.style.left=bbl.x+'%'; wrap.style.top=bbl.y+'%'; });
-  wrap.addEventListener('pointerup',e=>{ e.stopPropagation(); if(moved){ saveCur(); } else { openBubbleEdit(pIdx,bbl.id); } });
+  if(interactive){
+    let sx,sy,sbx,sby,moved=false;
+    wrap.addEventListener('pointerdown',e=>{ e.stopPropagation(); wrap.setPointerCapture(e.pointerId); sx=e.clientX; sy=e.clientY; sbx=bbl.x; sby=bbl.y; moved=false; });
+    wrap.addEventListener('pointermove',e=>{ const dx=e.clientX-sx,dy=e.clientY-sy; if(!moved&&Math.abs(dx)+Math.abs(dy)<6) return; moved=true; const r=panelEl.getBoundingClientRect(); bbl.x=Math.max(0,Math.min(88,sbx+dx/r.width*100)); bbl.y=Math.max(0,Math.min(88,sby+dy/r.height*100)); if(bbl.type!=='narration') wrap.style.left=bbl.x+'%'; wrap.style.top=bbl.y+'%'; });
+    wrap.addEventListener('pointerup',e=>{ e.stopPropagation(); if(moved){ saveCur(); } else { openBubbleEdit(pIdx,bbl.id); } });
+  }
   panelEl.appendChild(wrap);
 }
 
