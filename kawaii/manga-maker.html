@@ -44,6 +44,15 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
 .page-title-input { flex: 1; background: none; border: none; outline: none; color: #FFB3CC; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem; min-width: 0; }
 .hdr-btn { padding: 5px 12px; border-radius: 14px; border: none; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.78rem; cursor: pointer; white-space: nowrap; }
 .btn-view { background: #D63384; color: white; }
+
+/* PAGE NAV */
+.page-nav { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(0,0,0,0.3); justify-content: center; flex-shrink: 0; }
+.pnav-btn { padding: 4px 10px; border-radius: 10px; border: none; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.78rem; cursor: pointer; background: rgba(255,255,255,0.15); color: white; transition: opacity 0.15s; }
+.pnav-btn:disabled { opacity: 0.25; cursor: default; }
+.pnav-add { background: #D63384 !important; }
+.pnav-del { background: rgba(220,50,50,0.4) !important; }
+.pnav-label { color: #FFB3CC; font-weight: 900; font-size: 0.82rem; min-width: 72px; text-align: center; }
+
 .editor-body { flex: 1; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; padding: 10px 10px 6px; }
 
 .manga-page { flex-shrink: 0; width: min(88vw,330px); aspect-ratio: 3/4; gap: 4px; background: #111; border: 4px solid #111; }
@@ -107,9 +116,15 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
 .m-done { background: linear-gradient(135deg,#FF85A1,#D63384); color: white; }
 .m-del  { background: #FFF0F0; color: #D63384; border: 2px solid #FFB3CC; }
 
+/* layout picker modal */
+.modal-layout-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.modal-layout-card { aspect-ratio: 3/4; background: #EDE4FF; border-radius: 12px; border: 3px solid #FFB3CC; cursor: pointer; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.12s,border-color 0.12s; }
+.modal-layout-card:hover { transform: scale(1.05); border-color: #D63384; }
+
 /* PREVIEW */
-#s-preview { background: #111; justify-content: center; }
-.preview-page { width: min(88vw,360px); aspect-ratio: 3/4; gap: 4px; background: #111; }
+#s-preview { background: #111; justify-content: flex-start; overflow-y: auto; gap: 0; padding: 60px 12px 28px; }
+.preview-page { width: min(88vw,360px); aspect-ratio: 3/4; gap: 4px; background: #111; flex-shrink: 0; }
+.preview-page-sep { color: rgba(255,255,255,0.25); font-size: 0.65rem; font-weight: 700; letter-spacing: 3px; padding: 10px 0; text-align: center; }
 .preview-close { position: fixed; top: 14px; left: 14px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 20px; padding: 6px 14px; font-family: 'Nunito',sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; z-index: 50; }
 .preview-save { position: fixed; top: 14px; right: 14px; background: rgba(214,51,132,0.9); color: white; border: none; border-radius: 20px; padding: 6px 14px; font-family: 'Nunito',sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; z-index: 50; }
 
@@ -122,11 +137,12 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
   .preview-close, .preview-save { display: none !important; }
   #print-area {
     display: flex !important;
-    width: 100vw; height: 100vh;
-    align-items: center; justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
     background: #111 !important;
   }
-  #print-area .manga-page { width: 72vmin !important; height: calc(72vmin * 4 / 3) !important; }
+  #print-area .manga-page { width: 72vmin !important; height: calc(72vmin * 4 / 3) !important; page-break-after: always; }
 }
 </style>
 </head>
@@ -145,8 +161,8 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
 
 <!-- SETUP -->
 <div id="s-setup" class="screen">
-  <button class="back-btn" onclick="show('s-lib')">← Back</button>
-  <h1>Pick a layout 🖼️</h1>
+  <button class="back-btn" id="setupBackBtn">← Back</button>
+  <h1 id="setupTitle">Pick a layout 🖼️</h1>
   <div class="layout-grid" id="layoutGrid"></div>
 </div>
 
@@ -154,9 +170,16 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
 <div id="s-editor" class="screen">
   <div class="editor-hdr">
     <button class="back-btn" onclick="saveAndBack()">← Back</button>
-    <input class="page-title-input" id="titleInput" placeholder="My Manga Page">
-    <button class="hdr-btn btn-view" onclick="exportPage()" style="background:#A78BFA">📄</button>
+    <input class="page-title-input" id="titleInput" placeholder="My Manga">
+    <button class="hdr-btn btn-view" onclick="exportPages()" style="background:#A78BFA">📄</button>
     <button class="hdr-btn btn-view" onclick="openPreview()">👁️ View</button>
+  </div>
+  <div class="page-nav" id="pageNav">
+    <button class="pnav-btn" id="pgPrev" onclick="navigatePage(-1)">‹</button>
+    <span class="pnav-label" id="pgLabel">Page 1 / 1</span>
+    <button class="pnav-btn" id="pgNext" onclick="navigatePage(1)">›</button>
+    <button class="pnav-btn pnav-add" onclick="addPage()">+ Page</button>
+    <button class="pnav-btn pnav-del" onclick="deletePage()">🗑️</button>
   </div>
   <div class="editor-body">
     <div class="manga-page" id="mangaPage"></div>
@@ -170,8 +193,7 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
 <!-- PREVIEW -->
 <div id="s-preview" class="screen">
   <button class="preview-close" onclick="show('s-editor')">✕ Close</button>
-  <button class="preview-save" onclick="exportPage()">📄 Save PDF</button>
-  <div class="preview-page" id="previewPage"></div>
+  <button class="preview-save" onclick="exportPages()">📄 Save PDF</button>
 </div>
 
 <div id="print-area"></div>
@@ -199,6 +221,15 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
   </div>
 </div>
 
+<!-- MODAL: Add Page Layout Picker -->
+<div class="modal-overlay" id="modalLayout">
+  <div class="modal-sheet">
+    <button class="modal-close" onclick="closeModal('modalLayout')">✕</button>
+    <div class="modal-title">Pick layout for new page 🖼️</div>
+    <div class="modal-layout-grid" id="modalLayoutGrid"></div>
+  </div>
+</div>
+
 <script>
 const IMAGES = [
   {id:'falling',src:'https://images.unsplash.com/vector-1744442861923-aaeef319ac38?w=600&auto=format&fit=crop&q=80',label:'🌸 Falling'},
@@ -217,6 +248,8 @@ const IMAGES = [
   {id:'spacegirl',   src:'https://images.unsplash.com/vector-1744442862222-0bb0a9bf6a6f?w=600&auto=format&fit=crop&q=80',label:'🚀 Space Girl'},
   {id:'catearsgirl',  src:'https://plus.unsplash.com/premium_vector-1742843122520-08978e7dd475?w=600&auto=format&fit=crop&q=80',label:'🐱 Cat Ears Girl'},
   {id:'schoolgirlsnow', src:'https://images.unsplash.com/vector-1753190326256-1f9c8a7256ee?w=600&auto=format&fit=crop&q=80',label:'❄️ School Girl Snow'},
+  {id:'swordbull', src:'https://plus.unsplash.com/premium_vector-1726766834010-706dafc95ca4?w=600&auto=format&fit=crop&q=80',label:'⚔️ Sword Bull'},
+  {id:'pondhug',   src:'https://images.unsplash.com/vector-1745374815895-624a93fad30d?w=600&auto=format&fit=crop&q=80',label:'🌿 Pond Hug'},
   {id:'pink',   bg:'linear-gradient(135deg,#FFE4F0,#EDE4FF)',label:'🌸 Pink Magic'},
   {id:'night',  bg:'linear-gradient(180deg,#0a0a1a,#1a1060,#0d1a3a)',label:'🌙 Night Sky'},
   {id:'gold',   bg:'linear-gradient(135deg,#FFF8E1,#FFD700,#FFA000)',label:'⭐ Golden'},
@@ -239,16 +272,19 @@ const BTYPES = [
 ];
 const BDEFAULTS = {speech:'...',thought:'Hmm...',shout:'WAAAH!',narration:'Meanwhile...'};
 
-const SK = 'kawaii_manga_v1';
-let pages = [];
+const SK = 'kawaii_manga_v2';
+let mangas = [];
 let cur = null;
+let curPgIdx = 0;
 let selP = -1;
 let editPIdx = -1, editBId = null;
 
-function loadPages() { try { pages = JSON.parse(localStorage.getItem(SK)||'[]'); } catch { pages=[]; } }
-function savePages() { localStorage.setItem(SK, JSON.stringify(pages)); }
-function saveCur()   { const i=pages.findIndex(p=>p.id===cur.id); if(i>=0) pages[i]=cur; savePages(); }
-function show(id)    { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on')); document.getElementById(id).classList.add('on'); }
+function curPg() { return cur.pages[curPgIdx]; }
+
+function loadMangas() { try { mangas = JSON.parse(localStorage.getItem(SK)||'[]'); } catch { mangas=[]; } }
+function saveMangas() { localStorage.setItem(SK, JSON.stringify(mangas)); }
+function saveCur() { const i=mangas.findIndex(m=>m.id===cur.id); if(i>=0) mangas[i]=cur; saveMangas(); }
+function show(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on')); document.getElementById(id).classList.add('on'); }
 function openModal(id)  { document.getElementById(id).classList.add('show'); }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
@@ -264,35 +300,41 @@ function applySpan(el, L, i) {
   if(s.gr) el.style.gridRow    = s.gr;
 }
 
+function newPageData(layoutId) {
+  const L = LAYOUTS.find(l=>l.id===layoutId);
+  return { id:'pg_'+Date.now(), layout:layoutId, panels:Array.from({length:L.panels},()=>({iid:'pink',bubbles:[]})) };
+}
+
 // LIBRARY
 function renderLib() {
-  loadPages();
+  loadMangas();
   const g = document.getElementById('libGrid');
   g.innerHTML = '';
   const nc = document.createElement('div');
   nc.className = 'new-card';
-  nc.innerHTML = '<div class="new-card-icon">✏️</div><div>New Manga Page</div>';
-  nc.onclick = () => show('s-setup');
+  nc.innerHTML = '<div class="new-card-icon">✏️</div><div>New Manga</div>';
+  nc.onclick = () => { document.getElementById('setupBackBtn').onclick = () => show('s-lib'); document.getElementById('setupTitle').textContent = 'Pick a layout 🖼️'; renderSetup(false); show('s-setup'); };
   g.appendChild(nc);
-  [...pages].reverse().forEach(pg => {
+  [...mangas].reverse().forEach(manga => {
     const card = document.createElement('div');
     card.className = 'lib-card';
     const thumb = document.createElement('div');
     thumb.className = 'lib-thumb';
-    renderInto(thumb, pg, false);
+    renderInto(thumb, manga.pages[0], false);
     card.appendChild(thumb);
     const info = document.createElement('div');
     info.className = 'lib-info';
-    info.innerHTML = `<button class="lib-del" data-id="${pg.id}">🗑️</button><div class="lib-title">${pg.title||'Untitled'}</div><div class="lib-date">${new Date(pg.created).toLocaleDateString()}</div>`;
-    info.querySelector('.lib-del').onclick = e => { e.stopPropagation(); if(confirm('Delete this manga page?')){ pages=pages.filter(p=>p.id!==pg.id); savePages(); renderLib(); } };
+    const pc = manga.pages.length;
+    info.innerHTML = `<button class="lib-del" data-id="${manga.id}">🗑️</button><div class="lib-title">${manga.title||'Untitled'}</div><div class="lib-date">${pc} page${pc!==1?'s':''} · ${new Date(manga.created).toLocaleDateString()}</div>`;
+    info.querySelector('.lib-del').onclick = e => { e.stopPropagation(); if(confirm('Delete this manga?')){ mangas=mangas.filter(m=>m.id!==manga.id); saveMangas(); renderLib(); } };
     card.appendChild(info);
-    card.onclick = () => openEditor(pg.id);
+    card.onclick = () => openEditor(manga.id);
     g.appendChild(card);
   });
 }
 
 // SETUP
-function renderSetup() {
+function renderSetup(forAddPage) {
   const g = document.getElementById('layoutGrid');
   g.innerHTML = '';
   LAYOUTS.forEach(L => {
@@ -307,20 +349,20 @@ function renderSetup() {
     }
     const nm=document.createElement('div'); nm.className='layout-name'; nm.textContent=L.name;
     card.appendChild(prev); card.appendChild(nm);
-    card.onclick = () => createPage(L.id);
+    card.onclick = () => forAddPage ? insertPage(L.id) : createManga(L.id);
     g.appendChild(card);
   });
 }
 
-function createPage(layoutId) {
-  const L = LAYOUTS.find(l=>l.id===layoutId);
-  const pg = { id:'mg_'+Date.now(), title:'Manga '+(pages.length+1), created:Date.now(), layout:layoutId, panels:Array.from({length:L.panels},()=>({iid:'pink',bubbles:[]})) };
-  pages.push(pg); savePages(); openEditor(pg.id);
+function createManga(layoutId) {
+  const manga = { id:'mg_'+Date.now(), title:'Manga '+(mangas.length+1), created:Date.now(), pages:[newPageData(layoutId)] };
+  mangas.push(manga); saveMangas(); openEditor(manga.id);
 }
 
 // EDITOR
 function openEditor(id) {
-  cur = JSON.parse(JSON.stringify(pages.find(p=>p.id===id)));
+  cur = JSON.parse(JSON.stringify(mangas.find(m=>m.id===id)));
+  curPgIdx = 0;
   selP = -1;
   document.getElementById('titleInput').value = cur.title||'';
   renderEditor();
@@ -334,8 +376,61 @@ function saveAndBack() {
 
 function renderEditor() {
   const pg = document.getElementById('mangaPage');
-  renderInto(pg, cur, true);
+  renderInto(pg, curPg(), true);
   updateToolbar();
+  updatePageNav();
+}
+
+function updatePageNav() {
+  document.getElementById('pgLabel').textContent = `Page ${curPgIdx+1} / ${cur.pages.length}`;
+  document.getElementById('pgPrev').disabled = curPgIdx === 0;
+  document.getElementById('pgNext').disabled = curPgIdx === cur.pages.length - 1;
+}
+
+function navigatePage(dir) {
+  const n = curPgIdx + dir;
+  if(n >= 0 && n < cur.pages.length) { curPgIdx = n; selP = -1; renderEditor(); }
+}
+
+function addPage() {
+  const g = document.getElementById('modalLayoutGrid');
+  g.innerHTML = '';
+  LAYOUTS.forEach(L => {
+    const card = document.createElement('div');
+    card.className = 'modal-layout-card';
+    const prev = document.createElement('div');
+    prev.className = 'layout-preview';
+    applyLayoutCss(prev, L);
+    prev.style.gap = '3px'; prev.style.margin = '6px'; prev.style.flex = '1';
+    for(let i=0;i<L.panels;i++){
+      const p=document.createElement('div'); p.className='lp-panel'; applySpan(p,L,i); prev.appendChild(p);
+    }
+    const nm=document.createElement('div'); nm.className='layout-name'; nm.textContent=L.name;
+    card.appendChild(prev); card.appendChild(nm);
+    card.onclick = () => insertPage(L.id);
+    g.appendChild(card);
+  });
+  openModal('modalLayout');
+}
+
+function insertPage(layoutId) {
+  const pg = newPageData(layoutId);
+  cur.pages.splice(curPgIdx+1, 0, pg);
+  curPgIdx++;
+  selP = -1;
+  saveCur();
+  closeModal('modalLayout');
+  renderEditor();
+}
+
+function deletePage() {
+  if(cur.pages.length <= 1) { alert("Can't delete the only page!"); return; }
+  if(!confirm('Delete this page?')) return;
+  cur.pages.splice(curPgIdx, 1);
+  if(curPgIdx >= cur.pages.length) curPgIdx = cur.pages.length - 1;
+  selP = -1;
+  saveCur();
+  renderEditor();
 }
 
 function renderInto(container, pg, interactive) {
@@ -385,7 +480,7 @@ function updateToolbar() {
 function addBubble(type) {
   if(selP<0) return;
   const bbl = { id:'b_'+Date.now(), type, text:BDEFAULTS[type], x:type==='narration'?5:15+Math.random()*40, y:type==='narration'?5:8+Math.random()*30 };
-  cur.panels[selP].bubbles.push(bbl);
+  curPg().panels[selP].bubbles.push(bbl);
   saveCur();
   const pEl = document.getElementById('mp_'+selP);
   if(pEl){ const h=pEl.querySelector('.empty-hint'); if(h) h.remove(); addBubbleEl(bbl,pEl,selP); }
@@ -409,7 +504,7 @@ function addBubbleEl(bbl, panelEl, pIdx) {
 }
 
 function openBubbleEdit(pIdx, bId) {
-  const bbl=cur.panels[pIdx].bubbles.find(b=>b.id===bId);
+  const bbl=curPg().panels[pIdx].bubbles.find(b=>b.id===bId);
   if(!bbl) return;
   editPIdx=pIdx; editBId=bId;
   const row=document.getElementById('btypeRow');
@@ -420,44 +515,54 @@ function openBubbleEdit(pIdx, bId) {
 }
 
 function saveBubble() {
-  const bbl=cur.panels[editPIdx].bubbles.find(b=>b.id===editBId);
+  const bbl=curPg().panels[editPIdx].bubbles.find(b=>b.id===editBId);
   if(bbl) bbl.text=document.getElementById('bblText').value||'...';
   saveCur(); closeModal('modalBbl'); renderEditor();
 }
 
 function deleteBubble() {
-  cur.panels[editPIdx].bubbles=cur.panels[editPIdx].bubbles.filter(b=>b.id!==editBId);
+  curPg().panels[editPIdx].bubbles=curPg().panels[editPIdx].bubbles.filter(b=>b.id!==editBId);
   saveCur(); closeModal('modalBbl'); renderEditor();
 }
 
 function openImgPicker() {
   const g=document.getElementById('mimgGrid');
   g.innerHTML='';
-  const curIid=selP>=0?cur.panels[selP].iid:null;
-  IMAGES.forEach(img=>{ let el; if(img.src){ el=document.createElement('img'); el.src=img.src; el.alt=img.label; el.loading='lazy'; el.className='mimg-thumb'+(img.id===curIid?' sel':''); } else { el=document.createElement('div'); el.className='mimg-bg'+(img.id===curIid?' sel':''); el.style.background=img.bg; el.textContent=img.label; } el.onclick=()=>{ if(selP>=0){ cur.panels[selP].iid=img.id; saveCur(); closeModal('modalImg'); renderEditor(); } }; g.appendChild(el); });
+  const curIid=selP>=0?curPg().panels[selP].iid:null;
+  IMAGES.forEach(img=>{ let el; if(img.src){ el=document.createElement('img'); el.src=img.src; el.alt=img.label; el.loading='lazy'; el.className='mimg-thumb'+(img.id===curIid?' sel':''); } else { el=document.createElement('div'); el.className='mimg-bg'+(img.id===curIid?' sel':''); el.style.background=img.bg; el.textContent=img.label; } el.onclick=()=>{ if(selP>=0){ curPg().panels[selP].iid=img.id; saveCur(); closeModal('modalImg'); renderEditor(); } }; g.appendChild(el); });
   openModal('modalImg');
 }
 
 function openPreview() {
-  const pg=document.getElementById('previewPage');
-  renderInto(pg, cur, false);
-  pg.style.border='4px solid #444';
+  const screen = document.getElementById('s-preview');
+  // Remove old page elements (keep buttons)
+  Array.from(screen.children).forEach(c => { if(!c.classList.contains('preview-close') && !c.classList.contains('preview-save')) c.remove(); });
+  cur.pages.forEach((pg, i) => {
+    if(i > 0) { const sep=document.createElement('div'); sep.className='preview-page-sep'; sep.textContent=`— PAGE ${i+1} —`; screen.appendChild(sep); }
+    const pgEl = document.createElement('div');
+    pgEl.className = 'preview-page';
+    renderInto(pgEl, pg, false);
+    pgEl.style.border = '4px solid #444';
+    screen.appendChild(pgEl);
+  });
   show('s-preview');
 }
 
-function exportPage() {
+function exportPages() {
   cur.title = document.getElementById('titleInput').value.trim() || 'Untitled';
   saveCur();
   const area = document.getElementById('print-area');
   area.innerHTML = '';
-  const pg = document.createElement('div');
-  pg.className = 'manga-page';
-  renderInto(pg, cur, false);
-  area.appendChild(pg);
+  cur.pages.forEach(pg => {
+    const pgEl = document.createElement('div');
+    pgEl.className = 'manga-page';
+    renderInto(pgEl, pg, false);
+    area.appendChild(pgEl);
+  });
   window.print();
 }
 
-loadPages(); renderSetup(); renderLib();
+loadMangas(); renderLib();
 </script>
 </body>
 </html>
