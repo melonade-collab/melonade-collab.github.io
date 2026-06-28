@@ -236,9 +236,9 @@ h1 {
   </div>
   <div class="pick-title">Choose difficulty 💪</div>
   <div class="diff-row">
-    <button class="diff-btn easy"   onclick="startPuzzle('easy')">🟢 Easy<small>25 pieces</small></button>
-    <button class="diff-btn medium" onclick="startPuzzle('medium')">🟡 Medium<small>64 pieces</small></button>
-    <button class="diff-btn hard"   onclick="startPuzzle('hard')">🔴 Hard<small>100 pieces</small></button>
+    <button class="diff-btn easy"   onclick="startPuzzle('easy')">🟢 Easy<small>~25 pieces</small></button>
+    <button class="diff-btn medium" onclick="startPuzzle('medium')">🟡 Medium<small>~64 pieces</small></button>
+    <button class="diff-btn hard"   onclick="startPuzzle('hard')">🔴 Hard<small>~100 pieces</small></button>
   </div>
   <div class="pick-title">Pick a picture 🖼️</div>
   <div class="img-grid" id="imgGrid"></div>
@@ -290,26 +290,22 @@ const IMAGES = [
   { id:'paintthesky',  src:'https://images.unsplash.com/vector-1744442861181-b083e9816fcd?w=600&auto=format&fit=crop&q=80',        label:'🎨 Paint the Sky' },
 ];
 
-const DIFFS = {
-  easy:   { cols: 5,  rows: 5  },
-  medium: { cols: 8,  rows: 8  },
-  hard:   { cols: 10, rows: 10 },
-};
+const TARGETS  = { easy: 25, medium: 64, hard: 100 };
+const PP = 54; // pool piece width (px)
 
-const PP = 54; // pool piece display size (px), fixed for all difficulties
-
-let selImg   = IMAGES[0];
+let selImg     = IMAGES[0];
 let selPieceId = null;
-let pieces   = [];
-let cfg      = { cols: 5, rows: 5 };
-let BSZ      = 300;
-let PW       = 60;
+let pieces     = [];
+let cfg        = { cols: 5, rows: 5, ratio: 1 };
+let BW = 300, BH = 300;
+let PW = 60,  PH = 60;
+let PP_H = PP;
 let placedCount = 0;
-let curDiff  = 'easy';
+let curDiff    = 'easy';
 const SAVE_KEY = 'kawaii_jigsaw_slots';
-let curSlot = -1;
+let curSlot    = -1;
 
-// Build image picker
+// Build image picker — capture each image's natural aspect ratio on load
 const imgGrid = document.getElementById('imgGrid');
 IMAGES.forEach((img, i) => {
   const el = document.createElement('img');
@@ -317,6 +313,7 @@ IMAGES.forEach((img, i) => {
   el.alt = img.label;
   el.className = 'img-thumb' + (i === 0 ? ' sel' : '');
   el.loading = 'lazy';
+  el.onload = () => { img.ratio = el.naturalWidth / el.naturalHeight; };
   el.onclick = () => {
     document.querySelectorAll('.img-thumb').forEach(t => t.classList.remove('sel'));
     el.classList.add('sel');
@@ -325,10 +322,38 @@ IMAGES.forEach((img, i) => {
   imgGrid.appendChild(el);
 });
 
+// Compute cols × rows that approximate target piece count at the given aspect ratio
+function calcGrid(diff, ratio) {
+  const target = TARGETS[diff];
+  const r = ratio > 0 ? ratio : 1;
+  return {
+    cols: Math.max(2, Math.round(Math.sqrt(target * r))),
+    rows: Math.max(2, Math.round(Math.sqrt(target / r))),
+  };
+}
+
 function calcDims() {
-  BSZ = Math.min(window.innerWidth - 52, 360);
-  PW  = Math.floor(BSZ / cfg.cols);
-  BSZ = PW * cfg.cols; // exact fit
+  const ratio  = cfg.ratio > 0 ? cfg.ratio : 1;
+  const availW = Math.min(window.innerWidth - 52, 420);
+  const availH = window.innerHeight - 260; // reserve space for UI chrome + pool
+
+  // Width-constrained sizing
+  PW = Math.floor(availW / cfg.cols);
+  BW = PW * cfg.cols;
+  PH = Math.floor(BW / (ratio * cfg.rows));
+  BH = PH * cfg.rows;
+
+  // Fall back to height-constrained sizing for tall/portrait images
+  if (availH > 0 && BH > availH) {
+    PH = Math.floor(availH / cfg.rows);
+    PW = Math.floor(PH * cfg.rows * ratio / cfg.cols);
+    PW = Math.max(10, PW);
+    PH = Math.max(10, PH);
+    BW = PW * cfg.cols;
+    BH = PH * cfg.rows;
+  }
+
+  PP_H = Math.max(1, Math.round(PP * PH / PW));
 }
 
 function startPuzzle(diff) {
@@ -338,23 +363,23 @@ function startPuzzle(diff) {
   if (si === -1) { si = 0; for (let i = 1; i < _sl.length; i++) if (_sl[i] && _sl[i].savedAt < _sl[si].savedAt) si = i; }
   curSlot = si;
   curDiff = diff;
-  cfg = { ...DIFFS[diff] };
+
+  const ratio = selImg.ratio > 0 ? selImg.ratio : 1;
+  const grid  = calcGrid(diff, ratio);
+  cfg = { ...grid, ratio };
   calcDims();
+
   placedCount = 0;
   selPieceId  = null;
-
   pieces = [];
-  for (let r = 0; r < cfg.rows; r++) {
-    for (let c = 0; c < cfg.cols; c++) {
+  for (let r = 0; r < cfg.rows; r++)
+    for (let c = 0; c < cfg.cols; c++)
       pieces.push({ id: `p_${r}_${c}`, targetR: r, targetC: c, placed: false });
-    }
-  }
   shuffle(pieces);
 
   renderBoard();
   renderPool();
   updateCounter();
-
   document.getElementById('s-pick').classList.add('hidden');
   document.getElementById('s-puzzle').classList.remove('hidden');
 }
@@ -368,7 +393,7 @@ function saveProgress() {
   if (curSlot === -1) return;
   try {
     const slots = getSlots();
-    slots[curSlot] = { imgId: selImg.id, diff: curDiff, pieces, savedAt: Date.now() };
+    slots[curSlot] = { imgId: selImg.id, diff: curDiff, cols: cfg.cols, rows: cfg.rows, ratio: cfg.ratio, pieces, savedAt: Date.now() };
     saveSlots(slots);
   } catch(e) {}
 }
@@ -396,9 +421,9 @@ function renderSlots() {
   section.classList.toggle('show', any);
   if (!any) { list.innerHTML = ''; return; }
   list.innerHTML = slots.map((s, i) => {
-    if (!s) return '';
+    if (!s || !s.cols || !s.rows || !s.pieces) return '';
     const img = IMAGES.find(im => im.id === s.imgId);
-    if (!img || !DIFFS[s.diff] || !s.pieces) return '';
+    if (!img) return '';
     const placed = s.pieces.filter(p => p.placed).length;
     return `<div class="resume-card">
       <img class="resume-thumb" src="${img.src}" alt="">
@@ -416,12 +441,13 @@ function resumeSlot(idx) {
   try {
     const slots = getSlots();
     const save = slots[idx];
-    if (!save) return;
+    if (!save || !save.cols || !save.rows) return;
     const img = IMAGES.find(i => i.id === save.imgId);
     if (!img) return;
     curSlot = idx;
-    selImg = img; curDiff = save.diff;
-    cfg = { ...DIFFS[save.diff] };
+    selImg  = img;
+    curDiff = save.diff;
+    cfg = { cols: save.cols, rows: save.rows, ratio: save.ratio || 1 };
     calcDims();
     pieces = save.pieces;
     placedCount = pieces.filter(p => p.placed).length;
@@ -443,8 +469,8 @@ function renderSavedPlacements() {
     const inner = document.createElement('div');
     inner.className = 'slot-placed';
     inner.style.backgroundImage    = `url('${selImg.src}')`;
-    inner.style.backgroundSize     = `${BSZ}px ${BSZ}px`;
-    inner.style.backgroundPosition = `-${p.targetC * PW}px -${p.targetR * PW}px`;
+    inner.style.backgroundSize     = `${BW}px ${BH}px`;
+    inner.style.backgroundPosition = `-${p.targetC * PW}px -${p.targetR * PH}px`;
     slotEl.appendChild(inner);
   });
 }
@@ -473,6 +499,7 @@ function renderBoard() {
   const board = document.getElementById('board');
   board.style.gridTemplateColumns = `repeat(${cfg.cols}, ${PW}px)`;
   board.innerHTML = '';
+  hideHint();
 
   for (let r = 0; r < cfg.rows; r++) {
     for (let c = 0; c < cfg.cols; c++) {
@@ -480,7 +507,7 @@ function renderBoard() {
       slot.className = 'slot';
       slot.id = `slot_${r}_${c}`;
       slot.style.width  = PW + 'px';
-      slot.style.height = PW + 'px';
+      slot.style.height = PH + 'px';
       slot.addEventListener('click', () => slotTapped(r, c, slot));
       board.appendChild(slot);
     }
@@ -496,16 +523,17 @@ function renderPool() {
     return;
   }
 
-  const poolBgSz = PP * cfg.cols;
+  const pgW = PP * cfg.cols;
+  const pgH = PP_H * cfg.rows;
   unplaced.forEach(p => {
     const el = document.createElement('div');
     el.className = 'piece';
     el.id = `piece_${p.id}`;
     el.style.width  = PP + 'px';
-    el.style.height = PP + 'px';
+    el.style.height = PP_H + 'px';
     el.style.backgroundImage    = `url('${selImg.src}')`;
-    el.style.backgroundSize     = `${poolBgSz}px ${poolBgSz}px`;
-    el.style.backgroundPosition = `-${p.targetC * PP}px -${p.targetR * PP}px`;
+    el.style.backgroundSize     = `${pgW}px ${pgH}px`;
+    el.style.backgroundPosition = `-${p.targetC * PP}px -${p.targetR * PP_H}px`;
     el.addEventListener('click', () => pieceTapped(p.id, el));
     pool.appendChild(el);
   });
@@ -549,8 +577,8 @@ function slotTapped(r, c, slotEl) {
     const inner = document.createElement('div');
     inner.className = 'slot-placed';
     inner.style.backgroundImage    = `url('${selImg.src}')`;
-    inner.style.backgroundSize     = `${BSZ}px ${BSZ}px`;
-    inner.style.backgroundPosition = `-${c * PW}px -${r * PW}px`;
+    inner.style.backgroundSize     = `${BW}px ${BH}px`;
+    inner.style.backgroundPosition = `-${c * PW}px -${r * PH}px`;
     slotEl.appendChild(inner);
 
     const pieceEl = document.getElementById(`piece_${selPieceId}`);
