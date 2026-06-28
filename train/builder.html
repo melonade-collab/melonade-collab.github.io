@@ -196,7 +196,7 @@ h1 {
 .lb-comp { font-size: 0.62rem; color: rgba(255,255,255,0.45); }
 .lb-empty { font-size: 0.75rem; color: rgba(255,255,255,0.3); text-align: center; padding: 6px; }
 .length-display {
-  text-align: center;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
   color: rgba(255,215,0,0.85);
   font-size: 0.78rem;
   font-weight: 700;
@@ -205,6 +205,13 @@ h1 {
   min-height: 1.3em;
   padding: 0 12px;
 }
+.speak-btn {
+  background: none; border: none; cursor: pointer; padding: 2px 4px;
+  font-size: 1.1rem; line-height: 1; opacity: 0.7; flex-shrink: 0;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.speak-btn:hover { opacity: 1; }
+.speak-btn:active { transform: scale(0.88); }
 .celebration {
   display: none;
   position: fixed;
@@ -335,7 +342,10 @@ h1 {
   <button class="ctrl-btn" id="goBtn" onclick="goTrain()" disabled>GO! 🚂</button>
 </div>
 <div class="count-display" id="countDisplay">ADD SOME CARS TO GET STARTED</div>
-<div class="length-display" id="lengthDisplay"></div>
+<div class="length-display" id="lengthDisplay">
+  <span id="lengthText"></span>
+  <button class="speak-btn" id="speakBtn" onclick="speakLength()" title="Read aloud" style="display:none">🔊</button>
+</div>
 
 <div class="engine-picker" id="enginePicker">
   <div class="engine-picker-title">PICK YOUR ENGINE!</div>
@@ -752,6 +762,11 @@ function speak(text) {
   window.speechSynthesis.speak(u);
 }
 
+function speakLength() {
+  const text = document.getElementById('speakBtn').dataset.speech;
+  if (text) speak(text);
+}
+
 function removeCar(idx) {
   train.splice(idx, 1);
   renderTrain();
@@ -768,7 +783,8 @@ function renderTrain() {
   if (train.length === 0) {
     display.innerHTML = '<div class="empty-track" id="emptyMsg">TAP CARS ABOVE TO BUILD YOUR TRAIN!</div>';
     count.textContent = 'ADD SOME CARS TO GET STARTED';
-    lengthEl.textContent = '';
+    document.getElementById('lengthText').textContent = '';
+    document.getElementById('speakBtn').style.display = 'none';
     goBtn.disabled = true;
     return;
   }
@@ -791,7 +807,10 @@ function renderTrain() {
 
   const m = trainLengthMetres();
   const dist = m >= 1000 ? `${(m / 1000).toFixed(2)} km` : `${m} m`;
-  lengthEl.textContent = `📏 ${dist} long — ${trainComparison(m)}`;
+  const comparison = trainComparison(m);
+  document.getElementById('lengthText').textContent = `📏 ${dist} long — ${comparison}`;
+  document.getElementById('speakBtn').style.display = '';
+  document.getElementById('speakBtn').dataset.speech = `Your train is ${dist} long. That's ${comparison.replace(/[^\w\s',!.—–-]/g, '')}`.replace('🚂','').replace('🏙️','').trim();
 
   const wrapper = document.getElementById('trackWrapper');
   setTimeout(() => { wrapper.scrollLeft = wrapper.scrollWidth; }, 50);
@@ -862,6 +881,14 @@ function renderLb(newM) {
   }).join('');
 }
 
+function setDriving(on) {
+  document.querySelectorAll('.car-btn, #goBtn, #clearBtn').forEach(el => {
+    el.disabled = on;
+    el.style.pointerEvents = on ? 'none' : '';
+    el.style.opacity = on ? '0.4' : '';
+  });
+}
+
 function goTrain() {
   if (train.length === 0) return;
   const m = trainLengthMetres();
@@ -870,6 +897,7 @@ function goTrain() {
   document.getElementById('celebLength').textContent = `📏 ${dist} — ${trainComparison(m)}`;
   renderLb(m);
 
+  setDriving(true);
   const wrapper = document.getElementById('trackWrapper');
   const display = document.getElementById('trainDisplay');
   wrapper.scrollTo({ left: 0, behavior: 'smooth' });
@@ -890,6 +918,7 @@ function resetAfterGo() {
   const display = document.getElementById('trainDisplay');
   display.style.transition = 'none';
   display.style.transform = '';
+  setDriving(false);
   showEnginePicker();
 }
 
