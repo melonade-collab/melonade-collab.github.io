@@ -128,6 +128,14 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
 .preview-close { position: fixed; top: 14px; left: 14px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 20px; padding: 6px 14px; font-family: 'Nunito',sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; z-index: 50; }
 .preview-save { position: fixed; top: 14px; right: 14px; background: rgba(214,51,132,0.9); color: white; border: none; border-radius: 20px; padding: 6px 14px; font-family: 'Nunito',sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; z-index: 50; }
 
+/* PAGE OVERVIEW */
+#s-pages { position: fixed; inset: 0; min-height: unset; padding: 0; background: #1a0a2e; overflow: hidden; z-index: 50; flex-direction: column; }
+.pages-ov-grid { flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 12px; }
+.pov-wrap { cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.pov-frame { width: 100%; aspect-ratio: 3/4; border: 3px solid #333; border-radius: 6px; overflow: hidden; transition: border-color 0.15s; }
+.pov-wrap:hover .pov-frame, .pov-frame.cur-page { border-color: #D63384; }
+.pov-label { color: #FFB3CC; font-size: 0.72rem; font-weight: 900; font-family: 'Nunito',sans-serif; }
+
 /* PRINT */
 #print-area { display: none; }
 @media print {
@@ -172,6 +180,7 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
     <button class="back-btn" onclick="saveAndBack()">← Back</button>
     <input class="page-title-input" id="titleInput" placeholder="My Manga">
     <button class="hdr-btn btn-view" onclick="exportPages()" style="background:#A78BFA">📄</button>
+    <button class="hdr-btn btn-view" onclick="openPageOverview()" style="background:#5B4E77">📋</button>
     <button class="hdr-btn btn-view" onclick="openPreview()">👁️ View</button>
   </div>
   <div class="page-nav" id="pageNav">
@@ -188,6 +197,15 @@ h1 { font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 900; color: #D63384; text
     <div class="toolbar-hint" id="toolbarHint">Tap a panel to edit ✨</div>
     <div class="toolbar-row" id="toolbarRow"></div>
   </div>
+</div>
+
+<!-- PAGE OVERVIEW -->
+<div id="s-pages" class="screen">
+  <div class="editor-hdr">
+    <button class="back-btn" onclick="show('s-editor')" style="margin-bottom:0">← Back</button>
+    <span style="color:#FFB3CC;font-weight:900;font-size:1rem;flex:1;text-align:center;">All Pages</span>
+  </div>
+  <div class="pages-ov-grid" id="pagesOvGrid"></div>
 </div>
 
 <!-- PREVIEW -->
@@ -259,8 +277,8 @@ const IMAGES = [
 ];
 
 const LAYOUTS = [
-  {id:'A',name:'Stack 2',   panels:2,css:{gtc:'',         gtr:'1fr 1fr'},         spans:[null,null]},
-  {id:'B',name:'Side x 2', panels:2,css:{gtc:'1fr 1fr',   gtr:''},                spans:[null,null]},
+  {id:'A',name:'Stack 2',   panels:2,css:{gtc:'1fr',       gtr:'1fr 1fr'},         spans:[null,null]},
+  {id:'B',name:'Side x 2', panels:2,css:{gtc:'1fr 1fr',   gtr:'1fr'},              spans:[null,null]},
   {id:'C',name:'Wide + 2', panels:3,css:{gtc:'1fr 1fr',   gtr:'1.2fr 1fr'},       spans:[null,null,{gc:'1/3'}]},
   {id:'D',name:'4 Panels', panels:4,css:{gtc:'1fr 1fr',   gtr:'1fr 1fr'},         spans:[null,null,null,null]},
   {id:'E',name:'Big + 2',  panels:3,css:{gtc:'1.4fr 1fr', gtr:'1fr 1fr'},         spans:[{gr:'1/3'},null,null]},
@@ -445,7 +463,7 @@ function renderInto(container, pg, interactive) {
   pg.panels.forEach((panel, i) => {
     const pEl = document.createElement('div');
     pEl.className = 'manga-panel' + (interactive && i===selP ? ' sel' : '');
-    pEl.id = 'mp_'+i;
+    if(interactive) pEl.id = 'mp_'+i;
     applySpan(pEl, L, i);
     const img = IMAGES.find(x=>x.id===panel.iid);
     if(img){ if(img.src){ pEl.style.backgroundImage=`url('${img.src}')`; pEl.style.backgroundSize='cover'; pEl.style.backgroundPosition='center'; } else if(img.bg){ pEl.style.background=img.bg; } }
@@ -550,6 +568,26 @@ function openPreview() {
     screen.appendChild(pgEl);
   });
   show('s-preview');
+}
+
+function openPageOverview() {
+  const grid = document.getElementById('pagesOvGrid');
+  grid.innerHTML = '';
+  cur.pages.forEach((pg, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'pov-wrap';
+    const frame = document.createElement('div');
+    frame.className = 'pov-frame' + (i === curPgIdx ? ' cur-page' : '');
+    renderInto(frame, pg, false);
+    const label = document.createElement('div');
+    label.className = 'pov-label';
+    label.textContent = 'Page ' + (i + 1);
+    wrap.appendChild(frame);
+    wrap.appendChild(label);
+    wrap.onclick = () => { curPgIdx = i; selP = -1; renderEditor(); show('s-editor'); };
+    grid.appendChild(wrap);
+  });
+  show('s-pages');
 }
 
 function exportPages() {
