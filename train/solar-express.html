@@ -147,6 +147,7 @@ body {
 }
 
 .planet-display {
+  position: relative;
   width: 90px;
   height: 90px;
   border-radius: 50%;
@@ -576,6 +577,7 @@ const PLANETS = [
     bg: '#208888',
     glow: 'rgba(60,200,200,0.55)',
     nameColor: '#60d8d8',
+    ring: true,
     facts: [
       "Uranus spins on its side — its axis is tilted nearly 98 degrees, so it rolls around the Sun like a bowling ball!",
       "Uranus is the coldest planet in the solar system — temperatures can drop to minus 224 degrees!",
@@ -604,9 +606,9 @@ const PLANETS = [
   },
   {
     name: 'NEPTUNE',
-    emoji: '💙',
-    bg: '#1830a0',
-    glow: 'rgba(60,80,220,0.55)',
+    emoji: '🔵',
+    bg: '#1a2aa0',
+    glow: 'rgba(40,60,200,0.55)',
     nameColor: '#6080f0',
     facts: [
       "Neptune has the strongest winds in the solar system — gusts can reach over 2,000 km per hour!",
@@ -663,7 +665,9 @@ function buildTrack() {
     }
     const stop = document.createElement('div');
     stop.className = 'planet-stop' + (i < currentPlanet ? ' done' : i === currentPlanet ? ' current' : '');
-    stop.textContent = p.emoji;
+    stop.textContent = '';
+    stop.style.background = p.bg;
+    stop.style.borderRadius = '50%';
     stop.title = p.name;
     track.appendChild(stop);
   });
@@ -674,10 +678,16 @@ function loadPlanet() {
   const p = PLANETS[currentPlanet];
 
   const display = document.getElementById('planetDisplay');
-  display.textContent = p.emoji;
   display.style.background = p.bg;
   display.style.setProperty('--glow', p.glow);
   display.style.boxShadow = `0 0 32px ${p.glow}`;
+  if (p.ring) {
+    display.style.overflow = 'visible';
+    display.innerHTML = '<svg style="position:absolute;inset:-20px;width:calc(100% + 40px);height:calc(100% + 40px);overflow:visible;pointer-events:none" viewBox="0 0 130 130"><ellipse cx="65" cy="65" rx="60" ry="16" fill="none" stroke="rgba(180,240,230,0.7)" stroke-width="5"/></svg>';
+  } else {
+    display.style.overflow = '';
+    display.innerHTML = '';
+  }
 
   document.getElementById('planetName').textContent = p.name;
   document.getElementById('planetName').style.color = p.nameColor;

@@ -30,12 +30,24 @@ h1 {
 }
 .subtitle { font-size: 0.78rem; color: #9B8AB8; font-weight: 700; letter-spacing: 1px; margin-bottom: 14px; text-align: center; }
 
+/* SCENE PICKER */
+.scene-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+.scene-btn {
+  padding: 10px 20px; border-radius: 22px; cursor: pointer;
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.92rem;
+  background: white; color: #D63384; border: 3px solid #FFB3D9;
+  box-shadow: 0 3px 10px rgba(200,100,200,0.14);
+  transition: transform 0.12s, background 0.12s, color 0.12s, border-color 0.12s;
+}
+.scene-btn:hover { transform: scale(1.05); }
+.scene-btn.active { background: #FFE0F0; color: #D63384; border-color: #D63384; }
+
 /* PALETTE */
-.palette-wrap { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; max-width: 480px; }
+.palette-wrap { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; max-width: 520px; }
 .swatch {
-  width: 48px; height: 48px; border-radius: 12px; cursor: pointer;
+  width: 56px; height: 56px; border-radius: 14px; cursor: pointer;
   border: 3px solid transparent; display: flex; align-items: center; justify-content: center;
-  font-size: 0.8rem; font-weight: 900; color: rgba(0,0,0,0.5);
+  font-size: 0.9rem; font-weight: 900; color: rgba(0,0,0,0.5);
   box-shadow: 0 3px 10px rgba(0,0,0,0.18); transition: transform 0.12s, border-color 0.12s;
   flex-shrink: 0;
 }
@@ -84,120 +96,32 @@ h1 {
 /* WIN */
 .win-overlay { display: none; position: fixed; inset: 0; background: rgba(80,30,180,0.55); z-index: 100; align-items: center; justify-content: center; }
 .win-overlay.show { display: flex; }
-.win-card { background: white; border-radius: 28px; padding: 36px 40px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 300px; width: 90%; }
+.win-card { background: white; border-radius: 28px; padding: 36px 40px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 320px; width: 90%; }
 .win-card h2 { font-size: 2rem; color: #D63384; font-weight: 900; margin: 12px 0 6px; }
 .win-card p  { color: #8B7BA8; font-weight: 700; margin-bottom: 22px; }
+.win-btns { display: flex; flex-direction: column; gap: 10px; }
 .big-btn { padding: 12px 30px; border-radius: 16px; border: none; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem; cursor: pointer; background: linear-gradient(135deg, #A78BFA, #7C3AED); color: white; }
+.alt-btn { padding: 12px 30px; border-radius: 16px; border: 2px solid #FFB3D9; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem; cursor: pointer; background: white; color: #D63384; }
 </style>
 </head>
 <body>
 
 <a class="back" href="index.html">← Anime World</a>
 <h1>🎨 Colour by Number</h1>
-<p class="subtitle">Pick a colour, then tap a matching number!</p>
+<p class="subtitle">Pick a scene, choose a colour, then tap a matching number!</p>
+
+<div class="scene-row">
+  <button class="scene-btn active" data-scene="panda" onclick="loadScene('panda',this)">🐼 Kawaii Panda</button>
+  <button class="scene-btn" data-scene="neko" onclick="loadScene('neko',this)">🐱 Neko Cat</button>
+</div>
 
 <div class="palette-wrap" id="palette"></div>
 
 <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
-<div class="progress-label" id="progressLabel">0 of 20 regions filled</div>
+<div class="progress-label" id="progressLabel">0 of 32 regions filled</div>
 
 <div class="canvas-wrap">
-  <svg id="artwork" viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg">
-
-    <!-- ═══════════ REGIONS ═══════════ -->
-
-    <!-- 1 · Outer face / head -->
-    <ellipse class="region" data-region="1" cx="200" cy="230" rx="160" ry="155" fill="#ffffff"/>
-    <text class="num-label" data-label="1" x="200" y="155" text-anchor="middle">1</text>
-
-    <!-- 2 · Left ear outer -->
-    <polygon class="region" data-region="2" points="60,100 100,160 30,170" fill="#ffffff"/>
-    <text class="num-label" data-label="2" x="62" y="148" text-anchor="middle">2</text>
-
-    <!-- 3 · Right ear outer -->
-    <polygon class="region" data-region="3" points="340,100 300,160 370,170" fill="#ffffff"/>
-    <text class="num-label" data-label="3" x="338" y="148" text-anchor="middle">3</text>
-
-    <!-- 4 · Left ear inner -->
-    <polygon class="region" data-region="4" points="68,108 99,155 42,162" fill="#ffffff"/>
-    <text class="num-label" data-label="4" x="69" y="148" text-anchor="middle">4</text>
-
-    <!-- 5 · Right ear inner -->
-    <polygon class="region" data-region="5" points="332,108 301,155 358,162" fill="#ffffff"/>
-    <text class="num-label" data-label="5" x="329" y="148" text-anchor="middle">5</text>
-
-    <!-- 6 · Left eye white -->
-    <ellipse class="region" data-region="6" cx="148" cy="220" rx="38" ry="30" fill="#ffffff"/>
-    <text class="num-label" data-label="6" x="148" y="224" text-anchor="middle">6</text>
-
-    <!-- 7 · Right eye white -->
-    <ellipse class="region" data-region="7" cx="252" cy="220" rx="38" ry="30" fill="#ffffff"/>
-    <text class="num-label" data-label="7" x="252" y="224" text-anchor="middle">7</text>
-
-    <!-- 8 · Left iris -->
-    <ellipse class="region" data-region="8" cx="148" cy="222" rx="22" ry="22" fill="#ffffff"/>
-    <text class="num-label" data-label="8" x="148" y="226" text-anchor="middle">8</text>
-
-    <!-- 9 · Right iris -->
-    <ellipse class="region" data-region="9" cx="252" cy="222" rx="22" ry="22" fill="#ffffff"/>
-    <text class="num-label" data-label="9" x="252" y="226" text-anchor="middle">9</text>
-
-    <!-- 10 · Left pupil -->
-    <circle class="region" data-region="10" cx="148" cy="224" r="10" fill="#ffffff"/>
-    <text class="num-label" data-label="10" x="148" y="228" text-anchor="middle">10</text>
-
-    <!-- 11 · Right pupil -->
-    <circle class="region" data-region="11" cx="252" cy="224" r="10" fill="#ffffff"/>
-    <text class="num-label" data-label="11" x="252" y="228" text-anchor="middle">11</text>
-
-    <!-- 12 · Nose -->
-    <ellipse class="region" data-region="12" cx="200" cy="278" rx="18" ry="12" fill="#ffffff"/>
-    <text class="num-label" data-label="12" x="200" y="282" text-anchor="middle">12</text>
-
-    <!-- 13 · Mouth / smile -->
-    <path class="region" data-region="13" d="M175,295 Q200,320 225,295 Q210,308 200,310 Q190,308 175,295Z" fill="#ffffff"/>
-    <text class="num-label" data-label="13" x="200" y="312" text-anchor="middle">13</text>
-
-    <!-- 14 · Left cheek blush -->
-    <ellipse class="region" data-region="14" cx="120" cy="272" rx="30" ry="18" fill="#ffffff"/>
-    <text class="num-label" data-label="14" x="120" y="276" text-anchor="middle">14</text>
-
-    <!-- 15 · Right cheek blush -->
-    <ellipse class="region" data-region="15" cx="280" cy="272" rx="30" ry="18" fill="#ffffff"/>
-    <text class="num-label" data-label="15" x="280" y="276" text-anchor="middle">15</text>
-
-    <!-- 16 · Left whisker area -->
-    <ellipse class="region" data-region="16" cx="105" cy="285" rx="42" ry="16" fill="#ffffff" transform="rotate(-10,105,285)"/>
-    <text class="num-label" data-label="16" x="105" y="292" text-anchor="middle">16</text>
-
-    <!-- 17 · Right whisker area -->
-    <ellipse class="region" data-region="17" cx="295" cy="285" rx="42" ry="16" fill="#ffffff" transform="rotate(10,295,285)"/>
-    <text class="num-label" data-label="17" x="295" y="292" text-anchor="middle">17</text>
-
-    <!-- 18 · Bow top-left petal -->
-    <ellipse class="region" data-region="18" cx="165" cy="390" rx="28" ry="18" fill="#ffffff" transform="rotate(-30,165,390)"/>
-    <text class="num-label" data-label="18" x="157" y="394" text-anchor="middle">18</text>
-
-    <!-- 19 · Bow top-right petal -->
-    <ellipse class="region" data-region="19" cx="235" cy="390" rx="28" ry="18" fill="#ffffff" transform="rotate(30,235,390)"/>
-    <text class="num-label" data-label="19" x="242" y="394" text-anchor="middle">19</text>
-
-    <!-- 20 · Bow centre knot -->
-    <circle class="region" data-region="20" cx="200" cy="394" r="12" fill="#ffffff"/>
-    <text class="num-label" data-label="20" x="200" y="399" text-anchor="middle">20</text>
-
-    <!-- Outline details (non-interactive) -->
-    <!-- Eye shine dots -->
-    <circle cx="138" cy="213" r="5" fill="white" opacity="0.7" pointer-events="none"/>
-    <circle cx="242" cy="213" r="5" fill="white" opacity="0.7" pointer-events="none"/>
-    <!-- Whisker lines -->
-    <line x1="65" y1="278" x2="155" y2="282" stroke="#555" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
-    <line x1="65" y1="288" x2="155" y2="290" stroke="#555" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
-    <line x1="65" y1="298" x2="155" y2="294" stroke="#555" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
-    <line x1="335" y1="278" x2="245" y2="282" stroke="#555" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
-    <line x1="335" y1="288" x2="245" y2="290" stroke="#555" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
-    <line x1="335" y1="298" x2="245" y2="294" stroke="#555" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
-  </svg>
+  <svg id="artwork" viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg"></svg>
 </div>
 
 <div class="controls">
@@ -206,64 +130,369 @@ h1 {
 </div>
 
 <div class="win-overlay" id="winOverlay">
-  <div class="win-card">
-    <div style="font-size:3.5rem">🌸</div>
-    <h2>Beautiful!</h2>
-    <p>You coloured the whole picture!</p>
-    <button class="big-btn" onclick="resetAll(); document.getElementById('winOverlay').classList.remove('show')">🎨 Play Again</button>
-  </div>
+  <div class="win-card" id="winCard"></div>
 </div>
 
 <script>
-const PALETTE = [
-  { n:1,  color:'#F9C5D8', label:'1', desc:'Soft Pink'    },
-  { n:2,  color:'#F4A0B4', label:'2', desc:'Pink'         },
-  { n:3,  color:'#F4A0B4', label:'3', desc:'Pink'         },
-  { n:4,  color:'#FFC0CB', label:'4', desc:'Blush'        },
-  { n:5,  color:'#FFC0CB', label:'5', desc:'Blush'        },
-  { n:6,  color:'#FFFFFF', label:'6', desc:'White'        },
-  { n:7,  color:'#FFFFFF', label:'7', desc:'White'        },
-  { n:8,  color:'#7DD3FC', label:'8', desc:'Sky Blue'     },
-  { n:9,  color:'#7DD3FC', label:'9', desc:'Sky Blue'     },
-  { n:10, color:'#1E3A5F', label:'10', desc:'Dark Blue'   },
-  { n:11, color:'#1E3A5F', label:'11', desc:'Dark Blue'   },
-  { n:12, color:'#FFB6C1', label:'12', desc:'Light Pink'  },
-  { n:13, color:'#E07090', label:'13', desc:'Rose'        },
-  { n:14, color:'#FFD6E7', label:'14', desc:'Blush Pink'  },
-  { n:15, color:'#FFD6E7', label:'15', desc:'Blush Pink'  },
-  { n:16, color:'#FFF0F5', label:'16', desc:'Pale'        },
-  { n:17, color:'#FFF0F5', label:'17', desc:'Pale'        },
-  { n:18, color:'#C084FC', label:'18', desc:'Lavender'    },
-  { n:19, color:'#C084FC', label:'19', desc:'Lavender'    },
-  { n:20, color:'#9333EA', label:'20', desc:'Purple'      },
-];
+// Small five-point star template (outer≈10, inner≈4), centred at origin.
+const STAR = '0,-10 2.4,-3.2 9.5,-3.1 3.9,1.3 5.9,8.1 0,4 -5.9,8.1 -3.9,1.3 -9.5,-3.1 -2.4,-3.2';
 
-// Map region number → colour
-const REGION_COLORS = {};
-PALETTE.forEach(p => { REGION_COLORS[p.n] = p.color; });
+/* ══════════════════════ SCENE A · KAWAII PANDA ══════════════════════ */
+const PANDA_SVG = `
+  <!-- 1 sky -->
+  <rect class="region" data-region="1" x="0" y="0" width="400" height="460" fill="#ffffff"/>
+  <text class="num-label" data-label="1" x="40" y="150" text-anchor="middle">1</text>
 
-// Unique swatches (by colour value, grouped)
-const UNIQUE_COLORS = [
-  { color:'#F9C5D8', regions:[1],         label:'1'  },
-  { color:'#F4A0B4', regions:[2,3],       label:'2·3'},
-  { color:'#FFC0CB', regions:[4,5],       label:'4·5'},
-  { color:'#FFFFFF', regions:[6,7],       label:'6·7'},
-  { color:'#7DD3FC', regions:[8,9],       label:'8·9'},
-  { color:'#1E3A5F', regions:[10,11],     label:'10·11', textColor:'white'},
-  { color:'#FFB6C1', regions:[12],        label:'12' },
-  { color:'#E07090', regions:[13],        label:'13' },
-  { color:'#FFD6E7', regions:[14,15],     label:'14·15'},
-  { color:'#FFF0F5', regions:[16,17],     label:'16·17', border:'#ddd'},
-  { color:'#C084FC', regions:[18,19],     label:'18·19'},
-  { color:'#9333EA', regions:[20],        label:'20', textColor:'white'},
-];
+  <!-- 5 ground -->
+  <ellipse class="region" data-region="5" cx="200" cy="460" rx="260" ry="75" fill="#ffffff"/>
+  <text class="num-label" data-label="5" x="58" y="442" text-anchor="middle">5</text>
 
+  <!-- 2 left cloud -->
+  <ellipse class="region" data-region="2" cx="70" cy="78" rx="50" ry="28" fill="#ffffff"/>
+  <ellipse class="region" data-region="2" cx="100" cy="64" rx="36" ry="22" fill="#ffffff"/>
+  <ellipse class="region" data-region="2" cx="128" cy="72" rx="38" ry="24" fill="#ffffff"/>
+  <text class="num-label" data-label="2" x="95" y="76" text-anchor="middle">2</text>
+
+  <!-- 3 right cloud -->
+  <ellipse class="region" data-region="3" cx="290" cy="88" rx="50" ry="28" fill="#ffffff"/>
+  <ellipse class="region" data-region="3" cx="320" cy="72" rx="36" ry="22" fill="#ffffff"/>
+  <ellipse class="region" data-region="3" cx="348" cy="82" rx="38" ry="24" fill="#ffffff"/>
+  <text class="num-label" data-label="3" x="318" y="86" text-anchor="middle">3</text>
+
+  <!-- 4 stars -->
+  <polygon class="region" data-region="4" points="${STAR}" transform="translate(200,52)" fill="#ffffff"/>
+  <polygon class="region" data-region="4" points="${STAR}" transform="translate(310,50)" fill="#ffffff"/>
+  <polygon class="region" data-region="4" points="${STAR}" transform="translate(160,48)" fill="#ffffff"/>
+  <text class="num-label" data-label="4" x="255" y="52" text-anchor="middle">4</text>
+
+  <!-- 6 left flowers -->
+  <circle class="region" data-region="6" cx="65" cy="388" r="14" fill="#ffffff"/>
+  <circle class="region" data-region="6" cx="65" cy="416" r="14" fill="#ffffff"/>
+  <circle class="region" data-region="6" cx="51" cy="402" r="14" fill="#ffffff"/>
+  <circle class="region" data-region="6" cx="79" cy="402" r="14" fill="#ffffff"/>
+  <text class="num-label" data-label="6" x="65" y="392" text-anchor="middle">6</text>
+
+  <!-- 7 right flowers -->
+  <circle class="region" data-region="7" cx="335" cy="394" r="14" fill="#ffffff"/>
+  <circle class="region" data-region="7" cx="335" cy="422" r="14" fill="#ffffff"/>
+  <circle class="region" data-region="7" cx="321" cy="408" r="14" fill="#ffffff"/>
+  <circle class="region" data-region="7" cx="349" cy="408" r="14" fill="#ffffff"/>
+  <text class="num-label" data-label="7" x="335" y="398" text-anchor="middle">7</text>
+
+  <!-- 8 flower centres -->
+  <circle class="region" data-region="8" cx="65" cy="402" r="10" fill="#ffffff"/>
+  <circle class="region" data-region="8" cx="335" cy="408" r="10" fill="#ffffff"/>
+  <text class="num-label" data-label="8" x="65" y="406" text-anchor="middle">8</text>
+
+  <!-- 27 left arm -->
+  <ellipse class="region" data-region="27" cx="82" cy="330" rx="28" ry="54" fill="#ffffff" transform="rotate(15,82,330)"/>
+  <text class="num-label" data-label="27" x="80" y="334" text-anchor="middle">27</text>
+
+  <!-- 28 right arm -->
+  <ellipse class="region" data-region="28" cx="318" cy="330" rx="28" ry="54" fill="#ffffff" transform="rotate(-15,318,330)"/>
+  <text class="num-label" data-label="28" x="320" y="334" text-anchor="middle">28</text>
+
+  <!-- 14 body -->
+  <ellipse class="region" data-region="14" cx="200" cy="362" rx="100" ry="88" fill="#ffffff"/>
+  <text class="num-label" data-label="14" x="124" y="342" text-anchor="middle">14</text>
+
+  <!-- 29 left foot -->
+  <ellipse class="region" data-region="29" cx="140" cy="426" rx="52" ry="26" fill="#ffffff"/>
+  <text class="num-label" data-label="29" x="140" y="430" text-anchor="middle">29</text>
+
+  <!-- 30 right foot -->
+  <ellipse class="region" data-region="30" cx="260" cy="426" rx="52" ry="26" fill="#ffffff"/>
+  <text class="num-label" data-label="30" x="260" y="430" text-anchor="middle">30</text>
+
+  <!-- 15 tummy -->
+  <ellipse class="region" data-region="15" cx="200" cy="368" rx="60" ry="68" fill="#ffffff"/>
+  <text class="num-label" data-label="15" x="200" y="392" text-anchor="middle">15</text>
+
+  <!-- 9 left ear outer -->
+  <circle class="region" data-region="9" cx="118" cy="104" r="48" fill="#ffffff"/>
+  <text class="num-label" data-label="9" x="90" y="108" text-anchor="middle">9</text>
+
+  <!-- 10 right ear outer -->
+  <circle class="region" data-region="10" cx="282" cy="104" r="48" fill="#ffffff"/>
+  <text class="num-label" data-label="10" x="310" y="108" text-anchor="middle">10</text>
+
+  <!-- 11 left inner ear -->
+  <circle class="region" data-region="11" cx="118" cy="104" r="28" fill="#ffffff"/>
+  <text class="num-label" data-label="11" x="118" y="108" text-anchor="middle">11</text>
+
+  <!-- 12 right inner ear -->
+  <circle class="region" data-region="12" cx="282" cy="104" r="28" fill="#ffffff"/>
+  <text class="num-label" data-label="12" x="282" y="108" text-anchor="middle">12</text>
+
+  <!-- 13 head -->
+  <circle class="region" data-region="13" cx="200" cy="188" r="108" fill="#ffffff"/>
+  <text class="num-label" data-label="13" x="150" y="130" text-anchor="middle">13</text>
+
+  <!-- 31 bow petals -->
+  <ellipse class="region" data-region="31" cx="182" cy="116" rx="26" ry="17" fill="#ffffff" transform="rotate(-28,182,116)"/>
+  <ellipse class="region" data-region="31" cx="218" cy="116" rx="26" ry="17" fill="#ffffff" transform="rotate(28,218,116)"/>
+  <text class="num-label" data-label="31" x="176" y="112" text-anchor="middle">31</text>
+
+  <!-- 32 bow centre -->
+  <circle class="region" data-region="32" cx="200" cy="116" r="13" fill="#ffffff"/>
+  <text class="num-label" data-label="32" x="200" y="120" text-anchor="middle">32</text>
+
+  <!-- 16 left eye patch -->
+  <ellipse class="region" data-region="16" cx="168" cy="184" rx="38" ry="36" fill="#ffffff" transform="rotate(-8,168,184)"/>
+  <text class="num-label" data-label="16" x="146" y="168" text-anchor="middle">16</text>
+
+  <!-- 17 right eye patch -->
+  <ellipse class="region" data-region="17" cx="232" cy="184" rx="38" ry="36" fill="#ffffff" transform="rotate(8,232,184)"/>
+  <text class="num-label" data-label="17" x="254" y="168" text-anchor="middle">17</text>
+
+  <!-- 18 left eye white -->
+  <circle class="region" data-region="18" cx="168" cy="181" r="22" fill="#ffffff"/>
+  <text class="num-label" data-label="18" x="160" y="203" text-anchor="middle">18</text>
+
+  <!-- 19 right eye white -->
+  <circle class="region" data-region="19" cx="232" cy="181" r="22" fill="#ffffff"/>
+  <text class="num-label" data-label="19" x="240" y="203" text-anchor="middle">19</text>
+
+  <!-- 20 left iris -->
+  <circle class="region" data-region="20" cx="171" cy="185" r="14" fill="#ffffff"/>
+  <text class="num-label" data-label="20" x="160" y="184" text-anchor="middle">20</text>
+
+  <!-- 21 right iris -->
+  <circle class="region" data-region="21" cx="235" cy="185" r="14" fill="#ffffff"/>
+  <text class="num-label" data-label="21" x="246" y="184" text-anchor="middle">21</text>
+
+  <!-- 22 left pupil -->
+  <circle class="region" data-region="22" cx="173" cy="188" r="8" fill="#ffffff"/>
+  <text class="num-label" data-label="22" x="173" y="192" text-anchor="middle">22</text>
+
+  <!-- 23 right pupil -->
+  <circle class="region" data-region="23" cx="237" cy="188" r="8" fill="#ffffff"/>
+  <text class="num-label" data-label="23" x="237" y="192" text-anchor="middle">23</text>
+
+  <!-- 24 nose -->
+  <ellipse class="region" data-region="24" cx="200" cy="214" rx="11" ry="9" fill="#ffffff"/>
+  <text class="num-label" data-label="24" x="200" y="218" text-anchor="middle">24</text>
+
+  <!-- 25 left blush -->
+  <ellipse class="region" data-region="25" cx="142" cy="222" rx="28" ry="17" fill="#ffffff"/>
+  <text class="num-label" data-label="25" x="142" y="226" text-anchor="middle">25</text>
+
+  <!-- 26 right blush -->
+  <ellipse class="region" data-region="26" cx="258" cy="222" rx="28" ry="17" fill="#ffffff"/>
+  <text class="num-label" data-label="26" x="258" y="226" text-anchor="middle">26</text>
+
+  <!-- decorations (non-interactive) -->
+  <circle cx="162" cy="175" r="6" fill="white" opacity="0.7" pointer-events="none"/>
+  <circle cx="226" cy="175" r="6" fill="white" opacity="0.7" pointer-events="none"/>
+  <line x1="152" y1="212" x2="122" y2="207" stroke="#888" stroke-width="1.5" opacity="0.35" pointer-events="none"/>
+  <line x1="152" y1="219" x2="120" y2="221" stroke="#888" stroke-width="1.5" opacity="0.35" pointer-events="none"/>
+  <line x1="248" y1="212" x2="278" y2="207" stroke="#888" stroke-width="1.5" opacity="0.35" pointer-events="none"/>
+  <line x1="248" y1="219" x2="280" y2="221" stroke="#888" stroke-width="1.5" opacity="0.35" pointer-events="none"/>
+  <path d="M120,432 Q124,422 128,432" fill="none" stroke="#7CC050" stroke-width="2" opacity="0.5" pointer-events="none"/>
+  <path d="M150,438 Q154,428 158,438" fill="none" stroke="#7CC050" stroke-width="2" opacity="0.5" pointer-events="none"/>
+  <path d="M242,438 Q246,428 250,438" fill="none" stroke="#7CC050" stroke-width="2" opacity="0.5" pointer-events="none"/>
+  <path d="M272,432 Q276,422 280,432" fill="none" stroke="#7CC050" stroke-width="2" opacity="0.5" pointer-events="none"/>
+`;
+
+/* ══════════════════════ SCENE B · NEKO CAT ══════════════════════ */
+const NEKO_SVG = `
+  <!-- 1 background -->
+  <rect class="region" data-region="1" x="0" y="0" width="400" height="380" fill="#ffffff"/>
+  <text class="num-label" data-label="1" x="30" y="130" text-anchor="middle">1</text>
+
+  <!-- 26 sparkle stars -->
+  <polygon class="region" data-region="26" points="${STAR}" transform="translate(40,300) scale(0.85)" fill="#ffffff"/>
+  <polygon class="region" data-region="26" points="${STAR}" transform="translate(360,300) scale(0.85)" fill="#ffffff"/>
+  <polygon class="region" data-region="26" points="${STAR}" transform="translate(200,32) scale(0.85)" fill="#ffffff"/>
+  <text class="num-label" data-label="26" x="40" y="304" text-anchor="middle">26</text>
+
+  <!-- 27 deco star -->
+  <polygon class="region" data-region="27" points="${STAR}" transform="translate(50,236) scale(0.9)" fill="#ffffff"/>
+  <text class="num-label" data-label="27" x="50" y="240" text-anchor="middle">27</text>
+
+  <!-- 28 bottom ribbon -->
+  <ellipse class="region" data-region="28" cx="56" cy="345" rx="16" ry="10" fill="#ffffff" transform="rotate(-20,56,345)"/>
+  <ellipse class="region" data-region="28" cx="86" cy="345" rx="16" ry="10" fill="#ffffff" transform="rotate(20,86,345)"/>
+  <circle class="region" data-region="28" cx="71" cy="345" r="6" fill="#ffffff"/>
+  <text class="num-label" data-label="28" x="71" y="349" text-anchor="middle">28</text>
+
+  <!-- 2 left hair bun -->
+  <circle class="region" data-region="2" cx="108" cy="118" r="72" fill="#ffffff"/>
+  <text class="num-label" data-label="2" x="66" y="120" text-anchor="middle">2</text>
+
+  <!-- 3 right hair bun -->
+  <circle class="region" data-region="3" cx="292" cy="118" r="72" fill="#ffffff"/>
+  <text class="num-label" data-label="3" x="334" y="120" text-anchor="middle">3</text>
+
+  <!-- 4 left cat ear -->
+  <polygon class="region" data-region="4" points="72,66 132,62 92,8" fill="#ffffff"/>
+  <text class="num-label" data-label="4" x="96" y="48" text-anchor="middle">4</text>
+
+  <!-- 5 right cat ear -->
+  <polygon class="region" data-region="5" points="328,66 268,62 308,8" fill="#ffffff"/>
+  <text class="num-label" data-label="5" x="304" y="48" text-anchor="middle">5</text>
+
+  <!-- 6 left inner ear -->
+  <polygon class="region" data-region="6" points="86,60 122,58 98,28" fill="#ffffff"/>
+  <text class="num-label" data-label="6" x="100" y="52" text-anchor="middle">6</text>
+
+  <!-- 7 right inner ear -->
+  <polygon class="region" data-region="7" points="314,60 278,58 302,28" fill="#ffffff"/>
+  <text class="num-label" data-label="7" x="300" y="52" text-anchor="middle">7</text>
+
+  <!-- 8 left hair ribbon -->
+  <ellipse class="region" data-region="8" cx="44" cy="158" rx="17" ry="11" fill="#ffffff" transform="rotate(-20,44,158)"/>
+  <ellipse class="region" data-region="8" cx="72" cy="158" rx="17" ry="11" fill="#ffffff" transform="rotate(20,72,158)"/>
+  <circle class="region" data-region="8" cx="58" cy="158" r="7" fill="#ffffff"/>
+  <text class="num-label" data-label="8" x="22" y="162" text-anchor="middle">8</text>
+
+  <!-- 9 right hair ribbon -->
+  <ellipse class="region" data-region="9" cx="328" cy="158" rx="17" ry="11" fill="#ffffff" transform="rotate(20,328,158)"/>
+  <ellipse class="region" data-region="9" cx="356" cy="158" rx="17" ry="11" fill="#ffffff" transform="rotate(-20,356,158)"/>
+  <circle class="region" data-region="9" cx="342" cy="158" r="7" fill="#ffffff"/>
+  <text class="num-label" data-label="9" x="378" y="162" text-anchor="middle">9</text>
+
+  <!-- 10 face -->
+  <ellipse class="region" data-region="10" cx="200" cy="222" rx="108" ry="100" fill="#ffffff"/>
+  <text class="num-label" data-label="10" x="200" y="162" text-anchor="middle">10</text>
+
+  <!-- 11 left eye white -->
+  <ellipse class="region" data-region="11" cx="168" cy="210" rx="30" ry="26" fill="#ffffff"/>
+  <text class="num-label" data-label="11" x="168" y="192" text-anchor="middle">11</text>
+
+  <!-- 12 right eye white -->
+  <ellipse class="region" data-region="12" cx="232" cy="210" rx="30" ry="26" fill="#ffffff"/>
+  <text class="num-label" data-label="12" x="232" y="192" text-anchor="middle">12</text>
+
+  <!-- 13 left iris -->
+  <ellipse class="region" data-region="13" cx="168" cy="213" rx="20" ry="19" fill="#ffffff"/>
+  <text class="num-label" data-label="13" x="154" y="215" text-anchor="middle">13</text>
+
+  <!-- 14 right iris -->
+  <ellipse class="region" data-region="14" cx="232" cy="213" rx="20" ry="19" fill="#ffffff"/>
+  <text class="num-label" data-label="14" x="246" y="215" text-anchor="middle">14</text>
+
+  <!-- 15 left pupil -->
+  <circle class="region" data-region="15" cx="171" cy="216" r="11" fill="#ffffff"/>
+  <text class="num-label" data-label="15" x="171" y="220" text-anchor="middle">15</text>
+
+  <!-- 16 right pupil -->
+  <circle class="region" data-region="16" cx="235" cy="216" r="11" fill="#ffffff"/>
+  <text class="num-label" data-label="16" x="235" y="220" text-anchor="middle">16</text>
+
+  <!-- 17 left blush -->
+  <ellipse class="region" data-region="17" cx="128" cy="248" rx="30" ry="19" fill="#ffffff"/>
+  <text class="num-label" data-label="17" x="128" y="252" text-anchor="middle">17</text>
+
+  <!-- 18 right blush -->
+  <ellipse class="region" data-region="18" cx="272" cy="248" rx="30" ry="19" fill="#ffffff"/>
+  <text class="num-label" data-label="18" x="272" y="252" text-anchor="middle">18</text>
+
+  <!-- 19 nose -->
+  <ellipse class="region" data-region="19" cx="200" cy="255" rx="10" ry="8" fill="#ffffff"/>
+  <text class="num-label" data-label="19" x="200" y="259" text-anchor="middle">19</text>
+
+  <!-- 20 mouth -->
+  <path class="region" data-region="20" d="M186,256 Q200,272 214,256 Q206,266 200,266 Q194,266 186,256 Z" fill="#ffffff"/>
+  <text class="num-label" data-label="20" x="200" y="264" text-anchor="middle">20</text>
+
+  <!-- 21 white collar -->
+  <polygon class="region" data-region="21" points="150,308 250,308 280,368 120,368" fill="#ffffff"/>
+  <text class="num-label" data-label="21" x="140" y="363" text-anchor="middle">21</text>
+
+  <!-- 22 collar stripe -->
+  <polygon class="region" data-region="22" points="136,335 264,335 258,350 142,350" fill="#ffffff"/>
+  <text class="num-label" data-label="22" x="152" y="346" text-anchor="middle">22</text>
+
+  <!-- 23 left collar bow petal -->
+  <ellipse class="region" data-region="23" cx="182" cy="340" rx="20" ry="13" fill="#ffffff" transform="rotate(-25,182,340)"/>
+  <text class="num-label" data-label="23" x="176" y="344" text-anchor="middle">23</text>
+
+  <!-- 24 right collar bow petal -->
+  <ellipse class="region" data-region="24" cx="218" cy="340" rx="20" ry="13" fill="#ffffff" transform="rotate(25,218,340)"/>
+  <text class="num-label" data-label="24" x="224" y="344" text-anchor="middle">24</text>
+
+  <!-- 25 bow centre -->
+  <circle class="region" data-region="25" cx="200" cy="340" r="11" fill="#ffffff"/>
+  <text class="num-label" data-label="25" x="200" y="344" text-anchor="middle">25</text>
+
+  <!-- decorations (non-interactive) -->
+  <circle cx="159" cy="202" r="5" fill="white" opacity="0.75" pointer-events="none"/>
+  <circle cx="223" cy="202" r="5" fill="white" opacity="0.75" pointer-events="none"/>
+  <line x1="150" y1="256" x2="112" y2="250" stroke="#C99" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
+  <line x1="150" y1="262" x2="110" y2="266" stroke="#C99" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
+  <line x1="250" y1="256" x2="288" y2="250" stroke="#C99" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
+  <line x1="250" y1="262" x2="290" y2="266" stroke="#C99" stroke-width="1.5" opacity="0.4" pointer-events="none"/>
+`;
+
+/* ══════════════════════ SCENES ══════════════════════ */
+const SCENES = {
+  panda: {
+    name: 'Kawaii Panda',
+    emoji: '🐼',
+    svgViewBox: '0 0 400 460',
+    totalRegions: 32,
+    svgContent: PANDA_SVG,
+    winMsg: 'You coloured the whole panda scene!',
+    palette: [
+      { color:'#D4C0FF', regions:[1], label:'1', desc:'Lilac Sky' },
+      { color:'#FFFFFF', regions:[2,3,18,19], label:'2', desc:'White', border:'#ddd' },
+      { color:'#FFD700', regions:[4], label:'3', desc:'Star Gold' },
+      { color:'#FFE066', regions:[8], label:'4', desc:'Flower Yellow' },
+      { color:'#B8E8A0', regions:[5], label:'5', desc:'Grass Green' },
+      { color:'#FFB3D9', regions:[6,7], label:'6', desc:'Flower Pink' },
+      { color:'#1A1A1A', regions:[9,10,16,17,22,23,27,28,29,30], label:'7', desc:'Panda Black', textColor:'white' },
+      { color:'#FFB0CC', regions:[11,12,25,26], label:'8', desc:'Blush Pink' },
+      { color:'#F2F2F2', regions:[13,14], label:'9', desc:'Panda White', border:'#ccc' },
+      { color:'#E4E4E4', regions:[15], label:'10', desc:'Tummy Grey', border:'#ccc' },
+      { color:'#90C8FF', regions:[20,21], label:'11', desc:'Eye Blue' },
+      { color:'#FF8096', regions:[24], label:'12', desc:'Nose Pink' },
+      { color:'#FF85C1', regions:[31], label:'13', desc:'Bow Pink' },
+      { color:'#D63384', regions:[32], label:'14', desc:'Deep Pink', textColor:'white' },
+    ],
+  },
+  neko: {
+    name: 'Neko Cat',
+    emoji: '🐱',
+    svgViewBox: '0 0 400 380',
+    totalRegions: 28,
+    svgContent: NEKO_SVG,
+    winMsg: 'You coloured the whole neko cat!',
+    palette: [
+      { color:'#FFE8F4', regions:[1], label:'1', desc:'Soft Pink Sky' },
+      { color:'#9333EA', regions:[2,3,4,5], label:'2', desc:'Purple Hair', textColor:'white' },
+      { color:'#FFB0CC', regions:[6,7,17,18], label:'3', desc:'Blush Pink' },
+      { color:'#FFD700', regions:[8,9,26,27], label:'4', desc:'Gold' },
+      { color:'#FFD6BA', regions:[10], label:'5', desc:'Face Peach' },
+      { color:'#FFFFFF', regions:[11,12,21], label:'6', desc:'White', border:'#ddd' },
+      { color:'#7B68EE', regions:[13,14], label:'7', desc:'Iris Violet', textColor:'white' },
+      { color:'#0D1B2A', regions:[15,16], label:'8', desc:'Pupil Navy', textColor:'white' },
+      { color:'#FF8096', regions:[19], label:'9', desc:'Nose Pink' },
+      { color:'#FF4088', regions:[20], label:'10', desc:'Mouth Pink', textColor:'white' },
+      { color:'#5B8AF0', regions:[22], label:'11', desc:'Collar Blue', textColor:'white' },
+      { color:'#FF85C1', regions:[23,24], label:'12', desc:'Bow Pink' },
+      { color:'#D63384', regions:[25], label:'13', desc:'Deep Pink', textColor:'white' },
+      { color:'#FFB3D9', regions:[28], label:'14', desc:'Ribbon Pink' },
+    ],
+  },
+};
+
+/* ══════════════════════ STATE + LOGIC ══════════════════════ */
+let currentScene = 'panda';
 let selColor = null;
 let filled = {};
+let regionColors = {};        // region number → correct colour, for reveal
+const artwork = document.getElementById('artwork');
 
-function buildPalette() {
+function buildRegionColorMap(scene) {
+  regionColors = {};
+  scene.palette.forEach(p => p.regions.forEach(r => { regionColors[r] = p.color; }));
+}
+
+function buildPalette(scene) {
   const wrap = document.getElementById('palette');
-  UNIQUE_COLORS.forEach(u => {
+  wrap.innerHTML = '';
+  scene.palette.forEach(u => {
     const sw = document.createElement('div');
     sw.className = 'swatch';
     sw.style.background = u.color;
@@ -272,7 +501,6 @@ function buildPalette() {
     sw.textContent = u.label;
     sw.title = u.desc || '';
     sw.onclick = () => selectColor(u, sw);
-    u._el = sw;
     wrap.appendChild(sw);
   });
 }
@@ -283,61 +511,108 @@ function selectColor(u, sw) {
   sw.classList.add('sel');
 }
 
-document.querySelectorAll('.region').forEach(el => {
-  el.addEventListener('click', () => {
-    const n = parseInt(el.dataset.region);
-    if (!selColor) {
-      el.classList.add('shake');
-      setTimeout(() => el.classList.remove('shake'), 300);
-      return;
-    }
-    const correctColor = REGION_COLORS[n];
-    if (selColor.regions.includes(n)) {
-      el.style.fill = correctColor;
-      el.classList.add('filled');
-      filled[n] = true;
-      document.querySelector(`.num-label[data-label="${n}"]`)?.classList.add('hidden');
-      updateProgress();
-    } else {
-      el.classList.add('shake');
-      setTimeout(() => el.classList.remove('shake'), 300);
-    }
+function shake(el) {
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 300);
+}
+
+function fillRegion(n, color) {
+  artwork.querySelectorAll(`.region[data-region="${n}"]`).forEach(e => {
+    e.style.fill = color;
+    e.classList.add('filled');
   });
-});
+  filled[n] = true;
+  artwork.querySelector(`.num-label[data-label="${n}"]`)?.classList.add('hidden');
+}
+
+function attachListeners() {
+  artwork.querySelectorAll('.region').forEach(el => {
+    el.addEventListener('click', () => {
+      const n = parseInt(el.dataset.region);
+      if (!selColor) { shake(el); return; }
+      if (selColor.regions.includes(n)) {
+        fillRegion(n, selColor.color);
+        updateProgress();
+      } else {
+        shake(el);
+      }
+    });
+  });
+}
 
 function updateProgress() {
-  const total = 20;
+  const total = SCENES[currentScene].totalRegions;
   const done = Object.keys(filled).length;
   const pct = Math.round(done / total * 100);
   document.getElementById('progressBar').style.width = pct + '%';
   document.getElementById('progressLabel').textContent = `${done} of ${total} regions filled`;
-  if (done === total) setTimeout(() => document.getElementById('winOverlay').classList.add('show'), 600);
+  if (done === total) setTimeout(showWin, 600);
+}
+
+function showWin() {
+  const scene = SCENES[currentScene];
+  const other = currentScene === 'panda' ? 'neko' : 'panda';
+  const otherScene = SCENES[other];
+  const card = document.getElementById('winCard');
+  card.innerHTML =
+    `<div style="font-size:3.5rem">${scene.emoji}✨</div>` +
+    `<h2>Beautiful!</h2>` +
+    `<p>${scene.winMsg}</p>` +
+    `<div class="win-btns">` +
+      `<button class="big-btn" onclick="closeWin(); resetAll();">🎨 Colour Again</button>` +
+      `<button class="alt-btn" onclick="loadScene('${other}')">${otherScene.emoji} Try the ${otherScene.name}!</button>` +
+    `</div>`;
+  document.getElementById('winOverlay').classList.add('show');
+}
+
+function closeWin() {
+  document.getElementById('winOverlay').classList.remove('show');
 }
 
 function resetAll() {
   filled = {};
   selColor = null;
   document.querySelectorAll('.swatch').forEach(s => s.classList.remove('sel'));
-  document.querySelectorAll('.region').forEach(el => {
+  artwork.querySelectorAll('.region').forEach(el => {
     el.style.fill = '#ffffff';
     el.classList.remove('filled');
   });
-  document.querySelectorAll('.num-label').forEach(el => el.classList.remove('hidden'));
+  artwork.querySelectorAll('.num-label').forEach(el => el.classList.remove('hidden'));
   updateProgress();
 }
 
 function revealAll() {
-  document.querySelectorAll('.region').forEach(el => {
+  artwork.querySelectorAll('.region').forEach(el => {
     const n = parseInt(el.dataset.region);
-    el.style.fill = REGION_COLORS[n];
+    el.style.fill = regionColors[n];
     el.classList.add('filled');
     filled[n] = true;
-    document.querySelector(`.num-label[data-label="${n}"]`)?.classList.add('hidden');
+    artwork.querySelector(`.num-label[data-label="${n}"]`)?.classList.add('hidden');
   });
   updateProgress();
 }
 
-buildPalette();
+function loadScene(key, btn) {
+  currentScene = key;
+  const scene = SCENES[key];
+  document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
+  (btn || document.querySelector(`.scene-btn[data-scene="${key}"]`)).classList.add('active');
+
+  artwork.setAttribute('viewBox', scene.svgViewBox);
+  artwork.innerHTML = scene.svgContent;
+
+  buildRegionColorMap(scene);
+  buildPalette(scene);
+
+  filled = {};
+  selColor = null;
+  attachListeners();
+  updateProgress();
+  closeWin();
+}
+
+// Boot
+loadScene('panda');
 </script>
 </body>
 </html>
