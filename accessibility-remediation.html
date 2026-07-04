@@ -275,13 +275,40 @@
     </div>
   </div>
 
-  <div class="acc-card acc-outcome mb40" style="border-color:#BAE6FD;">
+  <div class="acc-card acc-outcome mb16" style="border-color:#BAE6FD;">
     <div class="acc-header" onclick="toggleAcc(this)" style="background:#F0F9FF;">
       <p class="card-label">Outcome</p>
       <span class="acc-chevron" style="color:#0EA5E9;">▼</span>
     </div>
     <div class="acc-body" style="background:#F0F9FF;">
       <p style="color:#0C4A6E;">Brought the site to WCAG 2.1 AA compliance across all primary user flows over a 6-month remediation cycle. Subsequent quarterly audits found zero critical violations. Product and design teams began self-reporting accessibility checks as part of sprint reviews. The training program was absorbed into onboarding for new design and product hires — making prevention, not just remediation, part of the culture.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tradeoffs</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Distributed ownership without enforcement</p>
+          <p class="contrib-item-text">Keeping remediation within each team's roadmap avoided a separate workstream, but meant no team held overall risk — a team could slip on compliance without anyone catching it until the next scheduled audit.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Design system embedding</p>
+          <p class="contrib-item-text">Fixing shared components made future products inherit compliance by default, but existing products still needed manual remediation on their own timelines, with no mechanism to force it.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">AA, not AAA</p>
+          <p class="contrib-item-text">Targeting WCAG 2.1 AA was a deliberate call — it covers the broadest set of users within what's practically achievable — but some users still encounter barriers that only AAA requirements address, and that gap was explicitly accepted.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Training over automated guardrails</p>
+          <p class="contrib-item-text">Shifting to distributed prevention through training is a culture change, not a technical constraint. Training fades without reinforcement, and no automated CI/CD check existed to catch accessibility regressions at merge time.</p>
+        </div>
+      </div>
     </div>
   </div>
 

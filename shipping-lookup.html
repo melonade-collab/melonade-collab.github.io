@@ -55,6 +55,9 @@
   .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
   .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
   .acc-body li { font-size: 0.875rem; color: #555; line-height: 1.7; margin-bottom: 6px; }
+  .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+  .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #1E3D5C; margin-bottom: 4px; }
+  .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
   .proto-stage { display: flex; flex-direction: column; align-items: center; background: var(--accent-light); border-radius: 16px; padding: 36px 20px 48px; }
   .proto-stage-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #1E3D5C; margin-bottom: 24px; }
 
@@ -498,13 +501,40 @@
     </div>
   </div>
 
-  <div class="acc-card acc-outcome mb40" style="border-color:#BAE6FD;">
+  <div class="acc-card acc-outcome mb16" style="border-color:#BAE6FD;">
     <div class="acc-header" onclick="toggleAcc(this)" style="background:#F0F9FF;">
       <p class="card-label" style="color:#0C4A6E;">Outcome</p>
       <span class="acc-chevron" style="color:#0EA5E9;">▼</span>
     </div>
     <div class="acc-body" style="background:#F0F9FF;">
       <p style="color:#0C4A6E;">The prototype validated the self-serve concept: every internal tester completed a rate or delivery time lookup in under 90 seconds with no instruction. The conversational format consistently felt more natural than a form — testers described it as "like asking a person." The agent handoff button at the end of every flow resolved the biggest stakeholder concern about dropping complex cases. Business case modelling suggested 15–20% of inbound rate and time queries could be deflected with this flow.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tradeoffs</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Conversational scope</p>
+          <p class="contrib-item-text">The flow handles common queries well but struggles with edge cases — unusual package types, third-party shipper situations, international addresses with special requirements — that a structured form would handle more robustly.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">No session history</p>
+          <p class="contrib-item-text">Without login, users who return for the same information start from scratch every time. Repeat queries were common in research but were explicitly out of scope given the no-account constraint.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Agent handoff cost</p>
+          <p class="contrib-item-text">The handoff button at the end of every path provides a reliable safety valve, but routes users to a live agent — and its cost — even for queries that fell just outside the bot's scope and could have been handled differently.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Simulated rate tables</p>
+          <p class="contrib-item-text">The prototype uses static rate data; real pricing engine integration would require handling account-specific discounts, fuel surcharges, and dimensional weight — a meaningful engineering lift not addressed here.</p>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -305,13 +305,40 @@
     </div>
   </div>
 
-  <div class="acc-card mb40" style="border-color:#BAE6FD;">
+  <div class="acc-card mb16" style="border-color:#BAE6FD;">
     <div class="acc-header" onclick="toggleAcc(this)" style="background:#F0F9FF;">
       <p class="card-label">Outcome</p>
       <span class="acc-chevron" style="color:#0EA5E9;">▼</span>
     </div>
     <div class="acc-body" style="background:#F0F9FF;">
       <p style="color:#0C4A6E;">Measurably reduced inbound call volume to B2B support for plan-related inquiries. The SIM-as-identity model became the baseline assumption for the enterprise product line — no login flow was ever designed because it was never needed. Voicemail PIN management — previously a call to IT or a carrier IVR — became a self-serve three-step flow inside the app.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tradeoffs</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">SIM-as-identity is device-bound</p>
+          <p class="contrib-item-text">The frictionless authentication model is also its constraint — the app only works on the enrolled device. Employees with two phones, a replacement device, or a broken SIM have no fallback authentication path.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">MVP scope covers the top three call drivers</p>
+          <p class="contrib-item-text">Focusing on usage, voicemail, and plan details solved the highest-volume problems but left a long tail of tasks — billing disputes, plan changes, roaming setup — that still required calling support.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Voicemail transcription accuracy</p>
+          <p class="contrib-item-text">AI-generated transcriptions raise accuracy expectations. Errors on important messages may erode trust in the feature faster than not having transcription at all — a risk that scales with message sensitivity.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">IT contact surface</p>
+          <p class="contrib-item-text">Surfacing the IT contact within the app is useful, but also routes employees back to IT for things the app could eventually own — a short-term solve that creates a dependency worth revisiting as scope expands.</p>
+        </div>
+      </div>
     </div>
   </div>
 

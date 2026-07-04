@@ -238,13 +238,40 @@
     </div>
   </div>
 
-  <div class="acc-card mb40" style="border-color:#DDD6FE;">
+  <div class="acc-card mb16" style="border-color:#DDD6FE;">
     <div class="acc-header" onclick="toggleAcc(this)" style="background:#EDE9FE;">
       <p class="card-label">Outcome</p>
       <span class="acc-chevron" style="color:#7C3AED;">▼</span>
     </div>
     <div class="acc-body" style="background:#EDE9FE;">
       <p style="color:#4C1D95;">Tracking-related support contacts dropped measurably in the weeks following the fix. The change also applied retroactively to historical shipments, resolving confusing tracking histories without any re-processing. The fix has been in place for all new shipments since, and no further out-of-order display issues have been reported from this root cause.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tradeoffs</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Event timestamp reliance</p>
+          <p class="contrib-item-text">Sorting by event timestamp is more accurate than received timestamp, but still depends on device clocks being reasonably set — a scan device with a significantly wrong clock would still produce incorrect ordering.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Stage rank as tiebreaker</p>
+          <p class="contrib-item-text">The stage rank tiebreaker handles clock drift well against the current scan taxonomy, but any future changes to the stage model would require reviewing and updating the rank ordering to stay correct.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Retroactive fix</p>
+          <p class="contrib-item-text">Applying the new sort to historical shipments resolved confusing tracking histories, but users who had already seen and acted on incorrect ordering wouldn't benefit from the correction after the fact.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Duplicate stage suppression</p>
+          <p class="contrib-item-text">Suppressing repeat stage events is correct in most cases, but a legitimate re-entry into a stage — such as a package returned to a facility after a failed delivery — requires handling separately to avoid hiding real events.</p>
+        </div>
+      </div>
     </div>
   </div>
 

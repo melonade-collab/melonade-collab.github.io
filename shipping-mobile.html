@@ -327,8 +327,8 @@
     </div>
     <div class="acc-body">
       <ul>
-        <li>No consumer account system — tracking history had to be stored locally</li>
-        <li>No native app — prototype scoped to a mobile web experience</li>
+        <li>No consumer account system — tracking history had to be stored locally on device</li>
+        <li>App Store and Google Play submission required — updates couldn't be deployed instantly and had to go through review cycles</li>
         <li>Barcode/QR scanning requires device camera access (simulated here)</li>
         <li>Tracking data had to work without an authenticated session</li>
         <li>Needed to support both first-time shippers and repeat trackers in a single entry point</li>
@@ -370,6 +370,33 @@
     </div>
     <div class="acc-body">
       <p>Track opens as the home screen, showing saved shipments with live status and a progress bar for each stage in the shipping system. Users can add a tracking number by typing or scanning a barcode — numbers are saved locally so they persist without an account. A persistent bottom nav gives access to Ship, Locations, and Support from anywhere in the app. The Ship flow walks through sender address, destination, package type, dimensions, quote, and payment — one step per screen with a visible progress indicator — and lands back in Track on completion so the new shipment appears immediately.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tradeoffs</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Local tracking history</p>
+          <p class="contrib-item-text">Storing tracking numbers on device avoids the cost of building a consumer account system, but the history is device-specific — it disappears if the user uninstalls the app and doesn't carry over to a new device.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Camera permission</p>
+          <p class="contrib-item-text">Scan-to-track eliminates manual number entry, but the camera permission prompt adds friction on first use and may deter users cautious about granting device access.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">App store distribution</p>
+          <p class="contrib-item-text">Updates and fixes required App Store and Google Play review cycles — any post-launch change had lead time baked in before users received it, unlike a web experience where changes deploy instantly.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Unified home screen</p>
+          <p class="contrib-item-text">A single Ship + Track entry point reinforces a coherent mental model, but most users are predominantly trackers — a tracking-first home would serve the majority better at the cost of Ship flow discoverability.</p>
+        </div>
+      </div>
     </div>
   </div>
 

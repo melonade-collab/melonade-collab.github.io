@@ -265,13 +265,40 @@
     </div>
   </div>
 
-  <div class="acc-card acc-outcome mb40" style="border-color:#DDD6FE;">
+  <div class="acc-card acc-outcome mb16" style="border-color:#DDD6FE;">
     <div class="acc-header" onclick="toggleAcc(this)" style="background:#EDE9FE;">
       <p class="card-label">Outcome</p>
       <span class="acc-chevron" style="color:#7C3AED;">▼</span>
     </div>
     <div class="acc-body" style="background:#EDE9FE;">
       <p style="color:#4C1D95;">Piloted with 12 medium-volume accounts over six weeks. Manual report generation dropped from approximately six hours per week to on-demand and self-serve. Exception response time improved from next-business-day — when the daily Excel report was circulated — to same-session.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tradeoffs</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">15-minute batch updates</p>
+          <p class="contrib-item-text">The dashboard is always slightly stale by design — acceptable for strategic portfolio monitoring, but not suited for live exception management where individual minutes matter.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Keeping internal reporting in the loop</p>
+          <p class="contrib-item-text">Ad hoc requests still route through the internal ops team, preserving the relationship but creating a two-tier system where some answers are self-serve and others require a ticket.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">30-day rolling window</p>
+          <p class="contrib-item-text">Matches how shippers think about performance cycles, but means historical trend analysis beyond the window still required the manual process that the dashboard was meant to replace.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Exception sort order</p>
+          <p class="contrib-item-text">Sorting by days-since-last-scan surfaces the oldest stuck packages first — the highest-signal ordering in research — but doesn't account for shippers who prioritize by shipment value or customer account tier.</p>
+        </div>
+      </div>
     </div>
   </div>
 
