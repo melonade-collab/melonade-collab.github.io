@@ -683,10 +683,10 @@ function loadPlanet() {
   display.style.boxShadow = `0 0 32px ${p.glow}`;
   if (p.ring) {
     display.style.overflow = 'visible';
-    display.innerHTML = '<svg style="position:absolute;inset:-20px;width:calc(100% + 40px);height:calc(100% + 40px);overflow:visible;pointer-events:none" viewBox="0 0 130 130"><ellipse cx="65" cy="65" rx="60" ry="16" fill="none" stroke="rgba(180,240,230,0.7)" stroke-width="5"/></svg>';
+    display.innerHTML = `<span style="font-size:3.2rem;line-height:1;position:relative;z-index:1">${p.emoji}</span><svg style="position:absolute;inset:-20px;width:calc(100% + 40px);height:calc(100% + 40px);overflow:visible;pointer-events:none" viewBox="0 0 130 130"><ellipse cx="65" cy="65" rx="16" ry="60" fill="none" stroke="rgba(180,240,230,0.7)" stroke-width="5"/></svg>`;
   } else {
     display.style.overflow = '';
-    display.innerHTML = '';
+    display.textContent = p.emoji;
   }
 
   document.getElementById('planetName').textContent = p.name;
