@@ -488,6 +488,33 @@
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Product Ownership</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Call flow analysis</p>
+          <p class="contrib-item-text">Mapped the inbound call flow to identify the minimum information agents actually needed to answer a rate or delivery time question. Found it was almost always just destination and parcel weight class.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Conversation design</p>
+          <p class="contrib-item-text">Designed the conversational flow to collect those two inputs naturally. Validated through testing that the format felt more like asking a person than filling out a rate calculator.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Agent handoff design</p>
+          <p class="contrib-item-text">Defined the live agent handoff escape at the end of every conversational path — directly addressing the primary stakeholder concern about complex customer needs falling through the cracks.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Prototype & validation</p>
+          <p class="contrib-item-text">Built the prototype end-to-end with simulated rate tables so testing could be done interactively rather than from static screens.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
       <p class="card-label">How it worked</p>
       <span class="acc-chevron">▼</span>
     </div>
@@ -501,17 +528,7 @@
     </div>
   </div>
 
-  <div class="acc-card acc-outcome mb16" style="border-color:#BAE6FD;">
-    <div class="acc-header" onclick="toggleAcc(this)" style="background:#F0F9FF;">
-      <p class="card-label" style="color:#0C4A6E;">Outcome</p>
-      <span class="acc-chevron" style="color:#0EA5E9;">▼</span>
-    </div>
-    <div class="acc-body" style="background:#F0F9FF;">
-      <p style="color:#0C4A6E;">The prototype validated the self-serve concept: every internal tester completed a rate or delivery time lookup in under 90 seconds with no instruction. The conversational format consistently felt more natural than a form — testers described it as "like asking a person." The agent handoff button at the end of every flow resolved the biggest stakeholder concern about dropping complex cases. Business case modelling suggested 15–20% of inbound rate and time queries could be deflected with this flow.</p>
-    </div>
-  </div>
-
-  <div class="acc-card mb40">
+  <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
       <p class="card-label">Tradeoffs</p>
       <span class="acc-chevron">▼</span>
@@ -535,6 +552,16 @@
           <p class="contrib-item-text">The prototype uses static rate data; real pricing engine integration would require handling account-specific discounts, fuel surcharges, and dimensional weight — a meaningful engineering lift not addressed here.</p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="acc-card acc-outcome mb40" style="border-color:#BAE6FD;">
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#F0F9FF;">
+      <p class="card-label" style="color:#0C4A6E;">Outcome</p>
+      <span class="acc-chevron" style="color:#0EA5E9;">▼</span>
+    </div>
+    <div class="acc-body" style="background:#F0F9FF;">
+      <p style="color:#0C4A6E;">The prototype validated the self-serve concept: every internal tester completed a rate or delivery time lookup in under 90 seconds with no instruction. The conversational format consistently felt more natural than a form — testers described it as "like asking a person." The agent handoff button at the end of every flow resolved the biggest stakeholder concern about dropping complex cases. Business case modelling suggested 15–20% of inbound rate and time queries could be deflected with this flow.</p>
     </div>
   </div>
 
