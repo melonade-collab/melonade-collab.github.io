@@ -358,7 +358,10 @@ body {
     <button class="speak-btn" id="speakBtn" title="Hear the fact">🔊</button>
   </div>
 
-  <div class="quiz-label">🚂 CONDUCTOR'S QUESTION</div>
+  <div class="quiz-label" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+    🚂 CONDUCTOR'S QUESTION
+    <button class="speak-btn" id="speakQBtn" title="Hear the question" style="position:static;font-size:1.1rem;">🔊</button>
+  </div>
   <div class="question" id="questionText"></div>
   <div class="answers" id="answersDiv"></div>
   <div class="result-msg" id="resultMsg"></div>
@@ -383,7 +386,28 @@ const PLANETS = [
     bg: '#444444',
     glow: 'rgba(150,150,150,0.5)',
     nameColor: '#aaaaaa',
-    fact: "Mercury is the smallest planet and closest to the Sun. Even though it's so close, it's not the hottest — it has no atmosphere to trap heat!",
+    facts: [
+      "Mercury is the smallest planet in our solar system — it is about the same size as Earth's moon!",
+      "Mercury has no atmosphere, so it has no weather at all — no wind, no rain, and no snow.",
+      "A day on Mercury lasts 59 Earth days, but a year is only 88 Earth days — a year is shorter than a day!",
+      "Mercury is the closest planet to the Sun — about 77 million km away at its nearest point.",
+      "Mercury has no moons at all.",
+      "Mercury's surface is covered in craters from meteor impacts, just like our Moon.",
+      "Temperatures on Mercury can swing from 430 degrees during the day to minus 180 degrees at night — the biggest temperature swing of any planet!",
+      "Mercury moves faster than any other planet, travelling at about 47 km every second!",
+      "Mercury was named after the Roman messenger god, who wore winged sandals and could fly super fast.",
+      "The largest crater on Mercury is called the Caloris Basin — it is about 1,500 km wide!",
+      "From Mercury's surface, the Sun would look nearly three times bigger than it does from Earth.",
+      "Mercury has a huge iron core that takes up about 85 percent of the planet's radius — it is mostly metal inside!",
+      "If you stood on Mercury, you would weigh about a third of what you weigh on Earth.",
+      "Mercury is one of only five planets you can see from Earth without a telescope.",
+      "Mercury has wrinkles called scarps that formed when the planet cooled and shrank billions of years ago.",
+      "NASA's Messenger spacecraft orbited Mercury from 2011 to 2015 and took over 100,000 photographs.",
+      "Ice has been found inside craters at Mercury's north and south poles, even though the surface can get extremely hot!",
+      "You could fit about 18 Mercurys inside Earth.",
+      "Mercury has almost no axial tilt, so it has no seasons at all.",
+      "Because Mercury spins so slowly, some parts of its surface experience very long stretches of total darkness.",
+    ],
     question: 'How many moons does Mercury have?',
     answers: ['0 moons', '1 moon', '2 moons'],
     correct: 0,
@@ -394,7 +418,28 @@ const PLANETS = [
     bg: '#c8a030',
     glow: 'rgba(230,190,80,0.55)',
     nameColor: '#f0d060',
-    fact: "Venus is the hottest planet in the solar system — even hotter than Mercury! Its thick clouds trap heat like a blanket. It also spins backwards, so the Sun rises in the west.",
+    facts: [
+      "Venus is the hottest planet in the solar system, with surface temperatures around 465 degrees — hot enough to melt lead!",
+      "Venus spins backwards compared to most planets, so the Sun rises in the west and sets in the east.",
+      "A day on Venus is longer than a year on Venus — it takes 243 Earth days to spin once!",
+      "Venus is almost exactly the same size as Earth, so it is sometimes called Earth's twin.",
+      "The thick clouds on Venus are made of sulphuric acid — they would be very dangerous to breathe.",
+      "Venus is the second planet from the Sun.",
+      "From Earth, Venus is the brightest object in the night sky after the Moon.",
+      "Venus has no moons and no rings.",
+      "Venus has thousands of volcanoes — some may still be active today!",
+      "The atmosphere on Venus is so heavy it would crush you like being 900 metres underwater.",
+      "Venus was named after the Roman goddess of love and beauty.",
+      "Spacecraft that landed on Venus only survived for about two hours before being destroyed by the heat and pressure.",
+      "From Venus, you cannot see the Sun through the clouds — the sky is always a murky orange colour.",
+      "Some scientists think there might be tiny life forms living high in the cooler clouds of Venus.",
+      "Venus takes 225 Earth days to orbit the Sun.",
+      "Venus has been visited by more than 40 spacecraft — more than any planet except Mars!",
+      "The highest mountain on Venus is called Maxwell Montes — it is about 11 km tall.",
+      "If you could stand on Venus, you would be squished by air pressure 90 times stronger than on Earth.",
+      "Venus rotates so slowly that you could walk faster than the surface is spinning at its equator!",
+      "Venus looks like a very bright star in the sky and is sometimes called the Morning Star or the Evening Star.",
+    ],
     question: 'Why is Venus the hottest planet?',
     answers: ['It is closest to the Sun', 'Its thick clouds trap heat', 'It is the biggest planet'],
     correct: 1,
@@ -405,7 +450,28 @@ const PLANETS = [
     bg: '#1a5090',
     glow: 'rgba(70,140,230,0.55)',
     nameColor: '#5ab0f0',
-    fact: "Earth is the only planet we know of with life on it! About 71% of its surface is covered in water — that is why it looks so blue from space.",
+    facts: [
+      "Earth is the only planet we know of that has life on it.",
+      "About 71 percent of Earth's surface is covered in water — that is why it looks blue from space!",
+      "Earth is the third planet from the Sun.",
+      "Earth has one moon, which is the fifth largest moon in the solar system.",
+      "Earth is the densest planet in the solar system — packed very tightly with rock and metal.",
+      "Earth's core is as hot as the surface of the Sun — about 5,500 degrees!",
+      "Earth is tilted on its axis by about 23 degrees, which gives us our four seasons.",
+      "It takes Earth 365 and a quarter days to orbit the Sun — that is why we have a leap year every four years!",
+      "Earth has a magnetic field that protects us from harmful radiation from the Sun.",
+      "The highest point on Earth is Mount Everest at 8,849 metres above sea level.",
+      "Earth is about 4.5 billion years old.",
+      "More than 8 million different species of animals live on Earth!",
+      "Earth is the largest of the four rocky inner planets.",
+      "The deepest point on Earth is the Mariana Trench in the Pacific Ocean — about 11 km deep!",
+      "Earth's atmosphere is made of about 78 percent nitrogen and 21 percent oxygen.",
+      "One day on Earth is 24 hours — the time it takes to spin once on its axis.",
+      "Earth has seven continents: Africa, Antarctica, Asia, Australia, Europe, North America, and South America.",
+      "Giant pieces of Earth's crust called tectonic plates slowly move, causing earthquakes and volcanoes.",
+      "Earth is about 150 million km from the Sun — just the right distance to keep liquid water on its surface.",
+      "Earth is the only planet not named after a god — its name comes from old words meaning ground or soil.",
+    ],
     question: 'How much of Earth is covered in water?',
     answers: ['About 30%', 'About 50%', 'About 70%'],
     correct: 2,
@@ -416,7 +482,28 @@ const PLANETS = [
     bg: '#a03010',
     glow: 'rgba(200,70,20,0.55)',
     nameColor: '#e06040',
-    fact: "Mars is called the Red Planet because of its rusty red soil. It has the tallest volcano in the whole solar system — Olympus Mons is three times taller than Mount Everest!",
+    facts: [
+      "Mars is called the Red Planet because its soil and rocks are covered in rusty red iron oxide.",
+      "Mars has two moons called Phobos and Deimos — named after the Greek words for fear and dread!",
+      "The tallest volcano in the solar system is on Mars — Olympus Mons is three times taller than Mount Everest!",
+      "Mars has the longest canyon in the solar system — Valles Marineris is as wide as the entire United States!",
+      "A day on Mars is just slightly longer than on Earth — about 24 hours and 37 minutes.",
+      "A year on Mars lasts about 687 Earth days.",
+      "Mars is about half the size of Earth.",
+      "Mars has very thin air mostly made of carbon dioxide — you could not breathe there without a space suit.",
+      "Temperatures on Mars can drop to minus 125 degrees in winter near the poles!",
+      "Mars has polar ice caps made of frozen water and carbon dioxide.",
+      "Several rovers have explored Mars — including Perseverance and Curiosity, which are exploring there right now!",
+      "Scientists have found signs that liquid water once flowed on Mars billions of years ago.",
+      "Mars has the biggest dust storms in the solar system — they can cover the entire planet for months!",
+      "Mars is the fourth planet from the Sun.",
+      "Mars was named after the Roman god of war.",
+      "Phobos, the larger moon of Mars, is slowly getting closer and will eventually crash into the planet — but not for 50 million years!",
+      "Gravity on Mars is only about 38 percent of Earth's — you could jump nearly three times as high!",
+      "Mars appears as a bright reddish star in our night sky.",
+      "The first spacecraft to land on Mars was in 1971.",
+      "A journey from Earth to Mars would take astronauts about seven months each way.",
+    ],
     question: 'How many moons does Mars have?',
     answers: ['0 moons', '2 moons', '8 moons'],
     correct: 1,
@@ -427,7 +514,28 @@ const PLANETS = [
     bg: '#9a6020',
     glow: 'rgba(190,130,50,0.55)',
     nameColor: '#d09050',
-    fact: "Jupiter is the biggest planet — you could fit over 1,300 Earths inside it! The Great Red Spot is a giant storm that has been swirling for hundreds of years.",
+    facts: [
+      "Jupiter is the biggest planet in our solar system — over 1,300 Earths could fit inside it!",
+      "The Great Red Spot on Jupiter is a giant storm that has been swirling for at least 350 years!",
+      "Jupiter is made mostly of hydrogen and helium gas — it has no solid surface to stand on.",
+      "Jupiter has at least 95 known moons — more than any other planet!",
+      "The four largest moons of Jupiter were discovered by Galileo way back in 1610.",
+      "Jupiter spins faster than any other planet — one day is only about 10 hours long!",
+      "Jupiter has a faint ring system, but it is much harder to see than Saturn's rings.",
+      "Jupiter acts like a giant shield, pulling in asteroids with its gravity that might otherwise hit Earth!",
+      "Jupiter is the fifth planet from the Sun.",
+      "If Jupiter were about 80 times more massive, it would have become a star!",
+      "Jupiter was named after the king of the Roman gods.",
+      "Io, one of Jupiter's moons, is the most volcanically active place in the whole solar system.",
+      "Europa, another moon of Jupiter, might have a liquid water ocean under its icy surface — and possibly even life!",
+      "The Great Red Spot storm is about twice the size of Earth!",
+      "Jupiter has an incredibly powerful magnetic field — the strongest of any planet.",
+      "Jupiter radiates more heat than it receives from the Sun — it generates its own heat!",
+      "A year on Jupiter lasts about 12 Earth years.",
+      "The spacecraft Juno has been orbiting Jupiter since 2016, studying its storms.",
+      "Jupiter is so massive it has more than twice the mass of all the other planets combined!",
+      "Jupiter's colourful bands are clouds driven by incredibly strong winds.",
+    ],
     question: 'How many Earths could fit inside Jupiter?',
     answers: ['About 13', 'About 130', 'Over 1,300'],
     correct: 2,
@@ -438,7 +546,28 @@ const PLANETS = [
     bg: '#907840',
     glow: 'rgba(200,180,100,0.55)',
     nameColor: '#d4bc70',
-    fact: "Saturn has beautiful rings made of billions of pieces of ice and rock. Saturn is so light that if you had a giant bathtub, it would actually float in the water!",
+    facts: [
+      "Saturn has the most spectacular ring system of any planet — made of billions of pieces of ice and rock.",
+      "Saturn is so light it could actually float in water if you had a big enough ocean!",
+      "Saturn has at least 146 known moons — the most of any planet.",
+      "Titan, Saturn's largest moon, is bigger than the planet Mercury and has its own thick atmosphere!",
+      "Saturn is the sixth planet from the Sun.",
+      "A day on Saturn is only about 10 and a half hours long.",
+      "A year on Saturn lasts about 29 Earth years.",
+      "Saturn's rings extend up to 282,000 km from the planet, but they are only about 10 metres thick in most places!",
+      "Saturn was named after the Roman god of agriculture and wealth.",
+      "Saturn's rings were first seen by Galileo in 1610, but he could not figure out what they were.",
+      "Winds on Saturn can reach up to 1,800 km per hour — much faster than any storm on Earth!",
+      "Saturn has a strange hexagonal-shaped storm at its north pole — a six-sided weather system!",
+      "The Cassini spacecraft studied Saturn for 13 years before its mission ended in 2017.",
+      "Saturn's moon Enceladus shoots jets of water ice out into space from its south pole!",
+      "Saturn's rings are made of particles ranging from tiny dust grains to chunks as big as houses.",
+      "Saturn has the lowest density of all the planets — it is mostly empty space in its huge volume.",
+      "Saturn's rings are thought to be relatively young — maybe only 100 to 400 million years old.",
+      "Saturn glows a pale golden yellow because of ammonia crystals in its atmosphere.",
+      "Saturn is a gas giant like Jupiter — it has no solid surface.",
+      "If you could stand inside Saturn's rings, the planet would look absolutely enormous in the sky!",
+    ],
     question: "What are Saturn's rings made of?",
     answers: ['Gold and stardust', 'Ice and rock', 'Clouds of gas'],
     correct: 1,
@@ -449,7 +578,28 @@ const PLANETS = [
     bg: '#208888',
     glow: 'rgba(60,200,200,0.55)',
     nameColor: '#60d8d8',
-    fact: "Uranus spins on its side like a rolling ball! Scientists think something very large crashed into it long ago and tipped it over. It looks like it is rolling around the Sun.",
+    facts: [
+      "Uranus spins on its side — its axis is tilted nearly 98 degrees, so it rolls around the Sun like a bowling ball!",
+      "Uranus is the coldest planet in the solar system — temperatures can drop to minus 224 degrees!",
+      "Uranus has 13 known rings, which are very thin, dark, and hard to see.",
+      "Uranus has 28 known moons, all named after characters from Shakespeare's plays!",
+      "Uranus is the seventh planet from the Sun.",
+      "A year on Uranus lasts 84 Earth years!",
+      "Uranus is an ice giant — its interior is made mostly of water, ammonia, and methane ice.",
+      "The blue-green colour of Uranus is caused by methane gas, which absorbs red light.",
+      "Uranus was named after the ancient Greek god of the sky.",
+      "Uranus was the first planet discovered using a telescope — by William Herschel in 1781.",
+      "Because Uranus is so tilted, one pole faces the Sun for 42 years, then the other for the next 42 years!",
+      "A day on Uranus lasts about 17 hours.",
+      "Uranus is about four times wider than Earth.",
+      "Only one spacecraft has ever visited Uranus — Voyager 2, which flew past in 1986.",
+      "Scientists think a giant object the size of Earth crashed into Uranus billions of years ago and knocked it sideways!",
+      "Uranus radiates very little heat compared to the other giant planets — scientists are not sure why!",
+      "The largest moon of Uranus is called Titania.",
+      "Uranus has a magnetic field that is tilted and off-centre, quite unlike any other planet.",
+      "Despite being called an ice giant, Uranus does not have a solid surface — it gets denser the deeper you go.",
+      "Uranus was originally suggested to be named Georgium Sidus after King George III — thankfully the name Uranus was chosen instead!",
+    ],
     question: 'What is unusual about how Uranus spins?',
     answers: ['It spins very fast', 'It spins on its side', 'It spins backwards'],
     correct: 1,
@@ -460,7 +610,28 @@ const PLANETS = [
     bg: '#1830a0',
     glow: 'rgba(60,80,220,0.55)',
     nameColor: '#6080f0',
-    fact: "Neptune has the strongest winds in the solar system — gusts can reach over 2,000 km/h! It is so far from the Sun that one year on Neptune is 165 Earth years long.",
+    facts: [
+      "Neptune has the strongest winds in the solar system — gusts can reach over 2,000 km per hour!",
+      "A year on Neptune lasts 165 Earth years — it has only completed one orbit since it was discovered!",
+      "Neptune was discovered in 1846 using maths — scientists predicted where it would be before anyone saw it!",
+      "Neptune is an ice giant with a slushy interior of water, ammonia, and methane.",
+      "Neptune's biggest moon is Triton, which orbits backwards — scientists think it was captured from space long ago.",
+      "Neptune has 16 known moons.",
+      "Neptune is the eighth and farthest planet from the Sun — about 4.5 billion km away!",
+      "Neptune was named after the Roman god of the sea.",
+      "A day on Neptune is about 16 hours long.",
+      "The Great Dark Spot was a massive storm on Neptune photographed in 1989 — it was about the size of Earth!",
+      "Neptune has five rings, but they are very thin and faint.",
+      "Only one spacecraft has ever visited Neptune — Voyager 2, which flew past in August 1989.",
+      "Neptune is about 17 times more massive than Earth.",
+      "Triton, Neptune's largest moon, has geysers that shoot nitrogen gas nearly 8 km high!",
+      "Neptune is so far away that sunlight takes about 4 hours to reach it — on Earth it only takes 8 minutes.",
+      "The blue colour of Neptune comes from methane gas in its atmosphere.",
+      "Neptune's winds blow in the opposite direction to the planet's rotation — making them even more extreme!",
+      "Even though it is farther from the Sun, Neptune is slightly smaller than Uranus but much heavier.",
+      "Neptune is the densest of all four giant planets.",
+      "If you could travel to Neptune at the speed of a jet plane, it would take about 700 years to get there!",
+    ],
     question: 'How long is one year on Neptune?',
     answers: ['12 Earth years', '84 Earth years', '165 Earth years'],
     correct: 2,
@@ -513,7 +684,8 @@ function loadPlanet() {
   document.getElementById('planetName').textContent = p.name;
   document.getElementById('planetName').style.color = p.nameColor;
   document.getElementById('mainCard').style.borderColor = p.bg;
-  document.getElementById('factText').textContent = p.fact;
+  const fact = p.facts[Math.floor(Math.random() * p.facts.length)];
+  document.getElementById('factText').textContent = fact;
   document.getElementById('questionText').textContent = p.question;
   document.getElementById('resultMsg').textContent = '';
   document.getElementById('nextBtn').style.display = 'none';
@@ -526,12 +698,12 @@ function loadPlanet() {
     const btn = document.createElement('button');
     btn.className = 'ans-btn';
     btn.textContent = a;
-    btn.onclick = () => checkAnswer(i);
+    btn.onclick = () => { speak(a); checkAnswer(i); };
     answersDiv.appendChild(btn);
   });
 
   buildTrack();
-  speak(p.fact);
+  speak(fact);
 }
 
 function checkAnswer(idx) {
@@ -575,6 +747,10 @@ document.getElementById('nextBtn').onclick = () => {
 
 document.getElementById('speakBtn').onclick = () => {
   speak(document.getElementById('factText').textContent);
+};
+
+document.getElementById('speakQBtn').onclick = () => {
+  speak(document.getElementById('questionText').textContent);
 };
 
 function speak(text) {
