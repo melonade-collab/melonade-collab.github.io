@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚂 Solar Express</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  background: #020b18;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  overflow-x: hidden;
+  padding-bottom: 40px;
+}
+
+.stars {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle var(--d) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.15; }
+}
+
+.header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 22px 20px 0;
+}
+.header h1 {
+  font-size: clamp(1.9rem, 7vw, 3rem);
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #ffd700;
+  text-shadow: 3px 3px 0 #6a4a00;
+}
+.header .subtitle {
+  font-size: 0.8rem;
+  color: #aac4e8;
+  letter-spacing: 3px;
+  margin-top: 4px;
+}
+
+/* Planet progress track */
+.planet-track {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding: 18px 16px 0;
+  width: 100%;
+  max-width: 520px;
+  overflow-x: auto;
+}
+.track-line {
+  height: 3px;
+  flex: 1;
+  min-width: 6px;
+  background: #1a3a6a;
+  transition: background 0.4s;
+}
+.track-line.done { background: #ffd700; }
+.planet-stop {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  border: 3px solid #1a3a6a;
+  background: #020b18;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.planet-stop.done    { border-color: #ffd700; }
+.planet-stop.current { border-color: #ffffff; box-shadow: 0 0 14px rgba(255,255,255,0.45); }
+
+.score-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  padding: 10px 0 0;
+  font-size: 0.82rem;
+  letter-spacing: 1px;
+  color: #aac4e8;
+}
+.score-val {
+  color: #ffd700;
+  font-weight: 900;
+  font-size: 1.1rem;
+}
+
+/* Animated train */
+.train-area {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 520px;
+  height: 40px;
+  overflow: hidden;
+  margin: 6px 0 0;
+}
+.train-anim {
+  position: absolute;
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  animation: train-roll 9s linear infinite;
+}
+@keyframes train-roll {
+  0%   { left: -130px; }
+  100% { left: 100%; }
+}
+
+/* Main card */
+.card {
+  position: relative;
+  z-index: 1;
+  background: rgba(8, 18, 38, 0.93);
+  border: 3px solid #1a3a6a;
+  border-radius: 24px;
+  padding: 26px 22px 22px;
+  margin: 10px 16px 0;
+  max-width: 500px;
+  width: calc(100% - 32px);
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.65);
+  transition: border-color 0.4s;
+}
+
+.planet-display {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.2rem;
+  box-shadow: 0 0 30px var(--glow, #ffffff44);
+  transition: background 0.4s, box-shadow 0.4s;
+}
+
+.planet-name {
+  font-size: clamp(1.8rem, 6vw, 2.4rem);
+  font-weight: 900;
+  letter-spacing: 3px;
+  transition: color 0.4s;
+}
+.station-label {
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  color: #7aa4cc;
+  margin-bottom: 18px;
+  margin-top: 2px;
+}
+
+.fact-box {
+  background: rgba(255,255,255,0.055);
+  border-radius: 14px;
+  padding: 14px 42px 14px 16px;
+  margin-bottom: 18px;
+  text-align: left;
+  position: relative;
+}
+.fact-label {
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  color: #ffd700;
+  font-weight: 900;
+  margin-bottom: 7px;
+}
+.fact-text {
+  font-size: clamp(0.88rem, 3vw, 1rem);
+  color: #ddeeff;
+  line-height: 1.5;
+}
+.speak-btn {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.35rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.speak-btn:hover { opacity: 1; transform: scale(1.2); }
+
+.quiz-label {
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  color: #ffd700;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+.question {
+  font-size: clamp(0.92rem, 3.2vw, 1.05rem);
+  color: #ddeeff;
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+.answers {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.ans-btn {
+  background: rgba(255,255,255,0.06);
+  border: 2px solid #1a3a6a;
+  border-radius: 12px;
+  padding: 11px 15px;
+  color: #ddeeff;
+  font-size: clamp(0.87rem, 2.8vw, 0.98rem);
+  font-family: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, transform 0.1s;
+}
+.ans-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.13);
+  border-color: #4a8ad4;
+  transform: translateX(4px);
+}
+.ans-btn.correct { background: rgba(50,200,100,0.22); border-color: #32c864; color: #b0ffc8; }
+.ans-btn.wrong   { background: rgba(200,50,50,0.22);  border-color: #c83232; color: #ffb0b0; }
+.ans-btn:disabled { cursor: default; }
+
+.result-msg {
+  margin-top: 13px;
+  font-size: 1rem;
+  font-weight: 700;
+  min-height: 22px;
+}
+
+.next-btn {
+  margin-top: 16px;
+  background: #ffd700;
+  color: #3a2800;
+  border: none;
+  border-radius: 14px;
+  padding: 13px 28px;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 6px 22px rgba(255,215,0,0.28);
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: none;
+}
+.next-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255,215,0,0.4); }
+
+/* Finish screen */
+.finish {
+  display: none;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 36px 24px 24px;
+  max-width: 480px;
+  width: calc(100% - 32px);
+}
+.finish h2 {
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  font-weight: 900;
+  color: #ffd700;
+  letter-spacing: 3px;
+  margin-bottom: 8px;
+}
+.finish .big-score {
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin: 14px 0;
+}
+.finish p {
+  font-size: 1rem;
+  color: #aac4e8;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.play-again {
+  background: #ffd700;
+  color: #3a2800;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 34px;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  cursor: pointer;
+  box-shadow: 0 6px 22px rgba(255,215,0,0.28);
+  transition: transform 0.15s;
+}
+.play-again:hover { transform: scale(1.05); }
+
+.back-link {
+  position: relative;
+  z-index: 1;
+  display: block;
+  text-align: center;
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  font-size: 0.78rem;
+  letter-spacing: 2px;
+  padding: 20px 16px 0;
+}
+.back-link:hover { color: rgba(255,255,255,0.55); }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="header">
+  <h1>🚂 SOLAR EXPRESS</h1>
+  <div class="subtitle">A SPACE TRAIN JOURNEY</div>
+</div>
+
+<div class="planet-track" id="planetTrack"></div>
+
+<div class="score-row">
+  <div>STATION <span class="score-val" id="stationNum">1</span> OF 8</div>
+  <div>⭐ STARS: <span class="score-val" id="starCount">0</span></div>
+</div>
+
+<div class="train-area">
+  <div class="train-anim">🚂🚃🚃</div>
+</div>
+
+<div class="card" id="mainCard">
+  <div class="planet-display" id="planetDisplay"></div>
+  <div class="planet-name" id="planetName"></div>
+  <div class="station-label">STATION STOP</div>
+
+  <div class="fact-box">
+    <div class="fact-label">🔭 DID YOU KNOW?</div>
+    <div class="fact-text" id="factText"></div>
+    <button class="speak-btn" id="speakBtn" title="Hear the fact">🔊</button>
+  </div>
+
+  <div class="quiz-label">🚂 CONDUCTOR'S QUESTION</div>
+  <div class="question" id="questionText"></div>
+  <div class="answers" id="answersDiv"></div>
+  <div class="result-msg" id="resultMsg"></div>
+  <button class="next-btn" id="nextBtn">NEXT STOP →</button>
+</div>
+
+<div class="finish" id="finishScreen">
+  <div style="font-size:4.5rem;margin-bottom:6px;">🚂✨</div>
+  <h2>JOURNEY COMPLETE!</h2>
+  <div class="big-score" id="finalStars">⭐ 0 / 8</div>
+  <p id="finishMsg"></p>
+  <button class="play-again" onclick="startGame()">🔄 RIDE AGAIN</button>
+</div>
+
+<a class="back-link" href="index.html">← BACK TO TRAIN WORLD</a>
+
+<script>
+const PLANETS = [
+  {
+    name: 'MERCURY',
+    emoji: '⚫',
+    bg: '#444444',
+    glow: 'rgba(150,150,150,0.5)',
+    nameColor: '#aaaaaa',
+    fact: "Mercury is the smallest planet and closest to the Sun. Even though it's so close, it's not the hottest — it has no atmosphere to trap heat!",
+    question: 'How many moons does Mercury have?',
+    answers: ['0 moons', '1 moon', '2 moons'],
+    correct: 0,
+  },
+  {
+    name: 'VENUS',
+    emoji: '🟡',
+    bg: '#c8a030',
+    glow: 'rgba(230,190,80,0.55)',
+    nameColor: '#f0d060',
+    fact: "Venus is the hottest planet in the solar system — even hotter than Mercury! Its thick clouds trap heat like a blanket. It also spins backwards, so the Sun rises in the west.",
+    question: 'Why is Venus the hottest planet?',
+    answers: ['It is closest to the Sun', 'Its thick clouds trap heat', 'It is the biggest planet'],
+    correct: 1,
+  },
+  {
+    name: 'EARTH',
+    emoji: '🌍',
+    bg: '#1a5090',
+    glow: 'rgba(70,140,230,0.55)',
+    nameColor: '#5ab0f0',
+    fact: "Earth is the only planet we know of with life on it! About 71% of its surface is covered in water — that is why it looks so blue from space.",
+    question: 'How much of Earth is covered in water?',
+    answers: ['About 30%', 'About 50%', 'About 70%'],
+    correct: 2,
+  },
+  {
+    name: 'MARS',
+    emoji: '🔴',
+    bg: '#a03010',
+    glow: 'rgba(200,70,20,0.55)',
+    nameColor: '#e06040',
+    fact: "Mars is called the Red Planet because of its rusty red soil. It has the tallest volcano in the whole solar system — Olympus Mons is three times taller than Mount Everest!",
+    question: 'How many moons does Mars have?',
+    answers: ['0 moons', '2 moons', '8 moons'],
+    correct: 1,
+  },
+  {
+    name: 'JUPITER',
+    emoji: '🟠',
+    bg: '#9a6020',
+    glow: 'rgba(190,130,50,0.55)',
+    nameColor: '#d09050',
+    fact: "Jupiter is the biggest planet — you could fit over 1,300 Earths inside it! The Great Red Spot is a giant storm that has been swirling for hundreds of years.",
+    question: 'How many Earths could fit inside Jupiter?',
+    answers: ['About 13', 'About 130', 'Over 1,300'],
+    correct: 2,
+  },
+  {
+    name: 'SATURN',
+    emoji: '🪐',
+    bg: '#907840',
+    glow: 'rgba(200,180,100,0.55)',
+    nameColor: '#d4bc70',
+    fact: "Saturn has beautiful rings made of billions of pieces of ice and rock. Saturn is so light that if you had a giant bathtub, it would actually float in the water!",
+    question: "What are Saturn's rings made of?",
+    answers: ['Gold and stardust', 'Ice and rock', 'Clouds of gas'],
+    correct: 1,
+  },
+  {
+    name: 'URANUS',
+    emoji: '🔵',
+    bg: '#208888',
+    glow: 'rgba(60,200,200,0.55)',
+    nameColor: '#60d8d8',
+    fact: "Uranus spins on its side like a rolling ball! Scientists think something very large crashed into it long ago and tipped it over. It looks like it is rolling around the Sun.",
+    question: 'What is unusual about how Uranus spins?',
+    answers: ['It spins very fast', 'It spins on its side', 'It spins backwards'],
+    correct: 1,
+  },
+  {
+    name: 'NEPTUNE',
+    emoji: '💙',
+    bg: '#1830a0',
+    glow: 'rgba(60,80,220,0.55)',
+    nameColor: '#6080f0',
+    fact: "Neptune has the strongest winds in the solar system — gusts can reach over 2,000 km/h! It is so far from the Sun that one year on Neptune is 165 Earth years long.",
+    question: 'How long is one year on Neptune?',
+    answers: ['12 Earth years', '84 Earth years', '165 Earth years'],
+    correct: 2,
+  },
+];
+
+let currentPlanet = 0;
+let stars = 0;
+let answered = false;
+
+function initStars() {
+  const c = document.getElementById('stars');
+  c.innerHTML = '';
+  for (let i = 0; i < 130; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.4 + 0.4;
+    s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*3+1).toFixed(1)}s;--delay:${(Math.random()*3).toFixed(1)}s`;
+    c.appendChild(s);
+  }
+}
+
+function buildTrack() {
+  const track = document.getElementById('planetTrack');
+  track.innerHTML = '';
+  PLANETS.forEach((p, i) => {
+    if (i > 0) {
+      const line = document.createElement('div');
+      line.className = 'track-line' + (i <= currentPlanet ? ' done' : '');
+      track.appendChild(line);
+    }
+    const stop = document.createElement('div');
+    stop.className = 'planet-stop' + (i < currentPlanet ? ' done' : i === currentPlanet ? ' current' : '');
+    stop.textContent = p.emoji;
+    stop.title = p.name;
+    track.appendChild(stop);
+  });
+}
+
+function loadPlanet() {
+  answered = false;
+  const p = PLANETS[currentPlanet];
+
+  const display = document.getElementById('planetDisplay');
+  display.textContent = p.emoji;
+  display.style.background = p.bg;
+  display.style.setProperty('--glow', p.glow);
+  display.style.boxShadow = `0 0 32px ${p.glow}`;
+
+  document.getElementById('planetName').textContent = p.name;
+  document.getElementById('planetName').style.color = p.nameColor;
+  document.getElementById('mainCard').style.borderColor = p.bg;
+  document.getElementById('factText').textContent = p.fact;
+  document.getElementById('questionText').textContent = p.question;
+  document.getElementById('resultMsg').textContent = '';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('stationNum').textContent = currentPlanet + 1;
+  document.getElementById('starCount').textContent = stars;
+
+  const answersDiv = document.getElementById('answersDiv');
+  answersDiv.innerHTML = '';
+  p.answers.forEach((a, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.textContent = a;
+    btn.onclick = () => checkAnswer(i);
+    answersDiv.appendChild(btn);
+  });
+
+  buildTrack();
+  speak(p.fact);
+}
+
+function checkAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const p = PLANETS[currentPlanet];
+  const btns = document.querySelectorAll('.ans-btn');
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === p.correct) b.classList.add('correct');
+    else if (i === idx) b.classList.add('wrong');
+  });
+
+  const isCorrect = idx === p.correct;
+  const msg = document.getElementById('resultMsg');
+  if (isCorrect) {
+    stars++;
+    document.getElementById('starCount').textContent = stars;
+    msg.style.color = '#32c864';
+    msg.textContent = '⭐ Correct! All aboard!';
+    speak('Correct! All aboard!');
+  } else {
+    msg.style.color = '#ff7070';
+    msg.textContent = '❌ Not quite — check the green answer!';
+    speak('Not quite — look for the green answer!');
+  }
+
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.style.display = 'block';
+  nextBtn.textContent = currentPlanet < PLANETS.length - 1 ? 'NEXT STOP →' : '🏁 END OF THE LINE!';
+}
+
+document.getElementById('nextBtn').onclick = () => {
+  currentPlanet++;
+  if (currentPlanet >= PLANETS.length) {
+    showFinish();
+  } else {
+    loadPlanet();
+  }
+};
+
+document.getElementById('speakBtn').onclick = () => {
+  speak(document.getElementById('factText').textContent);
+};
+
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.93;
+  window.speechSynthesis.speak(u);
+}
+
+function showFinish() {
+  document.getElementById('mainCard').style.display = 'none';
+  document.getElementById('finishScreen').style.display = 'block';
+  document.getElementById('finalStars').textContent = `⭐ ${stars} / 8`;
+  buildTrack();
+
+  let msg;
+  if (stars === 8) msg = "Perfect score! You are a Solar Express superstar! Every planet, every question — nailed it! 🌟";
+  else if (stars >= 6) msg = "Amazing ride! You know your planets really well. Hop back on to get that perfect score!";
+  else if (stars >= 4) msg = "Good journey! The solar system is a big place — ride again and explore more!";
+  else msg = "Every conductor starts somewhere! Ride again and you will learn all 8 planets! 🚂";
+
+  document.getElementById('finishMsg').textContent = msg;
+  speak(msg);
+}
+
+function startGame() {
+  currentPlanet = 0;
+  stars = 0;
+  answered = false;
+  document.getElementById('mainCard').style.display = 'block';
+  document.getElementById('finishScreen').style.display = 'none';
+  loadPlanet();
+}
+
+initStars();
+startGame();
+</script>
+</body>
+</html>
