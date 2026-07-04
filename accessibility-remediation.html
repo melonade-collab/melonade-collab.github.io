@@ -264,32 +264,8 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <div class="contrib-grid">
-        <div>
-          <p class="contrib-item-label">Text contrast</p>
-          <p class="contrib-item-text">Dozens of foreground/background combinations failing the 4.5:1 AA ratio — most caused by grey text on white, or low-opacity text on dark backgrounds used for aesthetic reasons.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">ARIA labels</p>
-          <p class="contrib-item-text">Icon-only buttons throughout the site with no accessible name — invisible to screen reader users who relied on them for navigation.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Heading structure</p>
-          <p class="contrib-item-text">Pages with skipped levels, missing H1s, or heading tags used purely for visual styling rather than document structure.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Focus indicators</p>
-          <p class="contrib-item-text">Interactive elements where <code>outline: none</code> had been applied to match brand aesthetics — effectively removing keyboard navigation visibility for users who couldn't use a mouse.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Alt text</p>
-          <p class="contrib-item-text">Content images with empty or auto-generated filename alt text, and decorative images missing the <code>alt=""</code> attribute entirely.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Form labels</p>
-          <p class="contrib-item-text">Inputs relying on placeholder text as labels — invisible to screen readers, gone when typing starts, and broken when autofill was used.</p>
-        </div>
-      </div>
+      <p>Text contrast was the most pervasive issue — dozens of foreground/background combinations failed the 4.5:1 AA ratio, most caused by grey text on white or low-opacity text on dark backgrounds applied for aesthetic effect. Heading structure problems were also widespread: pages with skipped levels, missing H1s, or heading tags used purely for visual styling rather than document hierarchy.</p>
+      <p style="margin-top:8px;">Interactive elements had two recurring failures: icon-only buttons with no ARIA label, making them invisible to screen reader users; and focus indicators removed with <code>outline: none</code> to match brand aesthetics, which eliminated keyboard navigation visibility entirely. Alt text coverage was inconsistent — content images carried empty or auto-generated filename alt text, while decorative images were missing <code>alt=""</code> altogether. Form inputs throughout the site used placeholder text as a substitute for labels, which disappear when typing starts, are invisible to screen readers, and break when autofill is used.</p>
     </div>
   </div>
 
