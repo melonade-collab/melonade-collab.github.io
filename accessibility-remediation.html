@@ -264,28 +264,36 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <ul>
-        <li><strong>Text contrast:</strong> Dozens of foreground/background combinations failing the 4.5:1 AA ratio — most caused by grey text on white, or low-opacity text on dark backgrounds used for aesthetic reasons</li>
-        <li><strong>ARIA labels:</strong> Icon-only buttons throughout the site with no accessible name — invisible to screen reader users who relied on them for navigation</li>
-        <li><strong>Heading structure:</strong> Pages with skipped levels, missing H1s, or heading tags used purely for visual styling rather than document structure</li>
-        <li><strong>Focus indicators:</strong> Interactive elements where <code>outline: none</code> had been applied to match brand aesthetics — effectively removing keyboard navigation visibility for users who couldn't use a mouse</li>
-        <li><strong>Alt text:</strong> Content images with empty or auto-generated filename alt text, and decorative images missing the <code>alt=""</code> attribute entirely</li>
-        <li><strong>Form labels:</strong> Inputs relying on placeholder text as labels — invisible to screen readers, gone when typing starts, and broken when autofill was used</li>
-      </ul>
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Text contrast</p>
+          <p class="contrib-item-text">Dozens of foreground/background combinations failing the 4.5:1 AA ratio — most caused by grey text on white, or low-opacity text on dark backgrounds used for aesthetic reasons.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">ARIA labels</p>
+          <p class="contrib-item-text">Icon-only buttons throughout the site with no accessible name — invisible to screen reader users who relied on them for navigation.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Heading structure</p>
+          <p class="contrib-item-text">Pages with skipped levels, missing H1s, or heading tags used purely for visual styling rather than document structure.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Focus indicators</p>
+          <p class="contrib-item-text">Interactive elements where <code>outline: none</code> had been applied to match brand aesthetics — effectively removing keyboard navigation visibility for users who couldn't use a mouse.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Alt text</p>
+          <p class="contrib-item-text">Content images with empty or auto-generated filename alt text, and decorative images missing the <code>alt=""</code> attribute entirely.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Form labels</p>
+          <p class="contrib-item-text">Inputs relying on placeholder text as labels — invisible to screen readers, gone when typing starts, and broken when autofill was used.</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="acc-card acc-outcome mb16" style="border-color:#BAE6FD;">
-    <div class="acc-header" onclick="toggleAcc(this)" style="background:#F0F9FF;">
-      <p class="card-label">Outcome</p>
-      <span class="acc-chevron" style="color:#0EA5E9;">▼</span>
-    </div>
-    <div class="acc-body" style="background:#F0F9FF;">
-      <p style="color:#0C4A6E;">Brought the site to WCAG 2.1 AA compliance across all primary user flows over a 6-month remediation cycle. Subsequent quarterly audits found zero critical violations. Product and design teams began self-reporting accessibility checks as part of sprint reviews. The training program was absorbed into onboarding for new design and product hires — making prevention, not just remediation, part of the culture.</p>
-    </div>
-  </div>
-
-  <div class="acc-card mb40">
+  <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
       <p class="card-label">Tradeoffs</p>
       <span class="acc-chevron">▼</span>
@@ -309,6 +317,16 @@
           <p class="contrib-item-text">Shifting to distributed prevention through training is a culture change, not a technical constraint. Training fades without reinforcement, and no automated CI/CD check existed to catch accessibility regressions at merge time.</p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="acc-card acc-outcome mb40" style="border-color:#BAE6FD;">
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#F0F9FF;">
+      <p class="card-label">Outcome</p>
+      <span class="acc-chevron" style="color:#0EA5E9;">▼</span>
+    </div>
+    <div class="acc-body" style="background:#F0F9FF;">
+      <p style="color:#0C4A6E;">Brought the site to WCAG 2.1 AA compliance across all primary user flows over a 6-month remediation cycle. Subsequent quarterly audits found zero critical violations. Product and design teams began self-reporting accessibility checks as part of sprint reviews. The training program was absorbed into onboarding for new design and product hires — making prevention, not just remediation, part of the culture.</p>
     </div>
   </div>
 
