@@ -26,45 +26,45 @@ h1 {
 }
 .subtitle { font-size:0.78rem; color:#9B8AB8; font-weight:700; margin-bottom:14px; text-align:center; }
 
-.scene-row { display:flex; gap:10px; justify-content:center; margin-bottom:16px; }
+.scene-row { display:flex; gap:10px; justify-content:center; margin-bottom:14px; }
 .scene-btn {
   padding:10px 22px; border-radius:22px; cursor:pointer;
   font-family:'Nunito',sans-serif; font-weight:900; font-size:0.92rem;
   background:white; color:#D63384; border:3px solid #FFB3D9;
-  box-shadow:0 3px 10px rgba(200,100,200,0.14); transition:transform 0.12s;
+  transition:transform 0.12s;
 }
 .scene-btn:hover { transform:scale(1.05); }
 .scene-btn.active { background:#FFE0F0; border-color:#D63384; }
 
+/* Palette = colour key only (not interactive) */
 .palette-wrap {
-  display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
-  margin-bottom:12px; max-width:420px;
+  display:flex; flex-wrap:wrap; gap:7px; justify-content:center;
+  margin-bottom:10px; max-width:420px;
 }
 .swatch {
-  width:62px; height:62px; border-radius:14px; cursor:pointer;
+  min-width:58px; height:52px; border-radius:12px;
   border:3px solid transparent;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:2px; font-family:'Nunito',sans-serif; font-weight:900;
+  gap:1px; font-family:'Nunito',sans-serif; font-weight:900;
   box-shadow:0 3px 10px rgba(0,0,0,0.18);
-  transition:transform 0.12s, opacity 0.3s; position:relative;
+  transition:opacity 0.3s; position:relative; padding:0 6px;
 }
-.swatch:hover { transform:scale(1.1); }
-.swatch.done { opacity:0.38; cursor:default; }
-.swatch .sw-num { font-size:1.25rem; line-height:1; }
-.swatch .sw-lbl { font-size:0.55rem; line-height:1; }
+.swatch.done { opacity:0.35; }
+.swatch .sw-num  { font-size:1.1rem; line-height:1; }
+.swatch .sw-lbl  { font-size:0.55rem; line-height:1; white-space:nowrap; }
 .swatch .sw-check {
-  position:absolute; top:-7px; right:-7px; width:20px; height:20px;
+  position:absolute; top:-7px; right:-7px; width:18px; height:18px;
   background:#34c759; border-radius:50%; display:none;
-  align-items:center; justify-content:center; font-size:0.75rem;
+  align-items:center; justify-content:center; font-size:0.65rem;
   color:white; border:2px solid white;
 }
 .swatch.done .sw-check { display:flex; }
 
 .progress-bar-wrap {
   width:100%; max-width:420px; background:rgba(255,255,255,0.5);
-  border-radius:20px; height:10px; margin-bottom:6px; overflow:hidden;
+  border-radius:20px; height:10px; margin-bottom:5px; overflow:hidden;
 }
-.progress-bar { height:100%; background:linear-gradient(90deg,#A78BFA,#D63384); border-radius:20px; transition:width 0.5s; }
+.progress-bar { height:100%; background:linear-gradient(90deg,#A78BFA,#D63384); border-radius:20px; transition:width 0.4s; }
 .progress-label { font-size:0.72rem; color:#9B8AB8; font-weight:700; text-align:center; margin-bottom:12px; }
 
 .canvas-wrap {
@@ -80,7 +80,7 @@ h1 {
   font-family:'Nunito',sans-serif; font-weight:900; font-size:0.88rem; transition:transform 0.1s;
 }
 .ctrl-btn:active { transform:scale(0.94); }
-.btn-reset { background:white; color:#6A28CC; border:2px solid #C8B5FF; }
+.btn-reset  { background:white; color:#6A28CC; border:2px solid #C8B5FF; }
 .btn-reveal { background:linear-gradient(135deg,#A78BFA,#7C3AED); color:white; }
 
 .win-overlay {
@@ -90,13 +90,13 @@ h1 {
 }
 .win-overlay.show { display:flex; }
 .win-card {
-  background:white; border-radius:28px; padding:36px 32px;
+  background:white; border-radius:28px; padding:32px 28px;
   text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.3);
   max-width:300px; width:90%;
 }
 .win-card h2 { font-size:2rem; color:#D63384; font-weight:900; margin:10px 0 6px; }
-.win-card p { color:#8B7BA8; font-weight:700; margin-bottom:20px; font-size:0.9rem; }
-.win-btns { display:flex; flex-direction:column; gap:10px; }
+.win-card p  { color:#8B7BA8; font-weight:700; margin-bottom:20px; font-size:0.9rem; }
+.win-btns    { display:flex; flex-direction:column; gap:10px; }
 .big-btn { padding:12px 24px; border-radius:16px; border:none; font-family:'Nunito',sans-serif; font-weight:900; font-size:0.95rem; cursor:pointer; background:linear-gradient(135deg,#A78BFA,#7C3AED); color:white; }
 .alt-btn { padding:12px 24px; border-radius:16px; border:2px solid #FFB3D9; font-family:'Nunito',sans-serif; font-weight:900; font-size:0.95rem; cursor:pointer; background:white; color:#D63384; }
 </style>
@@ -105,24 +105,24 @@ h1 {
 
 <a class="back" href="index.html">← Anime World</a>
 <h1>🎨 Colour by Number</h1>
-<p class="subtitle">Tap a number in the picture — or tap a colour swatch — to fill it!</p>
+<p class="subtitle">Find each number in the picture and tap it to colour it in!</p>
 
 <div class="scene-row">
   <button class="scene-btn active" data-scene="panda" onclick="loadScene('panda',this)">🐼 Panda</button>
-  <button class="scene-btn" data-scene="neko" onclick="loadScene('neko',this)">🐱 Neko Cat</button>
+  <button class="scene-btn"        data-scene="neko"  onclick="loadScene('neko',this)">🐱 Neko Cat</button>
 </div>
 
 <div class="palette-wrap" id="palette"></div>
 
 <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
-<div class="progress-label" id="progressLabel">Tap a number to start!</div>
+<div class="progress-label" id="progressLabel">Tap a numbered square to colour it in!</div>
 
 <div class="canvas-wrap">
   <svg id="artwork" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 384"></svg>
 </div>
 
 <div class="controls">
-  <button class="ctrl-btn btn-reset" onclick="resetScene()">🔄 Reset</button>
+  <button class="ctrl-btn btn-reset"  onclick="resetScene()">🔄 Reset</button>
   <button class="ctrl-btn btn-reveal" onclick="revealAll()">✨ Reveal All</button>
 </div>
 
@@ -134,13 +134,7 @@ h1 {
 const CELL = 24;
 
 /* ── PANDA (16×16) ──────────────────────────────────────────
-   Colors:
-   1 = Panda White  #F0F0F0
-   2 = Panda Black  #1A1A1A
-   3 = Blush Pink   #FFB0CC
-   4 = Eye White    #FFFFFF
-   5 = Eye Blue     #88B4FF
-*/
+   1=#F0F0F0  2=#1A1A1A  3=#FFB0CC  4=#FFFFFF  5=#88B4FF   */
 const PANDA_GRID = [
   [0,0,2,2,0,0,0,0,0,0,0,0,2,2,0,0],
   [0,2,2,3,2,0,0,0,0,0,0,2,2,3,2,0],
@@ -161,13 +155,7 @@ const PANDA_GRID = [
 ];
 
 /* ── NEKO CAT (16×16) ───────────────────────────────────────
-   Colors:
-   1 = Peach Face   #FFD6BA
-   2 = Purple       #9333EA
-   3 = Blush Pink   #FFB0CC
-   4 = Eye White    #FFFFFF
-   5 = Iris Violet  #7B68EE
-*/
+   1=#FFD6BA  2=#9333EA  3=#FFB0CC  4=#FFFFFF  5=#7B68EE   */
 const NEKO_GRID = [
   [0,0,2,2,0,0,0,0,0,0,0,0,2,2,0,0],
   [0,2,2,3,2,0,0,0,0,0,0,2,2,3,2,0],
@@ -189,98 +177,159 @@ const NEKO_GRID = [
 
 const SCENES = {
   panda: {
-    name:'Kawaii Panda', emoji:'🐼',
-    grid: PANDA_GRID,
-    bg: '#FFF0F8',
-    winMsg: 'You coloured the kawaii panda!',
-    colors: [
+    name:'Kawaii Panda', emoji:'🐼', grid:PANDA_GRID, bg:'#FFF0F8',
+    winMsg:'You coloured the kawaii panda!',
+    colors:[
       null,
-      { hex:'#F0F0F0', name:'Panda White', dark:true,  border:'#ccc' },
-      { hex:'#1A1A1A', name:'Panda Black', dark:false },
-      { hex:'#FFB0CC', name:'Blush Pink',  dark:true  },
-      { hex:'#FFFFFF', name:'Eye White',   dark:true,  border:'#ddd' },
-      { hex:'#88B4FF', name:'Eye Blue',    dark:true  },
+      {hex:'#F0F0F0',name:'Panda White',dark:true, border:'#ccc'},
+      {hex:'#1A1A1A',name:'Panda Black',dark:false},
+      {hex:'#FFB0CC',name:'Blush Pink', dark:true},
+      {hex:'#FFFFFF', name:'Eye White',  dark:true, border:'#ddd'},
+      {hex:'#88B4FF',name:'Eye Blue',   dark:true},
     ],
   },
   neko: {
-    name:'Neko Cat', emoji:'🐱',
-    grid: NEKO_GRID,
-    bg: '#F8F0FF',
-    winMsg: 'You coloured the neko cat!',
-    colors: [
+    name:'Neko Cat', emoji:'🐱', grid:NEKO_GRID, bg:'#F8F0FF',
+    winMsg:'You coloured the neko cat!',
+    colors:[
       null,
-      { hex:'#FFD6BA', name:'Peach',       dark:true  },
-      { hex:'#9333EA', name:'Purple',      dark:false },
-      { hex:'#FFB0CC', name:'Blush Pink',  dark:true  },
-      { hex:'#FFFFFF', name:'Eye White',   dark:true,  border:'#ddd' },
-      { hex:'#7B68EE', name:'Iris Violet', dark:false },
+      {hex:'#FFD6BA',name:'Peach',      dark:true},
+      {hex:'#9333EA',name:'Purple',     dark:false},
+      {hex:'#FFB0CC',name:'Blush Pink', dark:true},
+      {hex:'#FFFFFF', name:'Eye White',  dark:true, border:'#ddd'},
+      {hex:'#7B68EE',name:'Iris Violet',dark:false},
     ],
   },
 };
 
+/* ── STATE ── */
 let currentScene = 'panda';
-let filledColors  = new Set();
+let filledRegions = new Set();
+let sceneData = null;   // {regions, cellToRegion, cellRects, cellTexts}
 const svg = document.getElementById('artwork');
 
-function uniqueColorNums(grid) {
-  const s = new Set();
-  grid.forEach(row => row.forEach(v => { if (v > 0) s.add(v); }));
-  return [...s].sort((a,b) => a-b);
+/* ── FLOOD FILL: build connected regions ── */
+function buildRegions(grid) {
+  const R = grid.length, C = grid[0].length;
+  const visited       = Array.from({length:R}, () => new Array(C).fill(false));
+  const cellToRegion  = Array.from({length:R}, () => new Array(C).fill(-1));
+  const regions = [];
+
+  for (let r = 0; r < R; r++) {
+    for (let c = 0; c < C; c++) {
+      const n = grid[r][c];
+      if (n === 0 || visited[r][c]) continue;
+      const cells = [];
+      const q = [{r,c}];
+      visited[r][c] = true;
+      while (q.length) {
+        const {r:cr,c:cc} = q.shift();
+        cells.push({r:cr,c:cc});
+        for (const [dr,dc] of [[-1,0],[1,0],[0,-1],[0,1]]) {
+          const nr=cr+dr, nc=cc+dc;
+          if (nr>=0&&nr<R&&nc>=0&&nc<C&&!visited[nr][nc]&&grid[nr][nc]===n) {
+            visited[nr][nc]=true; q.push({r:nr,c:nc});
+          }
+        }
+      }
+      const id = regions.length;
+      regions.push({color:n, cells});
+      cells.forEach(({r,c}) => cellToRegion[r][c] = id);
+    }
+  }
+  return {regions, cellToRegion};
 }
 
 /* ── RENDER ── */
 function renderGrid() {
   const scene = SCENES[currentScene];
+  const grid  = scene.grid;
+  const R = grid.length, C = grid[0].length;
+
+  // build regions first
+  const {regions, cellToRegion} = buildRegions(grid);
+  const cellRects = Array.from({length:R}, () => new Array(C).fill(null));
+  const cellTexts = Array.from({length:R}, () => new Array(C).fill(null));
+  sceneData = {regions, cellToRegion, cellRects, cellTexts};
+
   svg.innerHTML = '';
 
-  // background fill
+  // background
   const bg = document.createElementNS('http://www.w3.org/2000/svg','rect');
-  bg.setAttribute('width', 16*CELL); bg.setAttribute('height', 16*CELL);
-  bg.setAttribute('fill', scene.bg); bg.setAttribute('rx','4');
-  svg.appendChild(bg);
+  bg.setAttribute('width',C*CELL); bg.setAttribute('height',R*CELL);
+  bg.setAttribute('fill',scene.bg); svg.appendChild(bg);
 
-  // first pass: rects
-  scene.grid.forEach((row, r) => {
-    row.forEach((n, c) => {
-      if (n === 0) return;
+  // rects (first pass)
+  for (let r = 0; r < R; r++) {
+    for (let c = 0; c < C; c++) {
+      const n = grid[r][c];
+      if (n === 0) continue;
       const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
       rect.setAttribute('x', c*CELL); rect.setAttribute('y', r*CELL);
       rect.setAttribute('width', CELL); rect.setAttribute('height', CELL);
-      rect.setAttribute('fill', '#ffffff');
-      rect.setAttribute('stroke', '#ddd'); rect.setAttribute('stroke-width','0.5');
-      rect.dataset.color = n;
+      rect.setAttribute('fill','#ffffff');
+      rect.setAttribute('stroke','#ddd'); rect.setAttribute('stroke-width','0.5');
       rect.style.cursor = 'pointer';
-      rect.addEventListener('click', () => fillColor(n));
+      const rid = cellToRegion[r][c];
+      rect.addEventListener('click', () => fillRegion(rid));
+      cellRects[r][c] = rect;
       svg.appendChild(rect);
-    });
-  });
+    }
+  }
 
-  // second pass: number labels (on top of rects)
-  scene.grid.forEach((row, r) => {
-    row.forEach((n, c) => {
-      if (n === 0) return;
-      const tx = document.createElementNS('http://www.w3.org/2000/svg','text');
-      tx.setAttribute('x', c*CELL + CELL/2);
-      tx.setAttribute('y', r*CELL + CELL/2 + 4);
-      tx.setAttribute('text-anchor','middle');
-      tx.setAttribute('font-size','9');
-      tx.setAttribute('font-weight','900');
-      tx.setAttribute('font-family','Nunito,sans-serif');
-      tx.setAttribute('fill','#bbb');
-      tx.setAttribute('pointer-events','none');
-      tx.dataset.label = n;
-      tx.textContent = n;
-      svg.appendChild(tx);
-    });
-  });
+  // labels (second pass — on top)
+  for (let r = 0; r < R; r++) {
+    for (let c = 0; c < C; c++) {
+      const n = grid[r][c];
+      if (n === 0) continue;
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x', c*CELL + CELL/2);
+      t.setAttribute('y', r*CELL + CELL/2 + 4);
+      t.setAttribute('text-anchor','middle');
+      t.setAttribute('font-size','9');
+      t.setAttribute('font-weight','900');
+      t.setAttribute('font-family','Nunito,sans-serif');
+      t.setAttribute('fill','#bbb');
+      t.setAttribute('pointer-events','none');
+      t.textContent = n;
+      cellTexts[r][c] = t;
+      svg.appendChild(t);
+    }
+  }
 }
 
+/* ── FILL A CONNECTED REGION ── */
+function fillRegion(regionId) {
+  if (filledRegions.has(regionId)) return;
+  const region   = sceneData.regions[regionId];
+  const colorDef = SCENES[currentScene].colors[region.color];
+
+  region.cells.forEach(({r,c}) => {
+    const rect = sceneData.cellRects[r][c];
+    if (rect) {
+      rect.setAttribute('fill', colorDef.hex);
+      rect.setAttribute('stroke','rgba(0,0,0,0.06)');
+      rect.style.cursor = 'default';
+    }
+    const t = sceneData.cellTexts[r][c];
+    if (t) t.setAttribute('visibility','hidden');
+  });
+
+  filledRegions.add(regionId);
+  refreshSwatches();
+  updateProgress();
+}
+
+/* ── PALETTE ── */
 function renderPalette() {
   const scene = SCENES[currentScene];
-  const wrap = document.getElementById('palette');
+  const wrap  = document.getElementById('palette');
   wrap.innerHTML = '';
-  uniqueColorNums(scene.grid).forEach(n => {
-    const c = scene.colors[n];
+  // collect unique color nums
+  const seen = new Set();
+  scene.grid.forEach(row => row.forEach(n => { if (n>0) seen.add(n); }));
+  [...seen].sort((a,b)=>a-b).forEach(n => {
+    const c  = scene.colors[n];
     const sw = document.createElement('div');
     sw.className = 'swatch';
     sw.dataset.swcolor = n;
@@ -289,61 +338,44 @@ function renderPalette() {
     sw.style.color = c.dark ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.92)';
     sw.title = `${n} — ${c.name}`;
     sw.innerHTML = `<span class="sw-num">${n}</span><span class="sw-lbl">${c.name}</span><span class="sw-check">✓</span>`;
-    sw.addEventListener('click', () => fillColor(n));
     wrap.appendChild(sw);
   });
 }
 
-/* ── FILL ── */
-function fillColor(n) {
-  if (filledColors.has(n)) return;
+function refreshSwatches() {
+  if (!sceneData) return;
   const scene = SCENES[currentScene];
-  const c = scene.colors[n];
-  if (!c) return;
-
-  // fill all rects of this color
-  svg.querySelectorAll(`rect[data-color="${n}"]`).forEach(rect => {
-    rect.setAttribute('fill', c.hex);
-    rect.setAttribute('stroke', 'rgba(0,0,0,0.06)');
-    rect.style.cursor = 'default';
-    rect.replaceWith(rect.cloneNode(true)); // remove click listener
+  const seen  = new Set();
+  scene.grid.forEach(row => row.forEach(n => { if (n>0) seen.add(n); }));
+  seen.forEach(n => {
+    const allDone = sceneData.regions.every((reg, id) =>
+      reg.color !== n || filledRegions.has(id));
+    const sw = document.querySelector(`.swatch[data-swcolor="${n}"]`);
+    if (sw) sw.classList.toggle('done', allDone);
   });
-
-  // hide number labels for this color
-  svg.querySelectorAll(`text[data-label="${n}"]`).forEach(t => {
-    t.setAttribute('visibility','hidden');
-  });
-
-  filledColors.add(n);
-
-  // mark swatch done
-  const sw = document.querySelector(`.swatch[data-swcolor="${n}"]`);
-  if (sw) sw.classList.add('done');
-
-  updateProgress();
 }
 
+/* ── PROGRESS ── */
 function updateProgress() {
-  const scene = SCENES[currentScene];
-  const total = uniqueColorNums(scene.grid).length;
-  const done  = filledColors.size;
+  const total = sceneData ? sceneData.regions.length : 1;
+  const done  = filledRegions.size;
   const pct   = Math.round(done / total * 100);
   document.getElementById('progressBar').style.width = pct + '%';
   document.getElementById('progressLabel').textContent =
-    done === 0 ? 'Tap a number to start!' :
+    done === 0 ? 'Tap a numbered square to colour it in!' :
     done === total ? 'All done! 🎉' :
-    `${done} of ${total} colours filled`;
-  if (done === total) setTimeout(showWin, 700);
+    `${done} of ${total} regions filled`;
+  if (done > 0 && done === total) setTimeout(showWin, 700);
 }
 
+/* ── WIN ── */
 function showWin() {
-  const scene = SCENES[currentScene];
+  const scene   = SCENES[currentScene];
   const otherId = currentScene === 'panda' ? 'neko' : 'panda';
   const other   = SCENES[otherId];
   document.getElementById('winCard').innerHTML =
     `<div style="font-size:3.2rem">${scene.emoji}✨</div>` +
-    `<h2>Beautiful!</h2>` +
-    `<p>${scene.winMsg}</p>` +
+    `<h2>Beautiful!</h2><p>${scene.winMsg}</p>` +
     `<div class="win-btns">` +
     `<button class="big-btn" onclick="document.getElementById('winOverlay').classList.remove('show');resetScene()">🔄 Colour Again</button>` +
     `<button class="alt-btn" onclick="switchScene('${otherId}')">🎨 Try ${other.name}</button>` +
@@ -353,13 +385,13 @@ function showWin() {
 
 function switchScene(id) {
   document.getElementById('winOverlay').classList.remove('show');
-  const btn = document.querySelector(`.scene-btn[data-scene="${id}"]`);
-  loadScene(id, btn);
+  loadScene(id, document.querySelector(`.scene-btn[data-scene="${id}"]`));
 }
 
+/* ── LOAD / RESET ── */
 function loadScene(id, btn) {
-  currentScene = id;
-  filledColors  = new Set();
+  currentScene  = id;
+  filledRegions = new Set();
   document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   renderGrid();
@@ -368,14 +400,15 @@ function loadScene(id, btn) {
 }
 
 function resetScene() {
-  filledColors = new Set();
+  filledRegions = new Set();
   renderGrid();
   renderPalette();
   updateProgress();
 }
 
 function revealAll() {
-  uniqueColorNums(SCENES[currentScene].grid).forEach(n => fillColor(n));
+  if (!sceneData) return;
+  sceneData.regions.forEach((_, id) => fillRegion(id));
 }
 
 // boot
