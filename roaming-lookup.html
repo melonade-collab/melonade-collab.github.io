@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roaming & Long Distance Lookup — Re-imagining</title>
+  <title>International Travel Rates — Re-imagining</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f5; color: #1a1a1a; min-height: 100vh; }
@@ -98,54 +98,57 @@
     .msg-avatar.user { background: #E2E8F0; color: #475569; }
 
     .msg-bubble { max-width: 72%; padding: 9px 12px; border-radius: 12px; font-size: 0.75rem; line-height: 1.55; }
-    .msg-bubble.bot { background: #fff; border: 1px solid #E2E8F0; color: #1a1a1a; border-bottom-left-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-    .msg-bubble.user { background: #0C4A6E; color: #fff; border-bottom-right-radius: 3px; }
+    .msg-bubble.bot { background: #1a1a1a; color: #fff; border-bottom-left-radius: 3px; }
+    .msg-bubble.user { background: #E0F2FE; color: #0C4A6E; border-bottom-right-radius: 3px; font-weight: 600; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+    .msg-row { animation: fadeUp 0.2s ease forwards; }
 
     .msg-time { font-size: 0.52rem; color: #aaa; margin-top: 4px; }
     .msg-row.user .msg-time { text-align: right; }
 
     /* Rate card */
-    .rate-card { margin-top: 8px; background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 10px; overflow: hidden; }
-    .rate-card-header { background: #0369A1; color: #fff; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; }
+    .rate-card { margin-top: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; overflow: hidden; }
+    .rate-card-header { background: rgba(255,255,255,0.12); color: #fff; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .rate-card-country { font-size: 0.74rem; font-weight: 700; }
     .rate-card-flag { font-size: 1rem; }
     .rate-card-body { padding: 10px 12px; }
-    .rate-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #E0F2FE; }
+    .rate-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
     .rate-row:last-child { border-bottom: none; }
-    .rate-type { display: flex; align-items: center; gap: 6px; font-size: 0.68rem; color: #374151; }
+    .rate-type { display: flex; align-items: center; gap: 6px; font-size: 0.68rem; color: rgba(255,255,255,0.7); }
     .rate-type-icon { font-size: 0.75rem; }
-    .rate-amount { font-size: 0.72rem; font-weight: 700; color: #0C4A6E; }
-    .rate-note { font-size: 0.56rem; color: #64748B; }
+    .rate-amount { font-size: 0.72rem; font-weight: 700; color: #6EC4FF; }
+    .rate-note { font-size: 0.56rem; color: rgba(255,255,255,0.45); }
 
     /* Package card */
     .pkg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 8px; }
-    .pkg-card { background: #fff; border: 1px solid #E2E8F0; border-radius: 8px; padding: 9px 10px; cursor: pointer; transition: all 0.15s; }
-    .pkg-card:hover { border-color: #0EA5E9; box-shadow: 0 2px 8px rgba(14,165,233,0.12); }
-    .pkg-card.selected { border-color: #0369A1; background: #F0F9FF; }
-    .pkg-name { font-size: 0.68rem; font-weight: 700; color: #111; margin-bottom: 2px; }
-    .pkg-price { font-size: 0.9rem; font-weight: 900; color: #0C4A6E; }
-    .pkg-price-unit { font-size: 0.52rem; color: #888; display: block; }
-    .pkg-detail { font-size: 0.58rem; color: #555; margin-top: 4px; line-height: 1.4; }
-    .pkg-badge { font-size: 0.48rem; font-weight: 700; background: #DCFCE7; color: #166534; border-radius: 4px; padding: 1px 4px; display: inline-block; margin-top: 3px; }
+    .pkg-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 9px 10px; cursor: pointer; transition: all 0.15s; }
+    .pkg-card:hover { border-color: rgba(110,196,255,0.5); background: rgba(255,255,255,0.13); }
+    .pkg-card.selected { border-color: #6EC4FF; background: rgba(110,196,255,0.12); }
+    .pkg-name { font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 2px; }
+    .pkg-price { font-size: 0.9rem; font-weight: 900; color: #6EC4FF; }
+    .pkg-price-unit { font-size: 0.52rem; color: rgba(255,255,255,0.45); display: block; }
+    .pkg-detail { font-size: 0.58rem; color: rgba(255,255,255,0.55); margin-top: 4px; line-height: 1.4; }
+    .pkg-badge { font-size: 0.48rem; font-weight: 700; background: rgba(74,222,128,0.2); color: #4ADE80; border-radius: 4px; padding: 1px 4px; display: inline-block; margin-top: 3px; }
 
     /* Confirm button */
     .confirm-btn { display: block; width: 100%; margin-top: 10px; padding: 9px; background: #0369A1; color: #fff; border: none; border-radius: 7px; font-size: 0.72rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: background 0.15s; }
     .confirm-btn:hover { background: #0C4A6E; }
-    .confirm-btn:disabled { background: #94A3B8; cursor: default; }
+    .confirm-btn:disabled { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.4); cursor: default; }
 
     /* Quick reply chips */
     .quick-replies { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-    .qr-chip { padding: 5px 11px; border-radius: 16px; border: 1.5px solid #0369A1; background: #fff; font-size: 0.66rem; font-weight: 600; color: #0369A1; cursor: pointer; font-family: inherit; transition: all 0.15s; }
-    .qr-chip:hover { background: #0369A1; color: #fff; }
+    .qr-chip { padding: 5px 11px; border-radius: 16px; border: 1.5px solid rgba(110,196,255,0.5); background: rgba(255,255,255,0.08); font-size: 0.66rem; font-weight: 600; color: #6EC4FF; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .qr-chip:hover { background: rgba(110,196,255,0.15); border-color: #6EC4FF; }
 
     /* Country search */
     .country-search-wrap { margin-top: 8px; }
-    .country-search { width: 100%; padding: 8px 11px; border: 1.5px solid #CBD5E1; border-radius: 7px; font-size: 0.72rem; font-family: inherit; outline: none; transition: border-color 0.15s; }
-    .country-search:focus { border-color: #0369A1; }
-    .country-results { margin-top: 5px; max-height: 130px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 7px; background: #fff; }
-    .country-result { padding: 7px 11px; font-size: 0.7rem; color: #333; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.1s; border-bottom: 1px solid #F1F5F9; }
+    .country-search { width: 100%; padding: 8px 11px; border: 1.5px solid rgba(255,255,255,0.2); border-radius: 7px; font-size: 0.72rem; font-family: inherit; outline: none; transition: border-color 0.15s; background: rgba(255,255,255,0.08); color: #fff; }
+    .country-search::placeholder { color: rgba(255,255,255,0.35); }
+    .country-search:focus { border-color: #6EC4FF; }
+    .country-results { margin-top: 5px; max-height: 130px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.12); border-radius: 7px; background: #1a1a1a; }
+    .country-result { padding: 7px 11px; font-size: 0.7rem; color: rgba(255,255,255,0.8); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.1s; border-bottom: 1px solid rgba(255,255,255,0.06); }
     .country-result:last-child { border-bottom: none; }
-    .country-result:hover { background: #F0F9FF; }
+    .country-result:hover { background: rgba(110,196,255,0.1); }
     .country-result-flag { font-size: 1rem; flex-shrink: 0; }
 
     /* Input area */
@@ -157,7 +160,7 @@
 
     /* Typing indicator */
     .typing-dots { display: flex; gap: 3px; align-items: center; padding: 4px 0; }
-    .typing-dot { width: 5px; height: 5px; border-radius: 50%; background: #94A3B8; animation: typingBounce 1.2s infinite; }
+    .typing-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.4); animation: typingBounce 1.2s infinite; }
     .typing-dot:nth-child(2) { animation-delay: 0.2s; }
     .typing-dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes typingBounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
@@ -176,8 +179,8 @@
 <div class="cs-header">
   <div class="cs-header-inner">
     <p class="eyebrow">Re-imagining</p>
-    <h1>Roaming & Long Distance Lookup</h1>
-    <p class="cs-intro">A conversational lookup tool embedded in the carrier's virtual assistant — letting customers check roaming and long distance rates by country, then add a package without leaving the chat.</p>
+    <h1>International Travel Rates</h1>
+    <p class="cs-intro">A conversational lookup tool embedded in the carrier's virtual assistant — letting customers check international rates by country, compare pay-per-use versus packages, and add a travel add-on without leaving the chat.</p>
   </div>
 </div>
 
@@ -189,8 +192,8 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>Customers planning international travel frequently called in to ask what their phone would cost to use abroad — and the self-serve experience wasn't helping. The rate information existed on the website, but it was buried inside a multi-level country lookup table that was difficult to navigate on mobile and gave no guidance on what the charges would actually mean in practice. Customers couldn't easily compare paying per-use rates against buying a roaming package.</p>
-      <p style="margin-top:8px;">The result was high call volume around travel season, long handle times while agents looked up the same rate tables, and frustrated customers who missed the option to pre-purchase a package before their trip started — often ending up with unexpected bill shock on return.</p>
+      <p>Customers planning international travel wanted a quick, confident answer to a simple question: what will my phone cost abroad, and is there a better option? The decision — pay-per-use versus a travel package — had real financial stakes, and customers needed enough context to make it without having to call in.</p>
+      <p style="margin-top:8px;">The opportunity was to surface that information conversationally, within the virtual assistant, at the moment customers were already reaching out — and to make adding a package a natural next step rather than a separate journey.</p>
     </div>
   </div>
 
@@ -201,11 +204,11 @@
     </div>
     <div class="acc-body">
       <ul>
-        <li>The virtual assistant couldn't complete account transactions at launch — the add-on purchase had to hand off to a pre-populated checkout flow, not happen inline</li>
-        <li>Rate tables were maintained by a pricing team in a separate system; the chatbot needed to consume a read-only API, not own the data</li>
-        <li>Long distance rates and roaming rates were stored in different systems with different structures — the chatbot needed to normalize them into a single response</li>
-        <li>Customers could be asking about roaming while already abroad — the response needed to surface pay-per-use rates prominently, not just package options</li>
-        <li>The assistant needed to handle ambiguous country names, common abbreviations, and occasional misspellings (e.g. "Mehico", "UK", "UAE")</li>
+        <li>Package purchase couldn't be completed inline at launch — the add-on had to hand off to a checkout flow with the customer's selection pre-loaded</li>
+        <li>Roaming rates and long distance rates had different structures and needed to be normalized into a single, coherent response</li>
+        <li>Customers asking about rates mid-trip needed pay-per-use information surfaced prominently, not just package upsell — the response logic had to account for both scenarios</li>
+        <li>Package availability varied depending on where the customer was in their billing cycle — the tool had to reflect what was actually purchasable at the time of the query</li>
+        <li>Input handling needed to cover country name variants, abbreviations, and common misspellings without requiring exact matches</li>
       </ul>
     </div>
   </div>
@@ -231,7 +234,7 @@
         </div>
         <div>
           <p class="contrib-item-label">Cross-Team Alignment</p>
-          <p class="contrib-item-text">Coordinated with the pricing team to define the rate API contract, the bot platform team on intent coverage, and the billing team to confirm which packages could be added mid-cycle versus only at renewal. Managed the scope negotiation when inline purchase was descoped pre-launch.</p>
+          <p class="contrib-item-text">Coordinated across product, billing, and platform teams to define the rate display logic, package availability rules, and checkout handoff behaviour. Managed scope negotiation when the inline purchase capability shifted to a handoff model for launch.</p>
         </div>
       </div>
     </div>
@@ -243,7 +246,7 @@
       <span class="acc-chevron" style="color:#0369A1;">▼</span>
     </div>
     <div class="acc-body" style="background:#E0F2FE;">
-      <p style="color:#0C4A6E;">The roaming intent became one of the top-five handled intents in the virtual assistant within 90 days of launch. Call deflection for roaming rate inquiries improved measurably in the first quarter. Package attachment rate during the chatbot flow exceeded the rate seen from the static rate table page, attributed to contextual comparison and the proximity of the purchase option in the same conversation.</p>
+      <p style="color:#0C4A6E;">International rate inquiries became one of the highest-volume handled intents in the virtual assistant within the first quarter. Call deflection for rate lookups improved measurably. Package attachment rate through the chatbot flow was strong — attributed to contextual comparison and the proximity of the purchase option within the same conversation.</p>
     </div>
   </div>
 

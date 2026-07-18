@@ -7,21 +7,41 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #fdf6ec;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 24px 24px 40px;
-      gap: 20px;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #fdf6ec; color: #1a1a1a; min-height: 100vh; }
+
+    /* ── Page structure ── */
+    .cs-header { background: #78350F; padding: 56px 40px 44px; }
+    .cs-header-inner { max-width: 860px; margin: 0 auto; }
+    .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
+    .cs-h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 580px; }
+
+    .cs-body { max-width: 860px; margin: 0 auto; padding: 48px 40px 40px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #D97706; margin-bottom: 0; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
+    .acc-body li { margin-bottom: 6px; }
+    .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #D97706; margin-bottom: 4px; }
+    .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
+
+    .proto-section { background: #fdf6ec; padding: 0 40px 80px; }
+    .proto-inner { max-width: 860px; margin: 0 auto; }
+    .proto-wrap { background: #FEF3C7; border-radius: 16px; padding: 32px 20px 40px; display: flex; flex-direction: column; align-items: center; }
+    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #D97706; text-align: center; margin-bottom: 24px; }
 
     .phone {
       width: min(292px, calc(100vw - 48px));
-      height: min(624px, calc(100vh - 120px));
+      height: 624px;
       background: #fff;
       border-radius: 44px;
       box-shadow:
@@ -185,9 +205,11 @@
     .gear-menu a:first-child { border-top: none; }
 
     @media (max-width: 600px) {
-      body { padding: 0; }
-      .phone { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; }
-      .status-bar { display: none; }
+      .cs-header { padding: 40px 20px 36px; }
+      .cs-body { padding: 36px 20px 40px; }
+      .contrib-grid { grid-template-columns: 1fr; }
+      .proto-section { padding: 0 16px 60px; }
+      .phone { width: min(292px, calc(100vw - 32px)); height: 580px; }
       .view-data-btn { display: none; }
       .gear-mobile-wrap { display: flex; }
       .portfolio-back-link { display: none; }
@@ -195,6 +217,88 @@
   </style>
 </head>
 <body>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="eyebrow">Prototype · Agentic AI</p>
+    <h1 class="cs-h1">Intake &amp; Triage Agent</h1>
+    <p class="cs-intro">Structured forms make users categorize their own problem before they've gotten any help. This prototype replaces the form with freeform conversation — the agent detects intent, asks one targeted follow-up, and routes the case autonomously.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Standard intake forms put the categorization burden on the user — asking them to select a department, choose a topic type, and articulate their own problem before getting any help. Users who are frustrated or in a hurry pick the wrong category, skip required fields, or abandon the form entirely. The downstream effect is misrouted tickets, higher handle times as agents re-establish what the actual issue is, and duplicated cases from customers who resubmit because they never heard back.</p>
+      <p style="margin-top:8px;">The core assumption embedded in a structured form is that the user knows what kind of problem they have. Often they don't — they just know something is wrong.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Constraints</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>The flow had to handle freeform input across six distinct intent types without requiring the user to choose a category</li>
+        <li>Intent detection had to work in a single turn for common inputs — too many clarifying turns would recreate the friction of a structured form</li>
+        <li>Follow-up questions had to be targeted to the detected intent: billing cases asked for an amount or date, technical cases for a device — generic follow-ups added noise without improving the case record</li>
+        <li>Urgency signals (emergency, ASAP, critical, right now) needed to override standard priority assignment regardless of detected intent</li>
+        <li>The case record had to be immediately actionable downstream — intent, priority, routed team, and contact info all captured in a single intake pass</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Product Ownership</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Conversational Flow Design</p>
+          <p class="contrib-item-text">Designed the three-turn intake structure — describe the issue, answer one targeted follow-up, provide contact info. Follow-up question and input placeholder are dynamically set by detected intent, so billing cases are asked for an amount and technical cases are asked for a device.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Intent Detection & Classification</p>
+          <p class="contrib-item-text">Defined keyword sets for six intent types (complaint, billing, technical, shipping, feature request, compliment) and the urgency detection layer that operates independently of intent. Specified fallback behavior for low-confidence and general inputs.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Agent Action Sequence</p>
+          <p class="contrib-item-text">Designed the visible processing steps — reading, detecting, assessing, routing, creating case — with animated status indicators so the user can observe the agent's decision-making rather than seeing a result appear without context.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Case Record Design</p>
+          <p class="contrib-item-text">Defined the structured output: detected intent, priority level, urgency flag, routed team, case number, timestamp, and full user input retained for reference. Output is written to sessionStorage to power the separate data view.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-card mb40" style="border-color:#FED7AA;">
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#FEF3C7;">
+      <p class="card-label" style="color:#92400E;">Outcome</p>
+      <span class="acc-chevron" style="color:#92400E;">▼</span>
+    </div>
+    <div class="acc-body" style="background:#FEF3C7;">
+      <p style="color:#78350F;">The freeform intake approach captured intent accurately without requiring the user to self-categorize. Targeted follow-up questions — dynamically set by detected intent — extracted the specific detail most useful for each case type in a single additional turn. The agent reduced intake to three user turns, producing a case record ready for immediate team handoff with no manual re-reading or recategorization required.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="proto-section">
+  <div class="proto-inner">
+    <div class="proto-wrap">
+      <p class="proto-wrap-label">Interactive prototype — Try the agent</p>
+      <div style="display:flex;justify-content:center;">
 
 <div class="phone">
 
@@ -252,14 +356,29 @@
 
 </div>
 
-<a href="intake-data.html" class="view-data-btn">
-  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-  View collected data
-</a>
+      </div><!-- /phone-center -->
+      <div style="margin-top:20px;text-align:center;">
+        <a href="intake-data.html" class="view-data-btn">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          View collected data
+        </a>
+      </div>
+    </div><!-- /proto-wrap -->
+  </div><!-- /proto-inner -->
+</div><!-- /proto-section -->
 
 <a href="index.html" class="portfolio-back-link" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
 
 <script>
+function toggleAcc(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
+
+// Save scroll before going to data page; restore when coming back
+document.querySelectorAll('a[href="intake-data.html"]').forEach(a => {
+  a.addEventListener('click', () => { sessionStorage.setItem('intake_scroll', window.scrollY); });
+});
+const _agentScroll = sessionStorage.getItem('agent_scroll');
+if (_agentScroll) { window.scrollTo(0, parseInt(_agentScroll)); sessionStorage.removeItem('agent_scroll'); }
+
 /* ── State ── */
 let state = 'intake'; // intake → followup → email → done
 let detectedIntent = null;
@@ -389,7 +508,7 @@ function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function enableInput(ph = 'Type a message…') {
   const i = document.getElementById('inp'), b = document.getElementById('goBtn');
-  i.placeholder = ph; i.disabled = false; b.disabled = false; setTimeout(() => i.focus(), 50);
+  i.placeholder = ph; i.disabled = false; b.disabled = false; setTimeout(() => i.focus({ preventScroll: true }), 50);
 }
 function disableInput() {
   const i = document.getElementById('inp'), b = document.getElementById('goBtn');

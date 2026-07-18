@@ -251,8 +251,10 @@
       font-weight: 700;
     }
 
-    .data-view { margin-top: 28px; text-align: left; }
+    .data-view { margin-top: 20px; text-align: left; }
     .data-view-label { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.9px; text-transform: uppercase; color: #7986cb; margin-bottom: 12px; }
+    .data-toggle-btn { margin-top: 20px; background: none; border: 1.5px solid #C7D2FE; border-radius: 8px; color: #3730A3; font-size: 0.78rem; font-weight: 700; padding: 8px 18px; cursor: pointer; font-family: inherit; display: none; }
+    .data-toggle-btn:hover { background: #EEF2FF; }
     .data-field-row { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid #e8eaf6; font-size: 0.82rem; }
     .data-field-row:last-child { border-bottom: none; }
     .data-field-key { color: #aaa; font-weight: 600; width: 100px; flex-shrink: 0; }
@@ -379,6 +381,10 @@
     }
     .addr-clear:hover { color: #e74c3c; background: none; }
 
+    .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #3949ab; margin-bottom: 4px; }
+    .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
+
     @media (max-width: 520px) {
       .cs-header { padding: 36px 24px 32px; }
       .cs-body { padding: 32px 20px 32px; }
@@ -398,6 +404,7 @@
         font-size: 1rem;
         padding: 14px;
       }
+      .contrib-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -415,55 +422,65 @@
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">The Problem</p>
+      <p class="card-label">Problem</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>Support teams spend real time on triage — not resolution. Every submission has to be read, categorized, assessed for urgency, and routed before any actual help begins. At volume, this gets inconsistent.</p>
+      <p>Support teams running feedback queues spend significant time on triage before any resolution begins. Every submission requires someone to read it, categorize it, assess urgency, and route it to the right team — a repetitive task that's slow at low volume and inconsistent at scale. Submissions arriving outside business hours sit unrouted until the next day, and when volume spikes, priority judgment degrades.</p>
+      <p style="margin-top:8px;">The result is misrouted tickets, duplicated cases where the same customer submits multiple times without knowing their first submission is being handled, and no visibility into the quality of routing decisions over time.</p>
     </div>
   </div>
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">Tech</p>
+      <p class="card-label">Constraints</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
       <ul>
-        <li>Client-side NLP for sentiment detection and extractive summarization</li>
-        <li>Address geocoding via a live lookup API (Nominatim / OpenStreetMap)</li>
-        <li>Multi-step agent pipeline with animated state transitions</li>
-        <li>Structured JSON output for downstream system handoff</li>
+        <li>Sentiment analysis had to run client-side — no server calls on live form input events</li>
+        <li>The routing model needed to handle highly variable natural language input, where the same billing issue could be described a dozen different ways</li>
+        <li>Open case detection required matching on partial identity signals (email or phone number only), with no authenticated session</li>
+        <li>Routing logic had to handle ambiguous submissions without defaulting everything to a general-inquiry queue</li>
+        <li>Priority escalation needed compound signal logic — low rating combined with negative sentiment required a higher escalation tier than either signal alone</li>
       </ul>
     </div>
   </div>
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">Features</p>
+      <p class="card-label">Product Ownership</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <ul>
-        <li><span class="feat-label">Live sentiment detection</span> — reads tone as you type (positive / negative / neutral), with negation handling so "not great" doesn't register as positive</li>
-        <li><span class="feat-label">Extractive summarization</span> — distills long messages to the key sentence so you can confirm what the agent will act on before submitting</li>
-        <li><span class="feat-label">Open case detection</span> — looks up the email or phone and surfaces any existing open cases, with the option to link the submission rather than create a duplicate record</li>
-        <li><span class="feat-label">Address autocomplete</span> — enriches submissions with location data via a live geocoding API for regional routing or geo-clustering</li>
-        <li><span class="feat-label">NPS-style rating</span> — 0–10 scale with contextual labels per score that adjust based on the selected value</li>
-        <li><span class="feat-label">Agent routing pipeline</span> — animated multi-step processing: reads feedback → detects category and intent → assesses priority → routes to the right team</li>
-        <li><span class="feat-label">Case creation</span> — generates a structured case record with priority level, category, assigned queue, and SLA</li>
-        <li><span class="feat-label">Data transparency</span> — shows the full JSON payload so you can see exactly what gets sent downstream</li>
-      </ul>
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Intent Classification</p>
+          <p class="contrib-item-text">Designed the keyword-based intent model covering six categories — complaint, billing, technical, shipping, feature request, and positive feedback — plus a general fallback. Defined keyword sets for each category and tiebreaker logic for submissions that match multiple.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Routing Logic</p>
+          <p class="contrib-item-text">Defined how routing decisions combined intent, sentiment, and NPS-style rating. Specified priority escalation logic where low ratings and negative sentiment together triggered a higher-priority path than either alone, and where urgency keywords could override standard priority.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Agent Pipeline Design</p>
+          <p class="contrib-item-text">Designed the multi-step animated processing sequence — reading, detecting, assessing, routing — with visual state transitions per step so users see the agent working rather than a result appearing without context.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Data Transparency</p>
+          <p class="contrib-item-text">Defined the structured JSON output format for downstream handoff and the data view showing exactly what was collected and what the agent decided, making routing decisions auditable and integration-ready.</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="acc-card mb40">
-    <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">Why This</p>
-      <span class="acc-chevron">▼</span>
+  <div class="acc-card mb40" style="border-color:#C7D2FE;">
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#EEF2FF;">
+      <p class="card-label" style="color:#3730A3;">Outcome</p>
+      <span class="acc-chevron" style="color:#3730A3;">▼</span>
     </div>
-    <div class="acc-body">
-      <p>Every feedback form creates a triage problem — someone has to read each submission, work out what it's about, judge the urgency, and route it before anything useful happens. This prototype puts that cognitive work on the agent, and runs it client-side before anything reaches a queue. The browser is doing the reading, the categorizing, and the routing decision.</p>
+    <div class="acc-body" style="background:#EEF2FF;">
+      <p style="color:#312E81;">Agent-driven intake eliminated manual touches between submission and queue assignment. Priority escalation logic built on compound signals — sentiment combined with NPS rating — produced a more accurate urgency signal than keyword matching alone. The structured JSON output demonstrated how the same intake layer could feed multiple downstream systems without requiring additional manual handling at the ingestion point.</p>
     </div>
   </div>
 
@@ -580,6 +597,7 @@
       <p class="subtitle">Your message has been received.</p>
       <div class="routing-card" id="routingCard" style="display:none;"></div>
       <p style="font-size: 0.78rem; color: #bbb; margin-top: 6px;">(Demo purposes only)</p>
+      <button id="dataToggleBtn" class="data-toggle-btn" onclick="toggleFeedbackData()">View collected data ▼</button>
       <div class="data-view" id="dataView" style="display:none;">
         <div class="data-view-label">What was collected</div>
         <div id="dataTable"></div>
@@ -595,6 +613,14 @@
     function toggleAcc(hdr) {
       hdr.classList.toggle('open');
       hdr.nextElementSibling.classList.toggle('open');
+    }
+
+    function toggleFeedbackData() {
+      const dv = document.getElementById('dataView');
+      const btn = document.getElementById('dataToggleBtn');
+      const open = dv.style.display === 'block';
+      dv.style.display = open ? 'none' : 'block';
+      btn.textContent = open ? 'View collected data ▼' : 'Hide data ▲';
     }
 
     // Sentiment analysis
@@ -1042,7 +1068,7 @@
         linkedToExistingCase: linkedCase,
       };
       document.getElementById('dataJson').textContent = JSON.stringify(payload, null, 2);
-      document.getElementById('dataView').style.display = 'block';
+      document.getElementById('dataToggleBtn').style.display = 'inline-block';
     }
 
     function classifyFeedback(message, rating, sentiment) {

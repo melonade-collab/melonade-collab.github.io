@@ -202,6 +202,28 @@
 
     <div class="projects">
 
+      <a href="roadmap.html" class="project-card">
+        <div class="project-icon" style="background:#DCFCE7;">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+            <rect x="6" y="10" width="16" height="44" rx="4" fill="#BBF7D0"/>
+            <rect x="6" y="10" width="16" height="14" rx="4" fill="#16a34a"/>
+            <rect x="24" y="10" width="16" height="44" rx="4" fill="#FDE68A"/>
+            <rect x="24" y="10" width="16" height="22" rx="4" fill="#F59E0B"/>
+            <rect x="42" y="10" width="16" height="44" rx="4" fill="#CBD5E1"/>
+            <rect x="42" y="10" width="16" height="32" rx="4" fill="#94A3B8"/>
+            <rect x="8" y="14" width="12" height="2" rx="1" fill="white" opacity="0.9"/>
+            <rect x="26" y="14" width="12" height="2" rx="1" fill="white" opacity="0.9"/>
+            <rect x="44" y="14" width="12" height="2" rx="1" fill="white" opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="project-info">
+          <p class="project-tag" style="color:#16a34a;">Interaction design</p>
+          <p class="project-name">Drag-to-Prioritize Roadmap</p>
+          <p class="project-desc">Static slides go stale the moment the meeting ends. Explores a living Now/Next/Later board where priority is communicated by dragging — no deck updates required.</p>
+        </div>
+        <span class="project-arrow">→</span>
+      </a>
+
       <a href="plants.html" class="project-card">
         <div class="project-icon" style="background:#e8f5e9;overflow:hidden;padding:0;">
           <img src="https://images.unsplash.com/photo-1617173944883-6ffbd35d584d?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG1vbnN0ZXJhJTIwbGVhZnxlbnwwfHwwfHx8MA%3D%3D" alt="Monstera leaf" style="width:100%;height:100%;object-fit:cover;display:block;">
@@ -446,24 +468,30 @@
           <span class="project-arrow">→</span>
         </a>
 
-        <a href="shipping-lookup.html" class="project-card">
-          <div class="project-icon" style="background: #EBF2F8;">
+<a href="roaming-lookup.html" class="project-card">
+          <div class="project-icon" style="background: #E0F2FE;">
             <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-              <rect x="6" y="8" width="38" height="28" rx="7" fill="#1E3D5C"/>
-              <circle cx="18" cy="22" r="3" fill="#fff" opacity="0.6"/>
-              <circle cx="25" cy="22" r="3" fill="#fff"/>
-              <circle cx="32" cy="22" r="3" fill="#fff" opacity="0.6"/>
-              <path d="M14 36 L10 48 L22 38" fill="#1E3D5C"/>
-              <rect x="36" y="34" width="22" height="22" rx="4" fill="#2C5F8A" opacity="0.18"/>
-              <polygon points="47,38 58,32 58,48 47,54" fill="#1E3D5C" opacity="0.5"/>
-              <polygon points="47,38 36,32 36,48 47,54" fill="#2C5F8A" opacity="0.7"/>
-              <polygon points="36,32 47,26 58,32 47,38" fill="#4A7FA8"/>
+              <!-- Globe fill -->
+              <circle cx="32" cy="32" r="20" fill="#E0F2FE"/>
+              <!-- Globe outline -->
+              <circle cx="32" cy="32" r="20" fill="none" stroke="#0C4A6E" stroke-width="2.5"/>
+              <!-- Latitude lines -->
+              <ellipse cx="32" cy="32" rx="10" ry="20" fill="none" stroke="#0C4A6E" stroke-width="1.5" opacity="0.4"/>
+              <line x1="12" y1="32" x2="52" y2="32" stroke="#0C4A6E" stroke-width="1.5" opacity="0.4"/>
+              <!-- Continent blobs (simple landmass shapes) -->
+              <ellipse cx="26" cy="28" rx="5" ry="4" fill="#34D399" opacity="0.7"/>
+              <ellipse cx="36" cy="26" rx="4" ry="3" fill="#34D399" opacity="0.6"/>
+              <ellipse cx="30" cy="36" rx="3" ry="2.5" fill="#F59E0B" opacity="0.65"/>
+              <!-- Signal arcs top-right -->
+              <path d="M44 18 Q50 14 50 8" fill="none" stroke="#0EA5E9" stroke-width="2.2" stroke-linecap="round"/>
+              <path d="M47 21 Q56 15 56 6" fill="none" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+              <circle cx="44" cy="19" r="2.2" fill="#0EA5E9"/>
             </svg>
           </div>
           <div class="project-info">
-            <p class="project-tag" style="color: #1E3D5C;">Customer support</p>
-            <p class="project-name">Shipping Assistant</p>
-            <p class="project-desc">Customers had no self-serve way to get a shipping rate without calling in. I prototyped a conversational VA that looks up rates and delivery times by destination with no account or hold time required.</p>
+            <p class="project-tag" style="color: #0C4A6E;">Customer support</p>
+            <p class="project-name">International Travel Rates</p>
+            <p class="project-desc">Customers called in to ask what their phone would cost abroad. I designed a conversational lookup embedded in the virtual assistant — surfacing rates by country and offering package add-ons without leaving the chat.</p>
           </div>
           <span class="project-arrow">→</span>
         </a>
@@ -499,6 +527,14 @@
               <!-- Code brackets -->
               <polyline points="20,18 10,32 20,46" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
               <polyline points="44,18 54,32 44,46" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- Syntax-highlighted code lines -->
+              <rect x="22" y="22" width="7" height="2.5" rx="1.2" fill="#60A5FA"/>
+              <rect x="31" y="22" width="11" height="2.5" rx="1.2" fill="#A78BFA"/>
+              <rect x="22" y="28" width="4" height="2.5" rx="1.2" fill="#34D399"/>
+              <rect x="28" y="28" width="14" height="2.5" rx="1.2" fill="#F59E0B"/>
+              <rect x="22" y="34" width="9" height="2.5" rx="1.2" fill="#A78BFA"/>
+              <rect x="33" y="34" width="9" height="2.5" rx="1.2" fill="#60A5FA"/>
+              <rect x="22" y="40" width="6" height="2.5" rx="1.2" fill="#34D399"/>
               <!-- Lock unlocked -->
               <rect x="26" y="30" width="12" height="10" rx="2" fill="#7C3AED"/>
               <path d="M28 30 v-4 a4 4 0 0 1 8 0" fill="none" stroke="#7C3AED" stroke-width="2.2" stroke-linecap="round"/>
@@ -513,31 +549,6 @@
           <span class="project-arrow">→</span>
         </a>
 
-        <a href="beta-dashboard.html" class="project-card">
-          <div class="project-icon" style="background: #ECFDF5;">
-            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-              <!-- NPS trend line -->
-              <polyline points="8,44 18,38 28,32 38,28 48,18 58,14" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <!-- Dots on trend -->
-              <circle cx="8" cy="44" r="2.5" fill="#059669"/>
-              <circle cx="28" cy="32" r="2.5" fill="#059669"/>
-              <circle cx="48" cy="18" r="2.5" fill="#059669"/>
-              <circle cx="58" cy="14" r="3.5" fill="#059669"/>
-              <!-- Mini bars below -->
-              <rect x="8" y="50" width="6" height="6" rx="1.5" fill="#D1FAE5"/>
-              <rect x="17" y="47" width="6" height="9" rx="1.5" fill="#A7F3D0"/>
-              <rect x="26" y="44" width="6" height="12" rx="1.5" fill="#6EE7B7"/>
-              <rect x="35" y="40" width="6" height="16" rx="1.5" fill="#34D399"/>
-              <rect x="44" y="36" width="6" height="20" rx="1.5" fill="#059669"/>
-            </svg>
-          </div>
-          <div class="project-info">
-            <p class="project-tag" style="color: #059669;">Beta program</p>
-            <p class="project-name">Beta Program Analytics Dashboard</p>
-            <p class="project-desc">Beta feedback was siloed across scores, bugs, focus groups, and war room outcomes. I built cycle-over-cycle reporting covering NPS trends, top issues, verbatims, and soak time.</p>
-          </div>
-          <span class="project-arrow">→</span>
-        </a>
 
       </div>
     </div>
