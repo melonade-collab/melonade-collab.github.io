@@ -6,10 +6,10 @@
   <title>Intake Agent — Collected Data</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #fdf6ec; color: #1a1a1a; min-height: 100vh; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0fdfb; color: #1a1a1a; min-height: 100vh; }
 
     /* Page structure — mirrors intake-agent.html */
-    .cs-header { background: #78350F; padding: 56px 40px 44px; }
+    .cs-header { background: #134E4A; padding: 56px 40px 44px; }
     .cs-header-inner { max-width: 860px; margin: 0 auto; }
     .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
     .cs-h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
@@ -21,7 +21,7 @@
     .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
     .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
     .acc-header:hover { background: #fafafa; }
-    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #D97706; margin-bottom: 0; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0D9488; margin-bottom: 0; }
     .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
     .acc-header.open .acc-chevron { transform: rotate(180deg); }
     .acc-body { display: none; padding: 0 22px 20px; }
@@ -30,25 +30,25 @@
     .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
     .acc-body li { margin-bottom: 6px; }
     .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
-    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #D97706; margin-bottom: 4px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #0D9488; margin-bottom: 4px; }
     .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
 
-    .proto-section { background: #fdf6ec; padding: 0 40px 80px; }
+    .proto-section { background: #f0fdfb; padding: 0 40px 80px; }
     .proto-inner { max-width: 860px; margin: 0 auto; }
-    .proto-wrap { background: #FEF3C7; border-radius: 16px; padding: 32px 28px 40px; }
-    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #D97706; margin-bottom: 24px; }
+    .proto-wrap { background: #CCFBF1; border-radius: 16px; padding: 32px 28px 40px; }
+    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0D9488; margin-bottom: 24px; }
 
     /* Data content */
     .back-link {
       display: inline-flex; align-items: center; gap: 6px;
-      font-size: 0.8rem; font-weight: 600; color: #92400E; text-decoration: none;
+      font-size: 0.8rem; font-weight: 600; color: #0F766E; text-decoration: none;
       margin-bottom: 24px; transition: color 0.15s;
     }
-    .back-link:hover { color: #451a03; }
+    .back-link:hover { color: #042f2e; }
 
     .section-label {
       font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px;
-      text-transform: uppercase; color: #D97706; margin-bottom: 10px; margin-top: 24px;
+      text-transform: uppercase; color: #0D9488; margin-bottom: 10px; margin-top: 24px;
     }
 
     .data-card {
@@ -75,7 +75,7 @@
     .badge-urgent  { background: #FEE2E2; color: #DC2626; }
     .badge-normal  { background: #EFF6FF; color: #2563EB; }
     .badge-low     { background: #ECFDF5; color: #059669; }
-    .badge-intent  { background: #FEF3C7; color: #D97706; }
+    .badge-intent  { background: #CCFBF1; color: #0D9488; }
     .badge-bool-yes { background: #FEE2E2; color: #DC2626; }
     .badge-bool-no  { background: #F3F4F6; color: #6B7280; }
 
@@ -90,7 +90,7 @@
     .json-bool  { color: #FCA5A5; }
     .json-num   { color: #FCD34D; }
 
-    .empty-state { text-align: center; padding: 60px 20px; color: #92400E; opacity: 0.5; }
+    .empty-state { text-align: center; padding: 60px 20px; color: #0F766E; opacity: 0.5; }
     .empty-state p { font-size: 0.9rem; margin-top: 8px; }
 
     @media (max-width: 600px) {
@@ -126,54 +126,43 @@
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">Constraints</p>
+      <p class="card-label">Tech</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
       <ul>
-        <li>The flow had to handle freeform input across six distinct intent types without requiring the user to choose a category</li>
-        <li>Intent detection had to work in a single turn for common inputs — too many clarifying turns would recreate the friction of a structured form</li>
-        <li>Follow-up questions had to be targeted to the detected intent: billing cases asked for an amount or date, technical cases for a device — generic follow-ups added noise without improving the case record</li>
-        <li>Urgency signals (emergency, ASAP, critical, right now) needed to override standard priority assignment regardless of detected intent</li>
-        <li>The case record had to be immediately actionable downstream — intent, priority, routed team, and contact info all captured in a single intake pass</li>
+        <li>Keyword-based intent classifier covering six intent types: complaint, billing, technical, shipping, feature request, compliment</li>
+        <li>Urgency layer (keywords: emergency, ASAP, critical, right now) operates independently — overrides priority regardless of detected intent</li>
+        <li>Per-intent follow-up questions and input placeholders set dynamically at runtime so each intent gets a targeted clarifying ask</li>
+        <li>Animated five-step processing sequence (reading → detecting → assessing → routing → creating case) renders the agent's decision-making visible rather than instant</li>
+        <li>sessionStorage used to write the case record progressively and power the separate data view without a backend</li>
       </ul>
     </div>
   </div>
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">Product Ownership</p>
+      <p class="card-label">Features</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <div class="contrib-grid">
-        <div>
-          <p class="contrib-item-label">Conversational Flow Design</p>
-          <p class="contrib-item-text">Designed the three-turn intake structure — describe the issue, answer one targeted follow-up, provide contact info. Follow-up question and input placeholder are dynamically set by detected intent, so billing cases are asked for an amount and technical cases are asked for a device.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Intent Detection &amp; Classification</p>
-          <p class="contrib-item-text">Defined keyword sets for six intent types (complaint, billing, technical, shipping, feature request, compliment) and the urgency detection layer that operates independently of intent. Specified fallback behavior for low-confidence and general inputs.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Agent Action Sequence</p>
-          <p class="contrib-item-text">Designed the visible processing steps — reading, detecting, assessing, routing, creating case — with animated status indicators so the user can observe the agent's decision-making rather than seeing a result appear without context.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Case Record Design</p>
-          <p class="contrib-item-text">Defined the structured output: detected intent, priority level, urgency flag, routed team, case number, timestamp, and full user input retained for reference. Output is written to sessionStorage to power the separate data view.</p>
-        </div>
-      </div>
+      <ul>
+        <li>Freeform first message — user describes the issue in natural language, no category selection required</li>
+        <li>Intent detection in a single turn with fallback for low-confidence or general inputs</li>
+        <li>One targeted follow-up per intent: billing cases are asked for an amount or date, technical cases for a device, shipping for an order number</li>
+        <li>Urgency override: emergency signals raise priority to urgent regardless of intent type</li>
+        <li>Case record output: intent, priority, urgency flag, routed team, case number, timestamp, and full user input — immediately actionable for downstream handoff</li>
+      </ul>
     </div>
   </div>
 
-  <div class="acc-card mb40" style="border-color:#FED7AA;">
-    <div class="acc-header" onclick="toggleAcc(this)" style="background:#FEF3C7;">
-      <p class="card-label" style="color:#92400E;">Outcome</p>
-      <span class="acc-chevron" style="color:#92400E;">▼</span>
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Why This</p>
+      <span class="acc-chevron">▼</span>
     </div>
-    <div class="acc-body" style="background:#FEF3C7;">
-      <p style="color:#78350F;">The freeform intake approach captured intent accurately without requiring the user to self-categorize. Targeted follow-up questions — dynamically set by detected intent — extracted the specific detail most useful for each case type in a single additional turn. The agent reduced intake to three user turns, producing a case record ready for immediate team handoff with no manual re-reading or recategorization required.</p>
+    <div class="acc-body">
+      <p>Structured forms assume users know what kind of problem they have — often they don't, they just know something is wrong. Asking people to self-categorize before getting help creates the first failure point: the wrong category leads to misrouting, longer handle times, and duplicate cases from customers who never get a response. Freeform intake moves classification to the agent, where it belongs.</p>
     </div>
   </div>
 

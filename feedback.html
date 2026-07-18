@@ -433,54 +433,43 @@
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">Constraints</p>
+      <p class="card-label">Tech</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
       <ul>
-        <li>Sentiment analysis had to run client-side — no server calls on live form input events</li>
-        <li>The routing model needed to handle highly variable natural language input, where the same billing issue could be described a dozen different ways</li>
-        <li>Open case detection required matching on partial identity signals (email or phone number only), with no authenticated session</li>
-        <li>Routing logic had to handle ambiguous submissions without defaulting everything to a general-inquiry queue</li>
-        <li>Priority escalation needed compound signal logic — low rating combined with negative sentiment required a higher escalation tier than either signal alone</li>
+        <li>Keyword-based intent classifier covering six categories: complaint, billing, technical, shipping, feature request, positive feedback — plus a general fallback with tiebreaker logic for multi-match submissions</li>
+        <li>Client-side sentiment analysis running on the message field in real time — no server calls</li>
+        <li>Compound priority escalation: low rating + negative sentiment triggers a higher priority tier than either signal alone; urgency keywords override standard priority independently</li>
+        <li>Open case detection using email or phone as partial identity signals, without an authenticated session</li>
+        <li>Animated four-step processing sequence (reading → detecting → assessing → routing) with per-step visual state transitions</li>
       </ul>
     </div>
   </div>
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">Product Ownership</p>
+      <p class="card-label">Features</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <div class="contrib-grid">
-        <div>
-          <p class="contrib-item-label">Intent Classification</p>
-          <p class="contrib-item-text">Designed the keyword-based intent model covering six categories — complaint, billing, technical, shipping, feature request, and positive feedback — plus a general fallback. Defined keyword sets for each category and tiebreaker logic for submissions that match multiple.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Routing Logic</p>
-          <p class="contrib-item-text">Defined how routing decisions combined intent, sentiment, and NPS-style rating. Specified priority escalation logic where low ratings and negative sentiment together triggered a higher-priority path than either alone, and where urgency keywords could override standard priority.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Agent Pipeline Design</p>
-          <p class="contrib-item-text">Designed the multi-step animated processing sequence — reading, detecting, assessing, routing — with visual state transitions per step so users see the agent working rather than a result appearing without context.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Data Transparency</p>
-          <p class="contrib-item-text">Defined the structured JSON output format for downstream handoff and the data view showing exactly what was collected and what the agent decided, making routing decisions auditable and integration-ready.</p>
-        </div>
-      </div>
+      <ul>
+        <li>Standard feedback form (name, email/phone, rating, message) — same UX as a conventional form, agent routing happens underneath</li>
+        <li>Intent detection from freeform message text — no category dropdown required</li>
+        <li>Priority assignment combining sentiment, rating score, and urgency keywords into a single escalation decision</li>
+        <li>Routing output card shows detected intent, sentiment, priority, recommended team, and open-case flag</li>
+        <li>Structured JSON payload visible in the data view — same format that would be sent to a backend on real submission</li>
+      </ul>
     </div>
   </div>
 
-  <div class="acc-card mb40" style="border-color:#C7D2FE;">
-    <div class="acc-header" onclick="toggleAcc(this)" style="background:#EEF2FF;">
-      <p class="card-label" style="color:#3730A3;">Outcome</p>
-      <span class="acc-chevron" style="color:#3730A3;">▼</span>
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Why This</p>
+      <span class="acc-chevron">▼</span>
     </div>
-    <div class="acc-body" style="background:#EEF2FF;">
-      <p style="color:#312E81;">Agent-driven intake eliminated manual touches between submission and queue assignment. Priority escalation logic built on compound signals — sentiment combined with NPS rating — produced a more accurate urgency signal than keyword matching alone. The structured JSON output demonstrated how the same intake layer could feed multiple downstream systems without requiring additional manual handling at the ingestion point.</p>
+    <div class="acc-body">
+      <p>Manual triage is a bottleneck that gets worse at scale — consistent at low volume, inconsistent under load, and completely absent outside business hours. Running classification and routing at intake means submissions arrive in the right queue with a priority level already assigned, so the first human touch is resolution, not categorization.</p>
     </div>
   </div>
 

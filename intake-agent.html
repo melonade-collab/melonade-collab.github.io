@@ -7,10 +7,10 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #fdf6ec; color: #1a1a1a; min-height: 100vh; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0fdfb; color: #1a1a1a; min-height: 100vh; }
 
     /* ── Page structure ── */
-    .cs-header { background: #78350F; padding: 56px 40px 44px; }
+    .cs-header { background: #134E4A; padding: 56px 40px 44px; }
     .cs-header-inner { max-width: 860px; margin: 0 auto; }
     .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
     .cs-h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
@@ -22,7 +22,7 @@
     .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
     .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
     .acc-header:hover { background: #fafafa; }
-    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #D97706; margin-bottom: 0; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0D9488; margin-bottom: 0; }
     .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
     .acc-header.open .acc-chevron { transform: rotate(180deg); }
     .acc-body { display: none; padding: 0 22px 20px; }
@@ -31,13 +31,13 @@
     .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
     .acc-body li { margin-bottom: 6px; }
     .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
-    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #D97706; margin-bottom: 4px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #0D9488; margin-bottom: 4px; }
     .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
 
-    .proto-section { background: #fdf6ec; padding: 0 40px 80px; }
+    .proto-section { background: #f0fdfb; padding: 0 40px 80px; }
     .proto-inner { max-width: 860px; margin: 0 auto; }
-    .proto-wrap { background: #FEF3C7; border-radius: 16px; padding: 32px 20px 40px; display: flex; flex-direction: column; align-items: center; }
-    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #D97706; text-align: center; margin-bottom: 24px; }
+    .proto-wrap { background: #CCFBF1; border-radius: 16px; padding: 32px 20px 40px; display: flex; flex-direction: column; align-items: center; }
+    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0D9488; text-align: center; margin-bottom: 24px; }
 
     .phone {
       width: min(292px, calc(100vw - 48px));
@@ -54,7 +54,7 @@
     }
 
     .status-bar {
-      background: #78350F;
+      background: #134E4A;
       padding: 10px 22px 6px;
       display: flex;
       justify-content: space-between;
@@ -65,7 +65,7 @@
     .status-icons { color: rgba(255,255,255,0.7); font-size: 0.7rem; letter-spacing: 2px; }
 
     .chat-header {
-      background: #78350F;
+      background: #134E4A;
       padding: 8px 16px 14px;
       display: flex;
       align-items: center;
@@ -74,7 +74,7 @@
     }
     .bot-avatar {
       width: 40px; height: 40px; border-radius: 50%;
-      background: #92400E;
+      background: #0F766E;
       border: 2px solid rgba(255,255,255,0.2);
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
@@ -90,7 +90,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      background: #fdf8f0;
+      background: #f0fdfb;
     }
 
     .msg { display: flex; gap: 8px; align-items: flex-end; }
@@ -99,7 +99,7 @@
 
     .msg-av {
       width: 28px; height: 28px; border-radius: 50%;
-      background: #92400E; flex-shrink: 0;
+      background: #0F766E; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
     }
     .msg-av svg { width: 16px; height: 16px; }
@@ -116,7 +116,7 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.07);
     }
     .msg.user .bubble {
-      background: #78350F;
+      background: #134E4A;
       color: #fff;
       border-radius: 18px 18px 4px 18px;
     }
@@ -148,38 +148,38 @@
       outline: none; font-family: inherit;
       transition: border-color 0.15s;
     }
-    .txt:focus    { border-color: #D97706; }
+    .txt:focus    { border-color: #0D9488; }
     .txt:disabled { background: #f6f6f6; color: #aaa; }
 
     .go {
       width: 38px; height: 38px; border-radius: 50%;
-      background: #78350F; border: none; cursor: pointer; flex-shrink: 0;
+      background: #134E4A; border: none; cursor: pointer; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       transition: background 0.15s;
     }
-    .go:hover    { background: #D97706; }
-    .go:disabled { background: #FED7AA; cursor: default; }
+    .go:hover    { background: #0D9488; }
+    .go:disabled { background: #99F6E4; cursor: default; }
     .go svg { width: 16px; height: 16px; fill: #fff; }
 
     .agent-action {
       display: flex; align-items: center; gap: 8px;
       padding: 6px 10px; margin: 0 0 0 36px;
-      background: #FEF3C7; border-left: 2px solid #D97706;
-      border-radius: 6px; font-size: 0.72rem; color: #D97706;
+      background: #CCFBF1; border-left: 2px solid #0D9488;
+      border-radius: 6px; font-size: 0.72rem; color: #0D9488;
       font-weight: 600; animation: fadeIn 0.3s ease;
     }
-    .agent-action-dot { width: 6px; height: 6px; border-radius: 50%; background: #D97706; flex-shrink: 0; animation: pulse 1.2s infinite; }
+    .agent-action-dot { width: 6px; height: 6px; border-radius: 50%; background: #0D9488; flex-shrink: 0; animation: pulse 1.2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
     @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
 
-    .agent-badge { font-size: 0.52rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; background: #92400E; color: #fff; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-left: 5px; vertical-align: middle; }
+    .agent-badge { font-size: 0.52rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; background: #0F766E; color: #fff; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-left: 5px; vertical-align: middle; }
     .agent-online { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #69F0AE; margin-right: 4px; animation: pulse 2s infinite; }
 
-    .outcome-card { background: #fff; border: 1.5px solid #FED7AA; border-radius: 12px; padding: 12px 14px; font-size: 0.78rem; line-height: 1.7; color: #1a1a1a; }
-    .outcome-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #B45309; margin-bottom: 8px; }
+    .outcome-card { background: #fff; border: 1.5px solid #99F6E4; border-radius: 12px; padding: 12px 14px; font-size: 0.78rem; line-height: 1.7; color: #1a1a1a; }
+    .outcome-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #0F766E; margin-bottom: 8px; }
     .outcome-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
     .outcome-icon { flex-shrink: 0; }
-    .outcome-ticket { display: inline-block; font-family: monospace; font-size: 0.72rem; background: #FEF3C7; color: #D97706; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+    .outcome-ticket { display: inline-block; font-family: monospace; font-size: 0.72rem; background: #CCFBF1; color: #0D9488; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
 
     .intent-tag { display: inline-block; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 
@@ -193,7 +193,7 @@
       transition: all 0.15s;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
-    .view-data-btn:hover { background: #FEF3C7; border-color: #D97706; color: #92400E; }
+    .view-data-btn:hover { background: #CCFBF1; border-color: #0D9488; color: #0F766E; }
     .view-data-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 
     .gear-mobile-wrap { position: relative; margin-left: auto; display: none; }
@@ -201,7 +201,7 @@
     .gear-mobile:hover { color: #fff; }
     .gear-mobile svg { display: block; }
     .gear-menu { display: none; position: absolute; right: 0; top: calc(100% + 6px); background: #fff; border-radius: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.16); min-width: 176px; overflow: hidden; border: 1px solid rgba(0,0,0,0.07); z-index: 100; }
-    .gear-menu a { display: flex; align-items: center; gap: 10px; padding: 13px 16px; font-size: 0.85rem; font-weight: 500; color: #92400E; text-decoration: none; font-family: inherit; border-top: 1px solid #f0f0f0; }
+    .gear-menu a { display: flex; align-items: center; gap: 10px; padding: 13px 16px; font-size: 0.85rem; font-weight: 500; color: #0F766E; text-decoration: none; font-family: inherit; border-top: 1px solid #f0f0f0; }
     .gear-menu a:first-child { border-top: none; }
 
     @media (max-width: 600px) {
@@ -241,54 +241,43 @@
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">Constraints</p>
+      <p class="card-label">Tech</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
       <ul>
-        <li>The flow had to handle freeform input across six distinct intent types without requiring the user to choose a category</li>
-        <li>Intent detection had to work in a single turn for common inputs — too many clarifying turns would recreate the friction of a structured form</li>
-        <li>Follow-up questions had to be targeted to the detected intent: billing cases asked for an amount or date, technical cases for a device — generic follow-ups added noise without improving the case record</li>
-        <li>Urgency signals (emergency, ASAP, critical, right now) needed to override standard priority assignment regardless of detected intent</li>
-        <li>The case record had to be immediately actionable downstream — intent, priority, routed team, and contact info all captured in a single intake pass</li>
+        <li>Keyword-based intent classifier covering six intent types: complaint, billing, technical, shipping, feature request, compliment</li>
+        <li>Urgency layer (keywords: emergency, ASAP, critical, right now) operates independently — overrides priority regardless of detected intent</li>
+        <li>Per-intent follow-up questions and input placeholders set dynamically at runtime so each intent gets a targeted clarifying ask</li>
+        <li>Animated five-step processing sequence (reading → detecting → assessing → routing → creating case) renders the agent's decision-making visible rather than instant</li>
+        <li>sessionStorage used to write the case record progressively and power the separate data view without a backend</li>
       </ul>
     </div>
   </div>
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">Product Ownership</p>
+      <p class="card-label">Features</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <div class="contrib-grid">
-        <div>
-          <p class="contrib-item-label">Conversational Flow Design</p>
-          <p class="contrib-item-text">Designed the three-turn intake structure — describe the issue, answer one targeted follow-up, provide contact info. Follow-up question and input placeholder are dynamically set by detected intent, so billing cases are asked for an amount and technical cases are asked for a device.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Intent Detection & Classification</p>
-          <p class="contrib-item-text">Defined keyword sets for six intent types (complaint, billing, technical, shipping, feature request, compliment) and the urgency detection layer that operates independently of intent. Specified fallback behavior for low-confidence and general inputs.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Agent Action Sequence</p>
-          <p class="contrib-item-text">Designed the visible processing steps — reading, detecting, assessing, routing, creating case — with animated status indicators so the user can observe the agent's decision-making rather than seeing a result appear without context.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Case Record Design</p>
-          <p class="contrib-item-text">Defined the structured output: detected intent, priority level, urgency flag, routed team, case number, timestamp, and full user input retained for reference. Output is written to sessionStorage to power the separate data view.</p>
-        </div>
-      </div>
+      <ul>
+        <li>Freeform first message — user describes the issue in natural language, no category selection required</li>
+        <li>Intent detection in a single turn with fallback for low-confidence or general inputs</li>
+        <li>One targeted follow-up per intent: billing cases are asked for an amount or date, technical cases for a device, shipping for an order number</li>
+        <li>Urgency override: emergency signals raise priority to urgent regardless of intent type</li>
+        <li>Case record output: intent, priority, urgency flag, routed team, case number, timestamp, and full user input — immediately actionable for downstream handoff</li>
+      </ul>
     </div>
   </div>
 
-  <div class="acc-card mb40" style="border-color:#FED7AA;">
-    <div class="acc-header" onclick="toggleAcc(this)" style="background:#FEF3C7;">
-      <p class="card-label" style="color:#92400E;">Outcome</p>
-      <span class="acc-chevron" style="color:#92400E;">▼</span>
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Why This</p>
+      <span class="acc-chevron">▼</span>
     </div>
-    <div class="acc-body" style="background:#FEF3C7;">
-      <p style="color:#78350F;">The freeform intake approach captured intent accurately without requiring the user to self-categorize. Targeted follow-up questions — dynamically set by detected intent — extracted the specific detail most useful for each case type in a single additional turn. The agent reduced intake to three user turns, producing a case record ready for immediate team handoff with no manual re-reading or recategorization required.</p>
+    <div class="acc-body">
+      <p>Structured forms assume users know what kind of problem they have — often they don't, they just know something is wrong. Asking people to self-categorize before getting help creates the first failure point: the wrong category leads to misrouting, longer handle times, and duplicate cases from customers who never get a response. Freeform intake moves classification to the agent, where it belongs.</p>
     </div>
   </div>
 
@@ -452,12 +441,12 @@ function classify(text) {
 
 /* ── DOM helpers ── */
 const AVG = `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="4" y="3" width="32" height="10" rx="3" fill="#F59E0B"/>
+  <rect x="4" y="3" width="32" height="10" rx="3" fill="#0D9488"/>
   <rect x="7" y="6" width="14" height="1.5" rx="0.75" fill="#fff" opacity="0.9"/>
   <rect x="7" y="9.5" width="9" height="1.5" rx="0.75" fill="#fff" opacity="0.6"/>
-  <path d="M20 13 L20 17 M20 17 L12 21 M20 17 L28 21" stroke="#D97706" stroke-width="1.8" stroke-linecap="round"/>
-  <rect x="4" y="21" width="14" height="10" rx="2.5" fill="#FBBF24"/>
-  <rect x="22" y="21" width="14" height="10" rx="2.5" fill="#F59E0B"/>
+  <path d="M20 13 L20 17 M20 17 L12 21 M20 17 L28 21" stroke="#0D9488" stroke-width="1.8" stroke-linecap="round"/>
+  <rect x="4" y="21" width="14" height="10" rx="2.5" fill="#14B8A6"/>
+  <rect x="22" y="21" width="14" height="10" rx="2.5" fill="#0D9488"/>
   <path d="M8 26 L10 28 L14 23" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
   <path d="M26 26 L28 28 L32 23" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 </svg>`;

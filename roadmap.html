@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drag-to-Prioritize Roadmap — Prototype</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f5; color: #1a1a1a; min-height: 100vh; }
+
+    /* ── Case study header ── */
+    .cs-header { background: #14532D; padding: 56px 40px 44px; }
+    .cs-header-inner { max-width: 860px; margin: 0 auto; }
+    .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 580px; }
+
+    /* ── Case study body ── */
+    .cs-body { max-width: 860px; margin: 0 auto; padding: 48px 40px 48px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+
+    /* ── Accordions ── */
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #16a34a; margin-bottom: 0; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body > p + p { margin-top: 8px; }
+    .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
+    .acc-body li { margin-bottom: 6px; }
+    .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #16a34a; margin-bottom: 4px; }
+    .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
+
+    /* ── Proto label bar ── */
+    .proto-label-bar { background: #DCFCE7; padding: 32px 40px 24px; }
+    .proto-label-inner { max-width: 1160px; margin: 0 auto; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #15803D; }
+
+    /* ── Board section ── */
+    .proto-section { background: #f7f7f5; padding: 0 40px 80px; }
+    .board-frame { max-width: 1160px; margin: 0 auto; background: #fff; border-radius: 0 0 16px 16px; border: 1px solid #E5E7EB; border-top: none; box-shadow: 0 8px 40px rgba(0,0,0,0.08); overflow: hidden; }
+
+    .board-titlebar { background: #F8F9FB; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #E5E7EB; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .dot-r { background: #FF5F57; }
+    .dot-y { background: #FEBC2E; }
+    .dot-g { background: #28C840; }
+    .board-title-text { font-size: 0.72rem; color: #9CA3AF; margin-left: 4px; font-family: monospace; }
+
+    .board-toolbar { background: #F8F9FB; border-bottom: 1px solid #E5E7EB; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .board-name { font-size: 0.88rem; font-weight: 800; color: #111; letter-spacing: -0.3px; }
+    .board-quarter { font-size: 0.72rem; color: #9CA3AF; background: #F3F4F6; border-radius: 5px; padding: 3px 9px; }
+    .board-reset-btn { font-size: 0.7rem; font-weight: 600; color: #6B7280; background: none; border: 1px solid #E5E7EB; border-radius: 6px; padding: 5px 12px; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+    .board-reset-btn:hover { background: #F9FAFB; color: #374151; border-color: #D1D5DB; }
+
+    /* ── Board ── */
+    .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 20px; background: #F8F9FB; min-height: 560px; }
+
+    /* ── Column ── */
+    .column { display: flex; flex-direction: column; }
+    .col-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 8px 8px 0 0; }
+    .col-name { font-size: 0.7rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+    .col-count { font-size: 0.65rem; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin-left: auto; transition: background 0.2s; }
+    .col-body { flex: 1; border-radius: 0 0 8px 8px; padding: 10px; display: flex; flex-direction: column; gap: 10px; min-height: 200px; border: 2px dashed transparent; transition: background 0.15s, border-color 0.15s; background: rgba(0,0,0,0.02); }
+    .col-body.drag-over { background: rgba(22,163,74,0.06); border-color: #86efac; }
+
+    .col-now .col-header { background: #DCFCE7; }
+    .col-now .col-name { color: #15803D; }
+    .col-now .col-count { background: #BBF7D0; color: #166534; }
+
+    .col-next .col-header { background: #FEF9C3; }
+    .col-next .col-name { color: #92400E; }
+    .col-next .col-count { background: #FDE68A; color: #78350F; }
+
+    .col-later .col-header { background: #F1F5F9; }
+    .col-later .col-name { color: #475569; }
+    .col-later .col-count { background: #CBD5E1; color: #334155; }
+
+    /* ── Cards ── */
+    .roadmap-card {
+      background: #fff;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      padding: 12px 14px 12px 12px;
+      cursor: grab;
+      user-select: none;
+      transition: box-shadow 0.15s, transform 0.15s, opacity 0.15s;
+      position: relative;
+    }
+    .roadmap-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); transform: translateY(-1px); }
+    .roadmap-card.dragging { opacity: 0.35; transform: scale(0.97); cursor: grabbing; }
+
+    .card-drag-handle { position: absolute; top: 12px; right: 10px; color: #D1D5DB; font-size: 0.9rem; line-height: 1; opacity: 0; transition: opacity 0.15s; pointer-events: none; letter-spacing: 1px; }
+    .roadmap-card:hover .card-drag-handle { opacity: 1; }
+
+    .card-title { font-size: 0.82rem; font-weight: 700; color: #111; margin-bottom: 4px; line-height: 1.3; padding-right: 16px; }
+    .card-desc { font-size: 0.72rem; color: #6B7280; line-height: 1.45; margin-bottom: 10px; }
+    .card-footer { display: flex; align-items: center; gap: 6px; }
+
+    .priority-badge { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; padding: 2px 7px; border-radius: 5px; }
+    .priority-high { background: #FEE2E2; color: #991B1B; }
+    .priority-medium { background: #FEF9C3; color: #854D0E; }
+    .priority-low { background: #F3F4F6; color: #6B7280; }
+
+    .card-team { font-size: 0.6rem; color: #9CA3AF; font-weight: 500; margin-left: auto; }
+
+    /* ── Drop indicator ── */
+    .drop-indicator { height: 3px; background: #16a34a; border-radius: 2px; margin: -2px 0; flex-shrink: 0; pointer-events: none; }
+
+    /* ── Toast ── */
+    .rm-toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(14px); background: #111827; color: #fff; font-size: 0.78rem; font-weight: 600; padding: 9px 18px; border-radius: 8px; opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none; z-index: 999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.25); }
+    .rm-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Annual roadmap view ── */
+    .annual-frame { max-width: 1160px; margin: 0 auto; background: #fff; border-radius: 0 0 16px 16px; border: 1px solid #E5E7EB; border-top: none; box-shadow: 0 8px 40px rgba(0,0,0,0.08); overflow: hidden; display: none; }
+    .annual-toolbar { background: #F8F9FB; border-bottom: 1px solid #E5E7EB; padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .annual-title { font-size: 0.88rem; font-weight: 800; color: #111; letter-spacing: -0.3px; }
+    .annual-subtitle { font-size: 0.7rem; color: #9CA3AF; margin-left: auto; }
+    .annual-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+    .annual-quarter { border-right: 1px solid #E5E7EB; }
+    .annual-quarter:last-child { border-right: none; }
+    .annual-quarter-header { padding: 12px 16px 10px; border-bottom: 1px solid #E5E7EB; background: #F8F9FB; }
+    .annual-q-label { font-size: 0.7rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #374151; }
+    .annual-q-count { font-size: 0.65rem; color: #9CA3AF; margin-top: 2px; }
+    .annual-quarter-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; min-height: 200px; background: #F8F9FB; }
+    .annual-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 8px; padding: 10px 12px; }
+    .annual-card .card-title { font-size: 0.78rem; font-weight: 700; color: #111; margin-bottom: 4px; line-height: 1.3; }
+    .annual-card .card-desc { font-size: 0.68rem; color: #6B7280; line-height: 1.4; margin-bottom: 8px; }
+    .annual-card .card-footer { display: flex; align-items: center; gap: 6px; }
+    .annual-empty { font-size: 0.72rem; color: #D1D5DB; text-align: center; padding: 24px 0; font-style: italic; }
+    .generate-btn { font-size: 0.7rem; font-weight: 700; color: #15803D; background: #DCFCE7; border: 1px solid #86EFAC; border-radius: 6px; padding: 5px 12px; font-family: inherit; cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px; }
+    .generate-btn:hover { background: #BBF7D0; border-color: #4ADE80; }
+    @media (max-width: 800px) {
+      .annual-grid { grid-template-columns: 1fr 1fr; }
+      .annual-quarter { border-bottom: 1px solid #E5E7EB; }
+    }
+
+    @media (max-width: 800px) {
+      .cs-header { padding: 40px 20px 36px; }
+      .cs-body { padding: 36px 20px 48px; }
+      .contrib-grid { grid-template-columns: 1fr; }
+      .proto-label-bar { padding: 24px 20px 20px; }
+      .proto-section { padding: 0 0 60px; }
+      .board { grid-template-columns: 1fr; padding: 14px; min-height: auto; }
+      .board-toolbar { padding: 10px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;border-radius:4px;">← Back to portfolio</a>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="eyebrow">Interactive Prototype</p>
+    <h1>Drag-to-Prioritize Roadmap</h1>
+    <p class="cs-intro">Static slides and spreadsheets go stale the moment the meeting ends. This prototype explores a living roadmap where priority is communicated by dragging — making the Now vs. Next conversation visible and instant.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Product teams spend time maintaining roadmap slides that are outdated before they're shared. Async readers can't tell if a card moved since last week, or whether "Next" means next sprint or next quarter. A drag-to-reorder board makes priority a first-class interaction — the current state is always visible, and changing it takes one gesture instead of editing a deck.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">How It Worked</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Three lanes — Now, Next, Later — answer the single most common roadmap question: is this in flight, committed for the next cycle, or backlog? Cards show a title, one-line description, and priority level. Drag to reorder within a lane, or drop into a different lane to change status; column counts update instantly. Reset restores the original state.</p>
+      <p>Designed for async consumption first: a stakeholder can share a link and the reader gets the current picture without scheduling a sync.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tradeoffs</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li><strong>Three lanes, not more:</strong> Adding On Hold, Blocked, or Done columns increases maintenance cost without improving the core priority conversation. Now/Next/Later is the minimum viable signal.</li>
+        <li><strong>No due dates:</strong> Dates create false confidence and rot fast. Priority relative to other cards is more honest and easier to maintain.</li>
+        <li><strong>No assignees on cards:</strong> Team tags communicate ownership without turning the board into a task manager. Assignee-level tracking belongs in Jira.</li>
+        <li><strong>Drag-only edit:</strong> Adding inline content editing would shift focus away from the prioritization interaction the prototype is exploring.</li>
+        <li><strong>Session-only state:</strong> Persistence requires auth and a backend — out of scope. The interaction model is what's being validated here.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Product Ownership</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Structure</p>
+          <p class="contrib-item-text">Chose Now/Next/Later over sprint-based columns — maps to business priority, not delivery cadence, so it's readable by non-technical stakeholders.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Card data model</p>
+          <p class="contrib-item-text">Title + one-liner + priority only. Deliberately excluded due dates, story points, and assignees to keep cards scannable at a glance.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Interaction spec</p>
+          <p class="contrib-item-text">Drag inserts at position — not just appended to the end — so within-lane ordering carries meaning. Column counts update live.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Reset behaviour</p>
+          <p class="contrib-item-text">Reset restores original card positions and order — intentional for demos where you need to walk through the interaction repeatedly without refreshing.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Outcome</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>The prototype makes visible what a slide can't: the act of dragging is itself the prioritization conversation. "Should this move to Now?" is easier to answer when you're holding the card and can see what's already there. The board replaces a 30-minute status meeting with a 10-second async read.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="proto-label-bar">
+  <p class="proto-label-inner">Prototype — drag cards to reprioritize</p>
+</div>
+
+<div class="proto-section">
+  <div id="board-frame-wrap">
+  <div class="board-frame">
+
+    <div class="board-titlebar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <span class="board-title-text">roadmap.app — Product Roadmap</span>
+    </div>
+
+    <div class="board-toolbar">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="board-name">Product Roadmap</span>
+        <span class="board-quarter">Q3 2026</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="generate-btn" onclick="generateRoadmap()">Generate annual roadmap →</button>
+        <button class="board-reset-btn" onclick="resetBoard()">↺ Reset</button>
+      </div>
+    </div>
+
+    <div class="board" id="board">
+
+      <!-- NOW -->
+      <div class="column col-now">
+        <div class="col-header">
+          <span class="col-name">Now</span>
+          <span class="col-count" id="count-now">2</span>
+        </div>
+        <div class="col-body" id="col-now"
+          ondragover="handleDragOver(event)"
+          ondragleave="handleDragLeave(event)"
+          ondrop="handleDrop(event)">
+
+          <div class="roadmap-card" draggable="true" data-id="c1"
+            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+            <span class="card-drag-handle">⠿</span>
+            <div class="card-title">Rate Alert Notifications</div>
+            <div class="card-desc">Alert shippers when carrier rates spike above their configured threshold</div>
+            <div class="card-footer">
+              <span class="priority-badge priority-high">High</span>
+              <span class="card-team">Growth</span>
+            </div>
+          </div>
+
+          <div class="roadmap-card" draggable="true" data-id="c2"
+            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+            <span class="card-drag-handle">⠿</span>
+            <div class="card-title">Label Reprint Workflow</div>
+            <div class="card-desc">One-click reprint for damaged labels from the shipment detail screen</div>
+            <div class="card-footer">
+              <span class="priority-badge priority-high">High</span>
+              <span class="card-team">Ops</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- NEXT -->
+      <div class="column col-next">
+        <div class="col-header">
+          <span class="col-name">Next</span>
+          <span class="col-count" id="count-next">3</span>
+        </div>
+        <div class="col-body" id="col-next"
+          ondragover="handleDragOver(event)"
+          ondragleave="handleDragLeave(event)"
+          ondrop="handleDrop(event)">
+
+          <div class="roadmap-card" draggable="true" data-id="c3"
+            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+            <span class="card-drag-handle">⠿</span>
+            <div class="card-title">Bulk Shipment Upload</div>
+            <div class="card-desc">CSV import for customers creating 50+ shipments daily</div>
+            <div class="card-footer">
+              <span class="priority-badge priority-high">High</span>
+              <span class="card-team">Core</span>
+            </div>
+          </div>
+
+          <div class="roadmap-card" draggable="true" data-id="c4"
+            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+            <span class="card-drag-handle">⠿</span>
+            <div class="card-title">Webhook Event Delivery</div>
+            <div class="card-desc">Push tracking status changes to customer systems in real time</div>
+            <div class="card-footer">
+              <span class="priority-badge priority-medium">Medium</span>
+              <span class="card-team">Developer</span>
+            </div>
+          </div>
+
+          <div class="roadmap-card" draggable="true" data-id="c5"
+            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+            <span class="card-drag-handle">⠿</span>
+            <div class="card-title">Mobile Barcode Scanning</div>
+            <div class="card-desc">Scan shipment barcodes from a warehouse phone without a desktop</div>
+            <div class="card-footer">
+              <span class="priority-badge priority-medium">Medium</span>
+              <span class="card-team">Mobile</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- LATER -->
+      <div class="column col-later">
+        <div class="col-header">
+          <span class="col-name">Later</span>
+          <span class="col-count" id="count-later">4</span>
+        </div>
+        <div class="col-body" id="col-later"
+          ondragover="handleDragOver(event)"
+          ondragleave="handleDragLeave(event)"
+          ondrop="handleDrop(event)">
+
+          <div class="roadmap-card" draggable="true" data-id="c6"
+            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+            <span class="card-drag-handle">⠿</span>
+            <div class="card-title">Analytics Dashboard</div>
+            <div class="card-desc">Self-serve reporting on volume, carrier performance, and spend</div>
+            <div class="card-footer">
+              <span class="priority-badge priority-medium">Medium</span>
+              <span class="card-team">Platform</span>
+            </div>
+          </div>
+
+          <div class="roadmap-card" draggable="true" data-id="c7"
+            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+            <span class="card-drag-handle">⠿</span>
+            <div class="card-title">Customs Form Pre-fill</div>
+            <div class="card-desc">Auto-populate customs declarations from address and commodity data</div>
+            <div class="card-footer">
+              <span class="priority-badge priority-medium">Medium</span>
+              <span class="card-team">Global</span>
+            </div>
+          </div>
+
+          <div class="roadmap-card" draggable="true" data-id="c8"
+            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+            <span class="card-drag-handle">⠿</span>
+            <div class="card-title">Smart Carrier Selection</div>
+            <div class="card-desc">Auto-route shipments to the cheapest eligible carrier by zone and weight</div>
+            <div class="card-footer">
+              <span class="priority-badge priority-low">Low</span>
+              <span class="card-team">Core</span>
+            </div>
+          </div>
+
+          <div class="roadmap-card" draggable="true" data-id="c9"
+            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+            <span class="card-drag-handle">⠿</span>
+            <div class="card-title">Dark Mode</div>
+            <div class="card-desc">Reduce eye strain for dispatch operators working night shifts</div>
+            <div class="card-footer">
+              <span class="priority-badge priority-low">Low</span>
+              <span class="card-team">Design</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div><!-- /board-frame-wrap -->
+
+  <div class="annual-frame" id="annual-frame">
+    <div class="annual-toolbar">
+      <button class="board-reset-btn" onclick="closeRoadmap()">← Back to board</button>
+      <span class="annual-title">Annual Roadmap</span>
+      <span class="annual-subtitle">Generated from current prioritization</span>
+    </div>
+    <div class="annual-grid" id="annual-grid"></div>
+  </div>
+
+</div>
+
+<div class="rm-toast" id="rm-toast"></div>
+
+<script>
+  // ── Accordion ──
+  function toggleAcc(hdr) {
+    hdr.classList.toggle('open');
+    hdr.nextElementSibling.classList.toggle('open');
+  }
+
+  // ── Drag & Drop ──
+  let draggedCard = null;
+  let sourceCol = null;
+
+  function handleDragStart(e) {
+    draggedCard = e.currentTarget;
+    sourceCol = draggedCard.closest('.col-body');
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => draggedCard && draggedCard.classList.add('dragging'), 0);
+  }
+
+  function handleDragEnd() {
+    if (draggedCard) draggedCard.classList.remove('dragging');
+    draggedCard = null;
+    sourceCol = null;
+    document.querySelectorAll('.col-body').forEach(c => c.classList.remove('drag-over'));
+    removeIndicators();
+    updateCounts();
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const col = e.currentTarget;
+    col.classList.add('drag-over');
+    const after = getDragAfterElement(col, e.clientY);
+    removeIndicators();
+    const ind = document.createElement('div');
+    ind.className = 'drop-indicator';
+    if (!after) col.appendChild(ind);
+    else col.insertBefore(ind, after);
+  }
+
+  function handleDragLeave(e) {
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      e.currentTarget.classList.remove('drag-over');
+      removeIndicators();
+    }
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    if (!draggedCard) return;
+    const col = e.currentTarget;
+    col.classList.remove('drag-over');
+    const after = getDragAfterElement(col, e.clientY);
+    removeIndicators();
+    const moved = col !== sourceCol;
+    if (!after) col.appendChild(draggedCard);
+    else col.insertBefore(draggedCard, after);
+    if (moved) {
+      const name = col.closest('.column').querySelector('.col-name').textContent;
+      showToast('Moved to ' + name);
+    }
+    updateCounts();
+  }
+
+  function getDragAfterElement(col, y) {
+    const cards = [...col.querySelectorAll('.roadmap-card:not(.dragging)')];
+    return cards.reduce((closest, el) => {
+      const box = el.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      return (offset < 0 && offset > closest.offset) ? { offset, element: el } : closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  function removeIndicators() {
+    document.querySelectorAll('.drop-indicator').forEach(el => el.remove());
+  }
+
+  function updateCounts() {
+    [['col-now','count-now'],['col-next','count-next'],['col-later','count-later']].forEach(([colId, countId]) => {
+      document.getElementById(countId).textContent =
+        document.getElementById(colId).querySelectorAll('.roadmap-card').length;
+    });
+  }
+
+  // ── Toast ──
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('rm-toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // ── Annual Roadmap Generator ──
+  function getQuarterLabel(q, y) { return `Q${q} ${y}`; }
+
+  function advanceQuarter(q, y, n) {
+    let cq = q, cy = y;
+    for (let i = 0; i < n; i++) { cq++; if (cq > 4) { cq = 1; cy++; } }
+    return { q: cq, y: cy };
+  }
+
+  function cardPriority(card) {
+    const b = card.querySelector('.priority-badge');
+    if (b.classList.contains('priority-high')) return 'high';
+    if (b.classList.contains('priority-medium')) return 'medium';
+    return 'low';
+  }
+
+  function cloneCardForAnnual(card) {
+    const title = card.querySelector('.card-title').textContent;
+    const desc = card.querySelector('.card-desc').textContent;
+    const badge = card.querySelector('.priority-badge').outerHTML;
+    const team = card.querySelector('.card-team').textContent;
+    return `<div class="annual-card">
+      <div class="card-title">${title}</div>
+      <div class="card-desc">${desc}</div>
+      <div class="card-footer">${badge}<span class="card-team">${team}</span></div>
+    </div>`;
+  }
+
+  function generateRoadmap() {
+    const qText = document.querySelector('.board-quarter').textContent.trim();
+    const parts = qText.match(/Q(\d)\s+(\d+)/);
+    const startQ = parts ? parseInt(parts[1]) : 3;
+    const startY = parts ? parseInt(parts[2]) : 2026;
+
+    const nowCards   = [...document.querySelectorAll('#col-now .roadmap-card')];
+    const nextCards  = [...document.querySelectorAll('#col-next .roadmap-card')];
+    const laterCards = [...document.querySelectorAll('#col-later .roadmap-card')];
+
+    const q1Cards = nowCards;
+    const q2Cards = nextCards.filter(c => cardPriority(c) === 'high');
+    const q3Cards = [
+      ...nextCards.filter(c => cardPriority(c) !== 'high'),
+      ...laterCards.filter(c => cardPriority(c) === 'high')
+    ];
+    const q4Cards = laterCards.filter(c => cardPriority(c) !== 'high');
+
+    const q1 = { q: startQ, y: startY };
+    const q2 = advanceQuarter(startQ, startY, 1);
+    const q3 = advanceQuarter(startQ, startY, 2);
+    const q4 = advanceQuarter(startQ, startY, 3);
+
+    const quarters = [
+      { label: getQuarterLabel(q1.q, q1.y), cards: q1Cards },
+      { label: getQuarterLabel(q2.q, q2.y), cards: q2Cards },
+      { label: getQuarterLabel(q3.q, q3.y), cards: q3Cards },
+      { label: getQuarterLabel(q4.q, q4.y), cards: q4Cards }
+    ];
+
+    const grid = document.getElementById('annual-grid');
+    grid.innerHTML = quarters.map(({ label, cards }) => `
+      <div class="annual-quarter">
+        <div class="annual-quarter-header">
+          <div class="annual-q-label">${label}</div>
+          <div class="annual-q-count">${cards.length} item${cards.length !== 1 ? 's' : ''}</div>
+        </div>
+        <div class="annual-quarter-body">
+          ${cards.length ? cards.map(cloneCardForAnnual).join('') : '<div class="annual-empty">No items</div>'}
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('board-frame-wrap').style.display = 'none';
+    document.getElementById('annual-frame').style.display = 'block';
+    document.getElementById('annual-frame').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function closeRoadmap() {
+    document.getElementById('annual-frame').style.display = 'none';
+    document.getElementById('board-frame-wrap').style.display = 'block';
+  }
+
+  // ── Reset ──
+  const originalState = {};
+  document.querySelectorAll('.col-body').forEach(col => {
+    originalState[col.id] = [...col.querySelectorAll('.roadmap-card')].map(c => c.dataset.id);
+  });
+
+  function resetBoard() {
+    const cards = {};
+    document.querySelectorAll('.roadmap-card').forEach(c => { cards[c.dataset.id] = c; c.remove(); });
+    Object.entries(originalState).forEach(([colId, ids]) => {
+      const col = document.getElementById(colId);
+      ids.forEach(id => col.appendChild(cards[id]));
+    });
+    updateCounts();
+    showToast('Board reset');
+  }
+</script>
+</body>
+</html>

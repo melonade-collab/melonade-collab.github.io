@@ -3,221 +3,234 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Collected Data</title>
+  <title>Conversational Feedback — Collected Data</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f0f8; color: #1a1a1a; min-height: 100vh; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f2f3f7;
-      color: #1a1a1a;
-      min-height: 100vh;
-      padding: 48px 24px 64px;
+    /* Page structure — mirrors assistant.html */
+    .cs-header { background: #1a237e; padding: 56px 40px 44px; }
+    .cs-header-inner { max-width: 860px; margin: 0 auto; }
+    .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
+    .cs-h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 580px; }
+
+    .cs-body { max-width: 860px; margin: 0 auto; padding: 48px 40px 40px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #3949AB; margin-bottom: 0; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
+    .acc-body li { margin-bottom: 6px; }
+    .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #3949AB; margin-bottom: 4px; }
+    .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
+
+    .proto-section { background: #f0f0f8; padding: 0 40px 80px; }
+    .proto-inner { max-width: 860px; margin: 0 auto; }
+    .proto-wrap { background: #E8EAF6; border-radius: 16px; padding: 32px 28px 40px; }
+    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #3949AB; margin-bottom: 24px; }
+
+    /* Data content */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.8rem; font-weight: 600; color: #3730A3; text-decoration: none;
+      margin-bottom: 24px; transition: color 0.15s;
+    }
+    .back-link:hover { color: #1a237e; }
+
+    .section-label {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: #3949AB; margin-bottom: 10px; margin-top: 24px;
     }
 
-    .page {
-      max-width: 560px;
-      margin: 0 auto;
+    .data-card {
+      background: #fff; border: 1px solid #e8e8ee; border-radius: 14px;
+      padding: 20px 22px; margin-bottom: 12px;
     }
 
-    .eyebrow {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: #7986cb;
-      margin-bottom: 10px;
-    }
+    .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #bbb; }
+    .field-value { font-size: 0.9rem; color: #1a1a1a; line-height: 1.55; }
+    .field-value.empty { color: #ccc; font-style: italic; }
 
-    h1 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      color: #111;
-      margin-bottom: 6px;
-    }
-
-    .subtitle {
-      font-size: 0.85rem;
-      color: #888;
-      margin-bottom: 32px;
-      line-height: 1.5;
-    }
-
-    /* ── Status badge ──────────────────────────────────────────────── */
     .status-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 24px;
+      display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
     }
-    .status-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: #c5cae9;
-    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #c5cae9; }
     .status-dot.complete { background: #43a047; }
     .status-label { font-size: 0.78rem; color: #888; }
 
-    /* ── Field table ───────────────────────────────────────────────── */
-    .field-card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-
-    .field-card-header {
-      padding: 12px 18px 10px;
-      border-bottom: 1px solid #f0f0ee;
-      font-size: 0.67rem;
-      font-weight: 700;
-      letter-spacing: 0.9px;
-      text-transform: uppercase;
-      color: #7986cb;
-    }
-
-    .field-row {
-      display: flex;
-      align-items: baseline;
-      gap: 16px;
-      padding: 10px 18px;
-      border-bottom: 1px solid #f7f7f5;
-    }
-    .field-row:last-child { border-bottom: none; }
-
-    .field-key {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #aaa;
-      width: 110px;
-      flex-shrink: 0;
-      text-transform: capitalize;
-    }
-
-    .field-val {
-      font-size: 0.875rem;
-      color: #1a1a1a;
-      word-break: break-all;
-    }
-    .field-val.empty { color: #ccc; font-style: italic; }
-
     .sentiment-badge {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
+      display: inline-block; padding: 2px 10px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 600;
     }
     .sentiment-badge.positive { background: #e8f5e9; color: #2e7d32; }
     .sentiment-badge.negative { background: #fce4ec; color: #c62828; }
     .sentiment-badge.neutral  { background: #eeeeee; color: #555; }
 
-    /* ── JSON block ────────────────────────────────────────────────── */
-    .json-card {
-      background: #1a237e;
-      border-radius: 12px;
-      padding: 18px;
-      margin-bottom: 28px;
-      overflow-x: auto;
+    .json-block {
+      background: #0F172A; border-radius: 12px; padding: 18px 20px;
+      font-family: "SF Mono", "Fira Code", monospace; font-size: 0.78rem;
+      line-height: 1.7; color: #E2E8F0; overflow-x: auto; white-space: pre;
     }
-    .json-card pre {
-      font-family: "SF Mono", "Fira Code", "Courier New", monospace;
-      font-size: 0.78rem;
-      line-height: 1.7;
-      color: #c5cae9;
-      white-space: pre-wrap;
-    }
-    .json-key   { color: #90caf9; }
-    .json-str   { color: #a5d6a7; }
-    .json-num   { color: #ffcc80; }
-    .json-null  { color: #ef9a9a; }
-
-    /* ── Back button ───────────────────────────────────────────────── */
-    .back-btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 10px 20px; border-radius: 10px;
-      background: #fff; border: 1.5px solid #c5cae9;
-      color: #3949ab; font-size: 0.85rem; font-weight: 600;
-      font-family: inherit; cursor: pointer;
-      text-decoration: none;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-      transition: all 0.15s;
-    }
-    .back-btn:hover { background: #e8eaf6; border-color: #3949ab; }
+    .json-key  { color: #7DD3FC; }
+    .json-str  { color: #86EFAC; }
+    .json-null { color: #94A3B8; }
+    .json-num  { color: #FCD34D; }
 
     .warning-card {
-      background: #fff8e1;
-      border: 1px solid #ffe082;
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 0.82rem;
-      color: #795548;
-      margin-bottom: 20px;
-      line-height: 1.5;
+      background: #EDE7F6; border: 1px solid #C5CAE9; border-radius: 10px;
+      padding: 12px 16px; font-size: 0.82rem; color: #3730A3;
+      margin-bottom: 20px; line-height: 1.5;
+    }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: #3730A3; opacity: 0.5; }
+    .empty-state p { font-size: 0.9rem; margin-top: 8px; }
+
+    @media (max-width: 600px) {
+      .cs-header { padding: 40px 20px 36px; }
+      .cs-body { padding: 36px 20px 40px; }
+      .contrib-grid { grid-template-columns: 1fr; }
+      .proto-section { padding: 0 16px 60px; }
+      .proto-wrap { padding: 24px 16px 32px; }
     }
   </style>
 </head>
 <body>
 
-<div class="page">
-  <p class="eyebrow">Feedback Assistant</p>
-  <h1>Collected Data</h1>
-  <p class="subtitle">Structured data captured during the conversation. This is what would be sent to a backend on form submission.</p>
-
-  <div class="status-row" id="statusRow">
-    <div class="status-dot" id="statusDot"></div>
-    <span class="status-label" id="statusLabel">Loading…</span>
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="eyebrow">Prototype · Agentic AI</p>
+    <h1 class="cs-h1">Conversational Feedback Agent</h1>
+    <p class="cs-intro">Static feedback forms collect every field upfront before any interaction. This prototype replaces the form with a conversation — collecting contact info, rating, and message through natural dialogue with skip, retry, and edit at every step.</p>
   </div>
+</div>
 
-  <div id="warningEl" class="warning-card" style="display:none;">
-    No conversation data found. Start a chat in the assistant first, then come back here.
-  </div>
+<div class="cs-body">
 
-  <!-- Human-readable table -->
-  <div class="field-card" id="fieldCard">
-    <div class="field-card-header">Contact Information</div>
-    <div class="field-row"><span class="field-key">Name</span>        <span class="field-val" id="fName">—</span></div>
-    <div class="field-row"><span class="field-key">City</span>        <span class="field-val" id="fCity">—</span></div>
-    <div class="field-row"><span class="field-key">Province / State</span><span class="field-val" id="fProvince">—</span></div>
-    <div class="field-row"><span class="field-key">Email</span>       <span class="field-val" id="fEmail">—</span></div>
-    <div class="field-row"><span class="field-key">Phone</span>       <span class="field-val" id="fPhone">—</span></div>
-    <div class="field-row"><span class="field-key">Postal / Zip</span><span class="field-val" id="fPostal">—</span></div>
-  </div>
-
-  <div class="field-card">
-    <div class="field-card-header">Feedback</div>
-    <div class="field-row"><span class="field-key">Rating</span>    <span class="field-val" id="fRating">—</span></div>
-    <div class="field-row"><span class="field-key">Sentiment</span> <span class="field-val" id="fSentiment">—</span></div>
-    <div class="field-row"><span class="field-key">Message</span>   <span class="field-val" id="fMessage" style="white-space:pre-wrap;">—</span></div>
-  </div>
-
-  <!-- JSON representation -->
-  <div class="field-card" style="margin-bottom:20px;">
-    <div class="field-card-header">Raw JSON payload</div>
-    <div class="json-card" style="border-radius:0 0 12px 12px; margin:0;">
-      <pre id="jsonBlock">Loading…</pre>
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Static feedback forms collect every field upfront — name, contact details, rating, message — before any interaction. Users who are in a hurry, unsure what to write, or reluctant to share personal details abandon halfway through or fill in the minimum. What gets submitted arrives as unstructured text needing manual review and routing before anything can be done with it.</p>
     </div>
   </div>
 
-  <a href="assistant.html" class="back-btn">← Back to assistant</a>
-</div>
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tech</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Conversational state machine with nine steps (name, city, province, email, phone, postal, rating, message, review) and skip, retry, and edit paths at each step</li>
+        <li>City-to-province lookup table covering major Canadian and US cities — used for a soft-confirm flow that auto-suggests province without a dropdown</li>
+        <li>Client-side sentiment analysis run on the message field</li>
+        <li>sessionStorage used for real-time data persistence so the data view page reads live session state without requiring a submission event</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Features</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Nine-step conversational intake covering all fields a traditional form would collect</li>
+        <li>At each step: skip detection, retry prompts, quit/cancel handling, privacy question responses, and confusion recovery</li>
+        <li>Review step at the end where users can change any field by naming it — re-asks only that specific step</li>
+        <li>Address intelligence: recognized cities auto-suggest province with a soft confirm; city/province mismatches trigger a natural correction flow</li>
+        <li>Rating accepts numeric input, approximate language ("maybe a 7"), and out-of-range values with natural correction</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Why This</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Conversation matches how people naturally report issues — they describe, qualify, and correct as they go. Removing the upfront form eliminates the cognitive load of deciding what to include before any dialogue has started. Progressive collection with skip options lowers the barrier to starting, while the edit flow means users aren't locked into their first answers.</p>
+    </div>
+  </div>
+
+</div><!-- /cs-body -->
+
+<div class="proto-section">
+  <div class="proto-inner">
+    <div class="proto-wrap">
+      <p class="proto-wrap-label">Collected data — live session output</p>
+
+      <a href="assistant.html" class="back-link">← Back to agent</a>
+
+      <div id="warningEl" class="warning-card" style="display:none;">
+        No conversation data found. Start a chat in the agent first, then come back here.
+      </div>
+
+      <div class="status-row" id="statusRow">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-label" id="statusLabel">Loading…</span>
+      </div>
+
+      <p class="section-label">Contact</p>
+      <div class="data-card" id="contactCard">
+        <div class="field"><span class="field-label">Name</span><span class="field-value" id="fName">—</span></div>
+        <div class="field"><span class="field-label">City</span><span class="field-value" id="fCity">—</span></div>
+        <div class="field"><span class="field-label">Province / State</span><span class="field-value" id="fProvince">—</span></div>
+        <div class="field"><span class="field-label">Email</span><span class="field-value" id="fEmail">—</span></div>
+        <div class="field"><span class="field-label">Phone</span><span class="field-value" id="fPhone">—</span></div>
+        <div class="field"><span class="field-label">Postal / Zip</span><span class="field-value" id="fPostal">—</span></div>
+      </div>
+
+      <p class="section-label">Feedback</p>
+      <div class="data-card">
+        <div class="field"><span class="field-label">Rating</span><span class="field-value" id="fRating">—</span></div>
+        <div class="field"><span class="field-label">Sentiment</span><span class="field-value" id="fSentiment">—</span></div>
+        <div class="field"><span class="field-label">Message</span><span class="field-value" id="fMessage" style="white-space:pre-wrap;">—</span></div>
+      </div>
+
+      <p class="section-label">Raw JSON payload</p>
+      <div class="json-block" id="jsonBlock">Loading…</div>
+
+    </div><!-- /proto-wrap -->
+  </div><!-- /proto-inner -->
+</div><!-- /proto-section -->
 
 <a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
 
 <script>
-function val(v) {
-  return (v === null || v === undefined || v === '') ? null : v;
-}
+function toggleAcc(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = sessionStorage.getItem('assistant_scroll');
+  if (saved) { window.scrollTo(0, parseInt(saved)); sessionStorage.removeItem('assistant_scroll'); }
+  document.querySelector('.back-link').addEventListener('click', () => {
+    sessionStorage.setItem('assistant_scroll', window.scrollY);
+  });
+});
 
 function renderField(id, v, suffix) {
   const el = document.getElementById(id);
-  if (v === null || v === '') {
+  if (v === null || v === undefined || v === '') {
     el.textContent = 'Not provided';
-    el.className = 'field-val empty';
+    el.className = 'field-value empty';
   } else {
     el.textContent = suffix ? `${v}${suffix}` : v;
-    el.className = 'field-val';
+    el.className = 'field-value';
   }
 }
 
@@ -233,7 +246,7 @@ const raw = sessionStorage.getItem('assistant_data');
 
 if (!raw) {
   document.getElementById('warningEl').style.display = 'block';
-  document.getElementById('fieldCard').style.display = 'none';
+  document.getElementById('contactCard').style.display = 'none';
   document.getElementById('statusDot').className = 'status-dot';
   document.getElementById('statusLabel').textContent = 'No data — start a conversation first';
   document.getElementById('jsonBlock').textContent = 'null';
@@ -246,21 +259,21 @@ if (!raw) {
     ? 'Conversation complete — all fields collected'
     : 'Conversation in progress — data updates in real time';
 
-  renderField('fName',    d.name,       null);
-  renderField('fCity',     d.city,       null);
-  renderField('fProvince', d.province,  null);
-  renderField('fEmail',    d.email,     null);
-  renderField('fPhone',   d.phone,      null);
-  renderField('fPostal',  d.postalCode, null);
-  renderField('fRating',  d.rating !== null ? d.rating : null, ' / 10');
-  renderField('fMessage', d.message,    null);
+  renderField('fName',     d.name,                               null);
+  renderField('fCity',     d.city,                               null);
+  renderField('fProvince', d.province,                           null);
+  renderField('fEmail',    d.email,                              null);
+  renderField('fPhone',    d.phone,                              null);
+  renderField('fPostal',   d.postalCode,                         null);
+  renderField('fRating',   d.rating !== null ? d.rating : null,  ' / 10');
+  renderField('fMessage',  d.message,                            null);
 
   const sentEl = document.getElementById('fSentiment');
   if (d.sentiment) {
     sentEl.innerHTML = `<span class="sentiment-badge ${d.sentiment}">${d.sentiment}</span>`;
   } else {
     sentEl.textContent = 'Not yet analysed';
-    sentEl.className = 'field-val empty';
+    sentEl.className = 'field-value empty';
   }
 
   const payload = {
