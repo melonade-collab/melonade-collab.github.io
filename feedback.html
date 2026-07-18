@@ -421,22 +421,22 @@
 <div class="cs-body">
 
   <div class="acc-card mb16">
-    <div class="acc-header open" onclick="toggleAcc(this)">
+    <div class="acc-header" onclick="toggleAcc(this)">
       <p class="card-label">Problem</p>
       <span class="acc-chevron">▼</span>
     </div>
-    <div class="acc-body open">
+    <div class="acc-body">
       <p>Support teams running feedback queues spend significant time on triage before any resolution begins. Every submission requires someone to read it, categorize it, assess urgency, and route it to the right team — a repetitive task that's slow at low volume and inconsistent at scale. Submissions arriving outside business hours sit unrouted until the next day, and when volume spikes, priority judgment degrades.</p>
       <p style="margin-top:8px;">The result is misrouted tickets, duplicated cases where the same customer submits multiple times without knowing their first submission is being handled, and no visibility into the quality of routing decisions over time.</p>
     </div>
   </div>
 
   <div class="acc-card mb16">
-    <div class="acc-header open" onclick="toggleAcc(this)">
+    <div class="acc-header" onclick="toggleAcc(this)">
       <p class="card-label">Constraints</p>
       <span class="acc-chevron">▼</span>
     </div>
-    <div class="acc-body open">
+    <div class="acc-body">
       <ul>
         <li>Sentiment analysis had to run client-side — no server calls on live form input events</li>
         <li>The routing model needed to handle highly variable natural language input, where the same billing issue could be described a dozen different ways</li>
@@ -448,11 +448,11 @@
   </div>
 
   <div class="acc-card mb16">
-    <div class="acc-header open" onclick="toggleAcc(this)">
+    <div class="acc-header" onclick="toggleAcc(this)">
       <p class="card-label">Product Ownership</p>
       <span class="acc-chevron">▼</span>
     </div>
-    <div class="acc-body open">
+    <div class="acc-body">
       <div class="contrib-grid">
         <div>
           <p class="contrib-item-label">Intent Classification</p>
@@ -475,11 +475,11 @@
   </div>
 
   <div class="acc-card mb40" style="border-color:#C7D2FE;">
-    <div class="acc-header open" onclick="toggleAcc(this)" style="background:#EEF2FF;">
+    <div class="acc-header" onclick="toggleAcc(this)" style="background:#EEF2FF;">
       <p class="card-label" style="color:#3730A3;">Outcome</p>
       <span class="acc-chevron" style="color:#3730A3;">▼</span>
     </div>
-    <div class="acc-body open" style="background:#EEF2FF;">
+    <div class="acc-body" style="background:#EEF2FF;">
       <p style="color:#312E81;">Agent-driven intake eliminated manual touches between submission and queue assignment. Priority escalation logic built on compound signals — sentiment combined with NPS rating — produced a more accurate urgency signal than keyword matching alone. The structured JSON output demonstrated how the same intake layer could feed multiple downstream systems without requiring additional manual handling at the ingestion point.</p>
     </div>
   </div>
