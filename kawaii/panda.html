@@ -53,6 +53,29 @@ h1 {
   margin-bottom: 9px;
   text-align: center;
 }
+.mode-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  max-width: 320px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.mode-btn {
+  padding: 10px 8px;
+  border-radius: 14px;
+  border: 3px solid transparent;
+  background: white;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #8B6BAE;
+  box-shadow: 0 2px 10px rgba(180,100,200,0.1);
+  transition: all 0.14s;
+}
+.mode-btn:hover { transform: scale(1.04); }
+.mode-btn.active { border-color: #D63384; background: #FFF0F8; color: #D63384; }
 .outfit-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -155,7 +178,21 @@ h1 {
   <clipPath id="bodyClip">
     <ellipse cx="170" cy="330" rx="92" ry="84"/>
   </clipPath>
+  <clipPath id="mcBodyClip">
+    <rect x="100" y="228" width="140" height="140"/>
+  </clipPath>
+  <clipPath id="rbBodyClip">
+    <rect x="106" y="234" width="128" height="130" rx="6"/>
+  </clipPath>
+  <radialGradient id="irisGrad" cx="35%" cy="30%" r="65%">
+    <stop offset="0%" stop-color="#CC99FF"/>
+    <stop offset="55%" stop-color="#9966EE"/>
+    <stop offset="100%" stop-color="#5533AA"/>
+  </radialGradient>
 </defs>
+
+<!-- ═══════════════ KAWAII MODE ═══════════════ -->
+<g id="mode-kawaii">
 
 <!-- Ground shadow -->
 <ellipse cx="170" cy="437" rx="84" ry="9" fill="#C8A0C8" opacity="0.22"/>
@@ -201,8 +238,7 @@ h1 {
 <circle cx="234" cy="370" r="5.5" fill="#111"/>
 <circle cx="251" cy="374" r="5.5" fill="#111"/>
 
-<!-- ── OUTFITS (above body, below head) ── -->
-
+<!-- OUTFITS -->
 <g id="outfit-pink" style="display:none">
   <g clip-path="url(#bodyClip)">
     <rect x="78" y="242" width="184" height="174" fill="#FFB0CC"/>
@@ -302,13 +338,12 @@ h1 {
 <!-- Ears -->
 <circle cx="82"  cy="60" r="42" fill="url(#darkGrad)"/>
 <circle cx="258" cy="60" r="42" fill="url(#darkGrad)"/>
-<!-- Pink inner ears -->
 <circle cx="82"  cy="60" r="24" fill="#FFB8CC"/>
 <circle cx="258" cy="60" r="24" fill="#FFB8CC"/>
 <circle cx="74"  cy="52" r="9"  fill="#FFC8D8" opacity="0.55"/>
 <circle cx="250" cy="52" r="9"  fill="#FFC8D8" opacity="0.55"/>
 
-<!-- Bunny ears (before head so head covers base) -->
+<!-- Bunny ears -->
 <g id="acc-bunny" style="display:none">
   <ellipse cx="120" cy="28" rx="14" ry="28" fill="white" stroke="#E8E8E8" stroke-width="1.5"/>
   <ellipse cx="220" cy="28" rx="14" ry="28" fill="white" stroke="#E8E8E8" stroke-width="1.5"/>
@@ -322,7 +357,7 @@ h1 {
 <!-- Tummy -->
 <ellipse id="tummy" cx="170" cy="335" rx="58" ry="66" fill="url(#tummyGrad)"/>
 
-<!-- Eye patches — slightly rotated for more character -->
+<!-- Eye patches -->
 <ellipse cx="132" cy="148" rx="40" ry="38" fill="url(#patchGrad)" transform="rotate(-8,132,148)"/>
 <ellipse cx="208" cy="148" rx="40" ry="38" fill="url(#patchGrad)" transform="rotate(8,208,148)"/>
 
@@ -348,19 +383,15 @@ h1 {
 
 <!-- Mouth -->
 <path d="M156,193 Q170,207 184,193" fill="none" stroke="#1a1a1a" stroke-width="2.8" stroke-linecap="round"/>
-<!-- Tiny cheek crinkles -->
 <path d="M148,202 Q144,207 146,211" fill="none" stroke="#1a1a1a" stroke-width="1.4" stroke-linecap="round" opacity="0.35"/>
 <path d="M192,202 Q196,207 194,211" fill="none" stroke="#1a1a1a" stroke-width="1.4" stroke-linecap="round" opacity="0.35"/>
 
-<!-- ── ACCESSORIES (on top of face) ── -->
-
-<!-- Blush -->
+<!-- ACCESSORIES -->
 <g id="acc-blush" style="display:none">
   <ellipse cx="96"  cy="168" rx="27" ry="17" fill="#FFB0CC" opacity="0.6"/>
   <ellipse cx="244" cy="168" rx="27" ry="17" fill="#FFB0CC" opacity="0.6"/>
 </g>
 
-<!-- Round glasses -->
 <g id="acc-glasses" style="display:none">
   <circle cx="132" cy="145" r="32" fill="#FFD6EE" opacity="0.45"/>
   <circle cx="132" cy="145" r="32" fill="none" stroke="#FF69B4" stroke-width="3"/>
@@ -371,7 +402,6 @@ h1 {
   <line x1="240" y1="145" x2="256" y2="139" stroke="#FF69B4" stroke-width="3"/>
 </g>
 
-<!-- Heart sunglasses -->
 <g id="acc-sunglasses" style="display:none">
   <path d="M132,146 C132,132 108,128 108,146 C108,160 132,178 132,178 C132,178 156,160 156,146 C156,128 132,132 132,146 Z" fill="#FF3388" opacity="0.88"/>
   <path d="M208,146 C208,132 184,128 184,146 C184,160 208,178 208,178 C208,178 232,160 232,146 C232,128 208,132 208,146 Z" fill="#FF3388" opacity="0.88"/>
@@ -382,7 +412,6 @@ h1 {
   <ellipse cx="194" cy="140" rx="5" ry="3" fill="white" opacity="0.38" transform="rotate(-22,194,140)"/>
 </g>
 
-<!-- Crown -->
 <g id="acc-crown" style="display:none">
   <polygon points="124,68 141,42 158,60 170,24 182,60 199,42 216,68" fill="#FFD700"/>
   <rect x="124" y="64" width="92" height="14" fill="#FFD700" rx="2"/>
@@ -395,7 +424,6 @@ h1 {
   <circle cx="199" cy="42" r="2.5" fill="#FFE566"/>
 </g>
 
-<!-- Tiara (more delicate than crown) -->
 <g id="acc-tiara" style="display:none">
   <path d="M126,78 L143,54 L158,70 L170,46 L182,70 L197,54 L214,78" fill="none" stroke="#FFD700" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
   <line x1="118" y1="80" x2="222" y2="80" stroke="#FFD700" stroke-width="4" stroke-linecap="round"/>
@@ -407,7 +435,6 @@ h1 {
   <circle cx="182" cy="70" r="3.5" fill="#FFD700"/>
 </g>
 
-<!-- Bow on right ear -->
 <g id="acc-bow" style="display:none">
   <ellipse cx="256" cy="46" rx="20" ry="12" fill="#FF85A1" transform="rotate(-22,256,46)"/>
   <ellipse cx="292" cy="46" rx="20" ry="12" fill="#FF6B9D" transform="rotate(22,292,46)"/>
@@ -415,7 +442,6 @@ h1 {
   <circle cx="274" cy="46" r="5"  fill="#FFB0CC"/>
 </g>
 
-<!-- Flower on left ear -->
 <g id="acc-flower" style="display:none">
   <circle cx="52" cy="39" r="13" fill="#FF85A1"/>
   <circle cx="68" cy="32" r="13" fill="#FF6B9D"/>
@@ -427,7 +453,6 @@ h1 {
   <circle cx="68" cy="47" r="9"  fill="#FFA500"/>
 </g>
 
-<!-- Party hat -->
 <g id="acc-hat" style="display:none">
   <polygon points="140,58 200,58 170,8" fill="#FF85A1"/>
   <polygon points="140,58 200,58 170,8" fill="none" stroke="#D63384" stroke-width="2"/>
@@ -439,7 +464,6 @@ h1 {
   <path d="M140,58 Q170,70 200,58" fill="#D63384"/>
 </g>
 
-<!-- Pearl necklace -->
 <g id="acc-necklace" style="display:none">
   <circle cx="108" cy="246" r="5.5" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
   <circle cx="122" cy="252" r="5.5" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
@@ -452,7 +476,6 @@ h1 {
   <circle cx="232" cy="246" r="5.5" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
 </g>
 
-<!-- Star wand -->
 <g id="acc-wand" style="display:none">
   <line x1="230" y1="325" x2="262" y2="175" stroke="#C4B5FD" stroke-width="7" stroke-linecap="round"/>
   <polygon points="262,144 266.1,156.3 279.1,156.4 268.7,164.2 272.6,176.6 262,169 251.4,176.6 255.3,164.2 244.9,156.4 257.9,156.3" fill="#FFD700" stroke="#E6A800" stroke-width="1.5"/>
@@ -461,7 +484,972 @@ h1 {
   <circle cx="283" cy="166" r="3" fill="#FFD700" opacity="0.7"/>
 </g>
 
+</g><!-- end mode-kawaii -->
+
+
+<!-- ═══════════════ MINECRAFT MODE ═══════════════ -->
+<g id="mode-minecraft" style="display:none">
+
+<!-- Ground shadow -->
+<ellipse cx="170" cy="437" rx="84" ry="9" fill="#5A4A5A" opacity="0.2"/>
+
+<!-- Angel wings (pixel style, behind body) -->
+<g id="mc-acc-wings" style="display:none">
+  <rect x="8"   y="256" width="48" height="12" fill="white" opacity="0.9"/>
+  <rect x="8"   y="268" width="64" height="12" fill="white" opacity="0.87"/>
+  <rect x="8"   y="280" width="76" height="12" fill="white" opacity="0.85"/>
+  <rect x="8"   y="292" width="76" height="12" fill="white" opacity="0.82"/>
+  <rect x="8"   y="304" width="64" height="12" fill="white" opacity="0.78"/>
+  <rect x="16"  y="316" width="48" height="12" fill="white" opacity="0.72"/>
+  <rect x="24"  y="328" width="32" height="12" fill="white" opacity="0.65"/>
+  <rect x="284" y="256" width="48" height="12" fill="white" opacity="0.9"/>
+  <rect x="268" y="268" width="64" height="12" fill="white" opacity="0.87"/>
+  <rect x="256" y="280" width="76" height="12" fill="white" opacity="0.85"/>
+  <rect x="256" y="292" width="76" height="12" fill="white" opacity="0.82"/>
+  <rect x="268" y="304" width="64" height="12" fill="white" opacity="0.78"/>
+  <rect x="276" y="316" width="48" height="12" fill="white" opacity="0.72"/>
+  <rect x="284" y="328" width="32" height="12" fill="white" opacity="0.65"/>
+</g>
+
+<!-- Body block -->
+<rect x="100" y="228" width="140" height="140" fill="#E0E0E0"/>
+
+<!-- Arms -->
+<rect x="36"  y="228" width="64" height="148" fill="#1E1E1E"/>
+<rect x="240" y="228" width="64" height="148" fill="#1E1E1E"/>
+
+<!-- Paw pads (bottom of arms) -->
+<rect x="44"  y="352" width="12" height="12" fill="#0d0d0d"/>
+<rect x="60"  y="358" width="12" height="12" fill="#0d0d0d"/>
+<rect x="76"  y="352" width="12" height="12" fill="#0d0d0d"/>
+<rect x="252" y="352" width="12" height="12" fill="#0d0d0d"/>
+<rect x="268" y="358" width="12" height="12" fill="#0d0d0d"/>
+<rect x="284" y="352" width="12" height="12" fill="#0d0d0d"/>
+
+<!-- Feet -->
+<rect x="100" y="360" width="64" height="68" fill="#1E1E1E"/>
+<rect x="176" y="360" width="64" height="68" fill="#1E1E1E"/>
+
+<!-- Toe marks -->
+<rect x="104" y="352" width="12" height="10" fill="#111"/>
+<rect x="122" y="348" width="12" height="10" fill="#111"/>
+<rect x="140" y="352" width="12" height="10" fill="#111"/>
+<rect x="184" y="352" width="12" height="10" fill="#111"/>
+<rect x="202" y="348" width="12" height="10" fill="#111"/>
+<rect x="220" y="352" width="12" height="10" fill="#111"/>
+
+<!-- MC OUTFITS -->
+<g id="mc-outfit-pink" style="display:none">
+  <g clip-path="url(#mcBodyClip)">
+    <rect x="100" y="228" width="140" height="140" fill="#FFB0CC"/>
+    <rect x="120" y="248" width="8" height="8" fill="white" opacity="0.42"/>
+    <rect x="152" y="264" width="8" height="8" fill="white" opacity="0.38"/>
+    <rect x="184" y="248" width="8" height="8" fill="white" opacity="0.4"/>
+    <rect x="136" y="288" width="8" height="8" fill="white" opacity="0.36"/>
+    <rect x="168" y="304" width="8" height="8" fill="white" opacity="0.38"/>
+    <rect x="200" y="280" width="8" height="8" fill="white" opacity="0.35"/>
+    <rect x="120" y="320" width="8" height="8" fill="white" opacity="0.35"/>
+    <rect x="160" y="336" width="8" height="8" fill="white" opacity="0.33"/>
+    <rect x="196" y="320" width="8" height="8" fill="white" opacity="0.32"/>
+  </g>
+  <rect x="100" y="228" width="140" height="12" fill="#FF85A1"/>
+</g>
+
+<g id="mc-outfit-blue" style="display:none">
+  <g clip-path="url(#mcBodyClip)">
+    <rect x="100" y="228" width="140" height="140" fill="#8BBCF8"/>
+    <rect x="148" y="252" width="8" height="24" fill="white" opacity="0.5"/>
+    <rect x="140" y="260" width="24" height="8" fill="white" opacity="0.5"/>
+    <rect x="196" y="296" width="8" height="24" fill="white" opacity="0.45"/>
+    <rect x="188" y="304" width="24" height="8" fill="white" opacity="0.45"/>
+    <rect x="120" y="308" width="8" height="24" fill="white" opacity="0.42"/>
+    <rect x="112" y="316" width="24" height="8" fill="white" opacity="0.42"/>
+    <rect x="176" y="268" width="8" height="8" fill="white" opacity="0.4"/>
+    <rect x="136" y="344" width="8" height="8" fill="white" opacity="0.38"/>
+    <rect x="204" y="348" width="8" height="8" fill="white" opacity="0.36"/>
+  </g>
+  <rect x="100" y="228" width="140" height="12" fill="#4A88E8"/>
+</g>
+
+<g id="mc-outfit-purple" style="display:none">
+  <g clip-path="url(#mcBodyClip)">
+    <rect x="100" y="228" width="140" height="140" fill="#C4A8FF"/>
+    <rect x="100" y="264" width="140" height="4" fill="#FFD700" opacity="0.55"/>
+    <rect x="100" y="296" width="140" height="4" fill="#FFD700" opacity="0.45"/>
+    <rect x="100" y="328" width="140" height="4" fill="#FFD700" opacity="0.4"/>
+    <rect x="162" y="276" width="12" height="12" fill="#FFD700" opacity="0.65"/>
+    <rect x="136" y="308" width="8" height="8" fill="#FFD700" opacity="0.5"/>
+    <rect x="196" y="308" width="8" height="8" fill="#FFD700" opacity="0.5"/>
+    <rect x="148" y="344" width="8" height="8" fill="#FFD700" opacity="0.45"/>
+    <rect x="188" y="348" width="8" height="8" fill="#FFD700" opacity="0.45"/>
+  </g>
+  <rect x="100" y="228" width="140" height="12" fill="#8048D8"/>
+</g>
+
+<g id="mc-outfit-strawberry" style="display:none">
+  <g clip-path="url(#mcBodyClip)">
+    <rect x="100" y="228" width="140" height="140" fill="#FF6060"/>
+    <rect x="130" y="250" width="6" height="8" fill="#FFF5EE" opacity="0.82"/>
+    <rect x="160" y="266" width="6" height="8" fill="#FFF5EE" opacity="0.82"/>
+    <rect x="190" y="250" width="6" height="8" fill="#FFF5EE" opacity="0.82"/>
+    <rect x="144" y="292" width="6" height="8" fill="#FFF5EE" opacity="0.78"/>
+    <rect x="180" y="298" width="6" height="8" fill="#FFF5EE" opacity="0.78"/>
+    <rect x="116" y="280" width="6" height="8" fill="#FFF5EE" opacity="0.74"/>
+    <rect x="208" y="278" width="6" height="8" fill="#FFF5EE" opacity="0.74"/>
+    <rect x="156" y="332" width="6" height="8" fill="#FFF5EE" opacity="0.7"/>
+    <rect x="192" y="340" width="6" height="8" fill="#FFF5EE" opacity="0.68"/>
+    <rect x="126" y="318" width="6" height="8" fill="#FFF5EE" opacity="0.72"/>
+  </g>
+  <rect x="100" y="228" width="140" height="12" fill="#3DAA50"/>
+</g>
+
+<g id="mc-outfit-rainbow" style="display:none">
+  <g clip-path="url(#mcBodyClip)">
+    <rect x="100" y="228" width="140" height="24" fill="#FF8888"/>
+    <rect x="100" y="252" width="140" height="23" fill="#FFB866"/>
+    <rect x="100" y="275" width="140" height="23" fill="#FFE566"/>
+    <rect x="100" y="298" width="140" height="23" fill="#88DD88"/>
+    <rect x="100" y="321" width="140" height="23" fill="#88AAFF"/>
+    <rect x="100" y="344" width="140" height="24" fill="#CC88FF"/>
+  </g>
+  <rect x="100" y="228" width="140" height="12" fill="#FF6060"/>
+</g>
+
+<g id="mc-outfit-mint" style="display:none">
+  <g clip-path="url(#mcBodyClip)">
+    <rect x="100" y="228" width="140" height="140" fill="#A0EED0"/>
+    <rect x="132" y="250" width="12" height="8" fill="#4A2810" opacity="0.6"/>
+    <rect x="178" y="270" width="12" height="8" fill="#4A2810" opacity="0.6"/>
+    <rect x="152" y="306" width="10" height="8" fill="#4A2810" opacity="0.58"/>
+    <rect x="116" y="290" width="10" height="8" fill="#4A2810" opacity="0.55"/>
+    <rect x="200" y="304" width="10" height="8" fill="#4A2810" opacity="0.55"/>
+    <rect x="162" y="350" width="10" height="8" fill="#4A2810" opacity="0.52"/>
+    <rect x="130" y="336" width="10" height="8" fill="#4A2810" opacity="0.5"/>
+    <rect x="204" y="336" width="10" height="8" fill="#4A2810" opacity="0.5"/>
+  </g>
+  <rect x="100" y="228" width="140" height="12" fill="#50B888"/>
+</g>
+
+<!-- Scarf (before head) -->
+<g id="mc-acc-scarf" style="display:none">
+  <rect x="72"  y="220" width="196" height="32" fill="#FF6B9D"/>
+  <rect x="114" y="252" width="28"  height="76" fill="#FF6B9D"/>
+  <rect x="72"  y="222" width="196" height="6"  fill="#D63384" opacity="0.45"/>
+  <rect x="72"  y="240" width="196" height="6"  fill="#D63384" opacity="0.35"/>
+</g>
+
+<!-- Bowtie (before head) -->
+<g id="mc-acc-bowtie" style="display:none">
+  <rect x="114" y="232" width="44" height="20" fill="#A78BFA"/>
+  <rect x="182" y="232" width="44" height="20" fill="#A78BFA"/>
+  <rect x="154" y="228" width="32" height="28" fill="#7C3AED"/>
+  <rect x="160" y="234" width="20" height="16" fill="#C4B5FD"/>
+</g>
+
+<!-- Panda ear blocks -->
+<rect x="56"  y="4"  width="64" height="60" fill="#1E1E1E"/>
+<rect x="68"  y="12" width="40" height="40" fill="#FFB8CC"/>
+<rect x="220" y="4"  width="64" height="60" fill="#1E1E1E"/>
+<rect x="232" y="12" width="40" height="40" fill="#FFB8CC"/>
+
+<!-- Bunny ears (before head) -->
+<g id="mc-acc-bunny" style="display:none">
+  <rect x="104" y="2"  width="28" height="52" fill="white" stroke="#E8E8E8" stroke-width="2"/>
+  <rect x="110" y="6"  width="16" height="40" fill="#FFB0C8"/>
+  <rect x="208" y="2"  width="28" height="52" fill="white" stroke="#E8E8E8" stroke-width="2"/>
+  <rect x="214" y="6"  width="16" height="40" fill="#FFB0C8"/>
+</g>
+
+<!-- Head block -->
+<rect x="60" y="40" width="220" height="200" fill="#F0F0F0"/>
+
+<!-- Tummy -->
+<rect x="114" y="252" width="112" height="108" fill="#F8F8F8"/>
+
+<!-- Eye patches -->
+<rect x="82"  y="90" width="84" height="76" fill="#1E1E1E"/>
+<rect x="174" y="90" width="84" height="76" fill="#1E1E1E"/>
+
+<!-- Eyes (white) -->
+<rect x="94"  y="102" width="52" height="52" fill="white"/>
+<rect x="186" y="102" width="52" height="52" fill="white"/>
+
+<!-- Pupils -->
+<rect x="106" y="114" width="24" height="24" fill="#111"/>
+<rect x="198" y="114" width="24" height="24" fill="#111"/>
+
+<!-- Shine -->
+<rect x="96"  y="104" width="14" height="14" fill="white"/>
+<rect x="188" y="104" width="14" height="14" fill="white"/>
+
+<!-- Nose -->
+<rect x="152" y="172" width="36" height="24" fill="#1E1E1E"/>
+<rect x="154" y="174" width="10" height="8"  fill="#333" opacity="0.4"/>
+
+<!-- Mouth (pixel smile) -->
+<rect x="148" y="202" width="8" height="8" fill="#111"/>
+<rect x="156" y="210" width="8" height="8" fill="#111"/>
+<rect x="164" y="214" width="16" height="8" fill="#111"/>
+<rect x="180" y="210" width="8" height="8" fill="#111"/>
+<rect x="188" y="202" width="8" height="8" fill="#111"/>
+
+<!-- MC ACCESSORIES -->
+
+<!-- Blush -->
+<g id="mc-acc-blush" style="display:none">
+  <rect x="60"  y="158" width="48" height="28" fill="#FFB0CC" opacity="0.6"/>
+  <rect x="232" y="158" width="48" height="28" fill="#FFB0CC" opacity="0.6"/>
+</g>
+
+<!-- Glasses -->
+<g id="mc-acc-glasses" style="display:none">
+  <rect x="82"  y="86" width="84" height="84" fill="#FFD6EE" opacity="0.3"/>
+  <rect x="82"  y="86" width="84" height="84" fill="none" stroke="#FF69B4" stroke-width="4"/>
+  <rect x="174" y="86" width="84" height="84" fill="#FFD6EE" opacity="0.3"/>
+  <rect x="174" y="86" width="84" height="84" fill="none" stroke="#FF69B4" stroke-width="4"/>
+  <rect x="166" y="122" width="8"  height="8" fill="#FF69B4"/>
+  <rect x="58"  y="122" width="24" height="8" fill="#FF69B4"/>
+  <rect x="258" y="122" width="24" height="8" fill="#FF69B4"/>
+</g>
+
+<!-- Sunglasses -->
+<g id="mc-acc-sunglasses" style="display:none">
+  <rect x="82"  y="86" width="84" height="84" fill="#FF3388" opacity="0.88"/>
+  <rect x="174" y="86" width="84" height="84" fill="#FF3388" opacity="0.88"/>
+  <rect x="166" y="118" width="8"  height="8" fill="#BB0055"/>
+  <rect x="58"  y="118" width="24" height="8" fill="#BB0055"/>
+  <rect x="258" y="118" width="24" height="8" fill="#BB0055"/>
+  <rect x="90"  y="94"  width="16" height="8" fill="white" opacity="0.35"/>
+  <rect x="182" y="94"  width="16" height="8" fill="white" opacity="0.35"/>
+</g>
+
+<!-- Crown -->
+<g id="mc-acc-crown" style="display:none">
+  <rect x="118" y="60" width="104" height="16" fill="#FFD700"/>
+  <rect x="118" y="44" width="16"  height="16" fill="#FFD700"/>
+  <rect x="142" y="36" width="16"  height="24" fill="#FFD700"/>
+  <rect x="162" y="20" width="20"  height="40" fill="#FFD700"/>
+  <rect x="190" y="36" width="16"  height="24" fill="#FFD700"/>
+  <rect x="210" y="44" width="16"  height="16" fill="#FFD700"/>
+  <rect x="164" y="24" width="12"  height="10" fill="#FF4081"/>
+  <rect x="144" y="40" width="8"   height="8"  fill="#9C27B0"/>
+  <rect x="194" y="40" width="8"   height="8"  fill="#2196F3"/>
+  <rect x="118" y="60" width="104" height="16" fill="none" stroke="#E6B800" stroke-width="2"/>
+</g>
+
+<!-- Tiara -->
+<g id="mc-acc-tiara" style="display:none">
+  <rect x="116" y="72" width="108" height="8" fill="#FFD700"/>
+  <rect x="132" y="56" width="8"   height="16" fill="#FFD700"/>
+  <rect x="154" y="44" width="8"   height="28" fill="#FFD700"/>
+  <rect x="166" y="36" width="8"   height="36" fill="#FFD700"/>
+  <rect x="182" y="44" width="8"   height="28" fill="#FFD700"/>
+  <rect x="204" y="56" width="8"   height="16" fill="#FFD700"/>
+  <rect x="166" y="36" width="8"   height="8"  fill="#FF80C0"/>
+  <rect x="154" y="44" width="8"   height="8"  fill="#C4B5FD"/>
+  <rect x="182" y="44" width="8"   height="8"  fill="#A0D8FF"/>
+</g>
+
+<!-- Bow (on right ear) -->
+<g id="mc-acc-bow" style="display:none">
+  <rect x="224" y="22" width="24" height="20" fill="#FF85A1"/>
+  <rect x="260" y="22" width="24" height="20" fill="#FF6B9D"/>
+  <rect x="220" y="18" width="12" height="28" fill="#FF85A1" opacity="0.7"/>
+  <rect x="252" y="18" width="12" height="28" fill="#FF6B9D" opacity="0.7"/>
+  <rect x="242" y="20" width="20" height="24" fill="#D63384"/>
+  <rect x="246" y="24" width="12" height="16" fill="#FFB0CC"/>
+</g>
+
+<!-- Flower (on left ear) -->
+<g id="mc-acc-flower" style="display:none">
+  <rect x="60" y="16" width="12" height="12" fill="#FF85A1"/>
+  <rect x="72" y="8"  width="12" height="12" fill="#FF6B9D"/>
+  <rect x="84" y="16" width="12" height="12" fill="#FF85A1"/>
+  <rect x="84" y="28" width="12" height="12" fill="#FF6B9D"/>
+  <rect x="72" y="36" width="12" height="12" fill="#FF85A1"/>
+  <rect x="60" y="28" width="12" height="12" fill="#FF6B9D"/>
+  <rect x="68" y="20" width="20" height="20" fill="#FFD700"/>
+  <rect x="72" y="24" width="12" height="12" fill="#FFA500"/>
+</g>
+
+<!-- Party Hat -->
+<g id="mc-acc-hat" style="display:none">
+  <rect x="162" y="6"  width="16" height="8"  fill="#FF85A1"/>
+  <rect x="154" y="14" width="32" height="8"  fill="#FF85A1"/>
+  <rect x="146" y="22" width="48" height="8"  fill="#FF85A1"/>
+  <rect x="138" y="30" width="64" height="8"  fill="#FF85A1"/>
+  <rect x="138" y="38" width="64" height="8"  fill="#FF85A1"/>
+  <rect x="138" y="46" width="64" height="8"  fill="#FF85A1"/>
+  <rect x="138" y="54" width="64" height="8"  fill="#D63384"/>
+  <rect x="156" y="18" width="8"  height="8"  fill="white" opacity="0.8"/>
+  <rect x="168" y="34" width="8"  height="8"  fill="white" opacity="0.7"/>
+  <rect x="162" y="0"  width="16" height="6"  fill="#FFD700"/>
+</g>
+
+<!-- Necklace -->
+<g id="mc-acc-necklace" style="display:none">
+  <rect x="102" y="230" width="12" height="12" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <rect x="118" y="234" width="12" height="12" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <rect x="134" y="238" width="12" height="12" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <rect x="150" y="242" width="12" height="12" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <rect x="164" y="244" width="12" height="12" fill="#FFD0E8" stroke="#FF88BB" stroke-width="1.5"/>
+  <rect x="178" y="242" width="12" height="12" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <rect x="194" y="238" width="12" height="12" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <rect x="210" y="234" width="12" height="12" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <rect x="226" y="230" width="12" height="12" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+</g>
+
+<!-- Star Wand (pixel style) -->
+<g id="mc-acc-wand" style="display:none">
+  <!-- handle: stepped diagonal -->
+  <rect x="260" y="192" width="8" height="8" fill="#C4B5FD"/>
+  <rect x="264" y="208" width="8" height="8" fill="#C4B5FD"/>
+  <rect x="268" y="224" width="8" height="8" fill="#C4B5FD"/>
+  <rect x="272" y="240" width="8" height="8" fill="#C4B5FD"/>
+  <rect x="276" y="256" width="8" height="8" fill="#C4B5FD"/>
+  <rect x="280" y="272" width="8" height="8" fill="#C4B5FD"/>
+  <rect x="284" y="288" width="8" height="8" fill="#C4B5FD"/>
+  <rect x="288" y="304" width="8" height="8" fill="#C4B5FD"/>
+  <!-- star: cross shape -->
+  <rect x="244" y="148" width="16" height="40" fill="#FFD700"/>
+  <rect x="228" y="160" width="48" height="16" fill="#FFD700"/>
+  <!-- diagonal points -->
+  <rect x="232" y="152" width="12" height="12" fill="#FFD700"/>
+  <rect x="260" y="152" width="12" height="12" fill="#FFD700"/>
+  <rect x="232" y="172" width="12" height="12" fill="#FFD700"/>
+  <rect x="260" y="172" width="12" height="12" fill="#FFD700"/>
+  <!-- center gem -->
+  <rect x="248" y="156" width="8"  height="24" fill="#FFE566"/>
+  <!-- sparkles -->
+  <rect x="276" y="144" width="8" height="8" fill="#FFD700" opacity="0.7"/>
+  <rect x="220" y="148" width="8" height="8" fill="#C4B5FD"/>
+  <rect x="228" y="140" width="8" height="8" fill="#FFD700" opacity="0.6"/>
+</g>
+
+</g><!-- end mode-minecraft -->
+
+
+<!-- ═══════════════ ROBLOX MODE ═══════════════ -->
+<g id="mode-roblox" style="display:none">
+
+<ellipse cx="170" cy="437" rx="84" ry="9" fill="#C8A0C8" opacity="0.2"/>
+
+<!-- Wings -->
+<g id="rb-acc-wings" style="display:none">
+  <ellipse cx="44" cy="300" rx="50" ry="66" fill="white" opacity="0.92" transform="rotate(-20,44,300)"/>
+  <ellipse cx="44" cy="300" rx="34" ry="48" fill="white" opacity="0.75" transform="rotate(-20,44,300)"/>
+  <ellipse cx="296" cy="300" rx="50" ry="66" fill="white" opacity="0.92" transform="rotate(20,296,300)"/>
+  <ellipse cx="296" cy="300" rx="34" ry="48" fill="white" opacity="0.75" transform="rotate(20,296,300)"/>
+  <path d="M24,258 Q38,300 34,344" stroke="#E8E8FF" stroke-width="2" fill="none" opacity="0.7"/>
+  <path d="M42,252 Q50,300 46,348" stroke="#E8E8FF" stroke-width="2" fill="none" opacity="0.7"/>
+  <path d="M60,258 Q62,300 58,344" stroke="#E8E8FF" stroke-width="2" fill="none" opacity="0.6"/>
+  <path d="M316,258 Q302,300 306,344" stroke="#E8E8FF" stroke-width="2" fill="none" opacity="0.7"/>
+  <path d="M298,252 Q290,300 294,348" stroke="#E8E8FF" stroke-width="2" fill="none" opacity="0.7"/>
+  <path d="M280,258 Q278,300 282,344" stroke="#E8E8FF" stroke-width="2" fill="none" opacity="0.6"/>
+</g>
+
+<!-- Body (rounded block) -->
+<rect x="106" y="234" width="128" height="130" rx="6" fill="#E2E2E2"/>
+
+<!-- Arms (rounded blocks) -->
+<rect x="42"  y="234" width="64" height="130" rx="6" fill="#1E1E1E"/>
+<rect x="234" y="234" width="64" height="130" rx="6" fill="#1E1E1E"/>
+
+<!-- Paw pads -->
+<circle cx="74"  cy="354" r="8"   fill="#0d0d0d"/>
+<circle cx="62"  cy="358" r="6"   fill="#0d0d0d"/>
+<circle cx="86"  cy="358" r="6"   fill="#0d0d0d"/>
+<circle cx="266" cy="354" r="8"   fill="#0d0d0d"/>
+<circle cx="254" cy="358" r="6"   fill="#0d0d0d"/>
+<circle cx="278" cy="358" r="6"   fill="#0d0d0d"/>
+
+<!-- Feet (rounded blocks) -->
+<rect x="106" y="358" width="60" height="70" rx="8" fill="#1E1E1E"/>
+<rect x="174" y="358" width="60" height="70" rx="8" fill="#1E1E1E"/>
+
+<!-- Toe marks -->
+<circle cx="118" cy="350" r="6.5" fill="#111"/>
+<circle cx="136" cy="346" r="6.5" fill="#111"/>
+<circle cx="154" cy="350" r="6.5" fill="#111"/>
+<circle cx="186" cy="350" r="6.5" fill="#111"/>
+<circle cx="204" cy="346" r="6.5" fill="#111"/>
+<circle cx="222" cy="350" r="6.5" fill="#111"/>
+
+<!-- RB OUTFITS -->
+<g id="rb-outfit-pink" style="display:none">
+  <g clip-path="url(#rbBodyClip)">
+    <rect x="106" y="234" width="128" height="130" fill="#FFB0CC"/>
+    <circle cx="130" cy="262" r="7"  fill="white" opacity="0.42"/>
+    <circle cx="170" cy="278" r="6"  fill="white" opacity="0.38"/>
+    <circle cx="205" cy="260" r="7"  fill="white" opacity="0.4"/>
+    <circle cx="146" cy="300" r="6"  fill="white" opacity="0.36"/>
+    <circle cx="186" cy="318" r="5"  fill="white" opacity="0.35"/>
+    <circle cx="118" cy="316" r="6"  fill="white" opacity="0.35"/>
+    <circle cx="158" cy="344" r="5"  fill="white" opacity="0.33"/>
+    <circle cx="198" cy="348" r="4"  fill="white" opacity="0.32"/>
+  </g>
+  <rect x="106" y="234" width="128" height="10" rx="4" fill="#FF85A1"/>
+</g>
+<g id="rb-outfit-blue" style="display:none">
+  <g clip-path="url(#rbBodyClip)">
+    <rect x="106" y="234" width="128" height="130" fill="#8BBCF8"/>
+    <polygon points="0,-10 2.4,-3.3 9.5,-3.1 3.9,1.2 5.9,8.1 0,4.1 -5.9,8.1 -3.9,1.2 -9.5,-3.1 -2.4,-3.3" fill="white" opacity="0.55" transform="translate(152,272)"/>
+    <polygon points="0,-10 2.4,-3.3 9.5,-3.1 3.9,1.2 5.9,8.1 0,4.1 -5.9,8.1 -3.9,1.2 -9.5,-3.1 -2.4,-3.3" fill="white" opacity="0.48" transform="translate(196,316)"/>
+    <polygon points="0,-10 2.4,-3.3 9.5,-3.1 3.9,1.2 5.9,8.1 0,4.1 -5.9,8.1 -3.9,1.2 -9.5,-3.1 -2.4,-3.3" fill="white" opacity="0.42" transform="translate(136,348)"/>
+    <circle cx="178" cy="296" r="4" fill="white" opacity="0.4"/>
+  </g>
+  <rect x="106" y="234" width="128" height="10" rx="4" fill="#4A88E8"/>
+</g>
+<g id="rb-outfit-purple" style="display:none">
+  <g clip-path="url(#rbBodyClip)">
+    <rect x="106" y="234" width="128" height="130" fill="#C4A8FF"/>
+    <rect x="106" y="270" width="128" height="3" fill="#FFD700" opacity="0.55"/>
+    <rect x="106" y="306" width="128" height="2" fill="#FFD700" opacity="0.45"/>
+    <circle cx="170" cy="288" r="6" fill="#FFD700" opacity="0.65"/>
+    <circle cx="140" cy="322" r="4" fill="#FFD700" opacity="0.5"/>
+    <circle cx="200" cy="322" r="4" fill="#FFD700" opacity="0.5"/>
+    <circle cx="152" cy="354" r="4" fill="#FFD700" opacity="0.45"/>
+    <circle cx="188" cy="356" r="4" fill="#FFD700" opacity="0.45"/>
+  </g>
+  <rect x="106" y="234" width="128" height="10" rx="4" fill="#8048D8"/>
+</g>
+<g id="rb-outfit-strawberry" style="display:none">
+  <g clip-path="url(#rbBodyClip)">
+    <rect x="106" y="234" width="128" height="130" fill="#FF6060"/>
+    <ellipse cx="132" cy="260" rx="3.5" ry="5" fill="#FFF5EE" opacity="0.82" transform="rotate(-15,132,260)"/>
+    <ellipse cx="163" cy="276" rx="3.5" ry="5" fill="#FFF5EE" opacity="0.82"/>
+    <ellipse cx="196" cy="260" rx="3.5" ry="5" fill="#FFF5EE" opacity="0.82" transform="rotate(10,196,260)"/>
+    <ellipse cx="146" cy="302" rx="3"   ry="4.5" fill="#FFF5EE" opacity="0.78"/>
+    <ellipse cx="182" cy="308" rx="3"   ry="4.5" fill="#FFF5EE" opacity="0.78"/>
+    <ellipse cx="116" cy="290" rx="3"   ry="4" fill="#FFF5EE" opacity="0.74"/>
+    <ellipse cx="208" cy="288" rx="3"   ry="4" fill="#FFF5EE" opacity="0.74"/>
+    <ellipse cx="162" cy="346" rx="3.5" ry="5" fill="#FFF5EE" opacity="0.7"/>
+  </g>
+  <rect x="106" y="234" width="128" height="10" rx="4" fill="#3DAA50"/>
+</g>
+<g id="rb-outfit-rainbow" style="display:none">
+  <g clip-path="url(#rbBodyClip)">
+    <rect x="106" y="234" width="128" height="22" fill="#FF8888"/>
+    <rect x="106" y="256" width="128" height="22" fill="#FFB866"/>
+    <rect x="106" y="278" width="128" height="22" fill="#FFE566"/>
+    <rect x="106" y="300" width="128" height="22" fill="#88DD88"/>
+    <rect x="106" y="322" width="128" height="22" fill="#88AAFF"/>
+    <rect x="106" y="344" width="128" height="20" fill="#CC88FF"/>
+  </g>
+  <rect x="106" y="234" width="128" height="10" rx="4" fill="#FF6060"/>
+</g>
+<g id="rb-outfit-mint" style="display:none">
+  <g clip-path="url(#rbBodyClip)">
+    <rect x="106" y="234" width="128" height="130" fill="#A0EED0"/>
+    <ellipse cx="140" cy="264" rx="6" ry="4" fill="#4A2810" opacity="0.6" transform="rotate(-18,140,264)"/>
+    <ellipse cx="180" cy="282" rx="6" ry="4" fill="#4A2810" opacity="0.6" transform="rotate(8,180,282)"/>
+    <ellipse cx="155" cy="316" rx="5.5" ry="3.5" fill="#4A2810" opacity="0.58"/>
+    <ellipse cx="120" cy="296" rx="5" ry="3.5" fill="#4A2810" opacity="0.55" transform="rotate(22,120,296)"/>
+    <ellipse cx="198" cy="310" rx="5" ry="3.5" fill="#4A2810" opacity="0.55"/>
+    <ellipse cx="160" cy="350" rx="5.5" ry="3.5" fill="#4A2810" opacity="0.52"/>
+  </g>
+  <rect x="106" y="234" width="128" height="10" rx="4" fill="#50B888"/>
+</g>
+
+<!-- Scarf -->
+<g id="rb-acc-scarf" style="display:none">
+  <rect x="76" y="222" width="188" height="30" rx="6" fill="#FF6B9D"/>
+  <rect x="128" y="252" width="26" height="74" rx="4" fill="#FF6B9D"/>
+  <rect x="76" y="224" width="188" height="5" rx="2" fill="#D63384" opacity="0.4"/>
+  <rect x="76" y="242" width="188" height="5" rx="2" fill="#D63384" opacity="0.35"/>
+</g>
+
+<!-- Bowtie -->
+<g id="rb-acc-bowtie" style="display:none">
+  <rect x="118" y="232" width="44" height="22" rx="6" fill="#A78BFA"/>
+  <rect x="178" y="232" width="44" height="22" rx="6" fill="#A78BFA"/>
+  <rect x="152" y="228" width="36" height="28" rx="6" fill="#7C3AED"/>
+  <circle cx="170" cy="242" r="8" fill="#C4B5FD"/>
+</g>
+
+<!-- Ears (rounded) -->
+<rect x="62"  y="4"  width="62" height="58" rx="8" fill="#1E1E1E"/>
+<rect x="72"  y="12" width="42" height="38" rx="6" fill="#FFB8CC"/>
+<rect x="76"  y="14" width="10" height="10" rx="3" fill="#FFC8D8" opacity="0.55"/>
+<rect x="216" y="4"  width="62" height="58" rx="8" fill="#1E1E1E"/>
+<rect x="226" y="12" width="42" height="38" rx="6" fill="#FFB8CC"/>
+<rect x="250" y="14" width="10" height="10" rx="3" fill="#FFC8D8" opacity="0.55"/>
+
+<!-- Bunny ears -->
+<g id="rb-acc-bunny" style="display:none">
+  <rect x="104" y="2" width="28" height="52" rx="6" fill="white" stroke="#E8E8E8" stroke-width="1.5"/>
+  <rect x="110" y="6" width="16" height="40" rx="4" fill="#FFB0C8"/>
+  <rect x="208" y="2" width="28" height="52" rx="6" fill="white" stroke="#E8E8E8" stroke-width="1.5"/>
+  <rect x="214" y="6" width="16" height="40" rx="4" fill="#FFB0C8"/>
+</g>
+
+<!-- Head (rounded block) -->
+<rect x="68" y="44" width="204" height="194" rx="8" fill="#F0F0F0"/>
+
+<!-- Tummy -->
+<rect x="118" y="254" width="104" height="102" rx="10" fill="#F8F8F8"/>
+
+<!-- Eye patches (rounded) -->
+<rect x="82"  y="88" width="82" height="76" rx="6" fill="#1E1E1E"/>
+<rect x="176" y="88" width="82" height="76" rx="6" fill="#1E1E1E"/>
+
+<!-- Eyes -->
+<circle cx="123" cy="126" r="28" fill="white"/>
+<circle cx="219" cy="126" r="28" fill="white"/>
+
+<!-- Pupils -->
+<circle cx="127" cy="130" r="17" fill="#111"/>
+<circle cx="223" cy="130" r="17" fill="#111"/>
+
+<!-- Shines -->
+<circle cx="115" cy="118" r="9"   fill="white"/>
+<circle cx="211" cy="118" r="9"   fill="white"/>
+<circle cx="130" cy="136" r="5"   fill="white"/>
+<circle cx="226" cy="136" r="5"   fill="white"/>
+<circle cx="111" cy="128" r="2.5" fill="white" opacity="0.65"/>
+<circle cx="207" cy="128" r="2.5" fill="white" opacity="0.65"/>
+
+<!-- Nose -->
+<ellipse cx="170" cy="176" rx="10" ry="8" fill="#1E1E1E"/>
+<ellipse cx="167" cy="173" rx="5"  ry="3" fill="#333" opacity="0.45"/>
+
+<!-- Mouth -->
+<path d="M156,191 Q170,205 184,191" fill="none" stroke="#1a1a1a" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M148,200 Q144,205 146,209" fill="none" stroke="#1a1a1a" stroke-width="1.4" stroke-linecap="round" opacity="0.35"/>
+<path d="M192,200 Q196,205 194,209" fill="none" stroke="#1a1a1a" stroke-width="1.4" stroke-linecap="round" opacity="0.35"/>
+
+<!-- RB ACCESSORIES -->
+<g id="rb-acc-blush" style="display:none">
+  <ellipse cx="84"  cy="148" rx="27" ry="17" fill="#FFB0CC" opacity="0.6"/>
+  <ellipse cx="256" cy="148" rx="27" ry="17" fill="#FFB0CC" opacity="0.6"/>
+</g>
+<g id="rb-acc-glasses" style="display:none">
+  <circle cx="123" cy="126" r="33" fill="#FFD6EE" opacity="0.45"/>
+  <circle cx="123" cy="126" r="33" fill="none" stroke="#FF69B4" stroke-width="3"/>
+  <circle cx="219" cy="126" r="33" fill="#FFD6EE" opacity="0.45"/>
+  <circle cx="219" cy="126" r="33" fill="none" stroke="#FF69B4" stroke-width="3"/>
+  <line x1="156" y1="126" x2="186" y2="126" stroke="#FF69B4" stroke-width="3"/>
+  <line x1="90"  y1="126" x2="74"  y2="120" stroke="#FF69B4" stroke-width="3"/>
+  <line x1="252" y1="126" x2="268" y2="120" stroke="#FF69B4" stroke-width="3"/>
+</g>
+<g id="rb-acc-sunglasses" style="display:none">
+  <path d="M123,126 C123,112 99,108 99,126 C99,140 123,158 123,158 C123,158 147,140 147,126 C147,108 123,112 123,126 Z" fill="#FF3388" opacity="0.88"/>
+  <path d="M219,126 C219,112 195,108 195,126 C195,140 219,158 219,158 C219,158 243,140 243,126 C243,108 219,112 219,126 Z" fill="#FF3388" opacity="0.88"/>
+  <line x1="147" y1="126" x2="195" y2="126" stroke="#BB0055" stroke-width="3"/>
+  <line x1="99"  y1="126" x2="81"  y2="121" stroke="#BB0055" stroke-width="3"/>
+  <line x1="243" y1="126" x2="261" y2="121" stroke="#BB0055" stroke-width="3"/>
+</g>
+<g id="rb-acc-crown" style="display:none">
+  <polygon points="124,68 141,42 158,60 170,24 182,60 199,42 216,68" fill="#FFD700"/>
+  <rect x="124" y="64" width="92" height="14" fill="#FFD700" rx="2"/>
+  <rect x="124" y="64" width="92" height="14" fill="none" stroke="#E6B800" stroke-width="1.5" rx="2"/>
+  <circle cx="170" cy="44" r="7.5" fill="#FF4081"/>
+  <circle cx="145" cy="62" r="5.5" fill="#9C27B0"/>
+  <circle cx="195" cy="62" r="5.5" fill="#2196F3"/>
+  <circle cx="170" cy="26" r="3"   fill="#FFE566"/>
+</g>
+<g id="rb-acc-tiara" style="display:none">
+  <path d="M126,78 L143,54 L158,70 L170,46 L182,70 L197,54 L214,78" fill="none" stroke="#FFD700" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <line x1="118" y1="80" x2="222" y2="80" stroke="#FFD700" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="170" cy="46" r="6.5" fill="#FF80C0"/>
+  <circle cx="143" cy="54" r="4.5" fill="#C4B5FD"/>
+  <circle cx="197" cy="54" r="4.5" fill="#A0D8FF"/>
+</g>
+<g id="rb-acc-bow" style="display:none">
+  <ellipse cx="248" cy="30" rx="20" ry="12" fill="#FF85A1" transform="rotate(-22,248,30)"/>
+  <ellipse cx="284" cy="30" rx="20" ry="12" fill="#FF6B9D" transform="rotate(22,284,30)"/>
+  <circle cx="266" cy="30" r="10" fill="#D63384"/>
+  <circle cx="266" cy="30" r="5"  fill="#FFB0CC"/>
+</g>
+<g id="rb-acc-flower" style="display:none">
+  <circle cx="68" cy="22" r="13" fill="#FF85A1"/>
+  <circle cx="84" cy="15" r="13" fill="#FF6B9D"/>
+  <circle cx="100" cy="22" r="13" fill="#FF85A1"/>
+  <circle cx="100" cy="38" r="13" fill="#FF6B9D"/>
+  <circle cx="84"  cy="45" r="13" fill="#FF85A1"/>
+  <circle cx="68"  cy="38" r="13" fill="#FF6B9D"/>
+  <circle cx="84"  cy="30" r="16" fill="#FFD700"/>
+  <circle cx="84"  cy="30" r="9"  fill="#FFA500"/>
+</g>
+<g id="rb-acc-hat" style="display:none">
+  <polygon points="140,58 200,58 170,8" fill="#FF85A1"/>
+  <polygon points="140,58 200,58 170,8" fill="none" stroke="#D63384" stroke-width="2"/>
+  <circle cx="160" cy="44" r="5" fill="white" opacity="0.8"/>
+  <circle cx="180" cy="34" r="4" fill="white" opacity="0.8"/>
+  <circle cx="168" cy="52" r="4" fill="white" opacity="0.7"/>
+  <circle cx="170" cy="6"  r="10" fill="#FFD700"/>
+  <path d="M140,58 Q170,70 200,58" fill="#D63384"/>
+</g>
+<g id="rb-acc-necklace" style="display:none">
+  <circle cx="108" cy="248" r="5.5" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="122" cy="254" r="5.5" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="137" cy="258" r="6"   fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="153" cy="261" r="6"   fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="170" cy="262" r="7"   fill="#FFD0E8" stroke="#FF88BB" stroke-width="1.5"/>
+  <circle cx="187" cy="261" r="6"   fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="203" cy="258" r="6"   fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="218" cy="254" r="5.5" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="232" cy="248" r="5.5" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+</g>
+<g id="rb-acc-wand" style="display:none">
+  <line x1="230" y1="325" x2="262" y2="175" stroke="#C4B5FD" stroke-width="7" stroke-linecap="round"/>
+  <polygon points="262,144 266.1,156.3 279.1,156.4 268.7,164.2 272.6,176.6 262,169 251.4,176.6 255.3,164.2 244.9,156.4 257.9,156.3" fill="#FFD700" stroke="#E6A800" stroke-width="1.5"/>
+  <circle cx="278" cy="150" r="4" fill="#FFD700" opacity="0.85"/>
+  <circle cx="270" cy="172" r="3" fill="#C4B5FD"/>
+</g>
+
+</g><!-- end mode-roblox -->
+
+
+<!-- ═══════════════ ANIME MODE ═══════════════ -->
+<g id="mode-anime" style="display:none">
+
+<ellipse cx="170" cy="437" rx="84" ry="9" fill="#C8A0C8" opacity="0.22"/>
+
+<!-- Static sparkles -->
+<path d="M42,80 L43.8,84.8 L48.6,86 L43.8,87.2 L42,92 L40.2,87.2 L35.4,86 L40.2,84.8 Z" fill="#FFD700" opacity="0.8"/>
+<path d="M298,74 L299.8,78.8 L304.6,80 L299.8,81.2 L298,86 L296.2,81.2 L291.4,80 L296.2,78.8 Z" fill="#FFD700" opacity="0.8"/>
+<circle cx="28"  cy="108" r="3" fill="#FFB0CC" opacity="0.7"/>
+<circle cx="312" cy="102" r="3" fill="#FFB0CC" opacity="0.7"/>
+<circle cx="50"  cy="120" r="2" fill="#C4B5FD" opacity="0.7"/>
+<circle cx="290" cy="116" r="2" fill="#C4B5FD" opacity="0.7"/>
+
+<!-- Wings -->
+<g id="an-acc-wings" style="display:none">
+  <ellipse cx="44" cy="300" rx="50" ry="66" fill="white" opacity="0.92" transform="rotate(-20,44,300)"/>
+  <ellipse cx="44" cy="300" rx="34" ry="48" fill="white" opacity="0.75" transform="rotate(-20,44,300)"/>
+  <ellipse cx="296" cy="300" rx="50" ry="66" fill="white" opacity="0.92" transform="rotate(20,296,300)"/>
+  <ellipse cx="296" cy="300" rx="34" ry="48" fill="white" opacity="0.75" transform="rotate(20,296,300)"/>
+  <path d="M24,258 Q38,300 34,344" stroke="#F0E8FF" stroke-width="2" fill="none" opacity="0.7"/>
+  <path d="M42,252 Q50,300 46,348" stroke="#F0E8FF" stroke-width="2" fill="none" opacity="0.7"/>
+  <path d="M60,258 Q62,300 58,344" stroke="#F0E8FF" stroke-width="2" fill="none" opacity="0.6"/>
+  <path d="M316,258 Q302,300 306,344" stroke="#F0E8FF" stroke-width="2" fill="none" opacity="0.7"/>
+  <path d="M298,252 Q290,300 294,348" stroke="#F0E8FF" stroke-width="2" fill="none" opacity="0.7"/>
+  <path d="M280,258 Q278,300 282,344" stroke="#F0E8FF" stroke-width="2" fill="none" opacity="0.6"/>
+  <!-- extra shimmer lines -->
+  <path d="M32,270 Q46,300 42,336" stroke="#E8DDFF" stroke-width="1" fill="none" opacity="0.5"/>
+  <path d="M308,270 Q294,300 298,336" stroke="#E8DDFF" stroke-width="1" fill="none" opacity="0.5"/>
+</g>
+
+<!-- Body (same as kawaii) -->
+<ellipse cx="170" cy="330" rx="92" ry="84" fill="url(#bodyGrad)" stroke="#E2E2E2" stroke-width="1.5"/>
+<ellipse cx="58"  cy="282" rx="28" ry="52" fill="url(#darkGrad)" transform="rotate(15,58,282)"/>
+<ellipse cx="282" cy="282" rx="28" ry="52" fill="url(#darkGrad)" transform="rotate(-15,282,282)"/>
+<circle cx="72"  cy="321" r="6"   fill="#111"/>
+<circle cx="64"  cy="325" r="4.5" fill="#111"/>
+<circle cx="80"  cy="325" r="4.5" fill="#111"/>
+<circle cx="268" cy="321" r="6"   fill="#111"/>
+<circle cx="260" cy="325" r="4.5" fill="#111"/>
+<circle cx="276" cy="325" r="4.5" fill="#111"/>
+<ellipse cx="106" cy="390" rx="50" ry="24" fill="url(#darkGrad)"/>
+<ellipse cx="234" cy="390" rx="50" ry="24" fill="url(#darkGrad)"/>
+<circle cx="89"  cy="374" r="5.5" fill="#111"/>
+<circle cx="106" cy="370" r="5.5" fill="#111"/>
+<circle cx="123" cy="374" r="5.5" fill="#111"/>
+<circle cx="217" cy="374" r="5.5" fill="#111"/>
+<circle cx="234" cy="370" r="5.5" fill="#111"/>
+<circle cx="251" cy="374" r="5.5" fill="#111"/>
+
+<!-- AN OUTFITS (same clip as kawaii, more vibrant + sparkles) -->
+<g id="an-outfit-pink" style="display:none">
+  <g clip-path="url(#bodyClip)">
+    <rect x="78" y="242" width="184" height="174" fill="#FF88CC"/>
+    <circle cx="140" cy="290" r="10" fill="white" opacity="0.42"/>
+    <circle cx="192" cy="310" r="8"  fill="white" opacity="0.38"/>
+    <circle cx="160" cy="345" r="11" fill="white" opacity="0.4"/>
+    <circle cx="205" cy="355" r="7"  fill="white" opacity="0.36"/>
+    <circle cx="120" cy="330" r="9"  fill="white" opacity="0.38"/>
+    <path d="M148,285 L149.8,289.8 L154.6,291 L149.8,292.2 L148,297 L146.2,292.2 L141.4,291 L146.2,289.8 Z" fill="white" opacity="0.6"/>
+    <path d="M198,320 L199.8,324.8 L204.6,326 L199.8,327.2 L198,332 L196.2,327.2 L191.4,326 L196.2,324.8 Z" fill="white" opacity="0.55"/>
+    <path d="M158,360 L159.8,364.8 L164.6,366 L159.8,367.2 L158,372 L156.2,367.2 L151.4,366 L156.2,364.8 Z" fill="white" opacity="0.5"/>
+  </g>
+  <ellipse cx="170" cy="247" rx="88" ry="12" fill="#FF5599"/>
+  <path d="M148,247 L149.4,250.6 L153,251.5 L149.4,252.4 L148,256 L146.6,252.4 L143,251.5 L146.6,250.6 Z" fill="white" opacity="0.65"/>
+  <path d="M192,247 L193.4,250.6 L197,251.5 L193.4,252.4 L192,256 L190.6,252.4 L187,251.5 L190.6,250.6 Z" fill="white" opacity="0.65"/>
+</g>
+<g id="an-outfit-blue" style="display:none">
+  <g clip-path="url(#bodyClip)">
+    <rect x="78" y="242" width="184" height="174" fill="#66AAFF"/>
+    <polygon points="0,-11 2.6,-3.6 10.5,-3.4 4.3,1.4 6.5,8.9 0,4.5 -6.5,8.9 -4.3,1.4 -10.5,-3.4 -2.6,-3.6" fill="white" opacity="0.6"  transform="translate(150,290)"/>
+    <polygon points="0,-11 2.6,-3.6 10.5,-3.4 4.3,1.4 6.5,8.9 0,4.5 -6.5,8.9 -4.3,1.4 -10.5,-3.4 -2.6,-3.6" fill="white" opacity="0.55" transform="translate(196,330)"/>
+    <polygon points="0,-11 2.6,-3.6 10.5,-3.4 4.3,1.4 6.5,8.9 0,4.5 -6.5,8.9 -4.3,1.4 -10.5,-3.4 -2.6,-3.6" fill="white" opacity="0.5"  transform="translate(134,362)"/>
+    <path d="M178,296 L179.4,299.6 L183,300.5 L179.4,301.4 L178,305 L176.6,301.4 L173,300.5 L176.6,299.6 Z" fill="white" opacity="0.6"/>
+    <path d="M142,348 L143.4,351.6 L147,352.5 L143.4,353.4 L142,357 L140.6,353.4 L137,352.5 L140.6,351.6 Z" fill="white" opacity="0.55"/>
+  </g>
+  <ellipse cx="170" cy="247" rx="88" ry="12" fill="#2266CC"/>
+  <path d="M150,247 L151.4,250.6 L155,251.5 L151.4,252.4 L150,256 L148.6,252.4 L145,251.5 L148.6,250.6 Z" fill="white" opacity="0.6"/>
+  <path d="M190,247 L191.4,250.6 L195,251.5 L191.4,252.4 L190,256 L188.6,252.4 L185,251.5 L188.6,250.6 Z" fill="white" opacity="0.6"/>
+</g>
+<g id="an-outfit-purple" style="display:none">
+  <g clip-path="url(#bodyClip)">
+    <rect x="78" y="242" width="184" height="174" fill="#BB88FF"/>
+    <rect x="78" y="280" width="184" height="3" fill="#FFD700" opacity="0.6"/>
+    <rect x="78" y="320" width="184" height="2" fill="#FFD700" opacity="0.45"/>
+    <circle cx="170" cy="300" r="7" fill="#FFD700" opacity="0.7"/>
+    <circle cx="140" cy="340" r="5" fill="#FFD700" opacity="0.55"/>
+    <circle cx="200" cy="340" r="5" fill="#FFD700" opacity="0.55"/>
+    <path d="M152,375 L153.4,378.6 L157,379.5 L153.4,380.4 L152,384 L150.6,380.4 L147,379.5 L150.6,378.6 Z" fill="#FFD700" opacity="0.6"/>
+    <path d="M190,378 L191.4,381.6 L195,382.5 L191.4,383.4 L190,387 L188.6,383.4 L185,382.5 L188.6,381.6 Z" fill="#FFD700" opacity="0.6"/>
+  </g>
+  <ellipse cx="170" cy="247" rx="88" ry="12" fill="#7722CC"/>
+  <path d="M152,247 L153.4,250.6 L157,251.5 L153.4,252.4 L152,256 L150.6,252.4 L147,251.5 L150.6,250.6 Z" fill="#FFD700" opacity="0.7"/>
+  <path d="M188,247 L189.4,250.6 L193,251.5 L189.4,252.4 L188,256 L186.6,252.4 L183,251.5 L186.6,250.6 Z" fill="#FFD700" opacity="0.7"/>
+</g>
+<g id="an-outfit-strawberry" style="display:none">
+  <g clip-path="url(#bodyClip)">
+    <rect x="78" y="242" width="184" height="174" fill="#FF4444"/>
+    <ellipse cx="136" cy="288" rx="4" ry="5.5" fill="#FFF5EE" opacity="0.85" transform="rotate(-15,136,288)"/>
+    <ellipse cx="170" cy="305" rx="4" ry="5.5" fill="#FFF5EE" opacity="0.85" transform="rotate(5,170,305)"/>
+    <ellipse cx="196" cy="288" rx="4" ry="5.5" fill="#FFF5EE" opacity="0.85" transform="rotate(10,196,288)"/>
+    <ellipse cx="150" cy="330" rx="3.5" ry="5" fill="#FFF5EE" opacity="0.8"/>
+    <ellipse cx="185" cy="335" rx="3.5" ry="5" fill="#FFF5EE" opacity="0.8"/>
+    <ellipse cx="126" cy="318" rx="3.5" ry="4.5" fill="#FFF5EE" opacity="0.76"/>
+    <ellipse cx="206" cy="318" rx="3.5" ry="4.5" fill="#FFF5EE" opacity="0.76"/>
+    <ellipse cx="166" cy="372" rx="4" ry="5" fill="#FFF5EE" opacity="0.76"/>
+    <path d="M172,296 L173.4,299.6 L177,300.5 L173.4,301.4 L172,305 L170.6,301.4 L167,300.5 L170.6,299.6 Z" fill="white" opacity="0.55"/>
+  </g>
+  <ellipse cx="170" cy="247" rx="88" ry="12" fill="#228833"/>
+  <path d="M162,247 L163.4,250.6 L167,251.5 L163.4,252.4 L162,256 L160.6,252.4 L157,251.5 L160.6,250.6 Z" fill="white" opacity="0.6"/>
+  <path d="M178,247 L179.4,250.6 L183,251.5 L179.4,252.4 L178,256 L176.6,252.4 L173,251.5 L176.6,250.6 Z" fill="white" opacity="0.6"/>
+</g>
+<g id="an-outfit-rainbow" style="display:none">
+  <g clip-path="url(#bodyClip)">
+    <rect x="78" y="242" width="184" height="29" fill="#FF6666"/>
+    <rect x="78" y="271" width="184" height="29" fill="#FFAA44"/>
+    <rect x="78" y="300" width="184" height="29" fill="#FFEE44"/>
+    <rect x="78" y="329" width="184" height="29" fill="#66EE66"/>
+    <rect x="78" y="358" width="184" height="29" fill="#6699FF"/>
+    <rect x="78" y="387" width="184" height="29" fill="#DD66FF"/>
+    <path d="M155,286 L156.4,289.6 L160,290.5 L156.4,291.4 L155,295 L153.6,291.4 L150,290.5 L153.6,289.6 Z" fill="white" opacity="0.55"/>
+    <path d="M192,320 L193.4,323.6 L197,324.5 L193.4,325.4 L192,329 L190.6,325.4 L187,324.5 L190.6,323.6 Z" fill="white" opacity="0.5"/>
+  </g>
+  <ellipse cx="170" cy="247" rx="88" ry="12" fill="#FF4444"/>
+  <path d="M155,247 L156.4,250.6 L160,251.5 L156.4,252.4 L155,256 L153.6,252.4 L150,251.5 L153.6,250.6 Z" fill="white" opacity="0.65"/>
+  <path d="M185,247 L186.4,250.6 L190,251.5 L186.4,252.4 L185,256 L183.6,252.4 L180,251.5 L183.6,250.6 Z" fill="white" opacity="0.65"/>
+</g>
+<g id="an-outfit-mint" style="display:none">
+  <g clip-path="url(#bodyClip)">
+    <rect x="78" y="242" width="184" height="174" fill="#88EEBB"/>
+    <ellipse cx="142" cy="290" rx="6.5" ry="4.5" fill="#3A1E08" opacity="0.6"  transform="rotate(-18,142,290)"/>
+    <ellipse cx="185" cy="310" rx="6.5" ry="4.5" fill="#3A1E08" opacity="0.6"  transform="rotate(8,185,310)"/>
+    <ellipse cx="160" cy="345" rx="6"   ry="4"   fill="#3A1E08" opacity="0.58" transform="rotate(-5,160,345)"/>
+    <ellipse cx="124" cy="325" rx="5.5" ry="3.5" fill="#3A1E08" opacity="0.55" transform="rotate(22,124,325)"/>
+    <ellipse cx="200" cy="340" rx="5.5" ry="3.5" fill="#3A1E08" opacity="0.55" transform="rotate(-18,200,340)"/>
+    <path d="M170,375 L171.4,378.6 L175,379.5 L171.4,380.4 L170,384 L168.6,380.4 L165,379.5 L168.6,378.6 Z" fill="white" opacity="0.5"/>
+    <path d="M142,362 L143.4,365.6 L147,366.5 L143.4,367.4 L142,371 L140.6,367.4 L137,366.5 L140.6,365.6 Z" fill="white" opacity="0.45"/>
+  </g>
+  <ellipse cx="170" cy="247" rx="88" ry="12" fill="#33AA66"/>
+  <path d="M152,247 L153.4,250.6 L157,251.5 L153.4,252.4 L152,256 L150.6,252.4 L147,251.5 L150.6,250.6 Z" fill="white" opacity="0.6"/>
+  <path d="M188,247 L189.4,250.6 L193,251.5 L189.4,252.4 L188,256 L186.6,252.4 L183,251.5 L186.6,250.6 Z" fill="white" opacity="0.6"/>
+</g>
+
+<!-- Scarf -->
+<g id="an-acc-scarf" style="display:none">
+  <ellipse cx="170" cy="242" rx="90" ry="18" fill="#FF6B9D"/>
+  <path d="M132,256 L122,320 Q120,330 130,328 Q140,326 138,316 L148,262 Z" fill="#FF6B9D"/>
+  <ellipse cx="170" cy="236" rx="90" ry="6" fill="#D63384" opacity="0.4"/>
+  <ellipse cx="170" cy="248" rx="89" ry="6" fill="#D63384" opacity="0.4"/>
+</g>
+
+<!-- Bowtie -->
+<g id="an-acc-bowtie" style="display:none">
+  <path d="M146,242 Q129,233 126,246 Q129,259 146,251 Z" fill="#A78BFA"/>
+  <path d="M194,242 Q211,233 214,246 Q211,259 194,251 Z" fill="#A78BFA"/>
+  <ellipse cx="170" cy="246" rx="14" ry="10" fill="#7C3AED"/>
+  <circle cx="170" cy="246" r="5" fill="#C4B5FD"/>
+</g>
+
+<!-- Ears (same as kawaii) -->
+<circle cx="82"  cy="60" r="42" fill="url(#darkGrad)"/>
+<circle cx="258" cy="60" r="42" fill="url(#darkGrad)"/>
+<circle cx="82"  cy="60" r="24" fill="#FFB8CC"/>
+<circle cx="258" cy="60" r="24" fill="#FFB8CC"/>
+<circle cx="74"  cy="52" r="9"  fill="#FFC8D8" opacity="0.55"/>
+<circle cx="250" cy="52" r="9"  fill="#FFC8D8" opacity="0.55"/>
+
+<!-- Bunny ears -->
+<g id="an-acc-bunny" style="display:none">
+  <ellipse cx="120" cy="28" rx="14" ry="28" fill="white" stroke="#E8E8E8" stroke-width="1.5"/>
+  <ellipse cx="220" cy="28" rx="14" ry="28" fill="white" stroke="#E8E8E8" stroke-width="1.5"/>
+  <ellipse cx="120" cy="28" rx="8"  ry="19" fill="#FFB0C8"/>
+  <ellipse cx="220" cy="28" rx="8"  ry="19" fill="#FFB0C8"/>
+</g>
+
+<!-- Head (same circle) -->
+<circle cx="170" cy="152" r="108" fill="url(#headGrad)" stroke="#E2E2E2" stroke-width="1.5"/>
+
+<!-- Tummy -->
+<ellipse cx="170" cy="335" rx="58" ry="66" fill="url(#tummyGrad)"/>
+
+<!-- Eye patches (slightly larger for anime) -->
+<ellipse cx="132" cy="150" rx="44" ry="42" fill="url(#patchGrad)" transform="rotate(-8,132,150)"/>
+<ellipse cx="208" cy="150" rx="44" ry="42" fill="url(#patchGrad)" transform="rotate(8,208,150)"/>
+
+<!-- Eye whites (bigger) -->
+<circle cx="132" cy="148" r="30" fill="white"/>
+<circle cx="208" cy="148" r="30" fill="white"/>
+
+<!-- Iris (colored) -->
+<circle cx="134" cy="150" r="20" fill="url(#irisGrad)"/>
+<circle cx="210" cy="150" r="20" fill="url(#irisGrad)"/>
+
+<!-- Inner iris -->
+<circle cx="134" cy="150" r="13" fill="#5533AA"/>
+<circle cx="210" cy="150" r="13" fill="#5533AA"/>
+
+<!-- Iris bottom shimmer -->
+<ellipse cx="134" cy="162" rx="12" ry="7" fill="#CC99FF" opacity="0.5"/>
+<ellipse cx="210" cy="162" rx="12" ry="7" fill="#CC99FF" opacity="0.5"/>
+
+<!-- Pupils -->
+<circle cx="136" cy="152" r="7" fill="#0d0d0d"/>
+<circle cx="212" cy="152" r="7" fill="#0d0d0d"/>
+
+<!-- Many shines (anime sparkle) -->
+<circle cx="118" cy="134" r="11" fill="white"/>
+<circle cx="194" cy="134" r="11" fill="white"/>
+<circle cx="138" cy="160" r="6"  fill="white"/>
+<circle cx="214" cy="160" r="6"  fill="white"/>
+<circle cx="112" cy="148" r="3"  fill="white"/>
+<circle cx="188" cy="148" r="3"  fill="white"/>
+<circle cx="136" cy="136" r="2"  fill="white" opacity="0.75"/>
+<circle cx="212" cy="136" r="2"  fill="white" opacity="0.75"/>
+
+<!-- Eyelashes -->
+<path d="M104,138 Q118,118 132,116 Q146,118 158,134" fill="none" stroke="#111" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M182,134 Q194,118 208,116 Q222,118 236,134" fill="none" stroke="#111" stroke-width="4.5" stroke-linecap="round"/>
+
+<!-- Eyebrows (thin, elegant) -->
+<path d="M100,108 Q118,94 142,104" fill="none" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>
+<path d="M198,104 Q222,94 240,108" fill="none" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>
+
+<!-- Nose (tiny/delicate) -->
+<ellipse cx="170" cy="183" rx="6" ry="4" fill="#CCA8C0" opacity="0.5"/>
+
+<!-- Mouth -->
+<path d="M162,197 Q170,209 178,197" fill="none" stroke="#CC4488" stroke-width="2.5" stroke-linecap="round"/>
+
+<!-- AN ACCESSORIES -->
+<g id="an-acc-blush" style="display:none">
+  <!-- anime 3-line blush -->
+  <line x1="72"  y1="170" x2="96"  y2="175" stroke="#FFB0CC" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="72"  y1="179" x2="96"  y2="184" stroke="#FFB0CC" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="72"  y1="188" x2="96"  y2="193" stroke="#FFB0CC" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="244" y1="170" x2="268" y2="175" stroke="#FFB0CC" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="244" y1="179" x2="268" y2="184" stroke="#FFB0CC" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="244" y1="188" x2="268" y2="193" stroke="#FFB0CC" stroke-width="3.5" stroke-linecap="round"/>
+</g>
+<g id="an-acc-glasses" style="display:none">
+  <circle cx="132" cy="148" r="36" fill="#FFD6EE" opacity="0.45"/>
+  <circle cx="132" cy="148" r="36" fill="none" stroke="#FF69B4" stroke-width="3"/>
+  <circle cx="208" cy="148" r="36" fill="#FFD6EE" opacity="0.45"/>
+  <circle cx="208" cy="148" r="36" fill="none" stroke="#FF69B4" stroke-width="3"/>
+  <line x1="168" y1="148" x2="172" y2="148" stroke="#FF69B4" stroke-width="3"/>
+  <line x1="96"  y1="148" x2="80"  y2="142" stroke="#FF69B4" stroke-width="3"/>
+  <line x1="244" y1="148" x2="260" y2="142" stroke="#FF69B4" stroke-width="3"/>
+  <!-- lens sparkle -->
+  <path d="M112,128 L113,131.4 L116.4,132 L113,132.6 L112,136 L111,132.6 L107.6,132 L111,131.4 Z" fill="white" opacity="0.7"/>
+  <path d="M188,128 L189,131.4 L192.4,132 L189,132.6 L188,136 L187,132.6 L183.6,132 L187,131.4 Z" fill="white" opacity="0.7"/>
+</g>
+<g id="an-acc-sunglasses" style="display:none">
+  <path d="M132,148 C132,132 104,128 104,148 C104,164 132,186 132,186 C132,186 160,164 160,148 C160,128 132,132 132,148 Z" fill="#FF3388" opacity="0.88"/>
+  <path d="M208,148 C208,132 180,128 180,148 C180,164 208,186 208,186 C208,186 236,164 236,148 C236,128 208,132 208,148 Z" fill="#FF3388" opacity="0.88"/>
+  <line x1="160" y1="148" x2="180" y2="148" stroke="#BB0055" stroke-width="3"/>
+  <line x1="104" y1="148" x2="86"  y2="143" stroke="#BB0055" stroke-width="3"/>
+  <line x1="236" y1="148" x2="254" y2="143" stroke="#BB0055" stroke-width="3"/>
+  <ellipse cx="116" cy="140" rx="6" ry="3.5" fill="white" opacity="0.4" transform="rotate(-22,116,140)"/>
+  <ellipse cx="192" cy="140" rx="6" ry="3.5" fill="white" opacity="0.4" transform="rotate(-22,192,140)"/>
+</g>
+<g id="an-acc-crown" style="display:none">
+  <polygon points="124,68 141,42 158,60 170,24 182,60 199,42 216,68" fill="#FFD700"/>
+  <rect x="124" y="64" width="92" height="14" fill="#FFD700" rx="2"/>
+  <rect x="124" y="64" width="92" height="14" fill="none" stroke="#E6B800" stroke-width="1.5" rx="2"/>
+  <circle cx="170" cy="44" r="7.5" fill="#FF4081"/>
+  <circle cx="145" cy="62" r="5.5" fill="#9C27B0"/>
+  <circle cx="195" cy="62" r="5.5" fill="#2196F3"/>
+  <circle cx="170" cy="26" r="3"   fill="#FFE566"/>
+  <!-- extra sparkles -->
+  <path d="M116,64 L117.4,67.6 L121,68.5 L117.4,69.4 L116,73 L114.6,69.4 L111,68.5 L114.6,67.6 Z" fill="white" opacity="0.7"/>
+  <path d="M224,64 L225.4,67.6 L229,68.5 L225.4,69.4 L224,73 L222.6,69.4 L219,68.5 L222.6,67.6 Z" fill="white" opacity="0.7"/>
+  <path d="M170,14 L171.4,17.6 L175,18.5 L171.4,19.4 L170,23 L168.6,19.4 L165,18.5 L168.6,17.6 Z" fill="white" opacity="0.6"/>
+</g>
+<g id="an-acc-tiara" style="display:none">
+  <path d="M126,78 L143,54 L158,70 L170,46 L182,70 L197,54 L214,78" fill="none" stroke="#FFD700" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <line x1="118" y1="80" x2="222" y2="80" stroke="#FFD700" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="170" cy="46" r="6.5" fill="#FF80C0"/>
+  <circle cx="170" cy="46" r="4"   fill="#FFC0E0"/>
+  <circle cx="143" cy="54" r="4.5" fill="#C4B5FD"/>
+  <circle cx="197" cy="54" r="4.5" fill="#A0D8FF"/>
+  <circle cx="158" cy="70" r="3.5" fill="#FFD700"/>
+  <circle cx="182" cy="70" r="3.5" fill="#FFD700"/>
+  <!-- sparkles -->
+  <path d="M108,76 L109.4,79.6 L113,80.5 L109.4,81.4 L108,85 L106.6,81.4 L103,80.5 L106.6,79.6 Z" fill="#FFD700" opacity="0.7"/>
+  <path d="M232,76 L233.4,79.6 L237,80.5 L233.4,81.4 L232,85 L230.6,81.4 L227,80.5 L230.6,79.6 Z" fill="#FFD700" opacity="0.7"/>
+</g>
+<g id="an-acc-bow" style="display:none">
+  <ellipse cx="256" cy="46" rx="20" ry="12" fill="#FF85A1" transform="rotate(-22,256,46)"/>
+  <ellipse cx="292" cy="46" rx="20" ry="12" fill="#FF6B9D" transform="rotate(22,292,46)"/>
+  <circle cx="274" cy="46" r="10" fill="#D63384"/>
+  <circle cx="274" cy="46" r="5"  fill="#FFB0CC"/>
+</g>
+<g id="an-acc-flower" style="display:none">
+  <circle cx="52" cy="39" r="13" fill="#FF85A1"/>
+  <circle cx="68" cy="32" r="13" fill="#FF6B9D"/>
+  <circle cx="84" cy="39" r="13" fill="#FF85A1"/>
+  <circle cx="84" cy="55" r="13" fill="#FF6B9D"/>
+  <circle cx="68" cy="62" r="13" fill="#FF85A1"/>
+  <circle cx="52" cy="55" r="13" fill="#FF6B9D"/>
+  <circle cx="68" cy="47" r="16" fill="#FFD700"/>
+  <circle cx="68" cy="47" r="9"  fill="#FFA500"/>
+</g>
+<g id="an-acc-hat" style="display:none">
+  <polygon points="140,58 200,58 170,8" fill="#FF85A1"/>
+  <polygon points="140,58 200,58 170,8" fill="none" stroke="#D63384" stroke-width="2"/>
+  <circle cx="160" cy="44" r="5" fill="white" opacity="0.8"/>
+  <circle cx="180" cy="34" r="4" fill="white" opacity="0.8"/>
+  <circle cx="168" cy="52" r="4" fill="white" opacity="0.7"/>
+  <circle cx="185" cy="50" r="3" fill="white" opacity="0.7"/>
+  <circle cx="170" cy="6"  r="10" fill="#FFD700"/>
+  <path d="M140,58 Q170,70 200,58" fill="#D63384"/>
+  <path d="M170,6 L171.4,9.6 L175,10.5 L171.4,11.4 L170,15 L168.6,11.4 L165,10.5 L168.6,9.6 Z" fill="white" opacity="0.7"/>
+</g>
+<g id="an-acc-necklace" style="display:none">
+  <circle cx="108" cy="246" r="5.5" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="122" cy="252" r="5.5" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="137" cy="257" r="6"   fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="153" cy="260" r="6"   fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="170" cy="261" r="7"   fill="#FFD0E8" stroke="#FF88BB" stroke-width="1.5"/>
+  <circle cx="187" cy="260" r="6"   fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="203" cy="257" r="6"   fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="218" cy="252" r="5.5" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+  <circle cx="232" cy="246" r="5.5" fill="#FFF4FA" stroke="#FFAAD4" stroke-width="1.5"/>
+</g>
+<g id="an-acc-wand" style="display:none">
+  <line x1="230" y1="325" x2="262" y2="175" stroke="#C4B5FD" stroke-width="7" stroke-linecap="round"/>
+  <!-- sparkle dots along handle -->
+  <circle cx="238" cy="310" r="3.5" fill="#FFD700" opacity="0.8"/>
+  <circle cx="246" cy="285" r="3"   fill="#C4B5FD" opacity="0.8"/>
+  <circle cx="254" cy="260" r="3.5" fill="#FFD700" opacity="0.7"/>
+  <circle cx="259" cy="232" r="3"   fill="#C4B5FD" opacity="0.7"/>
+  <polygon points="262,144 266.1,156.3 279.1,156.4 268.7,164.2 272.6,176.6 262,169 251.4,176.6 255.3,164.2 244.9,156.4 257.9,156.3" fill="#FFD700" stroke="#E6A800" stroke-width="1.5"/>
+  <circle cx="278" cy="150" r="4" fill="#FFD700" opacity="0.85"/>
+  <circle cx="270" cy="172" r="3" fill="#C4B5FD"/>
+  <circle cx="283" cy="166" r="3" fill="#FFD700" opacity="0.7"/>
+  <!-- star sparkle near wand tip -->
+  <path d="M244,138 L245.4,141.6 L249,142.5 L245.4,143.4 L244,147 L242.6,143.4 L239,142.5 L242.6,141.6 Z" fill="white" opacity="0.7"/>
+</g>
+
+</g><!-- end mode-anime -->
+
 </svg>
+</div>
+
+<div class="section-label">STYLE</div>
+<div class="mode-toggle">
+  <button class="mode-btn active" id="mbtn-kawaii"    onclick="setMode('kawaii')">🐼 Kawaii</button>
+  <button class="mode-btn"        id="mbtn-minecraft" onclick="setMode('minecraft')">⛏️ Minecraft</button>
+  <button class="mode-btn"        id="mbtn-roblox"    onclick="setMode('roblox')">🧱 Roblox</button>
+  <button class="mode-btn"        id="mbtn-anime"     onclick="setMode('anime')">✨ Anime</button>
 </div>
 
 <div class="section-label">OUTFIT</div>
@@ -498,28 +1486,72 @@ h1 {
 <script>
 const ACCS    = ['blush','glasses','sunglasses','crown','tiara','bow','flower','hat','bunny','wings','necklace','scarf','bowtie','wand'];
 const OUTFITS = ['pink','blue','purple','strawberry','rainbow','mint'];
+const MODES   = ['kawaii','minecraft','roblox','anime'];
+const PFXMAP  = { kawaii:'', minecraft:'mc-', roblox:'rb-', anime:'an-' };
+
+let currentMode  = 'kawaii';
+let activeOutfit = 'none';
+const activeAccs = new Set();
+
+function pfx() { return PFXMAP[currentMode]; }
+
+function setMode(m) {
+  currentMode = m;
+  MODES.forEach(mode => {
+    document.getElementById('mode-' + mode).style.display = (mode === m) ? '' : 'none';
+    document.getElementById('mbtn-' + mode).classList.toggle('active', mode === m);
+  });
+  const p = pfx();
+  OUTFITS.forEach(o => {
+    const el = document.getElementById(p + 'outfit-' + o);
+    if (el) el.style.display = (activeOutfit === o) ? '' : 'none';
+  });
+  ACCS.forEach(id => {
+    const el = document.getElementById(p + 'acc-' + id);
+    if (el) el.style.display = activeAccs.has(id) ? '' : 'none';
+  });
+}
 
 function toggle(id) {
-  const el  = document.getElementById('acc-' + id);
+  const el  = document.getElementById(pfx() + 'acc-' + id);
   const btn = document.getElementById('btn-' + id);
   const show = el.style.display === 'none';
   el.style.display = show ? '' : 'none';
   btn.classList.toggle('active', show);
+  if (show) activeAccs.add(id); else activeAccs.delete(id);
 }
 
 function setOutfit(name, btn) {
-  OUTFITS.forEach(o => { document.getElementById('outfit-' + o).style.display = 'none'; });
+  activeOutfit = name;
+  const p = pfx();
+  OUTFITS.forEach(o => {
+    const el = document.getElementById(p + 'outfit-' + o);
+    if (el) el.style.display = 'none';
+  });
   document.querySelectorAll('.outfit-btn').forEach(b => b.classList.remove('active'));
-  if (name !== 'none') document.getElementById('outfit-' + name).style.display = '';
+  if (name !== 'none') {
+    const el = document.getElementById(p + 'outfit-' + name);
+    if (el) el.style.display = '';
+  }
   btn.classList.add('active');
 }
 
 function resetAll() {
-  ACCS.forEach(id => {
-    document.getElementById('acc-' + id).style.display = 'none';
-    document.getElementById('btn-' + id).classList.remove('active');
+  activeAccs.clear();
+  activeOutfit = 'none';
+  Object.values(PFXMAP).forEach(p => {
+    ACCS.forEach(id => {
+      const el = document.getElementById(p + 'acc-' + id);
+      if (el) el.style.display = 'none';
+    });
+    OUTFITS.forEach(o => {
+      const el = document.getElementById(p + 'outfit-' + o);
+      if (el) el.style.display = 'none';
+    });
   });
-  setOutfit('none', document.getElementById('obtn-none'));
+  document.querySelectorAll('.acc-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.outfit-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('obtn-none').classList.add('active');
 }
 </script>
 </body>
