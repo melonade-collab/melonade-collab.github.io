@@ -94,6 +94,8 @@
     }
     .roadmap-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); transform: translateY(-1px); }
     .roadmap-card.dragging { opacity: 0.35; transform: scale(0.97); cursor: grabbing; }
+    .roadmap-card.touch-activating { transform: scale(1.03); box-shadow: 0 0 0 2px #16a34a, 0 6px 20px rgba(0,0,0,0.15); transition: transform 0.15s, box-shadow 0.15s; }
+    .touch-ghost { position: fixed; pointer-events: none; z-index: 1000; opacity: 0.9; box-shadow: 0 10px 30px rgba(0,0,0,0.25); transform: scale(1.04); border-radius: 10px; background: #fff; }
 
     .card-drag-handle { position: absolute; top: 12px; right: 10px; color: #D1D5DB; font-size: 0.9rem; line-height: 1; opacity: 0; transition: opacity 0.15s; pointer-events: none; letter-spacing: 1px; }
     .roadmap-card:hover .card-drag-handle { opacity: 1; }
@@ -159,7 +161,7 @@
   <div class="cs-header-inner">
     <p class="eyebrow">Interactive Prototype</p>
     <h1>Drag-to-Prioritize Roadmap</h1>
-    <p class="cs-intro">Static slides and spreadsheets go stale the moment the meeting ends. This prototype explores a living roadmap where priority is communicated by dragging — making the Now vs. Next conversation visible and instant.</p>
+    <p class="cs-intro">Static slides and spreadsheets go stale the moment the meeting ends.</p>
   </div>
 </div>
 
@@ -171,71 +173,49 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>Product teams spend time maintaining roadmap slides that are outdated before they're shared. Async readers can't tell if a card moved since last week, or whether "Next" means next sprint or next quarter. A drag-to-reorder board makes priority a first-class interaction — the current state is always visible, and changing it takes one gesture instead of editing a deck.</p>
+      <p>Product teams spend time maintaining roadmap slides that are outdated before they're shared. A drag-to-reorder board makes priority a first-class interaction — the current state is always visible, and changing it takes one gesture instead of editing a deck.</p>
     </div>
   </div>
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">How It Worked</p>
-      <span class="acc-chevron">▼</span>
-    </div>
-    <div class="acc-body">
-      <p>Three lanes — Now, Next, Later — answer the single most common roadmap question: is this in flight, committed for the next cycle, or backlog? Cards show a title, one-line description, and priority level. Drag to reorder within a lane, or drop into a different lane to change status; column counts update instantly. Reset restores the original state.</p>
-      <p>Designed for async consumption first: a stakeholder can share a link and the reader gets the current picture without scheduling a sync.</p>
-    </div>
-  </div>
-
-  <div class="acc-card mb16">
-    <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">Tradeoffs</p>
+      <p class="card-label">Tech</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
       <ul>
-        <li><strong>Three lanes, not more:</strong> Adding On Hold, Blocked, or Done columns increases maintenance cost without improving the core priority conversation. Now/Next/Later is the minimum viable signal.</li>
-        <li><strong>No due dates:</strong> Dates create false confidence and rot fast. Priority relative to other cards is more honest and easier to maintain.</li>
-        <li><strong>No assignees on cards:</strong> Team tags communicate ownership without turning the board into a task manager. Assignee-level tracking belongs in Jira.</li>
-        <li><strong>Drag-only edit:</strong> Adding inline content editing would shift focus away from the prioritization interaction the prototype is exploring.</li>
-        <li><strong>Session-only state:</strong> Persistence requires auth and a backend — out of scope. The interaction model is what's being validated here.</li>
+        <li>Native HTML5 drag-and-drop API — no library dependency; dragstart, dragover, drop, and dragend events drive all state changes</li>
+        <li>Position-aware insertion: drop target calculated from pointer Y position relative to existing cards, so ordering within a lane is preserved rather than always appending</li>
+        <li>Live column counts derived from DOM state after each drop — no separate data model to keep in sync</li>
+        <li>Snapshot-based reset: original card order captured on load and restored to the DOM on reset without a page refresh</li>
+        <li>Priority badge colors assigned via data attributes, styled in CSS — no runtime logic required for visual state</li>
       </ul>
     </div>
   </div>
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">Product Ownership</p>
+      <p class="card-label">Features</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <div class="contrib-grid">
-        <div>
-          <p class="contrib-item-label">Structure</p>
-          <p class="contrib-item-text">Chose Now/Next/Later over sprint-based columns — maps to business priority, not delivery cadence, so it's readable by non-technical stakeholders.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Card data model</p>
-          <p class="contrib-item-text">Title + one-liner + priority only. Deliberately excluded due dates, story points, and assignees to keep cards scannable at a glance.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Interaction spec</p>
-          <p class="contrib-item-text">Drag inserts at position — not just appended to the end — so within-lane ordering carries meaning. Column counts update live.</p>
-        </div>
-        <div>
-          <p class="contrib-item-label">Reset behaviour</p>
-          <p class="contrib-item-text">Reset restores original card positions and order — intentional for demos where you need to walk through the interaction repeatedly without refreshing.</p>
-        </div>
-      </div>
+      <ul>
+        <li>Three-lane board (Now / Next / Later) — answers the single most common roadmap question without requiring calendar dates</li>
+        <li>Cards show title, one-line description, team tag, and priority badge — scannable at a glance</li>
+        <li>Drag to reorder within a lane or drop into a different lane to change status; column counts update instantly</li>
+        <li>Drag affordance appears on hover so the interaction is discoverable without instructions</li>
+        <li>Reset button restores all cards to original positions — useful for demos and walkthroughs</li>
+      </ul>
     </div>
   </div>
 
   <div class="acc-card mb40">
     <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">Outcome</p>
+      <p class="card-label">Why This</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>The prototype makes visible what a slide can't: the act of dragging is itself the prioritization conversation. "Should this move to Now?" is easier to answer when you're holding the card and can see what's already there. The board replaces a 30-minute status meeting with a 10-second async read.</p>
+      <p>Roadmap conversations stall when priority lives in a slide that nobody can edit in the room. Making drag the primary interaction means the prioritization decision and its communication happen in the same gesture — no post-meeting deck update required. Now/Next/Later was chosen over sprint columns because it maps to business intent, not delivery mechanics, which makes it readable by stakeholders who don't track sprints.</p>
     </div>
   </div>
 
@@ -510,6 +490,125 @@
         document.getElementById(colId).querySelectorAll('.roadmap-card').length;
     });
   }
+
+  // ── Touch drag (long-press to drag on mobile) ──
+  let touchCard = null, touchGhost = null, touchDragging = false;
+  let touchLongPressTimer = null, touchLastCol = null;
+  let touchStartX = 0, touchStartY = 0;
+
+  function initTouchDrag() {
+    document.querySelectorAll('.roadmap-card').forEach(addTouchListeners);
+  }
+
+  function addTouchListeners(card) {
+    card.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchCard = card;
+      card.classList.add('touch-activating');
+      touchLongPressTimer = setTimeout(() => startTouchDrag(card, e.touches[0]), 300);
+    }, { passive: true });
+
+    card.addEventListener('touchmove', e => {
+      if (touchLongPressTimer) {
+        const dx = Math.abs(e.touches[0].clientX - touchStartX);
+        const dy = Math.abs(e.touches[0].clientY - touchStartY);
+        if (dx > 8 || dy > 8) cancelTouchPress(card);
+      }
+      if (!touchDragging) return;
+      e.preventDefault();
+      moveTouchGhost(e.touches[0]);
+    }, { passive: false });
+
+    card.addEventListener('touchend', e => {
+      cancelTouchPress(card);
+      if (!touchDragging) return;
+      dropTouchCard(e.changedTouches[0]);
+    });
+
+    card.addEventListener('touchcancel', e => {
+      cancelTouchPress(card);
+      if (touchDragging) cleanupTouchDrag();
+    });
+  }
+
+  function cancelTouchPress(card) {
+    clearTimeout(touchLongPressTimer);
+    touchLongPressTimer = null;
+    card && card.classList.remove('touch-activating');
+  }
+
+  function startTouchDrag(card, touch) {
+    if (navigator.vibrate) navigator.vibrate(40);
+    card.classList.remove('touch-activating');
+    touchDragging = true;
+    draggedCard = card;
+    sourceCol = card.closest('.col-body');
+    card.classList.add('dragging');
+
+    const rect = card.getBoundingClientRect();
+    touchGhost = card.cloneNode(true);
+    touchGhost.className = 'roadmap-card touch-ghost';
+    touchGhost.style.width = rect.width + 'px';
+    touchGhost.style.top = rect.top + 'px';
+    touchGhost.style.left = rect.left + 'px';
+    document.body.appendChild(touchGhost);
+  }
+
+  function moveTouchGhost(touch) {
+    if (!touchGhost) return;
+    const w = touchGhost.offsetWidth;
+    const h = touchGhost.offsetHeight;
+    touchGhost.style.top  = (touch.clientY - h / 2) + 'px';
+    touchGhost.style.left = (touch.clientX - w / 2) + 'px';
+
+    touchGhost.style.visibility = 'hidden';
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    touchGhost.style.visibility = '';
+
+    const col = el && el.closest('.col-body');
+    if (col) {
+      if (col !== touchLastCol) {
+        document.querySelectorAll('.col-body').forEach(c => c.classList.remove('drag-over'));
+        col.classList.add('drag-over');
+        touchLastCol = col;
+      }
+      removeIndicators();
+      const after = getDragAfterElement(col, touch.clientY);
+      const ind = document.createElement('div');
+      ind.className = 'drop-indicator';
+      if (!after) col.appendChild(ind); else col.insertBefore(ind, after);
+    } else {
+      document.querySelectorAll('.col-body').forEach(c => c.classList.remove('drag-over'));
+      removeIndicators();
+      touchLastCol = null;
+    }
+  }
+
+  function dropTouchCard(touch) {
+    if (touchGhost) { touchGhost.remove(); touchGhost = null; }
+    if (draggedCard) draggedCard.classList.remove('dragging');
+    document.querySelectorAll('.col-body').forEach(c => c.classList.remove('drag-over'));
+    removeIndicators();
+
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    const col = el && el.closest('.col-body');
+    if (col && draggedCard) {
+      const moved = col !== sourceCol;
+      const after = getDragAfterElement(col, touch.clientY);
+      if (!after) col.appendChild(draggedCard); else col.insertBefore(draggedCard, after);
+      if (moved) showToast('Moved to ' + col.closest('.column').querySelector('.col-name').textContent);
+    }
+    cleanupTouchDrag();
+  }
+
+  function cleanupTouchDrag() {
+    touchDragging = false; touchCard = null; touchLastCol = null;
+    draggedCard = null; sourceCol = null;
+    updateCounts();
+  }
+
+  initTouchDrag();
 
   // ── Toast ──
   let toastTimer;
