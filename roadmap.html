@@ -43,7 +43,13 @@
 
     /* ── Board section ── */
     .proto-section { background: #f7f7f5; padding: 0 40px 80px; }
-    .board-frame { max-width: 1160px; margin: 0 auto; background: #fff; border-radius: 0 0 16px 16px; border: 1px solid #E5E7EB; border-top: none; box-shadow: 0 8px 40px rgba(0,0,0,0.08); overflow: hidden; }
+
+    /* ── Shared frame chrome ── */
+    .board-frame, .matrix-frame, .annual-frame {
+      max-width: 1160px; margin: 0 auto; background: #fff;
+      border-radius: 0 0 16px 16px; border: 1px solid #E5E7EB; border-top: none;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.08); overflow: hidden;
+    }
 
     .board-titlebar { background: #F8F9FB; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #E5E7EB; }
     .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
@@ -118,8 +124,12 @@
     .rm-toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(14px); background: #111827; color: #fff; font-size: 0.78rem; font-weight: 600; padding: 9px 18px; border-radius: 8px; opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none; z-index: 999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.25); }
     .rm-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    /* ── Generate / action buttons ── */
+    .generate-btn { font-size: 0.7rem; font-weight: 700; color: #15803D; background: #DCFCE7; border: 1px solid #86EFAC; border-radius: 6px; padding: 5px 12px; font-family: inherit; cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px; }
+    .generate-btn:hover { background: #BBF7D0; border-color: #4ADE80; }
+
     /* ── Annual roadmap view ── */
-    .annual-frame { max-width: 1160px; margin: 0 auto; background: #fff; border-radius: 0 0 16px 16px; border: 1px solid #E5E7EB; border-top: none; box-shadow: 0 8px 40px rgba(0,0,0,0.08); overflow: hidden; display: none; }
+    .annual-frame { display: none; }
     .annual-toolbar { background: #F8F9FB; border-bottom: 1px solid #E5E7EB; padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
     .annual-title { font-size: 0.88rem; font-weight: 800; color: #111; letter-spacing: -0.3px; }
     .annual-subtitle { font-size: 0.7rem; color: #9CA3AF; margin-left: auto; }
@@ -135,12 +145,70 @@
     .annual-card .card-desc { font-size: 0.68rem; color: #6B7280; line-height: 1.4; margin-bottom: 8px; }
     .annual-card .card-footer { display: flex; align-items: center; gap: 6px; }
     .annual-empty { font-size: 0.72rem; color: #D1D5DB; text-align: center; padding: 24px 0; font-style: italic; }
-    .generate-btn { font-size: 0.7rem; font-weight: 700; color: #15803D; background: #DCFCE7; border: 1px solid #86EFAC; border-radius: 6px; padding: 5px 12px; font-family: inherit; cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px; }
-    .generate-btn:hover { background: #BBF7D0; border-color: #4ADE80; }
-    @media (max-width: 800px) {
-      .annual-grid { grid-template-columns: 1fr 1fr; }
-      .annual-quarter { border-bottom: 1px solid #E5E7EB; }
+
+    /* ── Matrix frame ── */
+    .matrix-frame { display: block; }
+
+    .matrix-toolbar { background: #F8F9FB; border-bottom: 1px solid #E5E7EB; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .matrix-title { font-size: 0.88rem; font-weight: 800; color: #111; letter-spacing: -0.3px; }
+    .placed-count { font-size: 0.7rem; color: #6B7280; background: #F3F4F6; border-radius: 5px; padding: 3px 9px; transition: background 0.2s, color 0.2s; }
+    .placed-count.all-placed { background: #DCFCE7; color: #15803D; }
+
+    /* Tray */
+    .matrix-tray { padding: 12px 20px 14px; border-bottom: 1px solid #E5E7EB; background: #F8F9FB; }
+    .matrix-tray-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #9CA3AF; margin-bottom: 8px; }
+    .matrix-tray-body {
+      display: flex; gap: 10px; overflow-x: auto; padding: 8px;
+      min-height: 56px; border: 2px dashed #E5E7EB; border-radius: 8px;
+      background: #fff; transition: background 0.15s, border-color 0.15s;
+      scrollbar-width: thin;
     }
+    .matrix-tray-body.drag-over { background: rgba(22,163,74,0.04); border-color: #86efac; }
+    .matrix-tray-body .roadmap-card { width: 180px; flex-shrink: 0; }
+    .tray-empty-hint { font-size: 0.72rem; color: #D1D5DB; font-style: italic; align-self: center; white-space: nowrap; }
+
+    /* 2×2 grid */
+    .matrix-content { padding: 20px; background: #F8F9FB; }
+    .matrix-axes-wrap { display: flex; gap: 8px; }
+    .matrix-y-label { display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 4px 0; width: 24px; flex-shrink: 0; }
+    .matrix-y-text { font-size: 0.58rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #9CA3AF; writing-mode: vertical-rl; }
+    .matrix-y-text:first-child { transform: rotate(180deg); }
+    .matrix-grid-col { flex: 1; display: flex; flex-direction: column; gap: 0; }
+    .matrix-row { display: flex; gap: 10px; }
+    .matrix-row + .matrix-row { margin-top: 10px; }
+    .matrix-quadrant {
+      flex: 1; border-radius: 10px; padding: 12px;
+      display: flex; flex-direction: column; gap: 8px;
+      min-height: 170px; border: 2px dashed transparent;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .matrix-quadrant.drag-over { filter: brightness(0.97); }
+    .mq-header { margin-bottom: 4px; }
+    .mq-label { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.3px; }
+    .mq-sublabel { font-size: 0.58rem; color: #9CA3AF; margin-top: 1px; }
+
+    .mq-quick-wins { background: #F0FDF4; border-color: #86EFAC; }
+    .mq-quick-wins .mq-label { color: #15803D; }
+    .mq-quick-wins.drag-over { border-color: #4ADE80; background: #DCFCE7; border-style: solid; }
+
+    .mq-big-bets { background: #EFF6FF; border-color: #BFDBFE; }
+    .mq-big-bets .mq-label { color: #1D4ED8; }
+    .mq-big-bets.drag-over { border-color: #93C5FD; background: #DBEAFE; border-style: solid; }
+
+    .mq-fill-ins { background: #F9FAFB; border-color: #E5E7EB; }
+    .mq-fill-ins .mq-label { color: #6B7280; }
+    .mq-fill-ins.drag-over { border-color: #D1D5DB; background: #F3F4F6; border-style: solid; }
+
+    .mq-time-sinks { background: #FFF7ED; border-color: #FED7AA; }
+    .mq-time-sinks .mq-label { color: #C2410C; }
+    .mq-time-sinks.drag-over { border-color: #FDBA74; background: #FFEDD5; border-style: solid; }
+
+    .matrix-x-label { display: flex; justify-content: space-between; padding: 8px 0 0; }
+    .matrix-x-text { font-size: 0.58rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #9CA3AF; }
+
+    /* In matrix mode: hide priority badge and team tag on cards */
+    body.matrix-mode .card-footer { display: none; }
+    body.matrix-mode .card-desc { margin-bottom: 0; }
 
     @media (max-width: 800px) {
       .cs-header { padding: 40px 20px 36px; }
@@ -150,18 +218,22 @@
       .proto-section { padding: 0 0 60px; }
       .board { grid-template-columns: 1fr; padding: 14px; min-height: auto; }
       .board-toolbar { padding: 10px 14px; }
+      .matrix-row { flex-direction: column; }
+      .matrix-y-label { display: none; }
+      .annual-grid { grid-template-columns: 1fr 1fr; }
+      .annual-quarter { border-bottom: 1px solid #E5E7EB; }
     }
   </style>
 </head>
-<body>
+<body class="matrix-mode">
 
 <a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;border-radius:4px;">← Back to portfolio</a>
 
 <div class="cs-header">
   <div class="cs-header-inner">
     <p class="eyebrow">Interactive Prototype</p>
-    <h1>Drag-to-Prioritize Roadmap</h1>
-    <p class="cs-intro">Static slides and spreadsheets go stale the moment the meeting ends.</p>
+    <h1>Prioritization Matrix + Roadmap</h1>
+    <p class="cs-intro">Score features on impact and effort first — then let the matrix build the roadmap for you.</p>
   </div>
 </div>
 
@@ -173,7 +245,7 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>Product teams spend time maintaining roadmap slides that are outdated before they're shared. A drag-to-reorder board makes priority a first-class interaction — the current state is always visible, and changing it takes one gesture instead of editing a deck.</p>
+      <p>Roadmap prioritization decisions often happen in a separate meeting from the roadmap itself — someone scores features in a spreadsheet, then manually translates that into a slide or board. The two artifacts drift apart immediately. This prototype connects the scoring step directly to the roadmap: placing a feature on the matrix is the act of prioritizing it.</p>
     </div>
   </div>
 
@@ -184,11 +256,12 @@
     </div>
     <div class="acc-body">
       <ul>
-        <li>Native HTML5 drag-and-drop API — no library dependency; dragstart, dragover, drop, and dragend events drive all state changes</li>
-        <li>Position-aware insertion: drop target calculated from pointer Y position relative to existing cards, so ordering within a lane is preserved rather than always appending</li>
-        <li>Live column counts derived from DOM state after each drop — no separate data model to keep in sync</li>
-        <li>Snapshot-based reset: original card order captured on load and restored to the DOM on reset without a page refresh</li>
-        <li>Priority badge colors assigned via data attributes, styled in CSS — no runtime logic required for visual state</li>
+        <li>Two-step flow: Step 1 is a draggable 2×2 impact/effort matrix; Step 2 is the Now/Next/Later kanban board</li>
+        <li>Native HTML5 drag-and-drop for both views — no library dependency; matrix quadrants and board columns are both drop targets</li>
+        <li>Quadrant → column mapping on "Build roadmap": Quick Wins → Now, Big Bets → Next, Fill-ins and Time Sinks → Later</li>
+        <li>Priority badges auto-assigned from quadrant placement: Quick Wins = High, Big Bets = Medium, Fill-ins/Time Sinks = Low</li>
+        <li>Long-press touch drag with haptic feedback works across both the matrix and board views</li>
+        <li>Board reset returns to the matrix with cards restored to the backlog tray</li>
       </ul>
     </div>
   </div>
@@ -200,11 +273,11 @@
     </div>
     <div class="acc-body">
       <ul>
-        <li>Three-lane board (Now / Next / Later) — answers the single most common roadmap question without requiring calendar dates</li>
-        <li>Cards show title, one-line description, team tag, and priority badge — scannable at a glance</li>
-        <li>Drag to reorder within a lane or drop into a different lane to change status; column counts update instantly</li>
-        <li>Drag affordance appears on hover so the interaction is discoverable without instructions</li>
-        <li>Reset button restores all cards to original positions — useful for demos and walkthroughs</li>
+        <li>Step 1 — Score: Drag features from the backlog tray onto four quadrants (Quick Wins, Big Bets, Fill-ins, Time Sinks); a counter tracks how many are placed</li>
+        <li>Step 2 — Arrange: "Build roadmap →" maps quadrant positions to Now/Next/Later columns and assigns priority badges automatically</li>
+        <li>Override: once on the board, cards can be freely re-dragged to any column to adjust the generated order</li>
+        <li>Annual roadmap generator reads the final board state and distributes items across four quarters</li>
+        <li>"← Back to matrix" restores all cards to the scoring tray with original badges intact</li>
       </ul>
     </div>
   </div>
@@ -215,18 +288,206 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>Roadmap conversations stall when priority lives in a slide that nobody can edit in the room. Making drag the primary interaction means the prioritization decision and its communication happen in the same gesture — no post-meeting deck update required. Now/Next/Later was chosen over sprint columns because it maps to business intent, not delivery mechanics, which makes it readable by stakeholders who don't track sprints.</p>
+      <p>Combining the scoring and roadmapping steps removes a translation layer that's easy to get wrong. The quadrant placement is the decision — the roadmap is just what that decision looks like arranged in time. Keeping both interactions in the same surface means there's no version skew between "how we prioritized" and "what the roadmap says."</p>
     </div>
   </div>
 
 </div>
 
 <div class="proto-label-bar">
-  <p class="proto-label-inner">Prototype — drag cards to reprioritize</p>
+  <p class="proto-label-inner" id="proto-label-text">Step 1 of 2 — Drag features onto the matrix to score them</p>
 </div>
 
 <div class="proto-section">
-  <div id="board-frame-wrap">
+
+  <!-- ── Step 1: Matrix ── -->
+  <div class="matrix-frame" id="matrix-frame">
+
+    <div class="board-titlebar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <span class="board-title-text">roadmap.app — Feature Matrix</span>
+    </div>
+
+    <div class="matrix-toolbar">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="matrix-title">Score Features</span>
+        <span class="placed-count" id="placed-count">0 / 9 placed</span>
+      </div>
+      <button class="generate-btn" onclick="buildRoadmap()">Build prioritization →</button>
+    </div>
+
+    <!-- Backlog tray -->
+    <div class="matrix-tray">
+      <div class="matrix-tray-label">Backlog — drag features onto the matrix below</div>
+      <div class="matrix-tray-body" id="matrix-tray"
+        ondragover="handleMatrixDragOver(event)"
+        ondragleave="handleMatrixDragLeave(event)"
+        ondrop="handleMatrixDrop(event)">
+
+        <div class="roadmap-card" draggable="true" data-id="c1"
+          ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <span class="card-drag-handle">⠿</span>
+          <div class="card-title">Rate Alert Notifications</div>
+          <div class="card-desc">Alert shippers when carrier rates spike above their configured threshold</div>
+          <div class="card-footer">
+            <span class="priority-badge priority-high">High</span>
+            <span class="card-team">Growth</span>
+          </div>
+        </div>
+
+        <div class="roadmap-card" draggable="true" data-id="c2"
+          ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <span class="card-drag-handle">⠿</span>
+          <div class="card-title">Label Reprint Workflow</div>
+          <div class="card-desc">One-click reprint for damaged labels from the shipment detail screen</div>
+          <div class="card-footer">
+            <span class="priority-badge priority-high">High</span>
+            <span class="card-team">Ops</span>
+          </div>
+        </div>
+
+        <div class="roadmap-card" draggable="true" data-id="c3"
+          ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <span class="card-drag-handle">⠿</span>
+          <div class="card-title">Bulk Shipment Upload</div>
+          <div class="card-desc">CSV import for customers creating 50+ shipments daily</div>
+          <div class="card-footer">
+            <span class="priority-badge priority-high">High</span>
+            <span class="card-team">Core</span>
+          </div>
+        </div>
+
+        <div class="roadmap-card" draggable="true" data-id="c4"
+          ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <span class="card-drag-handle">⠿</span>
+          <div class="card-title">Webhook Event Delivery</div>
+          <div class="card-desc">Push tracking status changes to customer systems in real time</div>
+          <div class="card-footer">
+            <span class="priority-badge priority-medium">Medium</span>
+            <span class="card-team">Developer</span>
+          </div>
+        </div>
+
+        <div class="roadmap-card" draggable="true" data-id="c5"
+          ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <span class="card-drag-handle">⠿</span>
+          <div class="card-title">Mobile Barcode Scanning</div>
+          <div class="card-desc">Scan shipment barcodes from a warehouse phone without a desktop</div>
+          <div class="card-footer">
+            <span class="priority-badge priority-medium">Medium</span>
+            <span class="card-team">Mobile</span>
+          </div>
+        </div>
+
+        <div class="roadmap-card" draggable="true" data-id="c6"
+          ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <span class="card-drag-handle">⠿</span>
+          <div class="card-title">Analytics Dashboard</div>
+          <div class="card-desc">Self-serve reporting on volume, carrier performance, and spend</div>
+          <div class="card-footer">
+            <span class="priority-badge priority-medium">Medium</span>
+            <span class="card-team">Platform</span>
+          </div>
+        </div>
+
+        <div class="roadmap-card" draggable="true" data-id="c7"
+          ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <span class="card-drag-handle">⠿</span>
+          <div class="card-title">Customs Form Pre-fill</div>
+          <div class="card-desc">Auto-populate customs declarations from address and commodity data</div>
+          <div class="card-footer">
+            <span class="priority-badge priority-medium">Medium</span>
+            <span class="card-team">Global</span>
+          </div>
+        </div>
+
+        <div class="roadmap-card" draggable="true" data-id="c8"
+          ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <span class="card-drag-handle">⠿</span>
+          <div class="card-title">Smart Carrier Selection</div>
+          <div class="card-desc">Auto-route shipments to the cheapest eligible carrier by zone and weight</div>
+          <div class="card-footer">
+            <span class="priority-badge priority-low">Low</span>
+            <span class="card-team">Core</span>
+          </div>
+        </div>
+
+        <div class="roadmap-card" draggable="true" data-id="c9"
+          ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <span class="card-drag-handle">⠿</span>
+          <div class="card-title">Dark Mode</div>
+          <div class="card-desc">Reduce eye strain for dispatch operators working night shifts</div>
+          <div class="card-footer">
+            <span class="priority-badge priority-low">Low</span>
+            <span class="card-team">Design</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 2×2 matrix -->
+    <div class="matrix-content">
+      <div class="matrix-axes-wrap">
+        <div class="matrix-y-label">
+          <span class="matrix-y-text">High Impact</span>
+          <span class="matrix-y-text">Low Impact</span>
+        </div>
+        <div class="matrix-grid-col">
+          <div class="matrix-row">
+            <div class="matrix-quadrant mq-quick-wins" data-quadrant="quick-wins" data-label="Quick Wins"
+              ondragover="handleMatrixDragOver(event)"
+              ondragleave="handleMatrixDragLeave(event)"
+              ondrop="handleMatrixDrop(event)">
+              <div class="mq-header">
+                <div class="mq-label">⚡ Quick Wins</div>
+                <div class="mq-sublabel">High impact · Low effort</div>
+              </div>
+            </div>
+            <div class="matrix-quadrant mq-big-bets" data-quadrant="big-bets" data-label="Big Bets"
+              ondragover="handleMatrixDragOver(event)"
+              ondragleave="handleMatrixDragLeave(event)"
+              ondrop="handleMatrixDrop(event)">
+              <div class="mq-header">
+                <div class="mq-label">🎯 Big Bets</div>
+                <div class="mq-sublabel">High impact · High effort</div>
+              </div>
+            </div>
+          </div>
+          <div class="matrix-row">
+            <div class="matrix-quadrant mq-fill-ins" data-quadrant="fill-ins" data-label="Fill-ins"
+              ondragover="handleMatrixDragOver(event)"
+              ondragleave="handleMatrixDragLeave(event)"
+              ondrop="handleMatrixDrop(event)">
+              <div class="mq-header">
+                <div class="mq-label">📦 Fill-ins</div>
+                <div class="mq-sublabel">Low impact · Low effort</div>
+              </div>
+            </div>
+            <div class="matrix-quadrant mq-time-sinks" data-quadrant="time-sinks" data-label="Time Sinks"
+              ondragover="handleMatrixDragOver(event)"
+              ondragleave="handleMatrixDragLeave(event)"
+              ondrop="handleMatrixDrop(event)">
+              <div class="mq-header">
+                <div class="mq-label">⚠️ Time Sinks</div>
+                <div class="mq-sublabel">Low impact · High effort</div>
+              </div>
+            </div>
+          </div>
+          <div class="matrix-x-label">
+            <span class="matrix-x-text">↙ Low Effort</span>
+            <span class="matrix-x-text">High Effort ↘</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /matrix-frame -->
+
+  <!-- ── Step 2: Board ── -->
+  <div id="board-frame-wrap" style="display:none;">
   <div class="board-frame">
 
     <div class="board-titlebar">
@@ -243,150 +504,45 @@
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="generate-btn" onclick="generateRoadmap()">Generate annual roadmap →</button>
-        <button class="board-reset-btn" onclick="resetBoard()">↺ Reset</button>
+        <button class="board-reset-btn" onclick="resetBoard()">← Back to matrix</button>
       </div>
     </div>
 
     <div class="board" id="board">
 
-      <!-- NOW -->
       <div class="column col-now">
         <div class="col-header">
           <span class="col-name">Now</span>
-          <span class="col-count" id="count-now">2</span>
+          <span class="col-count" id="count-now">0</span>
         </div>
         <div class="col-body" id="col-now"
           ondragover="handleDragOver(event)"
           ondragleave="handleDragLeave(event)"
           ondrop="handleDrop(event)">
-
-          <div class="roadmap-card" draggable="true" data-id="c1"
-            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-            <span class="card-drag-handle">⠿</span>
-            <div class="card-title">Rate Alert Notifications</div>
-            <div class="card-desc">Alert shippers when carrier rates spike above their configured threshold</div>
-            <div class="card-footer">
-              <span class="priority-badge priority-high">High</span>
-              <span class="card-team">Growth</span>
-            </div>
-          </div>
-
-          <div class="roadmap-card" draggable="true" data-id="c2"
-            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-            <span class="card-drag-handle">⠿</span>
-            <div class="card-title">Label Reprint Workflow</div>
-            <div class="card-desc">One-click reprint for damaged labels from the shipment detail screen</div>
-            <div class="card-footer">
-              <span class="priority-badge priority-high">High</span>
-              <span class="card-team">Ops</span>
-            </div>
-          </div>
-
         </div>
       </div>
 
-      <!-- NEXT -->
       <div class="column col-next">
         <div class="col-header">
           <span class="col-name">Next</span>
-          <span class="col-count" id="count-next">3</span>
+          <span class="col-count" id="count-next">0</span>
         </div>
         <div class="col-body" id="col-next"
           ondragover="handleDragOver(event)"
           ondragleave="handleDragLeave(event)"
           ondrop="handleDrop(event)">
-
-          <div class="roadmap-card" draggable="true" data-id="c3"
-            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-            <span class="card-drag-handle">⠿</span>
-            <div class="card-title">Bulk Shipment Upload</div>
-            <div class="card-desc">CSV import for customers creating 50+ shipments daily</div>
-            <div class="card-footer">
-              <span class="priority-badge priority-high">High</span>
-              <span class="card-team">Core</span>
-            </div>
-          </div>
-
-          <div class="roadmap-card" draggable="true" data-id="c4"
-            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-            <span class="card-drag-handle">⠿</span>
-            <div class="card-title">Webhook Event Delivery</div>
-            <div class="card-desc">Push tracking status changes to customer systems in real time</div>
-            <div class="card-footer">
-              <span class="priority-badge priority-medium">Medium</span>
-              <span class="card-team">Developer</span>
-            </div>
-          </div>
-
-          <div class="roadmap-card" draggable="true" data-id="c5"
-            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-            <span class="card-drag-handle">⠿</span>
-            <div class="card-title">Mobile Barcode Scanning</div>
-            <div class="card-desc">Scan shipment barcodes from a warehouse phone without a desktop</div>
-            <div class="card-footer">
-              <span class="priority-badge priority-medium">Medium</span>
-              <span class="card-team">Mobile</span>
-            </div>
-          </div>
-
         </div>
       </div>
 
-      <!-- LATER -->
       <div class="column col-later">
         <div class="col-header">
           <span class="col-name">Later</span>
-          <span class="col-count" id="count-later">4</span>
+          <span class="col-count" id="count-later">0</span>
         </div>
         <div class="col-body" id="col-later"
           ondragover="handleDragOver(event)"
           ondragleave="handleDragLeave(event)"
           ondrop="handleDrop(event)">
-
-          <div class="roadmap-card" draggable="true" data-id="c6"
-            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-            <span class="card-drag-handle">⠿</span>
-            <div class="card-title">Analytics Dashboard</div>
-            <div class="card-desc">Self-serve reporting on volume, carrier performance, and spend</div>
-            <div class="card-footer">
-              <span class="priority-badge priority-medium">Medium</span>
-              <span class="card-team">Platform</span>
-            </div>
-          </div>
-
-          <div class="roadmap-card" draggable="true" data-id="c7"
-            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-            <span class="card-drag-handle">⠿</span>
-            <div class="card-title">Customs Form Pre-fill</div>
-            <div class="card-desc">Auto-populate customs declarations from address and commodity data</div>
-            <div class="card-footer">
-              <span class="priority-badge priority-medium">Medium</span>
-              <span class="card-team">Global</span>
-            </div>
-          </div>
-
-          <div class="roadmap-card" draggable="true" data-id="c8"
-            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-            <span class="card-drag-handle">⠿</span>
-            <div class="card-title">Smart Carrier Selection</div>
-            <div class="card-desc">Auto-route shipments to the cheapest eligible carrier by zone and weight</div>
-            <div class="card-footer">
-              <span class="priority-badge priority-low">Low</span>
-              <span class="card-team">Core</span>
-            </div>
-          </div>
-
-          <div class="roadmap-card" draggable="true" data-id="c9"
-            ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-            <span class="card-drag-handle">⠿</span>
-            <div class="card-title">Dark Mode</div>
-            <div class="card-desc">Reduce eye strain for dispatch operators working night shifts</div>
-            <div class="card-footer">
-              <span class="priority-badge priority-low">Low</span>
-              <span class="card-team">Design</span>
-            </div>
-          </div>
-
         </div>
       </div>
 
@@ -394,6 +550,7 @@
   </div>
   </div><!-- /board-frame-wrap -->
 
+  <!-- ── Annual view ── -->
   <div class="annual-frame" id="annual-frame">
     <div class="annual-toolbar">
       <button class="board-reset-btn" onclick="closeRoadmap()">← Back to board</button>
@@ -403,7 +560,7 @@
     <div class="annual-grid" id="annual-grid"></div>
   </div>
 
-</div>
+</div><!-- /proto-section -->
 
 <div class="rm-toast" id="rm-toast"></div>
 
@@ -414,13 +571,70 @@
     hdr.nextElementSibling.classList.toggle('open');
   }
 
-  // ── Drag & Drop ──
+  // ── State ──
+  let inMatrixMode = true;
   let draggedCard = null;
   let sourceCol = null;
 
+  // Store original priority badges so reset can restore them
+  const originalPriorities = {};
+  // Tracks where each card sat on the matrix before "Build prioritization" was clicked
+  const lastMatrixPlacements = {};
+  document.querySelectorAll('.roadmap-card').forEach(c => {
+    const badge = c.querySelector('.priority-badge');
+    if (!badge) return;
+    if (badge.classList.contains('priority-high')) originalPriorities[c.dataset.id] = 'high';
+    else if (badge.classList.contains('priority-medium')) originalPriorities[c.dataset.id] = 'medium';
+    else originalPriorities[c.dataset.id] = 'low';
+  });
+
+  // ── Priority helpers ──
+  function setPriority(card, level) {
+    const badge = card.querySelector('.priority-badge');
+    if (!badge) return;
+    badge.className = 'priority-badge priority-' + level;
+    badge.textContent = level.charAt(0).toUpperCase() + level.slice(1);
+  }
+
+  // ── Placed count (matrix) ──
+  function updatePlacedCount() {
+    const total = document.querySelectorAll('.roadmap-card').length;
+    const inTray = document.querySelectorAll('#matrix-tray .roadmap-card').length;
+    const placed = total - inTray;
+    const el = document.getElementById('placed-count');
+    if (!el) return;
+    el.textContent = placed + ' / ' + total + ' placed';
+    el.className = 'placed-count' + (placed === total ? ' all-placed' : '');
+  }
+
+  // ── Matrix drag handlers ──
+  function handleMatrixDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    e.currentTarget.classList.add('drag-over');
+  }
+
+  function handleMatrixDragLeave(e) {
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+  }
+
+  function handleMatrixDrop(e) {
+    e.preventDefault();
+    if (!draggedCard) return;
+    const zone = e.currentTarget;
+    zone.classList.remove('drag-over');
+    zone.appendChild(draggedCard);
+    updatePlacedCount();
+  }
+
+  // ── Board drag handlers ──
   function handleDragStart(e) {
     draggedCard = e.currentTarget;
-    sourceCol = draggedCard.closest('.col-body');
+    sourceCol = draggedCard.closest('.col-body')
+      || draggedCard.closest('.matrix-quadrant')
+      || draggedCard.closest('#matrix-tray');
     e.dataTransfer.effectAllowed = 'move';
     setTimeout(() => draggedCard && draggedCard.classList.add('dragging'), 0);
   }
@@ -429,7 +643,7 @@
     if (draggedCard) draggedCard.classList.remove('dragging');
     draggedCard = null;
     sourceCol = null;
-    document.querySelectorAll('.col-body').forEach(c => c.classList.remove('drag-over'));
+    document.querySelectorAll('.col-body, .matrix-quadrant, #matrix-tray').forEach(c => c.classList.remove('drag-over'));
     removeIndicators();
     updateCounts();
   }
@@ -491,7 +705,77 @@
     });
   }
 
-  // ── Touch drag (long-press to drag on mobile) ──
+  // ── Build roadmap from matrix ──
+  function buildRoadmap() {
+    const quickWins = [...document.querySelectorAll('.mq-quick-wins .roadmap-card')];
+    const bigBets   = [...document.querySelectorAll('.mq-big-bets .roadmap-card')];
+    const fillIns   = [...document.querySelectorAll('.mq-fill-ins .roadmap-card')];
+    const timeSinks = [...document.querySelectorAll('.mq-time-sinks .roadmap-card')];
+    const unplaced  = [...document.querySelectorAll('#matrix-tray .roadmap-card')];
+
+    const scored = quickWins.length + bigBets.length + fillIns.length + timeSinks.length;
+    if (scored === 0) {
+      showToast('Place at least one feature on the matrix first');
+      return;
+    }
+
+    // Snapshot quadrant placement so "← Back to matrix" can restore it
+    document.querySelectorAll('.roadmap-card').forEach(c => {
+      const parent = c.closest('.matrix-quadrant') || c.closest('#matrix-tray');
+      if (parent) lastMatrixPlacements[c.dataset.id] = parent;
+    });
+
+    quickWins.forEach(c => setPriority(c, 'high'));
+    bigBets.forEach(c => setPriority(c, 'medium'));
+    fillIns.forEach(c => setPriority(c, 'medium'));
+    timeSinks.forEach(c => setPriority(c, 'low'));
+    unplaced.forEach(c => setPriority(c, 'low'));
+
+    const colNow   = document.getElementById('col-now');
+    const colNext  = document.getElementById('col-next');
+    const colLater = document.getElementById('col-later');
+
+    quickWins.forEach(c => colNow.appendChild(c));
+    bigBets.forEach(c => colNext.appendChild(c));
+    [...fillIns, ...timeSinks, ...unplaced].forEach(c => colLater.appendChild(c));
+
+    inMatrixMode = false;
+    document.body.classList.remove('matrix-mode');
+    document.getElementById('matrix-frame').style.display = 'none';
+    document.getElementById('board-frame-wrap').style.display = 'block';
+    document.getElementById('proto-label-text').textContent = 'Step 2 of 2 — Drag cards to fine-tune your roadmap';
+    updateCounts();
+    showToast('Roadmap built from matrix');
+  }
+
+  // ── Reset to matrix ──
+  function resetBoard() {
+    const tray = document.getElementById('matrix-tray');
+
+    // Restore each card to its last matrix position (quadrant or tray)
+    document.querySelectorAll('.roadmap-card').forEach(c => {
+      const target = lastMatrixPlacements[c.dataset.id] || tray;
+      target.appendChild(c);
+    });
+
+    // Restore original priority badges
+    Object.entries(originalPriorities).forEach(([id, level]) => {
+      const card = document.querySelector('[data-id="' + id + '"]');
+      if (card) setPriority(card, level);
+    });
+
+    inMatrixMode = true;
+    document.body.classList.add('matrix-mode');
+    document.getElementById('matrix-frame').style.display = 'block';
+    document.getElementById('board-frame-wrap').style.display = 'none';
+    document.getElementById('annual-frame').style.display = 'none';
+    document.getElementById('proto-label-text').textContent = 'Step 1 of 2 — Drag features onto the matrix to score them';
+    updatePlacedCount();
+    updateCounts();
+    showToast('Reset to matrix');
+  }
+
+  // ── Touch drag ──
   let touchCard = null, touchGhost = null, touchDragging = false;
   let touchLongPressTimer = null, touchLastCol = null;
   let touchStartX = 0, touchStartY = 0;
@@ -526,7 +810,7 @@
       dropTouchCard(e.changedTouches[0]);
     });
 
-    card.addEventListener('touchcancel', e => {
+    card.addEventListener('touchcancel', () => {
       cancelTouchPress(card);
       if (touchDragging) cleanupTouchDrag();
     });
@@ -543,7 +827,9 @@
     card.classList.remove('touch-activating');
     touchDragging = true;
     draggedCard = card;
-    sourceCol = card.closest('.col-body');
+    sourceCol = card.closest('.col-body')
+      || card.closest('.matrix-quadrant')
+      || card.closest('#matrix-tray');
     card.classList.add('dragging');
 
     const rect = card.getBoundingClientRect();
@@ -566,38 +852,58 @@
     const el = document.elementFromPoint(touch.clientX, touch.clientY);
     touchGhost.style.visibility = '';
 
-    const col = el && el.closest('.col-body');
-    if (col) {
-      if (col !== touchLastCol) {
-        document.querySelectorAll('.col-body').forEach(c => c.classList.remove('drag-over'));
-        col.classList.add('drag-over');
-        touchLastCol = col;
+    if (inMatrixMode) {
+      const zone = el && (el.closest('.matrix-quadrant') || el.closest('#matrix-tray'));
+      document.querySelectorAll('.matrix-quadrant, #matrix-tray').forEach(c => c.classList.remove('drag-over'));
+      if (zone) {
+        zone.classList.add('drag-over');
+        touchLastCol = zone;
+      } else {
+        touchLastCol = null;
       }
-      removeIndicators();
-      const after = getDragAfterElement(col, touch.clientY);
-      const ind = document.createElement('div');
-      ind.className = 'drop-indicator';
-      if (!after) col.appendChild(ind); else col.insertBefore(ind, after);
     } else {
-      document.querySelectorAll('.col-body').forEach(c => c.classList.remove('drag-over'));
-      removeIndicators();
-      touchLastCol = null;
+      const col = el && el.closest('.col-body');
+      if (col) {
+        if (col !== touchLastCol) {
+          document.querySelectorAll('.col-body').forEach(c => c.classList.remove('drag-over'));
+          col.classList.add('drag-over');
+          touchLastCol = col;
+        }
+        removeIndicators();
+        const after = getDragAfterElement(col, touch.clientY);
+        const ind = document.createElement('div');
+        ind.className = 'drop-indicator';
+        if (!after) col.appendChild(ind); else col.insertBefore(ind, after);
+      } else {
+        document.querySelectorAll('.col-body').forEach(c => c.classList.remove('drag-over'));
+        removeIndicators();
+        touchLastCol = null;
+      }
     }
   }
 
   function dropTouchCard(touch) {
     if (touchGhost) { touchGhost.remove(); touchGhost = null; }
     if (draggedCard) draggedCard.classList.remove('dragging');
-    document.querySelectorAll('.col-body').forEach(c => c.classList.remove('drag-over'));
+    document.querySelectorAll('.col-body, .matrix-quadrant, #matrix-tray').forEach(c => c.classList.remove('drag-over'));
     removeIndicators();
 
     const el = document.elementFromPoint(touch.clientX, touch.clientY);
-    const col = el && el.closest('.col-body');
-    if (col && draggedCard) {
-      const moved = col !== sourceCol;
-      const after = getDragAfterElement(col, touch.clientY);
-      if (!after) col.appendChild(draggedCard); else col.insertBefore(draggedCard, after);
-      if (moved) showToast('Moved to ' + col.closest('.column').querySelector('.col-name').textContent);
+
+    if (inMatrixMode) {
+      const zone = el && (el.closest('.matrix-quadrant') || el.closest('#matrix-tray'));
+      if (zone && draggedCard) {
+        zone.appendChild(draggedCard);
+        updatePlacedCount();
+      }
+    } else {
+      const col = el && el.closest('.col-body');
+      if (col && draggedCard) {
+        const moved = col !== sourceCol;
+        const after = getDragAfterElement(col, touch.clientY);
+        if (!after) col.appendChild(draggedCard); else col.insertBefore(draggedCard, after);
+        if (moved) showToast('Moved to ' + col.closest('.column').querySelector('.col-name').textContent);
+      }
     }
     cleanupTouchDrag();
   }
@@ -621,7 +927,7 @@
   }
 
   // ── Annual Roadmap Generator ──
-  function getQuarterLabel(q, y) { return `Q${q} ${y}`; }
+  function getQuarterLabel(q, y) { return 'Q' + q + ' ' + y; }
 
   function advanceQuarter(q, y, n) {
     let cq = q, cy = y;
@@ -641,11 +947,11 @@
     const desc = card.querySelector('.card-desc').textContent;
     const badge = card.querySelector('.priority-badge').outerHTML;
     const team = card.querySelector('.card-team').textContent;
-    return `<div class="annual-card">
-      <div class="card-title">${title}</div>
-      <div class="card-desc">${desc}</div>
-      <div class="card-footer">${badge}<span class="card-team">${team}</span></div>
-    </div>`;
+    return '<div class="annual-card">'
+      + '<div class="card-title">' + title + '</div>'
+      + '<div class="card-desc">' + desc + '</div>'
+      + '<div class="card-footer">' + badge + '<span class="card-team">' + team + '</span></div>'
+      + '</div>';
   }
 
   function generateRoadmap() {
@@ -679,17 +985,17 @@
     ];
 
     const grid = document.getElementById('annual-grid');
-    grid.innerHTML = quarters.map(({ label, cards }) => `
-      <div class="annual-quarter">
-        <div class="annual-quarter-header">
-          <div class="annual-q-label">${label}</div>
-          <div class="annual-q-count">${cards.length} item${cards.length !== 1 ? 's' : ''}</div>
-        </div>
-        <div class="annual-quarter-body">
-          ${cards.length ? cards.map(cloneCardForAnnual).join('') : '<div class="annual-empty">No items</div>'}
-        </div>
-      </div>
-    `).join('');
+    grid.innerHTML = quarters.map(function(qtr) {
+      return '<div class="annual-quarter">'
+        + '<div class="annual-quarter-header">'
+        + '<div class="annual-q-label">' + qtr.label + '</div>'
+        + '<div class="annual-q-count">' + qtr.cards.length + ' item' + (qtr.cards.length !== 1 ? 's' : '') + '</div>'
+        + '</div>'
+        + '<div class="annual-quarter-body">'
+        + (qtr.cards.length ? qtr.cards.map(cloneCardForAnnual).join('') : '<div class="annual-empty">No items</div>')
+        + '</div>'
+        + '</div>';
+    }).join('');
 
     document.getElementById('board-frame-wrap').style.display = 'none';
     document.getElementById('annual-frame').style.display = 'block';
@@ -701,22 +1007,8 @@
     document.getElementById('board-frame-wrap').style.display = 'block';
   }
 
-  // ── Reset ──
-  const originalState = {};
-  document.querySelectorAll('.col-body').forEach(col => {
-    originalState[col.id] = [...col.querySelectorAll('.roadmap-card')].map(c => c.dataset.id);
-  });
-
-  function resetBoard() {
-    const cards = {};
-    document.querySelectorAll('.roadmap-card').forEach(c => { cards[c.dataset.id] = c; c.remove(); });
-    Object.entries(originalState).forEach(([colId, ids]) => {
-      const col = document.getElementById(colId);
-      ids.forEach(id => col.appendChild(cards[id]));
-    });
-    updateCounts();
-    showToast('Board reset');
-  }
+  // Initialize placed count
+  updatePlacedCount();
 </script>
 </body>
 </html>
