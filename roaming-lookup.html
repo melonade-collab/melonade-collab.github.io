@@ -242,6 +242,18 @@
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">How It Worked</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>The lookup was triggered when the virtual assistant detected a roaming or long distance rate intent — either from a direct question ("what does it cost to use my phone in France?") or a travel-adjacent prompt ("I'm going to Japan next week"). The assistant confirmed the destination and surfaced a structured rate card showing pay-per-use rates for voice, text, and data alongside a contextual package recommendation, with estimated savings calculated against a 7-day trip baseline.</p>
+      <p style="margin-top:8px;">If the customer asked follow-up questions — "is the package worth it?", "what if I'm only there for 3 days?" — the assistant handled those inline before offering to add the package. Customers who chose a package were handed off to a pre-populated checkout flow with their selection already loaded. Customers who declined were given a summary of their pay-per-use rates and reminded they could add a package at any time from My Account.</p>
+      <p style="margin-top:8px;">The intent also handled edge cases: countries with no data roaming surfaced voice and text rates only; countries with no service returned a clear unavailability message rather than an empty result; mid-trip queries (where package purchase was no longer eligible) surfaced pay-per-use rates without the package comparison.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
       <p class="card-label">Trade-offs</p>
       <span class="acc-chevron">▼</span>
     </div>
