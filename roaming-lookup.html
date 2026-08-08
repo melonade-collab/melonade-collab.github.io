@@ -215,6 +215,21 @@
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Trade-offs</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li><strong>Chat as the lookup surface vs. a dedicated web page.</strong> Embedding rate lookup in the virtual assistant met customers where they already were, but added conversational overhead for users who just wanted to scan a table. A standalone rates page would have been faster for high-intent lookups; the chatbot was the right call for customers still deciding whether to buy a package.</li>
+        <li><strong>Handoff purchase model vs. inline checkout.</strong> Launching with a cart handoff instead of inline purchase reduced friction cost on the platform side but added steps for the customer. Conversion likely took a hit at the handoff point — a fully inline purchase flow would have been stronger, and that became the case for the post-launch iteration.</li>
+        <li><strong>7-day trip assumption for savings estimates.</strong> The comparison logic used a 7-day average to calculate package value, which worked well for typical trips but overstated savings for short stays and understated them for longer ones. A duration input would have been more accurate; we traded precision for a simpler default experience.</li>
+        <li><strong>Normalized rate display vs. full rate complexity.</strong> Surfacing a single per-day data rate simplified the experience, but actual billing had more edge cases — throttling thresholds, roaming partner variability, billing cycle cut-offs. The display prioritized confidence over completeness, with a fallback to support for edge cases.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
       <p class="card-label">Product Ownership</p>
       <span class="acc-chevron">▼</span>
     </div>
