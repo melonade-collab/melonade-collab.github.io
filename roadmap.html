@@ -45,7 +45,7 @@
     .proto-section { background: #f7f7f5; padding: 0 40px 80px; }
 
     /* ── Shared frame chrome ── */
-    .board-frame, .matrix-frame, .annual-frame {
+    .board-frame, .matrix-frame, .annual-frame, .rice-frame {
       max-width: 1160px; margin: 0 auto; background: #fff;
       border-radius: 0 0 16px 16px; border: 1px solid #E5E7EB; border-top: none;
       box-shadow: 0 8px 40px rgba(0,0,0,0.08); overflow: hidden;
@@ -210,6 +210,27 @@
     body.matrix-mode .card-footer { display: none; }
     body.matrix-mode .card-desc { margin-bottom: 0; }
 
+    /* ── RICE rating step ── */
+    .rice-frame { display: none; }
+    .rice-toolbar { background: #F8F9FB; border-bottom: 1px solid #E5E7EB; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .rice-title { font-size: 0.88rem; font-weight: 800; color: #111; letter-spacing: -0.3px; }
+    .rice-rated-count { font-size: 0.7rem; color: #6B7280; background: #F3F4F6; border-radius: 5px; padding: 3px 9px; transition: background 0.2s, color 0.2s; }
+    .rice-rated-count.all-rated { background: #DCFCE7; color: #15803D; }
+    .rice-list { max-width: 1160px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .rice-row { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 16px 20px; display: grid; grid-template-columns: 1fr 1.5fr auto; gap: 16px; align-items: center; }
+    .rice-card-title { font-size: 0.85rem; font-weight: 700; color: #111; margin-bottom: 6px; line-height: 1.3; }
+    .rice-q-badge { font-size: 0.6rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+    .rice-toggles { display: flex; flex-direction: column; gap: 10px; }
+    .rice-toggle-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #9CA3AF; margin-bottom: 5px; }
+    .rice-toggle-group { display: flex; gap: 5px; flex-wrap: wrap; }
+    .rice-btn { font-size: 0.72rem; font-weight: 600; padding: 5px 11px; border-radius: 6px; border: 1.5px solid #E5E7EB; background: #fff; color: #6B7280; cursor: pointer; transition: all 0.12s; font-family: inherit; }
+    .rice-btn:hover { border-color: #D1D5DB; background: #F9FAFB; }
+    .rice-btn.selected { border-color: #16a34a; background: #DCFCE7; color: #15803D; }
+    .rice-score-wrap { text-align: right; min-width: 56px; }
+    .rice-score { font-size: 1.5rem; font-weight: 900; color: #D1D5DB; line-height: 1; transition: color 0.2s; }
+    .rice-score.live { color: #15803D; }
+    .rice-score-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #9CA3AF; margin-top: 4px; }
+
     @media (max-width: 800px) {
       .cs-header { padding: 40px 20px 36px; }
       .cs-body { padding: 36px 20px 48px; }
@@ -222,6 +243,8 @@
       .matrix-y-label { display: none; }
       .annual-grid { grid-template-columns: 1fr 1fr; }
       .annual-quarter { border-bottom: 1px solid #E5E7EB; }
+      .rice-row { grid-template-columns: 1fr; }
+      .rice-score-wrap { text-align: left; }
     }
   </style>
 </head>
@@ -233,7 +256,7 @@
   <div class="cs-header-inner">
     <p class="eyebrow">Interactive Prototype</p>
     <h1>Prioritization Matrix + Roadmap</h1>
-    <p class="cs-intro">Score features on impact and effort first — then let the matrix build the roadmap for you.</p>
+    <p class="cs-intro">Score features on the matrix, rate reach and confidence to get a RICE score, then let the numbers build the roadmap for you.</p>
   </div>
 </div>
 
@@ -256,12 +279,13 @@
     </div>
     <div class="acc-body">
       <ul>
-        <li>Two-step flow: Step 1 is a draggable 2×2 impact/effort matrix; Step 2 is the Now/Next/Later kanban board</li>
-        <li>Native HTML5 drag-and-drop for both views — no library dependency; matrix quadrants and board columns are both drop targets</li>
-        <li>Quadrant → column mapping on "Build roadmap": Quick Wins → Now, Big Bets → Next, Fill-ins and Time Sinks → Later</li>
-        <li>Priority badges auto-assigned from quadrant placement: Quick Wins = High, Big Bets = Medium, Fill-ins/Time Sinks = Low</li>
-        <li>Long-press touch drag with haptic feedback works across both the matrix and board views</li>
-        <li>Board reset returns to the matrix with cards restored to the backlog tray</li>
+        <li>Three-step flow: matrix scoring → RICE rating → Now/Next/Later board</li>
+        <li>Native HTML5 drag-and-drop for matrix and board; no library dependency</li>
+        <li>RICE score calculated per card from matrix position (Impact + Effort) plus two user inputs (Reach + Confidence); cards sorted by score before roadmap is built</li>
+        <li>Priority badges auto-assigned from RICE ranking: top third = High → Now, middle = Medium → Next, bottom = Low → Later</li>
+        <li>Board allows free re-drag to override any RICE-generated placement</li>
+        <li>Long-press touch drag with haptic feedback works across matrix and board</li>
+        <li>Reset returns to Step 1 with all cards restored to their matrix positions</li>
       </ul>
     </div>
   </div>
@@ -273,11 +297,11 @@
     </div>
     <div class="acc-body">
       <ul>
-        <li>Step 1 — Score: Drag features from the backlog tray onto four quadrants (Quick Wins, Big Bets, Fill-ins, Time Sinks); a counter tracks how many are placed</li>
-        <li>Step 2 — Arrange: "Build roadmap →" maps quadrant positions to Now/Next/Later columns and assigns priority badges automatically</li>
-        <li>Override: once on the board, cards can be freely re-dragged to any column to adjust the generated order</li>
+        <li>Step 1 — Score: Drag features from the backlog tray onto the 2×2 matrix (Quick Wins, Big Bets, Fill-ins, Time Sinks)</li>
+        <li>Step 2 — Rate: For each placed feature, select Reach (Niche / Some / Many / Most) and Confidence (Low / Med / High); RICE score calculates live from these inputs combined with the matrix-derived Impact and Effort</li>
+        <li>Step 3 — Arrange: Roadmap auto-populates sorted by RICE score with priority badges set; cards can be freely re-dragged to override</li>
         <li>Annual roadmap generator reads the final board state and distributes items across four quarters</li>
-        <li>"← Back to matrix" restores all cards to the scoring tray with original badges intact</li>
+        <li>"← Back to matrix" restores all cards to the matrix with original badges intact</li>
       </ul>
     </div>
   </div>
@@ -288,14 +312,14 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>Combining the scoring and roadmapping steps removes a translation layer that's easy to get wrong. The quadrant placement is the decision — the roadmap is just what that decision looks like arranged in time. Keeping both interactions in the same surface means there's no version skew between "how we prioritized" and "what the roadmap says."</p>
+      <p>The matrix captures the qualitative call (high impact, low effort) and RICE adds the quantitative layer — reach and confidence are the two inputs most likely to differ between features that look similar on the matrix. Combining them in one flow means the roadmap reflects both judgment and data, and the board still lets you override when the numbers don't match what you know about the business.</p>
     </div>
   </div>
 
 </div>
 
 <div class="proto-label-bar">
-  <p class="proto-label-inner" id="proto-label-text">Step 1 of 2 — Drag features onto the matrix to score them</p>
+  <p class="proto-label-inner" id="proto-label-text">Step 1 of 3 — Drag features onto the matrix to score them</p>
 </div>
 
 <div class="proto-section">
@@ -315,7 +339,7 @@
         <span class="matrix-title">Score Features</span>
         <span class="placed-count" id="placed-count">0 / 9 placed</span>
       </div>
-      <button class="generate-btn" onclick="buildRoadmap()">Build prioritization →</button>
+      <button class="generate-btn" onclick="showRiceStep()">Rate features →</button>
     </div>
 
     <!-- Backlog tray -->
@@ -486,7 +510,26 @@
 
   </div><!-- /matrix-frame -->
 
-  <!-- ── Step 2: Board ── -->
+  <!-- ── Step 2: RICE rating ── -->
+  <div class="rice-frame" id="rice-frame">
+    <div class="board-titlebar">
+      <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+      <span class="board-title-text">roadmap.app — RICE Scoring</span>
+    </div>
+    <div class="rice-toolbar">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="rice-title">Rate Features</span>
+        <span class="rice-rated-count" id="rice-rated-count">0 / 0 rated</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="generate-btn" id="rice-build-btn" onclick="buildRoadmapFromRice()" style="opacity:0.4;cursor:not-allowed;" disabled>Rate all features to continue</button>
+        <button class="board-reset-btn" onclick="backToMatrix()">← Back to matrix</button>
+      </div>
+    </div>
+    <div class="rice-list" id="rice-list"></div>
+  </div>
+
+  <!-- ── Step 3: Board ── -->
   <div id="board-frame-wrap" style="display:none;">
   <div class="board-frame">
 
@@ -705,71 +748,179 @@
     });
   }
 
-  // ── Build roadmap from matrix ──
-  function buildRoadmap() {
-    const quickWins = [...document.querySelectorAll('.mq-quick-wins .roadmap-card')];
-    const bigBets   = [...document.querySelectorAll('.mq-big-bets .roadmap-card')];
-    const fillIns   = [...document.querySelectorAll('.mq-fill-ins .roadmap-card')];
-    const timeSinks = [...document.querySelectorAll('.mq-time-sinks .roadmap-card')];
-    const unplaced  = [...document.querySelectorAll('#matrix-tray .roadmap-card')];
+  // ── RICE data ──
+  const riceData = {}; // { cardId: { reach, confidence } }
+  const quadMeta = {
+    'quick-wins': { impact: 3, effort: 1, label: '⚡ Quick Win', color: '#15803D', bg: '#DCFCE7' },
+    'big-bets':   { impact: 3, effort: 3, label: '🎯 Big Bet',   color: '#1D4ED8', bg: '#EFF6FF' },
+    'fill-ins':   { impact: 1, effort: 1, label: '📦 Fill-in',   color: '#6B7280', bg: '#F3F4F6' },
+    'time-sinks': { impact: 1, effort: 3, label: '⚠️ Time Sink', color: '#C2410C', bg: '#FFF7ED' },
+  };
+  const reachVals = { Niche: 1, Some: 3, Many: 7, Most: 10 };
+  const confVals  = { Low: 50, Med: 80, High: 100 };
 
-    const scored = quickWins.length + bigBets.length + fillIns.length + timeSinks.length;
-    if (scored === 0) {
-      showToast('Place at least one feature on the matrix first');
-      return;
-    }
+  function calcRice(cardId) {
+    const d = riceData[cardId];
+    if (!d || !d.reach || !d.confidence) return null;
+    const parent = lastMatrixPlacements[cardId];
+    const qKey = parent && parent.dataset && parent.dataset.quadrant;
+    if (!qKey || !quadMeta[qKey]) return null;
+    const { impact, effort } = quadMeta[qKey];
+    return Math.round((reachVals[d.reach] * impact * confVals[d.confidence] / 100) / effort);
+  }
 
-    // Snapshot quadrant placement so "← Back to matrix" can restore it
+  // ── Show RICE rating step ──
+  function showRiceStep() {
+    const placed = [...document.querySelectorAll('.matrix-quadrant .roadmap-card')];
+    if (placed.length === 0) { showToast('Place at least one feature on the matrix first'); return; }
+
+    // Snapshot quadrant positions
     document.querySelectorAll('.roadmap-card').forEach(c => {
       const parent = c.closest('.matrix-quadrant') || c.closest('#matrix-tray');
       if (parent) lastMatrixPlacements[c.dataset.id] = parent;
     });
 
-    quickWins.forEach(c => setPriority(c, 'high'));
-    bigBets.forEach(c => setPriority(c, 'medium'));
-    fillIns.forEach(c => setPriority(c, 'medium'));
-    timeSinks.forEach(c => setPriority(c, 'low'));
-    unplaced.forEach(c => setPriority(c, 'low'));
+    // Init riceData for placed cards (preserve existing ratings on revisit)
+    placed.forEach(c => { if (!riceData[c.dataset.id]) riceData[c.dataset.id] = { reach: null, confidence: null }; });
+
+    // Render rating rows
+    const list = document.getElementById('rice-list');
+    list.innerHTML = '';
+    placed.forEach(card => {
+      const id = card.dataset.id;
+      const title = card.querySelector('.card-title').textContent;
+      const qKey = lastMatrixPlacements[id] && lastMatrixPlacements[id].dataset.quadrant;
+      const qm = qKey && quadMeta[qKey];
+      const d = riceData[id];
+
+      const row = document.createElement('div');
+      row.className = 'rice-row'; row.dataset.cardId = id;
+      row.innerHTML =
+        '<div>' +
+          '<div class="rice-card-title">' + title + '</div>' +
+          (qm ? '<span class="rice-q-badge" style="background:' + qm.bg + ';color:' + qm.color + '">' + qm.label + '</span>' : '') +
+        '</div>' +
+        '<div class="rice-toggles">' +
+          '<div><div class="rice-toggle-label">Reach — how many users does this affect?</div>' +
+          '<div class="rice-toggle-group">' +
+            ['Niche','Some','Many','Most'].map(o =>
+              '<button class="rice-btn' + (d.reach===o?' selected':'') + '" onclick="selectRice(this,\'reach\',\'' + id + '\')">' + o + '</button>'
+            ).join('') +
+          '</div></div>' +
+          '<div><div class="rice-toggle-label">Confidence — how sure are you in these estimates?</div>' +
+          '<div class="rice-toggle-group">' +
+            ['Low','Med','High'].map(o =>
+              '<button class="rice-btn' + (d.confidence===o?' selected':'') + '" onclick="selectRice(this,\'confidence\',\'' + id + '\')">' + o + '</button>'
+            ).join('') +
+          '</div></div>' +
+        '</div>' +
+        '<div class="rice-score-wrap">' +
+          '<div class="rice-score" id="rs-' + id + '">—</div>' +
+          '<div class="rice-score-label">RICE score</div>' +
+        '</div>';
+      list.appendChild(row);
+      refreshRiceScore(id);
+    });
+
+    document.getElementById('matrix-frame').style.display = 'none';
+    document.getElementById('rice-frame').style.display = 'block';
+    document.getElementById('proto-label-text').textContent = 'Step 2 of 3 — Rate each feature to calculate RICE scores';
+    refreshRiceButton();
+  }
+
+  function selectRice(btn, field, id) {
+    btn.closest('.rice-toggle-group').querySelectorAll('.rice-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    riceData[id][field] = btn.textContent;
+    refreshRiceScore(id);
+    refreshRiceButton();
+  }
+
+  function refreshRiceScore(id) {
+    const score = calcRice(id);
+    const el = document.getElementById('rs-' + id);
+    if (!el) return;
+    el.textContent = score !== null ? score : '—';
+    el.className = 'rice-score' + (score !== null ? ' live' : '');
+  }
+
+  function refreshRiceButton() {
+    const rows = [...document.querySelectorAll('.rice-row')];
+    const rated = rows.filter(r => { const d = riceData[r.dataset.cardId]; return d && d.reach && d.confidence; }).length;
+    const total = rows.length;
+    const el = document.getElementById('rice-rated-count');
+    if (el) { el.textContent = rated + ' / ' + total + ' rated'; el.className = 'rice-rated-count' + (rated===total?' all-rated':''); }
+    const btn = document.getElementById('rice-build-btn');
+    if (!btn) return;
+    const ready = rated === total;
+    btn.disabled = !ready;
+    btn.style.opacity = ready ? '1' : '0.4';
+    btn.style.cursor = ready ? 'pointer' : 'not-allowed';
+    btn.textContent = ready ? 'Build roadmap →' : 'Rate all features to continue';
+  }
+
+  function backToMatrix() {
+    document.getElementById('rice-frame').style.display = 'none';
+    document.getElementById('matrix-frame').style.display = 'block';
+    document.getElementById('proto-label-text').textContent = 'Step 1 of 3 — Drag features onto the matrix to score them';
+  }
+
+  // ── Build roadmap from RICE scores ──
+  function buildRoadmapFromRice() {
+    const rows = [...document.querySelectorAll('.rice-row')];
+    const scored = rows.map(row => {
+      const id = row.dataset.cardId;
+      return { id, score: calcRice(id) || 0, card: document.querySelector('[data-id="' + id + '"]') };
+    }).filter(x => x.card).sort((a, b) => b.score - a.score);
+
+    const n = scored.length;
+    const nowCut  = Math.ceil(n / 3);
+    const nextCut = Math.ceil(2 * n / 3);
 
     const colNow   = document.getElementById('col-now');
     const colNext  = document.getElementById('col-next');
     const colLater = document.getElementById('col-later');
 
-    quickWins.forEach(c => colNow.appendChild(c));
-    bigBets.forEach(c => colNext.appendChild(c));
-    [...fillIns, ...timeSinks, ...unplaced].forEach(c => colLater.appendChild(c));
+    scored.forEach((item, i) => {
+      const priority = i < nowCut ? 'high' : i < nextCut ? 'medium' : 'low';
+      setPriority(item.card, priority);
+      if (i < nowCut) colNow.appendChild(item.card);
+      else if (i < nextCut) colNext.appendChild(item.card);
+      else colLater.appendChild(item.card);
+    });
+
+    // Unplaced cards → Later, low priority
+    [...document.querySelectorAll('#matrix-tray .roadmap-card')].forEach(c => {
+      setPriority(c, 'low'); colLater.appendChild(c);
+    });
 
     inMatrixMode = false;
     document.body.classList.remove('matrix-mode');
-    document.getElementById('matrix-frame').style.display = 'none';
+    document.getElementById('rice-frame').style.display = 'none';
     document.getElementById('board-frame-wrap').style.display = 'block';
-    document.getElementById('proto-label-text').textContent = 'Step 2 of 2 — Drag cards to fine-tune your roadmap';
+    document.getElementById('proto-label-text').textContent = 'Step 3 of 3 — Drag cards to fine-tune, then generate your annual roadmap';
     updateCounts();
-    showToast('Roadmap built from matrix');
+    showToast('Roadmap built from RICE scores');
   }
 
   // ── Reset to matrix ──
   function resetBoard() {
     const tray = document.getElementById('matrix-tray');
-
-    // Restore each card to its last matrix position (quadrant or tray)
     document.querySelectorAll('.roadmap-card').forEach(c => {
       const target = lastMatrixPlacements[c.dataset.id] || tray;
       target.appendChild(c);
     });
-
-    // Restore original priority badges
     Object.entries(originalPriorities).forEach(([id, level]) => {
       const card = document.querySelector('[data-id="' + id + '"]');
       if (card) setPriority(card, level);
     });
-
     inMatrixMode = true;
     document.body.classList.add('matrix-mode');
     document.getElementById('matrix-frame').style.display = 'block';
     document.getElementById('board-frame-wrap').style.display = 'none';
+    document.getElementById('rice-frame').style.display = 'none';
     document.getElementById('annual-frame').style.display = 'none';
-    document.getElementById('proto-label-text').textContent = 'Step 1 of 2 — Drag features onto the matrix to score them';
+    document.getElementById('proto-label-text').textContent = 'Step 1 of 3 — Drag features onto the matrix to score them';
     updatePlacedCount();
     updateCounts();
     showToast('Reset to matrix');
