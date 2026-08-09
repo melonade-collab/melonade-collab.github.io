@@ -145,6 +145,11 @@
     .annual-card .card-desc { font-size: 0.68rem; color: #6B7280; line-height: 1.4; margin-bottom: 8px; }
     .annual-card .card-footer { display: flex; align-items: center; gap: 6px; }
     .annual-empty { font-size: 0.72rem; color: #D1D5DB; text-align: center; padding: 24px 0; font-style: italic; }
+    .annual-effort-badge { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.8px; background: #FEF3C7; color: #92400E; border-radius: 4px; padding: 1px 5px; vertical-align: middle; margin-left: 4px; }
+    .annual-card-cont { background: #fff; border: 1.5px dashed #D1D5DB; border-radius: 8px; padding: 10px 12px; opacity: 0.7; }
+    .annual-card-cont .card-title { font-size: 0.78rem; font-weight: 700; color: #9CA3AF; margin-bottom: 4px; line-height: 1.3; }
+    .annual-card-cont .card-footer { display: flex; align-items: center; gap: 6px; }
+    .annual-cont-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #9CA3AF; margin-bottom: 5px; }
 
     /* ── Matrix frame ── */
     .matrix-frame { display: block; }
@@ -1164,13 +1169,28 @@
     return 'low';
   }
 
-  function cloneCardForAnnual(card) {
+  function getEffortLevel(cardId) {
+    const parent = lastMatrixPlacements[cardId];
+    const qKey = parent && parent.dataset && parent.dataset.quadrant;
+    return (qKey && quadMeta[qKey]) ? quadMeta[qKey].effort : 1;
+  }
+
+  function cloneCardForAnnual(card, isContinuation) {
+    const id = card.dataset.id;
     const title = card.querySelector('.card-title').textContent;
     const desc = card.querySelector('.card-desc').textContent;
     const badge = card.querySelector('.priority-badge').outerHTML;
     const team = card.querySelector('.card-team').textContent;
+    const highEffort = getEffortLevel(id) === 3;
+    if (isContinuation) {
+      return '<div class="annual-card annual-card-cont">'
+        + '<div class="annual-cont-label">↳ continues</div>'
+        + '<div class="card-title">' + title + '</div>'
+        + '<div class="card-footer">' + badge + '<span class="card-team">' + team + '</span></div>'
+        + '</div>';
+    }
     return '<div class="annual-card">'
-      + '<div class="card-title">' + title + '</div>'
+      + '<div class="card-title">' + title + (highEffort ? '<span class="annual-effort-badge">2Q</span>' : '') + '</div>'
       + '<div class="card-desc">' + desc + '</div>'
       + '<div class="card-footer">' + badge + '<span class="card-team">' + team + '</span></div>'
       + '</div>';
@@ -1199,22 +1219,31 @@
     const q3 = advanceQuarter(startQ, startY, 2);
     const q4 = advanceQuarter(startQ, startY, 3);
 
+    const allBuckets = [q1Cards, q2Cards, q3Cards, q4Cards];
+    const continuations = [[], [], [], []];
+    allBuckets.forEach((cards, qi) => {
+      if (qi >= 3) return;
+      cards.forEach(card => { if (getEffortLevel(card.dataset.id) === 3) continuations[qi + 1].push(card); });
+    });
+
     const quarters = [
-      { label: getQuarterLabel(q1.q, q1.y), cards: q1Cards },
-      { label: getQuarterLabel(q2.q, q2.y), cards: q2Cards },
-      { label: getQuarterLabel(q3.q, q3.y), cards: q3Cards },
-      { label: getQuarterLabel(q4.q, q4.y), cards: q4Cards }
+      { label: getQuarterLabel(q1.q, q1.y), cards: q1Cards, conts: continuations[0] },
+      { label: getQuarterLabel(q2.q, q2.y), cards: q2Cards, conts: continuations[1] },
+      { label: getQuarterLabel(q3.q, q3.y), cards: q3Cards, conts: continuations[2] },
+      { label: getQuarterLabel(q4.q, q4.y), cards: q4Cards, conts: continuations[3] }
     ];
 
     const grid = document.getElementById('annual-grid');
     grid.innerHTML = quarters.map(function(qtr) {
+      const total = qtr.cards.length + qtr.conts.length;
       return '<div class="annual-quarter">'
         + '<div class="annual-quarter-header">'
         + '<div class="annual-q-label">' + qtr.label + '</div>'
-        + '<div class="annual-q-count">' + qtr.cards.length + ' item' + (qtr.cards.length !== 1 ? 's' : '') + '</div>'
+        + '<div class="annual-q-count">' + total + ' item' + (total !== 1 ? 's' : '') + '</div>'
         + '</div>'
         + '<div class="annual-quarter-body">'
-        + (qtr.cards.length ? qtr.cards.map(cloneCardForAnnual).join('') : '<div class="annual-empty">No items</div>')
+        + (qtr.cards.length ? qtr.cards.map(c => cloneCardForAnnual(c, false)).join('') : (qtr.conts.length ? '' : '<div class="annual-empty">No items</div>'))
+        + qtr.conts.map(c => cloneCardForAnnual(c, true)).join('')
         + '</div>'
         + '</div>';
     }).join('');
