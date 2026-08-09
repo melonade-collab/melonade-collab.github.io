@@ -80,7 +80,23 @@
 
     .empty-state { text-align: center; padding: 40px 20px; color: #ccc; font-size: 0.85rem; }
 
+    .cs-body { max-width: 860px; margin: 0 auto; padding: 48px 40px 0; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 0; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
+    .acc-body li { margin-bottom: 6px; }
+
     @media (max-width: 640px) {
+      .cs-body { padding: 36px 20px 0; }
       .cs-header { padding: 40px 20px 36px; }
       .page-body { padding: 32px 20px 60px; }
       .form-row, .form-row.three { grid-template-columns: 1fr; }
@@ -99,6 +115,58 @@
     <p class="cs-intro">Define a data event, add the teams who need it, and specify what format and system each one requires. Then generate the routing map.</p>
   </div>
 </header>
+
+<div class="cs-body">
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Deciding how a data event should route is a PM judgment call — who needs it, why, in what format, to which system. But that decision usually stays undocumented, or gets buried in a Confluence page nobody reads. This builder turns the routing decision into a shareable artifact: fill in the event and the consumers, and the map generates itself.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tech</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Pure client-side JavaScript — no framework, no backend</li>
+        <li>Dynamic team rows added and removed via JS; format and destination system selected from pre-populated dropdowns</li>
+        <li>Three quick-start templates pre-fill the form from the same scenario data used in the Data Routing Explorer</li>
+        <li>Generate button renders a visual routing map from the current form state</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Features</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Define a custom data event — name and payload fields</li>
+        <li>Add any number of downstream teams, each with their name, reason for needing the data, format, and destination system</li>
+        <li>Quick-start templates (Order Placed, New Account, Out of Stock) pre-fill everything to get started fast</li>
+        <li>Generate button produces a visual routing map showing the event fanning out to all defined consumers</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Why This</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>The Explorer shows a pre-built routing scenario — this lets you build your own. Together they demonstrate both sides of the data PM's job: understanding existing routing and designing new routing decisions. The builder is the format I'd actually use to document a new event before handing it to engineering.</p>
+    </div>
+  </div>
+</div>
 
 <div class="page-body">
   <a href="index.html" class="back-link">← Back to portfolio</a>
@@ -333,6 +401,8 @@
   // Start with two blank team rows
   addTeam();
   addTeam();
+
+  function toggleAcc(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
 </script>
 
 <a href="index.html" class="portfolio-back-link" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>

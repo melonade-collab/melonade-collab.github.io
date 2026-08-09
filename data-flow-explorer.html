@@ -88,44 +88,51 @@
 <div class="cs-body">
   <a href="index.html" class="back-link">← Back to portfolio</a>
 
-  <div class="mb16">
-    <div class="acc-card">
-      <div class="acc-header" onclick="toggleAcc(this)">
-        <div>
-          <p class="card-label">Context</p>
-          <p class="acc-title">What is this demonstrating?</p>
-        </div>
-        <span class="acc-chevron">▼</span>
-      </div>
-      <div class="acc-body">
-        <p>Data doesn't flow automatically to the right place. Someone has to map every event to every downstream consumer — what they need, why they need it, what format their system ingests, and where it lands. This is a core part of what data product managers do.</p>
-        <p>This prototype uses a fictional home-goods retailer, Fieldstone Co., to show how a single business event fans out to multiple teams. Each team has a different reason for needing the data, a different preferred format, and a different destination system. The job is to know all of that — and make sure the connections exist.</p>
-      </div>
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>A data PM's routing knowledge is almost entirely invisible. It lives in their head, in email threads, in undocumented assumptions: which teams need which events, why they need them, what format their systems actually ingest, and where the data lands. When that person leaves, it goes with them. This prototype makes that knowledge concrete and legible.</p>
     </div>
   </div>
 
-  <div class="mb40">
-    <div class="acc-card">
-      <div class="acc-header" onclick="toggleAcc(this)">
-        <div>
-          <p class="card-label">The company</p>
-          <p class="acc-title">About Fieldstone Co.</p>
-        </div>
-        <span class="acc-chevron">▼</span>
-      </div>
-      <div class="acc-body">
-        <p>Fieldstone Co. is a fictional mid-size e-commerce retailer selling home goods. Around 200 people, a mix of SaaS tools and custom internal systems. A data PM is responsible for making sure the right events reach the right downstream consumers in the formats they need.</p>
-        <ul>
-          <li><strong>WMS</strong> — Warehouse Management System (custom internal)</li>
-          <li><strong>NetSuite</strong> — Finance / ERP</li>
-          <li><strong>Klaviyo</strong> — Email and lifecycle marketing</li>
-          <li><strong>Snowflake</strong> — Cloud data warehouse</li>
-          <li><strong>Zendesk</strong> — Customer support</li>
-          <li><strong>Salesforce</strong> — CRM</li>
-          <li><strong>LoyaltyLion</strong> — Loyalty and rewards</li>
-          <li><strong>Recs Engine</strong> — Internal ML recommendations service</li>
-        </ul>
-      </div>
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tech</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Pure client-side JavaScript — no framework, no API dependencies</li>
+        <li>Three hardcoded scenarios (Order Placed, New Account Created, Out of Stock), each defining an event payload and a set of downstream consumers with routing metadata</li>
+        <li>Animated stagger on team rows when a new scenario loads</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Features</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li>Three scenario tabs — switch between data events to see how each one routes differently across the same organisation</li>
+        <li>Each scenario shows the event payload fields and every downstream consumer with the reason they need it, the format they receive it in, and the destination system it lands in</li>
+        <li>Built around Fieldstone Co., a fictional mid-size e-commerce retailer with a realistic mix of SaaS tools (NetSuite, Klaviyo, Snowflake, Zendesk, Salesforce, LoyaltyLion) and custom internal systems</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Why This</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>This is what a data PM knows that most stakeholders don't see: not just that data needs to move, but who needs it, why, in what shape, and where. The gap between "we have this event" and "everyone who needs it is actually getting it in a usable form" is where data product management lives. This prototype shows that gap — and what closing it looks like.</p>
     </div>
   </div>
 </div>
