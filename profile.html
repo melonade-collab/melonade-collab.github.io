@@ -437,8 +437,13 @@
     const _backUrl = (() => {
       try {
         const ref = document.referrer;
-        return ref && new URL(ref).hostname === location.hostname ? ref : 'plants.html';
-      } catch { return 'plants.html'; }
+        if (ref && new URL(ref).hostname === location.hostname) {
+          const url = new URL(ref);
+          if (url.pathname.endsWith('plants.html')) url.hash = 'proto';
+          return url.toString();
+        }
+        return 'plants.html#proto';
+      } catch { return 'plants.html#proto'; }
     })();
     document.getElementById('profileBackBtn').href = _backUrl;
 
