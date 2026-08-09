@@ -217,15 +217,22 @@
     .rice-rated-count { font-size: 0.7rem; color: #6B7280; background: #F3F4F6; border-radius: 5px; padding: 3px 9px; transition: background 0.2s, color 0.2s; }
     .rice-rated-count.all-rated { background: #DCFCE7; color: #15803D; }
     .rice-list { max-width: 1160px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-    .rice-row { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 16px 20px; display: grid; grid-template-columns: 1fr 1.5fr auto; gap: 16px; align-items: center; }
+    .rice-row { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 16px 20px; display: grid; grid-template-columns: 1fr 1.5fr auto; gap: 16px; align-items: start; }
     .rice-card-title { font-size: 0.85rem; font-weight: 700; color: #111; margin-bottom: 6px; line-height: 1.3; }
     .rice-q-badge { font-size: 0.6rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; display: inline-block; }
-    .rice-toggles { display: flex; flex-direction: column; gap: 10px; }
-    .rice-toggle-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #9CA3AF; margin-bottom: 5px; }
-    .rice-toggle-group { display: flex; gap: 5px; flex-wrap: wrap; }
-    .rice-btn { font-size: 0.72rem; font-weight: 600; padding: 5px 11px; border-radius: 6px; border: 1.5px solid #E5E7EB; background: #fff; color: #6B7280; cursor: pointer; transition: all 0.12s; font-family: inherit; }
-    .rice-btn:hover { border-color: #D1D5DB; background: #F9FAFB; }
-    .rice-btn.selected { border-color: #16a34a; background: #DCFCE7; color: #15803D; }
+    .rice-tracks { display: flex; flex-direction: column; gap: 10px; }
+    .rice-track-group-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #9CA3AF; margin-bottom: 5px; }
+    .rice-track { display: flex; border: 1.5px solid #E5E7EB; border-radius: 8px; overflow: hidden; }
+    .rice-zone { flex: 1; padding: 8px 4px; text-align: center; cursor: pointer; background: #F9FAFB; border-right: 1px solid #E5E7EB; transition: background 0.12s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 54px; }
+    .rice-zone:last-child { border-right: none; }
+    .rice-zone:hover { background: #F0F4FF; }
+    .rice-zone.dz-over { background: #EFF6FF; }
+    .rice-zone.active { background: #EFF6FF; }
+    .rice-zone-label { font-size: 0.68rem; font-weight: 500; color: #9CA3AF; user-select: none; pointer-events: none; }
+    .rice-zone.active .rice-zone-label { color: #15803D; font-weight: 700; }
+    .rice-puck { width: 20px; height: 20px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; cursor: grab; box-shadow: 0 1px 4px rgba(22,163,74,0.35); pointer-events: all; }
+    .rice-puck:active { cursor: grabbing; transform: scale(1.1); }
+    .rice-puck-dot { width: 6px; height: 6px; border-radius: 50%; background: #fff; pointer-events: none; }
     .rice-score-wrap { text-align: right; min-width: 56px; }
     .rice-score { font-size: 1.5rem; font-weight: 900; color: #D1D5DB; line-height: 1; transition: color 0.2s; }
     .rice-score.live { color: #15803D; }
@@ -364,7 +371,7 @@
         <div class="roadmap-card" draggable="true" data-id="c2"
           ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
           <span class="card-drag-handle">⠿</span>
-          <div class="card-title">Label Reprint Workflow</div>
+          <div class="card-title">Label Reprint</div>
           <div class="card-desc">One-click reprint for damaged labels from the shipment detail screen</div>
           <div class="card-footer">
             <span class="priority-badge priority-high">High</span>
@@ -386,7 +393,7 @@
         <div class="roadmap-card" draggable="true" data-id="c4"
           ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
           <span class="card-drag-handle">⠿</span>
-          <div class="card-title">Webhook Event Delivery</div>
+          <div class="card-title">Real-time Status Alerts</div>
           <div class="card-desc">Push tracking status changes to customer systems in real time</div>
           <div class="card-footer">
             <span class="priority-badge priority-medium">Medium</span>
@@ -408,7 +415,7 @@
         <div class="roadmap-card" draggable="true" data-id="c6"
           ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
           <span class="card-drag-handle">⠿</span>
-          <div class="card-title">Analytics Dashboard</div>
+          <div class="card-title">Shipment Analytics</div>
           <div class="card-desc">Self-serve reporting on volume, carrier performance, and spend</div>
           <div class="card-footer">
             <span class="priority-badge priority-medium">Medium</span>
@@ -527,6 +534,9 @@
       </div>
     </div>
     <div class="rice-list" id="rice-list"></div>
+    <div id="rice-bottom-bar" style="padding: 16px 20px; display: flex; justify-content: flex-end; border-top: 1px solid #E5E7EB; background: #F8F9FB;">
+      <button class="generate-btn" id="rice-build-btn-bottom" onclick="buildRoadmapFromRice()" style="opacity:0.4;cursor:not-allowed;" disabled>Rate all features to continue</button>
+    </div>
   </div>
 
   <!-- ── Step 3: Board ── -->
@@ -547,7 +557,7 @@
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="generate-btn" onclick="generateRoadmap()">Generate annual roadmap →</button>
-        <button class="board-reset-btn" onclick="resetBoard()">← Back to matrix</button>
+        <button class="board-reset-btn" onclick="backToRice()">← Back to rate features</button>
       </div>
     </div>
 
@@ -800,20 +810,7 @@
           '<div class="rice-card-title">' + title + '</div>' +
           (qm ? '<span class="rice-q-badge" style="background:' + qm.bg + ';color:' + qm.color + '">' + qm.label + '</span>' : '') +
         '</div>' +
-        '<div class="rice-toggles">' +
-          '<div><div class="rice-toggle-label">Reach — how many users does this affect?</div>' +
-          '<div class="rice-toggle-group">' +
-            ['Niche','Some','Many','Most'].map(o =>
-              '<button class="rice-btn' + (d.reach===o?' selected':'') + '" onclick="selectRice(this,\'reach\',\'' + id + '\')">' + o + '</button>'
-            ).join('') +
-          '</div></div>' +
-          '<div><div class="rice-toggle-label">Confidence — how sure are you in these estimates?</div>' +
-          '<div class="rice-toggle-group">' +
-            ['Low','Med','High'].map(o =>
-              '<button class="rice-btn' + (d.confidence===o?' selected':'') + '" onclick="selectRice(this,\'confidence\',\'' + id + '\')">' + o + '</button>'
-            ).join('') +
-          '</div></div>' +
-        '</div>' +
+        '<div class="rice-tracks">' + buildTrackHtml('reach', id, d) + buildTrackHtml('confidence', id, d) + '</div>' +
         '<div class="rice-score-wrap">' +
           '<div class="rice-score" id="rs-' + id + '">—</div>' +
           '<div class="rice-score-label">RICE score</div>' +
@@ -828,10 +825,61 @@
     refreshRiceButton();
   }
 
-  function selectRice(btn, field, id) {
-    btn.closest('.rice-toggle-group').querySelectorAll('.rice-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    riceData[id][field] = btn.textContent;
+  // ── Drag-track helpers ──
+  const REACH_VALS = ['Niche','Some','Many','Most'];
+  const CONF_VALS  = ['Low','Med','High'];
+
+  function buildTrackHtml(field, id, d) {
+    const values = field === 'reach' ? REACH_VALS : CONF_VALS;
+    const lbl = field === 'reach' ? 'Reach — how many users does this affect?' : 'Confidence — how sure are you in these estimates?';
+    const sel = d[field];
+    const zones = values.map(o => {
+      const active = sel === o;
+      return '<div class="rice-zone' + (active ? ' active' : '') + '"' +
+        ' ondragover="rzOver(event)" ondragleave="rzLeave(event)"' +
+        ' ondrop="rzDrop(event,\'' + field + '\',\'' + id + '\',\'' + o + '\')"' +
+        ' onclick="rzClick(\'' + field + '\',\'' + id + '\',\'' + o + '\')">' +
+        '<span class="rice-zone-label">' + o + '</span>' +
+        (active ? '<div class="rice-puck" draggable="true"' +
+          ' ondragstart="rzStart(event,\'' + field + '\',\'' + id + '\')"' +
+          ' onclick="event.stopPropagation()">' +
+          '<div class="rice-puck-dot"></div></div>' : '') +
+        '</div>';
+    }).join('');
+    return '<div><div class="rice-track-group-label">' + lbl + '</div>' +
+      '<div class="rice-track" data-field="' + field + '" data-id="' + id + '">' + zones + '</div></div>';
+  }
+
+  let rzActive = null;
+  function rzStart(e, field, id) { rzActive = { field, id }; e.dataTransfer.effectAllowed = 'move'; e.stopPropagation(); }
+  function rzOver(e)  { e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.add('dz-over'); }
+  function rzLeave(e) { e.currentTarget.classList.remove('dz-over'); }
+  function rzDrop(e, field, id, val) {
+    e.preventDefault(); e.stopPropagation();
+    e.currentTarget.classList.remove('dz-over');
+    if (!rzActive || rzActive.field !== field || rzActive.id !== id) return;
+    rzActive = null;
+    setRz(field, id, val);
+  }
+  function rzClick(field, id, val) { setRz(field, id, val); }
+  function setRz(field, id, val) {
+    riceData[id][field] = val;
+    const track = document.querySelector('.rice-track[data-field="' + field + '"][data-id="' + id + '"]');
+    if (!track) return;
+    const values = field === 'reach' ? REACH_VALS : CONF_VALS;
+    track.innerHTML = values.map(o => {
+      const active = val === o;
+      return '<div class="rice-zone' + (active ? ' active' : '') + '"' +
+        ' ondragover="rzOver(event)" ondragleave="rzLeave(event)"' +
+        ' ondrop="rzDrop(event,\'' + field + '\',\'' + id + '\',\'' + o + '\')"' +
+        ' onclick="rzClick(\'' + field + '\',\'' + id + '\',\'' + o + '\')">' +
+        '<span class="rice-zone-label">' + o + '</span>' +
+        (active ? '<div class="rice-puck" draggable="true"' +
+          ' ondragstart="rzStart(event,\'' + field + '\',\'' + id + '\')"' +
+          ' onclick="event.stopPropagation()">' +
+          '<div class="rice-puck-dot"></div></div>' : '') +
+        '</div>';
+    }).join('');
     refreshRiceScore(id);
     refreshRiceButton();
   }
@@ -850,19 +898,27 @@
     const total = rows.length;
     const el = document.getElementById('rice-rated-count');
     if (el) { el.textContent = rated + ' / ' + total + ' rated'; el.className = 'rice-rated-count' + (rated===total?' all-rated':''); }
-    const btn = document.getElementById('rice-build-btn');
-    if (!btn) return;
     const ready = rated === total;
-    btn.disabled = !ready;
-    btn.style.opacity = ready ? '1' : '0.4';
-    btn.style.cursor = ready ? 'pointer' : 'not-allowed';
-    btn.textContent = ready ? 'Build roadmap →' : 'Rate all features to continue';
+    ['rice-build-btn', 'rice-build-btn-bottom'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      btn.disabled = !ready;
+      btn.style.opacity = ready ? '1' : '0.4';
+      btn.style.cursor = ready ? 'pointer' : 'not-allowed';
+      btn.textContent = ready ? 'Build prioritization →' : 'Rate all features to continue';
+    });
   }
 
   function backToMatrix() {
     document.getElementById('rice-frame').style.display = 'none';
     document.getElementById('matrix-frame').style.display = 'block';
     document.getElementById('proto-label-text').textContent = 'Step 1 of 3 — Drag features onto the matrix to score them';
+  }
+
+  function backToRice() {
+    document.getElementById('board-frame-wrap').style.display = 'none';
+    document.getElementById('rice-frame').style.display = 'block';
+    document.getElementById('proto-label-text').textContent = 'Step 2 of 3 — Rate each feature to calculate RICE scores';
   }
 
   // ── Build roadmap from RICE scores ──

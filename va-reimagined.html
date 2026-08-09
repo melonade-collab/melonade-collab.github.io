@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Virtual Assistant Re-imagined</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f0f8; color: #1a1a1a; min-height: 100vh; }
+
+    .cs-header { background: #1a237e; padding: 56px 40px 44px; }
+    .cs-header-inner { max-width: 860px; margin: 0 auto; }
+    .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
+    .cs-h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 600px; }
+
+    .cs-body { max-width: 860px; margin: 0 auto; padding: 48px 40px 40px; }
+    .mb16 { margin-bottom: 16px; }
+    .mb40 { margin-bottom: 40px; }
+    .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
+    .acc-header:hover { background: #fafafa; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #3949AB; }
+    .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
+    .acc-header.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 22px 20px; }
+    .acc-body.open { display: block; }
+    .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
+    .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
+    .acc-body li { margin-bottom: 6px; }
+    .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 28px; }
+    .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #3949AB; margin-bottom: 4px; }
+    .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
+
+    /* ── Compare section ── */
+    .compare-section { padding: 0 24px 80px; }
+    .compare-inner { max-width: 1120px; margin: 0 auto; }
+    .compare-wrap { background: #E8EAF6; border-radius: 20px; padding: 32px 24px 28px; }
+    .compare-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #3949AB; text-align: center; margin-bottom: 20px; }
+
+    .compare-col-headers { display: flex; gap: 16px; margin-bottom: 10px; }
+    .col-hdr { flex: 1; }
+    .col-hdr-badge { display: inline-block; font-size: 0.55rem; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; margin-bottom: 5px; }
+    .col-hdr-badge.legacy { background: #607D8B; color: #CFD8DC; }
+    .col-hdr-badge.rag { background: #3949AB; color: #C5CAE9; }
+    .col-hdr h3 { font-size: 0.95rem; font-weight: 700; color: #1a1a1a; margin-bottom: 2px; }
+    .col-hdr p { font-size: 0.75rem; color: #666; line-height: 1.5; }
+
+    .compare-chat-row { display: flex; gap: 14px; margin-bottom: 14px; }
+
+    /* ── Chat window ── */
+    .cwin { flex: 1; background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column; min-height: 420px; }
+
+    .cwin-header { padding: 11px 14px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .cwin-header.legacy { background: #37474F; }
+    .cwin-header.rag { background: #1a237e; }
+
+    .cwin-av { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.72rem; font-weight: 800; color: rgba(255,255,255,0.8); }
+    .cwin-header.legacy .cwin-av { background: #455A64; }
+    .cwin-header.rag    .cwin-av { background: #283593; }
+
+    .cwin-header-info h2 { color: #fff; font-size: 0.82rem; font-weight: 700; line-height: 1.2; }
+    .cwin-header-info p { color: rgba(255,255,255,0.45); font-size: 0.65rem; }
+    .cwin-badge { font-size: 0.5rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 2px 5px; border-radius: 3px; display: inline-block; margin-left: 5px; vertical-align: middle; }
+    .cwin-header.legacy .cwin-badge { background: #546E7A; color: #B0BEC5; }
+    .cwin-header.rag    .cwin-badge { background: #3949AB; color: #C5CAE9; }
+    .online-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #69F0AE; margin-right: 4px; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ── Messages ── */
+    .cwin-msgs { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    #legacyMsgs { background: #ECEFF1; }
+    #ragMsgs    { background: #f2f3f7; }
+
+    .cmsg { display: flex; gap: 6px; align-items: flex-end; }
+    .cmsg.bot  { align-self: flex-start; max-width: 90%; }
+    .cmsg.user { align-self: flex-end; flex-direction: row-reverse; max-width: 90%; }
+
+    .cmsg-av { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.58rem; font-weight: 800; color: rgba(255,255,255,0.85); }
+    #legacyMsgs .cmsg-av { background: #546E7A; }
+    #ragMsgs    .cmsg-av { background: #3949AB; }
+
+    .cbubble { padding: 9px 13px; font-size: 0.8rem; line-height: 1.55; white-space: pre-wrap; }
+    .cmsg.bot .cbubble { background: #fff; color: #1a1a1a; border-radius: 14px 14px 14px 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    #legacyMsgs .cmsg.user .cbubble { background: #455A64; color: #fff; border-radius: 14px 14px 4px 14px; }
+    #ragMsgs    .cmsg.user .cbubble { background: #1a237e; color: #fff; border-radius: 14px 14px 4px 14px; }
+
+    /* Typing dots */
+    .ctyping .cbubble { padding: 12px 13px 8px; }
+    .cdots { display: flex; gap: 4px; align-items: center; height: 10px; }
+    .cdots span { width: 6px; height: 6px; border-radius: 50%; background: #bbb; animation: bop 1.2s infinite ease-in-out; }
+    .cdots span:nth-child(2) { animation-delay: 0.2s; }
+    .cdots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bop { 0%,60%,100%{transform:translateY(0);opacity:0.5} 30%{transform:translateY(-5px);opacity:1} }
+
+    /* Intent badge */
+    .intent-badge { display: flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 5px; font-size: 0.64rem; font-weight: 700; margin: 0 0 2px 30px; animation: fadeUp 0.25s ease; }
+    .intent-badge.matched { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }
+    .intent-badge.fallback { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A; }
+    .intent-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .intent-badge.matched .intent-dot { background: #2E7D32; }
+    .intent-badge.fallback .intent-dot { background: #C62828; }
+
+    /* KB source */
+    .kb-source { display: flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 5px; font-size: 0.64rem; font-weight: 600; color: #3949AB; background: #E8EAF6; border: 1px solid #C5CAE9; margin: 0 0 2px 30px; animation: fadeUp 0.25s ease; }
+    .kb-id { font-weight: 800; }
+
+    /* Searching */
+    .searching-row { display: flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 5px; font-size: 0.64rem; font-weight: 600; color: #5C6BC0; background: #EDE7F6; border: 1px solid #D1C4E9; margin: 0 0 2px 30px; animation: fadeUp 0.2s ease; }
+    .srch-spinner { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid #9575CD; border-top-color: transparent; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Quick reply chips (legacy) */
+    .reply-chips { display: flex; flex-wrap: wrap; gap: 5px; margin: 3px 0 0 30px; }
+    .reply-chip { font-size: 0.67rem; color: #546E7A; border: 1.5px solid #B0BEC5; background: #fff; border-radius: 12px; padding: 3px 9px; cursor: default; white-space: nowrap; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:none} }
+
+    /* ── Shared question panel ── */
+    .shared-q { background: #fff; border-radius: 12px; padding: 18px 18px 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .shared-q-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #9FA8DA; margin-bottom: 10px; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 13px; }
+    .q-chip { font-size: 0.73rem; font-weight: 500; color: #3949AB; background: #E8EAF6; border: 1.5px solid #C5CAE9; border-radius: 14px; padding: 6px 12px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .q-chip:hover { background: #C5CAE9; border-color: #9FA8DA; }
+    .q-chip.lit { background: #3949AB; color: #fff; border-color: #3949AB; }
+
+    .shared-bar { display: flex; gap: 8px; align-items: center; }
+    .shared-txt { flex: 1; border: 1.5px solid #e0e0e0; border-radius: 22px; padding: 9px 14px; font-size: 0.85rem; outline: none; font-family: inherit; transition: border-color 0.15s; }
+    .shared-txt:focus { border-color: #3949ab; }
+    .shared-go { width: 38px; height: 38px; border-radius: 50%; background: #1a237e; border: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+    .shared-go:hover { background: #3949ab; }
+    .shared-go svg { width: 16px; height: 16px; fill: #fff; }
+    .clear-link { font-size: 0.7rem; font-weight: 500; color: #9FA8DA; background: none; border: none; cursor: pointer; padding: 0; display: block; text-align: right; margin-top: 9px; transition: color 0.15s; }
+    .clear-link:hover { color: #5C6BC0; }
+
+    /* ── Mobile tabs ── */
+    .mobile-tabs { display: none; background: #fff; border-radius: 10px 10px 0 0; overflow: hidden; }
+    .tab-btn { flex: 1; padding: 10px 6px; background: none; border: none; border-bottom: 2px solid transparent; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.3px; color: #90A4AE; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+    .tab-btn.active-legacy { color: #37474F; border-color: #546E7A; }
+    .tab-btn.active-rag { color: #1a237e; border-color: #1a237e; }
+
+    @media (max-width: 720px) {
+      .cs-header { padding: 40px 20px 36px; }
+      .cs-body { padding: 36px 20px 40px; }
+      .contrib-grid { grid-template-columns: 1fr; }
+      .compare-section { padding: 0 12px 60px; }
+      .compare-wrap { padding: 16px 12px 20px; }
+      .compare-col-headers { display: none; }
+      .mobile-tabs { display: flex; margin-bottom: 0; }
+      .compare-chat-row { gap: 0; }
+      .cwin { border-radius: 0 0 12px 12px; min-height: 360px; }
+      .cwin.tab-hidden { display: none; }
+      .chip-row { gap: 6px; }
+      .q-chip { font-size: 0.7rem; padding: 5px 10px; }
+    }
+    @media (max-width: 480px) {
+      .chip-row { flex-direction: column; }
+      .q-chip { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cs-header">
+  <div class="cs-header-inner">
+    <p class="eyebrow">AI Product Strategy · Concept</p>
+    <h1 class="cs-h1">Virtual Assistant Re-imagined</h1>
+    <p class="cs-intro">A side-by-side look at how a shipping customer support assistant evolves — from a rigid intent-matching engine with scripted responses to a retrieval-augmented system that searches a live knowledge base to answer questions naturally and accurately.</p>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Problem</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Intent-based virtual assistants are brittle by design. They work for the handful of scenarios their developers anticipated — but as customer questions grow more nuanced, the system fails silently. Customers asking about customs documentation, weather delays in a specific lane, or dangerous goods compliance hit a dead end every time: "I didn't understand your request. Please select from the options below." Rather than containing the inquiry, the assistant escalates it. Support volume stays high, CSAT stagnates, and the team spends its time adding intents — a game of whack-a-mole with no end state.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tech</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <ul>
+        <li><strong>Legacy (left):</strong> Regex-based intent classification against a fixed set of 5 intents. Unmatched queries fall to a hardcoded fallback with a static topic menu. Response content is scripted per intent — no retrieval, no grounding.</li>
+        <li><strong>RAG-powered (right):</strong> Incoming query is matched against a vector index of 120+ support knowledge base articles across 7 domains. The top-matched article is retrieved and used to generate a contextual, grounded response. The source article is surfaced to the user for transparency.</li>
+        <li>Knowledge base domains: shipment tracking, damage and loss claims, pickup scheduling, billing and invoicing, international documentation, service disruptions, and dangerous goods compliance.</li>
+        <li>Retrieval grounds the model — responses are constrained to KB content, preventing hallucination outside known policy.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="acc-card mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Product Ownership</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Strategy</p>
+          <p class="contrib-item-text">Led the AI product roadmap to migrate from intent-based to retrieval-augmented architecture — including stakeholder alignment across operations, contact centre, and compliance.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Discovery</p>
+          <p class="contrib-item-text">Conducted intent gap analysis identifying 34% of sessions reaching the fallback state, with customs, disruptions, and dangerous goods as the top unhandled categories.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Knowledge Base</p>
+          <p class="contrib-item-text">Defined the support content taxonomy — 7 domains, 120+ articles — and partnered with operations and compliance to author and maintain the knowledge base.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Metrics</p>
+          <p class="contrib-item-text">Set containment rate (target: 75%), fallback rate (target: &lt;8%), and CSAT lift as primary success metrics. Established the baseline from legacy telemetry before migration.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Guardrails</p>
+          <p class="contrib-item-text">Defined retrieval and generation guardrails with engineering — response grounding rules, source citation requirements, and escalation triggers for low-confidence matches.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Research</p>
+          <p class="contrib-item-text">Validated with customer interviews that sourced, contextual answers improved trust and resolution rates — customers were more confident acting on answers when they could see the KB source.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="compare-section">
+  <div class="compare-inner">
+    <div class="compare-wrap">
+      <p class="compare-wrap-label">Interactive comparison — try the same question in both</p>
+
+      <div class="mobile-tabs" id="mobileTabs">
+        <button class="tab-btn active-legacy" onclick="switchTab('legacy',this)">Legacy · Intent-Based</button>
+        <button class="tab-btn" onclick="switchTab('rag',this)">Reimagined · RAG</button>
+      </div>
+
+      <div class="compare-col-headers">
+        <div class="col-hdr">
+          <div><span class="col-hdr-badge legacy">Legacy</span></div>
+          <h3>Intent-Based Assistant</h3>
+          <p>Matches input against a fixed set of intents. Anything outside the list hits a fallback.</p>
+        </div>
+        <div class="col-hdr">
+          <div><span class="col-hdr-badge rag">Reimagined</span></div>
+          <h3>RAG-Powered Assistant</h3>
+          <p>Retrieves the most relevant KB article and generates a grounded, contextual response.</p>
+        </div>
+      </div>
+
+      <div class="compare-chat-row">
+
+        <div class="cwin" id="legacyWin">
+          <div class="cwin-header legacy">
+            <div class="cwin-av">⚙</div>
+            <div class="cwin-header-info">
+              <h2>VirtuAssist <span class="cwin-badge">Intent Engine v2.3</span></h2>
+              <p><span class="online-dot"></span>Online · NorthStar Logistics</p>
+            </div>
+          </div>
+          <div class="cwin-msgs" id="legacyMsgs"></div>
+        </div>
+
+        <div class="cwin" id="ragWin">
+          <div class="cwin-header rag">
+            <div class="cwin-av">✦</div>
+            <div class="cwin-header-info">
+              <h2>VirtuAssist AI <span class="cwin-badge">RAG · KB-Grounded</span></h2>
+              <p><span class="online-dot"></span>Online · NorthStar Logistics</p>
+            </div>
+          </div>
+          <div class="cwin-msgs" id="ragMsgs"></div>
+        </div>
+
+      </div>
+
+      <div class="shared-q">
+        <p class="shared-q-label">Try these questions</p>
+        <div class="chip-row">
+          <button class="q-chip" onclick="sendQ(this,'Where is my shipment?')">Where is my shipment?</button>
+          <button class="q-chip" onclick="sendQ(this,'My cargo arrived damaged')">My cargo arrived damaged</button>
+          <button class="q-chip" onclick="sendQ(this,'I need customs documentation')">I need customs documentation</button>
+          <button class="q-chip" onclick="sendQ(this,'Why is my invoice different?')">Why is my invoice different?</button>
+          <button class="q-chip" onclick="sendQ(this,'Weather delay in my lane')">Weather delay in my lane</button>
+          <button class="q-chip" onclick="sendQ(this,'I have hazmat in this shipment')">I have hazmat in this shipment</button>
+        </div>
+        <div class="shared-bar">
+          <input class="shared-txt" id="sharedTxt" placeholder="Or type your own question…" onkeydown="if(event.key==='Enter')sendFromInput()">
+          <button class="shared-go" onclick="sendFromInput()">
+            <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+          </button>
+        </div>
+        <button class="clear-link" onclick="clearBoth()">Clear both chats</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
+<script>
+function toggleAcc(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
+
+function switchTab(which, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active-legacy','active-rag'); });
+  btn.classList.add(which === 'legacy' ? 'active-legacy' : 'active-rag');
+  document.getElementById('legacyWin').classList.toggle('tab-hidden', which !== 'legacy');
+  document.getElementById('ragWin').classList.toggle('tab-hidden', which !== 'rag');
+}
+
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+function lEl() { return document.getElementById('legacyMsgs'); }
+function rEl() { return document.getElementById('ragMsgs'); }
+function sc(el) { el.scrollTop = el.scrollHeight; }
+
+function addUser(el, text) {
+  const row = document.createElement('div'); row.className = 'cmsg user';
+  const b = document.createElement('div'); b.className = 'cbubble'; b.textContent = text;
+  row.appendChild(b); el.appendChild(row); sc(el);
+}
+
+function addBot(el, text) {
+  const isL = el.id === 'legacyMsgs';
+  const row = document.createElement('div'); row.className = 'cmsg bot';
+  const av = document.createElement('div'); av.className = 'cmsg-av'; av.textContent = isL ? '⚙' : '✦';
+  const b = document.createElement('div'); b.className = 'cbubble'; b.textContent = text;
+  row.append(av, b); el.appendChild(row); sc(el); return row;
+}
+
+let lTyping = null, rTyping = null;
+function showTyping(el) {
+  const isL = el.id === 'legacyMsgs';
+  const row = document.createElement('div'); row.className = 'cmsg bot ctyping';
+  const av = document.createElement('div'); av.className = 'cmsg-av'; av.textContent = isL ? '⚙' : '✦';
+  const b = document.createElement('div'); b.className = 'cbubble';
+  b.innerHTML = '<div class="cdots"><span></span><span></span><span></span></div>';
+  row.append(av, b); el.appendChild(row); sc(el);
+  if (isL) lTyping = row; else rTyping = row;
+}
+function hideTyping(which) {
+  if (which === 'l' && lTyping) { lTyping.remove(); lTyping = null; }
+  if (which === 'r' && rTyping) { rTyping.remove(); rTyping = null; }
+}
+
+function addIntentBadge(el, label, matched) {
+  const d = document.createElement('div');
+  d.className = 'intent-badge ' + (matched ? 'matched' : 'fallback');
+  d.innerHTML = `<div class="intent-dot"></div>${matched ? '✓ Intent: ' + label : '✗ No match — fallback'}`;
+  el.appendChild(d); sc(el);
+}
+
+function addKBSource(el, article) {
+  const d = document.createElement('div'); d.className = 'kb-source';
+  d.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="kb-id">${article.id}</span> · ${article.title}`;
+  el.appendChild(d); sc(el);
+}
+
+function addSearching(el, text) {
+  const d = document.createElement('div'); d.className = 'searching-row';
+  d.innerHTML = `<div class="srch-spinner"></div>${text}`;
+  el.appendChild(d); sc(el); return d;
+}
+
+function addReplyChips(el, chips) {
+  const row = document.createElement('div'); row.className = 'reply-chips';
+  chips.forEach(c => { const s = document.createElement('span'); s.className = 'reply-chip'; s.textContent = c; row.appendChild(s); });
+  el.appendChild(row); sc(el);
+}
+
+/* ── Intent data ── */
+const INTENTS = {
+  TRACK: { label: 'TRACK_SHIPMENT', text: 'To track your shipment, please enter your 12-digit PRO number at our tracking portal. Your PRO number can be found on your Bill of Lading or shipping confirmation email.\n\nFor further assistance, please select an option below.', chips: ["I don't have my PRO number", 'Speak to an agent', 'Main menu'] },
+  CLAIM: { label: 'FILE_CLAIM', text: 'To file a claim for a lost or damaged shipment you will need:\n• Your PRO number\n• Photos of the damage\n• Original invoice value\n\nClaims must be filed within 9 months of delivery.', chips: ['Start a claim', 'Learn more', 'Speak to an agent'] },
+  PICKUP: { label: 'SCHEDULE_PICKUP', text: 'To schedule or modify a pickup, please log in to the Customer Portal or call our dispatch line. Same-day pickups must be requested before 11:00 AM local time.', chips: ['Customer portal', 'Call dispatch', 'Main menu'] },
+  BILLING: { label: 'BILLING_INQUIRY', text: 'For billing inquiries, please have your invoice number ready. You can view and pay invoices in the Customer Portal. For billing disputes, our accounts team is available by email.', chips: ['View my invoices', 'Dispute a charge', 'Speak to an agent'] },
+  AGENT: { label: 'AGENT_REQUEST', text: "I'll connect you with a customer service representative. Our team is available Monday–Friday, 8 AM to 6 PM EST.\n\nEstimated wait time: 4 minutes.", chips: ['Request callback', 'Continue chatting', 'Main menu'] }
+};
+
+const FALLBACK = {
+  text: "I'm sorry, I wasn't able to understand your request. Please select from one of the following options, or speak with a customer service representative.",
+  chips: ['Track Shipment', 'File a Claim', 'Schedule Pickup', 'Billing & Invoices', 'Speak to an Agent']
+};
+
+/* ── KB articles ── */
+const KB = {
+  TRACK: { id: 'KB-1042', title: 'Tracking Your Shipment', text: 'Your shipment can be tracked in real time using your 12-digit PRO number at our web portal or mobile app. LTL shipments receive scan updates within 2 hours of each terminal touchpoint; truckload shipments provide GPS location updates every 30 minutes while in transit.\n\nIf the status shows Delivered but the freight hasn\'t been received in your facility, check with your receiving dock first — it may have been signed for by a clerk before reaching the right department. If it\'s still missing after 24 hours, submit a trace request through the portal and a freight specialist will follow up within one business day.' },
+  CLAIM: { id: 'KB-2107', title: 'Filing a Damage or Loss Claim', text: 'Damage and loss claims must be filed within 9 months of the original delivery date. Before submitting, document the damage with timestamped photos before the freight is moved, and note the exception on the delivery receipt while the driver is present — a noted POD exception significantly strengthens your claim and speeds up processing.\n\nYou\'ll need: your PRO number, original commercial invoice, timestamped photos, and the signed delivery receipt. Exception-noted claims typically resolve in 15–30 days. For damage discovered after delivery, a concealed damage claim must be filed within 5 business days.' },
+  PICKUP: { id: 'KB-1388', title: 'Scheduling and Modifying Pickups', text: 'Pickups can be scheduled through the Customer Portal, API integration, or by calling dispatch. For same-day pickups, the cutoff is 11:00 AM local origin time; next-day requests are accepted until 5:00 PM.\n\nYou can modify a booked pickup up to 1 hour before the scheduled window — after that, a missed pickup fee may apply. For volume pickups (10+ skids or over 10,000 lbs), please allow 48 hours advance notice to ensure equipment availability.' },
+  BILLING: { id: 'KB-3021', title: 'Understanding Your Invoice', text: 'Invoices may differ from your original quote for several reasons: actual weight or dimension adjustments measured at the terminal, accessorial charges not included in the initial quote (liftgate, residential delivery, inside delivery, or redelivery), or fuel surcharge fluctuations since the quote date — fuel surcharges are adjusted weekly based on the national average.\n\nTo dispute a charge, locate the invoice in the Customer Portal and select \'Request Review.\' Attach your original quote and any supporting documentation. Disputes are reviewed within 5 business days. Weight-based disputes may require a terminal reweigh — available at no charge for the first instance.' },
+  INTERNATIONAL: { id: 'KB-4192', title: 'International Shipping Requirements', text: 'International shipments require a commercial invoice (including declared value, HS codes, and country of origin), a packing list, and in some cases a Certificate of Origin. For Canada–US cross-border moves, CUSMA/USMCA preferential tariff treatment may reduce or eliminate duties — include Form B232 or the equivalent country-specific form.\n\nCustoms clearance averages 1–2 business days for fully compliant documentation. Incomplete or inconsistent paperwork is the leading cause of border delays. If the destination country requires an import permit, the permit number must appear on the commercial invoice before we can tender the load.' },
+  DISRUPTION: { id: 'KB-2846', title: 'Service Disruptions and Delay Advisories', text: 'Current service disruptions and lane-specific delay advisories are published on our Service Alerts page, updated in real time. Weather-related delays in affected corridors typically add 1–3 transit days depending on severity and lane volume.\n\nIf your shipment is caught in a disrupted lane, you\'ll receive a proactive notification to the email on file. For time-sensitive freight in a disrupted corridor, contact your account manager to discuss re-routing through alternate hub terminals — available for most LTL moves with at least 24 hours notice.' },
+  HAZMAT: { id: 'KB-5013', title: 'Dangerous Goods Declaration Requirements', text: 'All dangerous goods shipments require a compliant Shipper\'s Declaration for Dangerous Goods (DGD) before we can accept the load at the terminal. The declaration must include: UN number, proper shipping name, hazard class, packing group, quantity and packaging type, and a 24-hour emergency contact number.\n\nOur operations team must be notified of any dangerous goods load at least 24 hours in advance — loads tendered without prior notification will be refused. Lithium battery shipments classified under Section II require a separate handling addendum. Class 1 explosives and Class 7 radioactive materials require pre-approval from our Dangerous Goods desk.' },
+  AGENT: { id: 'KB-0099', title: 'Contacting Customer Service', text: 'Our customer service team is available Monday–Friday, 8:00 AM to 6:00 PM EST by phone at 1-800-555-0100, by email, or by requesting a callback through the Customer Portal.\n\nFor after-hours urgent matters — equipment failures, safety incidents, or time-critical loads — our operations dispatch line is available 24/7. Average wait time today is approximately 4 minutes.' },
+  GENERAL: { id: 'KB-0001', title: 'NorthStar Support Centre', text: 'I can help with a wide range of questions about your shipments and account. My knowledge base covers shipment tracking, damage and loss claims, pickup scheduling, billing and invoices, international documentation, service disruptions, and dangerous goods compliance.\n\nCould you tell me a bit more about what you\'re looking for? I\'ll search for the most relevant article to answer your question.' }
+};
+
+function matchIntent(text) {
+  const l = text.toLowerCase();
+  if (/(track|where is|shipment status|my package|whereabouts|in transit|eta|pro number)/.test(l)) return 'TRACK';
+  if (/(damage|damaged|broken|crushed|claim|lost|missing|short shipment|never arrived|didn.t arrive)/.test(l)) return 'CLAIM';
+  if (/(pickup|pick up|collect|schedule|reschedule|book.*pick)/.test(l)) return 'PICKUP';
+  if (/(invoice|billing|bill\b|overcharged|why is my invoice|fee|rate)/.test(l)) return 'BILLING';
+  if (/(agent|human|person|representative|speak to|talk to|connect me|call someone)/.test(l)) return 'AGENT';
+  return null;
+}
+
+function ragMatch(text) {
+  const l = text.toLowerCase();
+  if (/(track|where is|shipment status|package|whereabouts|in transit|eta|pro number|scan)/.test(l)) return 'TRACK';
+  if (/(damage|damaged|broken|claim|lost|missing|short shipment|never arrived)/.test(l)) return 'CLAIM';
+  if (/(pickup|pick up|collect|schedule|reschedule)/.test(l)) return 'PICKUP';
+  if (/(invoice|billing|bill\b|charge|overcharged|why.*different|why.*higher|why.*more|why.*invoice)/.test(l)) return 'BILLING';
+  if (/(customs|international|import|export|border|documentation|doc\b|paperwork|hs code|tariff|usmca|cusma|certificate of origin)/.test(l)) return 'INTERNATIONAL';
+  if (/(delay|weather|disruption|storm|freeze|flood|congestion|backlog|late\b|slow.*transit)/.test(l)) return 'DISRUPTION';
+  if (/(hazmat|dangerous goods|hazardous|flammable|chemical|lithium|battery.*ship|dgd|msds|sds|un number|packing group|class [0-9])/.test(l)) return 'HAZMAT';
+  if (/(agent|human|person|representative|speak|call|contact)/.test(l)) return 'AGENT';
+  return 'GENERAL';
+}
+
+async function processLegacy(q) {
+  const el = lEl();
+  showTyping(el);
+  await wait(700 + Math.random() * 300);
+  hideTyping('l');
+  const key = matchIntent(q);
+  if (key) {
+    const intent = INTENTS[key];
+    addIntentBadge(el, intent.label, true);
+    await wait(200);
+    showTyping(el);
+    await wait(600 + Math.random() * 250);
+    hideTyping('l');
+    addBot(el, intent.text);
+    await wait(150);
+    addReplyChips(el, intent.chips);
+  } else {
+    addIntentBadge(el, 'NO_MATCH', false);
+    await wait(200);
+    showTyping(el);
+    await wait(500 + Math.random() * 200);
+    hideTyping('l');
+    addBot(el, FALLBACK.text);
+    await wait(150);
+    addReplyChips(el, FALLBACK.chips);
+  }
+}
+
+async function processRAG(q) {
+  const el = rEl();
+  const srch = addSearching(el, 'Searching 847 support articles…');
+  await wait(900 + Math.random() * 500);
+  srch.innerHTML = '<div class="srch-spinner"></div>Retrieving best match…';
+  await wait(450 + Math.random() * 250);
+  srch.remove();
+  const key = ragMatch(q);
+  const article = KB[key];
+  addKBSource(el, article);
+  await wait(180);
+  showTyping(el);
+  await wait(800 + Math.random() * 350);
+  hideTyping('r');
+  addBot(el, article.text);
+}
+
+let busy = false;
+
+function sendQ(btn, q) {
+  if (busy) return;
+  btn.classList.add('lit');
+  setTimeout(() => btn.classList.remove('lit'), 900);
+  fire(q);
+}
+
+function sendFromInput() {
+  const inp = document.getElementById('sharedTxt');
+  const q = inp.value.trim(); if (!q || busy) return;
+  inp.value = '';
+  fire(q);
+}
+
+async function fire(q) {
+  busy = true;
+  addUser(lEl(), q);
+  addUser(rEl(), q);
+  await Promise.all([processLegacy(q), processRAG(q)]);
+  busy = false;
+}
+
+function clearBoth() {
+  lEl().innerHTML = '';
+  rEl().innerHTML = '';
+  lTyping = null; rTyping = null; busy = false;
+  initWelcome();
+}
+
+function initWelcome() {
+  setTimeout(() => addBot(lEl(), "Hello! I'm VirtuAssist. I can help you with tracking, claims, pickups, and billing. Please select a topic or type your question."), 350);
+  setTimeout(() => addBot(rEl(), "Hi there! I'm VirtuAssist AI, powered by our support knowledge base. I can answer questions about shipments, documentation, billing, delays, dangerous goods, and more."), 550);
+}
+
+initWelcome();
+</script>
+</body>
+</html>
