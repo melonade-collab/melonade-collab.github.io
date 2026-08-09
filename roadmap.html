@@ -209,6 +209,7 @@
     /* In matrix mode: hide priority badge and team tag on cards */
     body.matrix-mode .card-footer { display: none; }
     body.matrix-mode .card-desc { margin-bottom: 0; }
+    .matrix-quadrant .card-desc { display: none; }
 
     /* ── RICE rating step ── */
     .rice-frame { display: none; }
@@ -230,6 +231,9 @@
     .rice-zone.active { background: #EFF6FF; }
     .rice-zone-label { font-size: 0.68rem; font-weight: 500; color: #9CA3AF; user-select: none; pointer-events: none; }
     .rice-zone.active .rice-zone-label { color: #15803D; font-weight: 700; }
+    .rice-zone-origin { flex: 0 0 44px; background: #F3F4F6; border-right: 2px dashed #D1D5DB; cursor: default; gap: 3px; }
+    .rice-zone-origin:hover { background: #F3F4F6; }
+    .rice-zone-origin .rice-zone-label { font-size: 0.55rem; color: #9CA3AF; }
     .rice-puck { width: 20px; height: 20px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; cursor: grab; box-shadow: 0 1px 4px rgba(22,163,74,0.35); pointer-events: all; }
     .rice-puck:active { cursor: grabbing; transform: scale(1.1); }
     .rice-puck-dot { width: 6px; height: 6px; border-radius: 50%; background: #fff; pointer-events: none; }
@@ -833,6 +837,13 @@
     const values = field === 'reach' ? REACH_VALS : CONF_VALS;
     const lbl = field === 'reach' ? 'Reach — how many users does this affect?' : 'Confidence — how sure are you in these estimates?';
     const sel = d[field];
+    const originZone = !sel
+      ? '<div class="rice-zone rice-zone-origin">' +
+          '<div class="rice-puck" draggable="true"' +
+          ' ondragstart="rzStart(event,\'' + field + '\',\'' + id + '\')">' +
+          '<div class="rice-puck-dot"></div></div>' +
+          '<span class="rice-zone-label">drag →</span></div>'
+      : '';
     const zones = values.map(o => {
       const active = sel === o;
       return '<div class="rice-zone' + (active ? ' active' : '') + '"' +
@@ -847,7 +858,7 @@
         '</div>';
     }).join('');
     return '<div><div class="rice-track-group-label">' + lbl + '</div>' +
-      '<div class="rice-track" data-field="' + field + '" data-id="' + id + '">' + zones + '</div></div>';
+      '<div class="rice-track" data-field="' + field + '" data-id="' + id + '">' + originZone + zones + '</div></div>';
   }
 
   let rzActive = null;

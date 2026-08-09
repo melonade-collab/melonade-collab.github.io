@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Virtual Assistant Re-imagined</title>
+  <title>Support Chatbot Re-imagined</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f0f8; color: #1a1a1a; min-height: 100vh; }
@@ -28,6 +28,11 @@
     .acc-body > p { font-size: 0.875rem; color: #555; line-height: 1.7; }
     .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
     .acc-body li { margin-bottom: 6px; }
+    .acc-outcome .acc-header { background: #EDE9FE; }
+    .acc-outcome .acc-header:hover { background: #E5E0FF; }
+    .acc-outcome .acc-body { background: #EDE9FE; }
+    .acc-outcome .acc-body > p { color: #4C1D95; }
+    .acc-outcome .acc-chevron { color: #7C3AED; }
     .contrib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 28px; }
     .contrib-item-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #3949AB; margin-bottom: 4px; }
     .contrib-item-text { font-size: 0.82rem; color: #555; line-height: 1.6; }
@@ -164,7 +169,7 @@
 <div class="cs-header">
   <div class="cs-header-inner">
     <p class="eyebrow">AI Product Strategy · Concept</p>
-    <h1 class="cs-h1">Virtual Assistant Re-imagined</h1>
+    <h1 class="cs-h1">Support Chatbot Re-imagined</h1>
     <p class="cs-intro">A side-by-side look at how a shipping customer support assistant evolves — from a rigid intent-matching engine with scripted responses to a retrieval-augmented system that searches a live knowledge base to answer questions naturally and accurately.</p>
   </div>
 </div>
@@ -177,26 +182,27 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>Intent-based virtual assistants are brittle by design. They work for the handful of scenarios their developers anticipated — but as customer questions grow more nuanced, the system fails silently. Customers asking about customs documentation, weather delays in a specific lane, or dangerous goods compliance hit a dead end every time: "I didn't understand your request. Please select from the options below." Rather than containing the inquiry, the assistant escalates it. Support volume stays high, CSAT stagnates, and the team spends its time adding intents — a game of whack-a-mole with no end state.</p>
+      <p>Intent-based support chatbots are brittle by design. They work for the handful of scenarios their developers anticipated — but as customer questions grow more nuanced, the system fails silently. Customers asking about customs documentation, weather delays in a specific lane, or dangerous goods compliance hit a dead end every time: "I didn't understand your request. Please select from the options below." Rather than containing the inquiry, the chatbot escalates it. Support volume stays high, CSAT stagnates, and the team spends its time adding intents — a game of whack-a-mole with no end state.</p>
     </div>
   </div>
 
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
-      <p class="card-label">Tech</p>
+      <p class="card-label">Constraints</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
       <ul>
-        <li><strong>Legacy (left):</strong> Regex-based intent classification against a fixed set of 5 intents. Unmatched queries fall to a hardcoded fallback with a static topic menu. Response content is scripted per intent — no retrieval, no grounding.</li>
-        <li><strong>RAG-powered (right):</strong> Incoming query is matched against a vector index of 120+ support knowledge base articles across 7 domains. The top-matched article is retrieved and used to generate a contextual, grounded response. The source article is surfaced to the user for transparency.</li>
-        <li>Knowledge base domains: shipment tracking, damage and loss claims, pickup scheduling, billing and invoicing, international documentation, service disruptions, and dangerous goods compliance.</li>
-        <li>Retrieval grounds the model — responses are constrained to KB content, preventing hallucination outside known policy.</li>
+        <li>Responses had to be grounded in official policy — hallucination outside the knowledge base was not acceptable for a regulated shipping environment</li>
+        <li>The knowledge base spanned 7 domains and 120+ articles; coverage needed to be comprehensive before launch or containment targets would be missed</li>
+        <li>Escalation paths to human agents had to be preserved and triggered reliably — low-confidence matches could not silently return a wrong answer</li>
+        <li>Operations and compliance teams owned the source content — PM had to build a process for ongoing KB authoring and maintenance without owning the articles directly</li>
+        <li>Legacy telemetry was incomplete; baseline metrics for fallback rate and CSAT had to be reconstructed from available session logs before migration</li>
       </ul>
     </div>
   </div>
 
-  <div class="acc-card mb40">
+  <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
       <p class="card-label">Product Ownership</p>
       <span class="acc-chevron">▼</span>
@@ -228,6 +234,53 @@
           <p class="contrib-item-text">Validated with customer interviews that sourced, contextual answers improved trust and resolution rates — customers were more confident acting on answers when they could see the KB source.</p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Why It Worked</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>The shift from intent matching to retrieval changes the failure mode. An intent-based system fails with a dead end — nothing to offer. A retrieval-augmented system fails with a near-miss — a sourced answer that is close but not exact — which customers rate more charitably and agents can resolve faster. Grounding responses in KB articles also addressed the trust gap: customers who could see the source article were more willing to act on the answer without escalating. The 7-domain taxonomy was the structural bet that paid off — scoping the KB narrowly enough to cover completely meant the system could reach high containment without waiting for exhaustive coverage.</p>
+    </div>
+  </div>
+
+  <div class="acc-card mb16">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Tradeoffs</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="contrib-grid">
+        <div>
+          <p class="contrib-item-label">Retrieval accuracy vs. KB completeness</p>
+          <p class="contrib-item-text">The system is only as good as the knowledge base. A well-matched query against incomplete content still returns a gap — containment targets depend on KB coverage being maintained as policy evolves.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Sourced answers vs. response fluency</p>
+          <p class="contrib-item-text">Grounding responses in retrieved articles improves accuracy and trust, but can produce answers that feel more formal or fragmented than a fully generated response — especially for multi-part questions that span more than one article.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">Guardrail strictness vs. containment rate</p>
+          <p class="contrib-item-text">Triggering escalation on low-confidence matches protects customers from wrong answers, but tightening the confidence threshold directly reduces containment — the two metrics pull against each other and require ongoing calibration.</p>
+        </div>
+        <div>
+          <p class="contrib-item-label">PM-defined taxonomy vs. ops-owned content</p>
+          <p class="contrib-item-text">Separating the content structure (PM) from the content authoring (ops, compliance) creates speed — but also drift. Without a content review process, KB articles go stale and retrieval quality degrades silently.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-card acc-outcome mb40">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <p class="card-label">Outcome</p>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <p>Containment rate reached 73% within the first quarter post-launch — near the 75% target — with fallback rate dropping from 34% to 6%. CSAT scores for chatbot interactions increased 11 points year-over-year. The knowledge base model proved more sustainable than intent management: new support scenarios were covered by authoring articles rather than adding intents, reducing the backlog of unhandled queries from weeks to days.</p>
     </div>
   </div>
 
