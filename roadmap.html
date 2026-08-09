@@ -272,7 +272,7 @@
   <div class="cs-header-inner">
     <p class="eyebrow">Interactive Prototype</p>
     <h1>Prioritization Matrix + Roadmap</h1>
-    <p class="cs-intro">Score features on the matrix, rate reach and confidence to get a RICE score, then let the numbers build the roadmap for you.</p>
+    <p class="cs-intro">A four-step flow: score features on the impact/effort matrix, rate reach and confidence for a RICE score, review and confirm your prioritization, then generate the roadmap.</p>
   </div>
 </div>
 
@@ -284,7 +284,7 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>Roadmap prioritization decisions often happen in a separate meeting from the roadmap itself — someone scores features in a spreadsheet, then manually translates that into a slide or board. The two artifacts drift apart immediately. This prototype connects the scoring step directly to the roadmap: placing a feature on the matrix is the act of prioritizing it.</p>
+      <p>Feature valuation, prioritization, and delivery planning are treated as three separate activities — a scoring spreadsheet, a priority board, and a roadmap slide that someone updates manually after the other two are done. Each handoff introduces drift: the roadmap stops reflecting the scoring, the scoring stops reflecting what's actually shipping. This prototype collapses all three into one connected flow, where the act of scoring a feature is also the act of prioritizing it, and the roadmap builds itself from that output.</p>
     </div>
   </div>
 
@@ -295,13 +295,13 @@
     </div>
     <div class="acc-body">
       <ul>
-        <li>Three-step flow: matrix scoring → RICE rating → Now/Next/Later board</li>
+        <li>Four-step flow: matrix scoring → RICE rating → Now/Next/Later prioritization review → annual roadmap generation</li>
         <li>Native HTML5 drag-and-drop for matrix and board; no library dependency</li>
         <li>RICE score calculated per card from matrix position (Impact + Effort) plus two user inputs (Reach + Confidence); cards sorted by score before roadmap is built</li>
         <li>Priority badges auto-assigned from RICE ranking: top third = High → Now, middle = Medium → Next, bottom = Low → Later</li>
         <li>Board allows free re-drag to override any RICE-generated placement</li>
         <li>Long-press touch drag with haptic feedback works across matrix and board</li>
-        <li>Reset returns to Step 1 with all cards restored to their matrix positions</li>
+        <li>Back navigation at each step restores the previous state; full reset returns to Step 1 with all cards and scores cleared</li>
       </ul>
     </div>
   </div>
@@ -315,9 +315,9 @@
       <ul>
         <li>Step 1 — Score: Drag features from the backlog tray onto the 2×2 matrix (Quick Wins, Big Bets, Fill-ins, Time Sinks)</li>
         <li>Step 2 — Rate: For each placed feature, select Reach (Niche / Some / Many / Most) and Confidence (Low / Med / High); RICE score calculates live from these inputs combined with the matrix-derived Impact and Effort</li>
-        <li>Step 3 — Arrange: Roadmap auto-populates sorted by RICE score with priority badges set; cards can be freely re-dragged to override</li>
-        <li>Annual roadmap generator reads the final board state and distributes items across four quarters; high-effort items (Big Bets, Time Sinks) automatically span two quarters, with a continuation card rendered in the following quarter</li>
-        <li>"← Back to matrix" restores all cards to the matrix with original badges intact</li>
+        <li>Step 3 — Prioritize: Now/Next/Later board auto-populates sorted by RICE score with priority badges set; cards can be freely re-dragged to override before committing</li>
+        <li>Step 4 — Roadmap: Annual view distributes items across four quarters; high-effort items (Big Bets, Time Sinks) automatically span two quarters with a continuation card in the following quarter</li>
+        <li>"← Back" navigation at each step restores the previous state with all inputs and placements intact</li>
       </ul>
     </div>
   </div>
@@ -328,14 +328,14 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>The matrix captures the qualitative call (high impact, low effort) and RICE adds the quantitative layer — reach and confidence are the two inputs most likely to differ between features that look similar on the matrix. Combining them in one flow means the roadmap reflects both judgment and data, and the board still lets you override when the numbers don't match what you know about the business.</p>
+      <p>The four steps map directly to how prioritization actually works: the matrix surfaces the qualitative call (is this high-impact, low-effort?), RICE adds the quantitative layer that differentiates features that look similar on the matrix, the Now/Next/Later board is where you apply judgment and override what the numbers got wrong, and the annual roadmap is where delivery planning happens. Keeping these in sequence — rather than as separate artifacts — means the roadmap always reflects current scoring, and any override is a deliberate decision made in context rather than a manual edit made days later.</p>
     </div>
   </div>
 
 </div>
 
 <div class="proto-label-bar">
-  <p class="proto-label-inner" id="proto-label-text">Step 1 of 3 — Drag features onto the matrix to score them</p>
+  <p class="proto-label-inner" id="proto-label-text">Step 1 of 4 — Drag features onto the matrix to score them</p>
 </div>
 
 <div class="proto-section">
@@ -834,7 +834,7 @@
 
     document.getElementById('matrix-frame').style.display = 'none';
     document.getElementById('rice-frame').style.display = 'block';
-    document.getElementById('proto-label-text').textContent = 'Step 2 of 3 — Rate each feature to calculate RICE scores';
+    document.getElementById('proto-label-text').textContent = 'Step 2 of 4 — Rate each feature to calculate RICE scores';
     refreshRiceButton();
   }
 
@@ -932,13 +932,13 @@
   function backToMatrix() {
     document.getElementById('rice-frame').style.display = 'none';
     document.getElementById('matrix-frame').style.display = 'block';
-    document.getElementById('proto-label-text').textContent = 'Step 1 of 3 — Drag features onto the matrix to score them';
+    document.getElementById('proto-label-text').textContent = 'Step 1 of 4 — Drag features onto the matrix to score them';
   }
 
   function backToRice() {
     document.getElementById('board-frame-wrap').style.display = 'none';
     document.getElementById('rice-frame').style.display = 'block';
-    document.getElementById('proto-label-text').textContent = 'Step 2 of 3 — Rate each feature to calculate RICE scores';
+    document.getElementById('proto-label-text').textContent = 'Step 2 of 4 — Rate each feature to calculate RICE scores';
   }
 
   // ── Build roadmap from RICE scores ──
@@ -974,7 +974,7 @@
     document.body.classList.remove('matrix-mode');
     document.getElementById('rice-frame').style.display = 'none';
     document.getElementById('board-frame-wrap').style.display = 'block';
-    document.getElementById('proto-label-text').textContent = 'Step 3 of 3 — Drag cards to fine-tune, then generate your annual roadmap';
+    document.getElementById('proto-label-text').textContent = 'Step 3 of 4 — Review and confirm your prioritization, then generate the roadmap';
     updateCounts();
     showToast('Roadmap built from RICE scores');
   }
@@ -996,7 +996,7 @@
     document.getElementById('board-frame-wrap').style.display = 'none';
     document.getElementById('rice-frame').style.display = 'none';
     document.getElementById('annual-frame').style.display = 'none';
-    document.getElementById('proto-label-text').textContent = 'Step 1 of 3 — Drag features onto the matrix to score them';
+    document.getElementById('proto-label-text').textContent = 'Step 1 of 4 — Drag features onto the matrix to score them';
     updatePlacedCount();
     updateCounts();
     showToast('Reset to matrix');
@@ -1250,12 +1250,14 @@
 
     document.getElementById('board-frame-wrap').style.display = 'none';
     document.getElementById('annual-frame').style.display = 'block';
+    document.getElementById('proto-label-text').textContent = 'Step 4 of 4 — Annual roadmap generated from your prioritization';
     document.getElementById('annual-frame').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function closeRoadmap() {
     document.getElementById('annual-frame').style.display = 'none';
     document.getElementById('board-frame-wrap').style.display = 'block';
+    document.getElementById('proto-label-text').textContent = 'Step 3 of 4 — Review and confirm your prioritization, then generate the roadmap';
   }
 
   // Initialize placed count
