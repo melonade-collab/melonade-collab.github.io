@@ -300,6 +300,7 @@
         <li>RICE score calculated per card from matrix position (Impact + Effort) plus two user inputs (Reach + Confidence); cards sorted by score before roadmap is built</li>
         <li>Priority badges auto-assigned from RICE ranking: top third = High → Now, middle = Medium → Next, bottom = Low → Later</li>
         <li>Board allows free re-drag to override any RICE-generated placement</li>
+        <li>Annual roadmap is effort-aware: quadrant placement determines effort level, and high-effort items (Big Bets, Time Sinks) automatically span two consecutive quarters with a continuation card rendered in the second</li>
         <li>Long-press touch drag with haptic feedback works across matrix and board</li>
         <li>Back navigation at each step restores the previous state; full reset returns to Step 1 with all cards and scores cleared</li>
       </ul>
@@ -328,7 +329,7 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>The four steps map directly to how prioritization actually works: the matrix surfaces the qualitative call (is this high-impact, low-effort?), RICE adds the quantitative layer that differentiates features that look similar on the matrix, the Now/Next/Later board is where you apply judgment and override what the numbers got wrong, and the annual roadmap is where delivery planning happens. Keeping these in sequence — rather than as separate artifacts — means the roadmap always reflects current scoring, and any override is a deliberate decision made in context rather than a manual edit made days later.</p>
+      <p>The four steps map directly to how prioritization actually works: the matrix surfaces the qualitative call (is this high-impact, low-effort?), RICE adds the quantitative layer that differentiates features that look similar on the matrix, the Now/Next/Later board is where you apply judgment and override what the numbers got wrong, and the annual roadmap is where delivery planning happens. Keeping these in sequence — rather than as separate artifacts — means the roadmap always reflects current scoring, and any override is a deliberate decision made in context rather than a manual edit made days later. The roadmap is also effort-aware: because effort is already encoded in the matrix quadrant, Big Bets and Time Sinks automatically span two quarters — a more honest representation of what delivery actually looks like than placing every item in a single quarter regardless of size.</p>
     </div>
   </div>
 
