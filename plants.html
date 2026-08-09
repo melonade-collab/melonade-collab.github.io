@@ -508,6 +508,51 @@
     .weather-location { font-size: 0.68rem; color: #9e9e9e; text-align: right; flex-shrink: 0; }
     .weather-error  { font-size: 0.75rem; color: #9e9e9e; }
 
+    /* ── Add plant screen ── */
+    .search-wrap { position: relative; margin-bottom: 18px; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #bdbdbd; pointer-events: none; }
+    .search-input { width: 100%; padding: 11px 14px 11px 38px; border: none; border-radius: 12px; background: #fff; font-size: 0.88rem; font-family: inherit; color: #1c1c1e; outline: none; box-shadow: 0 1px 6px rgba(0,0,0,0.07); }
+    .search-input::placeholder { color: #bdbdbd; }
+    .section-sub { font-size: 0.72rem; color: #bdbdbd; margin-bottom: 10px; padding-left: 2px; }
+    .catalog-card { display: flex; align-items: center; gap: 14px; background: #fff; border-radius: 16px; padding: 12px 14px 12px 12px; margin-bottom: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); cursor: pointer; border: 2px solid transparent; transition: border-color 0.15s, transform 0.1s, box-shadow 0.15s; position: relative; }
+    .catalog-card:hover  { border-color: #a5d6a7; }
+    .catalog-card:active { transform: scale(0.98); box-shadow: 0 1px 6px rgba(0,0,0,0.08); }
+    .top-pick-badge { position: absolute; top: -1px; right: 12px; background: #2e7d32; color: #fff; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding: 3px 8px; border-radius: 0 0 8px 8px; }
+    .catalog-thumb { width: 58px; height: 58px; border-radius: 12px; overflow: hidden; flex-shrink: 0; background: #f5f5f5; }
+    .catalog-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .catalog-thumb.white-bg img { object-fit: contain; padding: 4px; }
+    .catalog-info { flex: 1; min-width: 0; }
+    .catalog-name { font-size: 0.95rem; font-weight: 700; color: #1b5e20; letter-spacing: -0.2px; }
+    .catalog-species { font-size: 0.7rem; color: #9e9e9e; font-style: italic; margin-top: 1px; margin-bottom: 5px; }
+    .catalog-match { font-size: 0.7rem; font-weight: 600; color: #66bb6a; }
+    .catalog-action { flex-shrink: 0; }
+    .add-btn { padding: 6px 14px; border: none; border-radius: 20px; background: #2e7d32; color: #fff; font-size: 0.78rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: background 0.15s, transform 0.1s; white-space: nowrap; }
+    .add-btn:hover  { background: #1b5e20; }
+    .add-btn:active { transform: scale(0.95); }
+    .add-btn.added  { background: #a5d6a7; color: #2e7d32; cursor: default; }
+    .add-btn.added:hover { background: #a5d6a7; }
+
+    /* ── Confirm overlay ── */
+    .confirm-overlay { display: none; position: absolute; inset: 0; background: rgba(255,255,255,0.92); z-index: 50; flex-direction: column; align-items: center; justify-content: center; gap: 12px; border-radius: 50px; }
+    .confirm-overlay.show { display: flex; }
+    .confirm-check { width: 64px; height: 64px; border-radius: 50%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; }
+    .confirm-title { font-size: 1.1rem; font-weight: 800; color: #1b5e20; }
+    .confirm-sub   { font-size: 0.82rem; color: #81c784; }
+
+    /* ── Profile screen ── */
+    .form-fields { display: flex; flex-direction: column; gap: 18px; }
+    .form-field label { display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: #81c784; margin-bottom: 7px; }
+    .form-field input, .form-field select { width: 100%; padding: 12px 14px; border: 1.5px solid #a5d6a7; border-radius: 12px; font-size: 0.92rem; font-family: inherit; color: #1b5e20; background: #fff; outline: none; transition: border-color 0.18s, box-shadow 0.18s; appearance: none; }
+    .form-field input:focus, .form-field select:focus { border-color: #2e7d32; box-shadow: 0 0 0 3px rgba(46,125,50,0.12); }
+    .form-field input::placeholder { color: #c8e6c9; }
+    .select-wrap { position: relative; }
+    .select-wrap::after { content: ''; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 12px; height: 8px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%232e7d32' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-size: contain; pointer-events: none; }
+    .select-wrap select { padding-right: 38px; cursor: pointer; }
+    .city-climate { font-size: 0.72rem; color: #81c784; margin-top: 8px; line-height: 1.5; padding-left: 2px; min-height: 1.2em; }
+    .profile-save-btn { width: 100%; padding: 15px; border-radius: 16px; border: none; font-size: 0.95rem; font-weight: 800; cursor: pointer; font-family: inherit; background: #2e7d32; color: #fff; box-shadow: 0 4px 20px rgba(46,125,50,0.4); margin-top: 24px; transition: background 0.15s, transform 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .profile-save-btn:hover  { background: #1b5e20; }
+    .profile-save-btn:active { transform: scale(0.97); }
+
     /* Mobile */
     @media (max-width: 440px) {
       .proto-label-bar { display: none; }
@@ -516,6 +561,7 @@
       .phone-frame { width: 100%; border-radius: 0; box-shadow: none; max-height: 100dvh; background: #f5f5f5; }
       .phone-frame::before { display: none; }
       .status-bar { display: none; }
+      .confirm-overlay { border-radius: 0; }
     }
   </style>
 </head>
@@ -617,6 +663,26 @@
       </div>
     </div>
 
+    <!-- Add plant nav (hidden by default) -->
+    <div class="app-nav" id="navAddPlant" style="display:none">
+      <button class="nav-back" onclick="closeAddPlant()">
+        <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1L1 6.5L7 12"/></svg>
+        My Plants
+      </button>
+      <span class="nav-title">Add a Plant</span>
+      <div style="min-width:72px;"></div>
+    </div>
+
+    <!-- Profile nav (hidden by default) -->
+    <div class="app-nav" id="navProfile" style="display:none">
+      <button class="nav-back" onclick="closeProfile()">
+        <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1L1 6.5L7 12"/></svg>
+        Back
+      </button>
+      <span class="nav-title">Profile</span>
+      <div style="min-width:72px;"></div>
+    </div>
+
     <!-- List nav -->
     <div class="app-nav" id="navList">
       <div style="min-width:72px;"></div>
@@ -629,10 +695,10 @@
           </svg>
         </button>
         <div class="nav-settings-menu" id="settingsMenu">
-          <a href="profile.html">
+          <button class="menu-item" onclick="showProfile()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             Change my profile
-          </a>
+          </button>
           <a href="feedback.html">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             Send feedback
@@ -660,10 +726,10 @@
           </svg>
         </button>
         <div class="nav-settings-menu" id="settingsMenuD">
-          <a href="profile.html">
+          <button class="menu-item" onclick="showProfile()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             Change my profile
-          </a>
+          </button>
           <a href="feedback.html">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             Send feedback
@@ -749,7 +815,7 @@
         </button>
       </div>
 
-      <button class="add-plant-btn" onclick="location.href='add-plant.html'">
+      <button class="add-plant-btn" onclick="showAddPlant()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add a plant
       </button>
@@ -838,6 +904,121 @@
           <button onclick="deletePlant()" style="background:none;border:none;font-size:0.78rem;font-weight:600;color:#e53935;cursor:pointer;font-family:inherit;padding:6px 8px;">Remove from My Plants</button>
         </div>
       </div>
+    </div>
+
+    <!-- Screen: add plant (hidden by default) -->
+    <div class="app-content" id="screenAddPlant" style="display:none">
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" type="text" placeholder="Search plants…" readonly>
+      </div>
+      <div class="section-label" id="addPlantSectionLabel">Suggested for your area</div>
+      <div class="section-sub">Based on your local climate and conditions</div>
+      <div id="catalogContainer">
+        <div id="monsteraCatalog" class="catalog-card" style="display:none;" onclick="addPlantFromCatalog('monstera')">
+          <div class="catalog-thumb">
+            <img src="https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=200&auto=format&fit=crop&q=60" alt="Monstera">
+          </div>
+          <div class="catalog-info">
+            <div class="catalog-name">Monstera</div>
+            <div class="catalog-species">Monstera deliciosa</div>
+            <div class="catalog-match">Your original plant — add it back anytime</div>
+          </div>
+          <div class="catalog-action">
+            <button class="add-btn" id="monsteraCatalogAddBtn" onclick="event.stopPropagation(); addPlantFromCatalog('monstera')">+ Add</button>
+          </div>
+        </div>
+        <div id="bopCatalog" class="catalog-card" onclick="addPlantFromCatalog('bop')">
+          <div class="catalog-thumb white-bg">
+            <img src="https://media.istockphoto.com/id/121351935/photo/bird-of-paradise-flower-isolated-on-white-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=b6qc2K_e5_TgPsU0XQJGe0oR94Hhzeo8pJFHntbdc3o=" alt="Bird of Paradise">
+          </div>
+          <div class="catalog-info">
+            <div class="catalog-name">Bird of Paradise</div>
+            <div class="catalog-species">Strelitzia reginae</div>
+            <div class="catalog-match" id="bopMatchText">Great match for your conditions</div>
+          </div>
+          <div class="catalog-action">
+            <button class="add-btn" id="bopCatalogAddBtn" onclick="event.stopPropagation(); addPlantFromCatalog('bop')">+ Add</button>
+          </div>
+        </div>
+        <div id="fiddleCatalog" class="catalog-card" onclick="addPlantFromCatalog('fiddle')">
+          <div class="catalog-thumb">
+            <img src="https://images.unsplash.com/photo-1643819131797-46919f3009f7?w=200&auto=format&fit=crop&q=60" alt="Fiddle Leaf Fig">
+          </div>
+          <div class="catalog-info">
+            <div class="catalog-name">Fiddle Leaf Fig</div>
+            <div class="catalog-species">Ficus lyrata</div>
+            <div class="catalog-match" id="fiddleMatchText">Great match for your conditions</div>
+          </div>
+          <div class="catalog-action">
+            <button class="add-btn" id="fiddleCatalogAddBtn" onclick="event.stopPropagation(); addPlantFromCatalog('fiddle')">+ Add</button>
+          </div>
+        </div>
+        <div id="lilyCatalog" class="catalog-card" onclick="addPlantFromCatalog('lily')">
+          <div class="catalog-thumb">
+            <img src="https://images.unsplash.com/photo-1687858001773-d58b6cec5bdf?w=200&auto=format&fit=crop&q=60" alt="Peace Lily">
+          </div>
+          <div class="catalog-info">
+            <div class="catalog-name">Peace Lily</div>
+            <div class="catalog-species">Spathiphyllum wallisii</div>
+            <div class="catalog-match" id="lilyMatchText">Great match for your conditions</div>
+          </div>
+          <div class="catalog-action">
+            <button class="add-btn" id="lilyCatalogAddBtn" onclick="event.stopPropagation(); addPlantFromCatalog('lily')">+ Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen: profile (hidden by default) -->
+    <div class="app-content" id="screenProfile" style="display:none;padding:24px 20px 40px;">
+      <h2 style="font-size:1.5rem;font-weight:900;color:#1b5e20;letter-spacing:-0.5px;line-height:1.15;margin-bottom:4px;">My profile.</h2>
+      <p style="font-size:0.82rem;color:#81c784;margin-bottom:24px;">Update your details anytime.</p>
+      <div class="form-fields">
+        <div class="form-field">
+          <label for="profileName">Your name</label>
+          <input type="text" id="profileName" placeholder="e.g. Alex" autocomplete="given-name" maxlength="40">
+        </div>
+        <div class="form-field">
+          <label for="profileLove">How much do you love plants?</label>
+          <div class="select-wrap">
+            <select id="profileLove">
+              <option value="" disabled>Choose one...</option>
+              <option value="obsessed">Completely obsessed 🌿</option>
+              <option value="alot">A whole lot</option>
+              <option value="growing">Still growing on me</option>
+              <option value="melanie">I don't really care but Melanie talks about them all the time, so....</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="profileCity">Your city</label>
+          <div class="select-wrap">
+            <select id="profileCity" onchange="updateCityClimate()">
+              <option value="" disabled>Select your city</option>
+              <option>Brampton</option><option>Calgary</option><option>Edmonton</option>
+              <option>Halifax</option><option>Hamilton</option><option>Kelowna</option>
+              <option>Laval</option><option>London</option><option>Mississauga</option>
+              <option>Moncton</option><option>Montreal</option><option>Ottawa</option>
+              <option>Quebec City</option><option>Regina</option><option>Saskatoon</option>
+              <option>St. John's</option><option>Sudbury</option><option>Thunder Bay</option>
+              <option>Toronto</option><option>Vancouver</option><option>Victoria</option>
+              <option>Windsor</option><option>Winnipeg</option>
+            </select>
+          </div>
+          <div class="city-climate" id="cityClimateText"></div>
+        </div>
+      </div>
+      <button class="profile-save-btn" onclick="saveProfile()">Save profile <span>→</span></button>
+    </div>
+
+    <!-- Confirm overlay (add plant) -->
+    <div class="confirm-overlay" id="confirmOverlay">
+      <div class="confirm-check">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="confirm-title">Added to My Plants!</div>
+      <div class="confirm-sub" id="confirmSub">It's in your collection.</div>
     </div>
 
   </div><!-- end phone-frame -->
@@ -1262,6 +1443,205 @@
       if (heatingTip) text += ' ' + heatingTip;
 
       if (text) { textEl.textContent = text; insightEl.style.display = 'block'; }
+    }
+    // ── Add plant screen ──
+    const sunnyCities  = ['Vancouver','Victoria','Windsor','Kelowna','Hamilton','London'];
+    const cloudyCities = ['Halifax',"St. John's",'Moncton','Sudbury','Thunder Bay','Winnipeg'];
+    const catalogNames  = { monstera:'Monstera', bop:'Bird of Paradise', fiddle:'Fiddle Leaf Fig', lily:'Peace Lily' };
+    const catalogLsKeys = { bop:'plant-bop-added', fiddle:'plant-fiddle-added', lily:'plant-lily-added' };
+
+    function showAddPlant() {
+      document.getElementById('screenList').style.display = 'none';
+      document.getElementById('navList').style.display = 'none';
+      document.getElementById('settingsMenu').style.display = 'none';
+      initAddPlant();
+      document.getElementById('screenAddPlant').style.display = '';
+      document.getElementById('navAddPlant').style.display = '';
+      document.getElementById('screenAddPlant').scrollTop = 0;
+    }
+
+    function closeAddPlant() {
+      document.getElementById('screenAddPlant').style.display = 'none';
+      document.getElementById('navAddPlant').style.display = 'none';
+      updatePlantCardVisibility();
+      document.getElementById('screenList').style.display = '';
+      document.getElementById('navList').style.display = '';
+      setWaterStatus('monsteraStatusDot','monsteraStatusText','watering-history','watering-interval',10);
+      setWaterStatus('bopStatusDot','bopStatusText','bop-watering-history','bop-watering-interval',14);
+      setWaterStatus('fiddleStatusDot','fiddleStatusText','fiddle-watering-history','fiddle-watering-interval',10);
+      setWaterStatus('lilyStatusDot','lilyStatusText','lily-watering-history','lily-watering-interval',10);
+    }
+
+    function initAddPlant() {
+      const city     = localStorage.getItem('plant-city') || 'Toronto';
+      const isSunny  = sunnyCities.includes(city);
+      const isCloudy = cloudyCities.includes(city);
+
+      document.getElementById('addPlantSectionLabel').innerHTML =
+        `Suggested for <span style="text-decoration:underline;cursor:pointer;text-underline-offset:2px;" onclick="showProfile();">${city}</span>`;
+
+      const matchText = {
+        bop:    isSunny  ? `Thrives in ${city}'s bright conditions — loves a south-facing window`
+              : isCloudy ? `Needs a lot of direct sun — best in ${city}'s brightest spot`
+              : `Loves bright direct light — perfect near a south window`,
+        fiddle: isSunny  ? `Bright indirect light is ideal — keep it back from direct sun in ${city}`
+              : isCloudy ? `Sensitive to drafts — find it a stable bright corner`
+              : `A popular pick for most Canadian homes — bright indirect light`,
+        lily:   isSunny  ? `Tolerates lower light — great for a north or east-facing room in ${city}`
+              : isCloudy ? `Low-light friendly — a natural fit for ${city}'s overcast winters`
+              : `Forgiving and low-light tolerant — a solid all-around pick`,
+      };
+      document.getElementById('bopMatchText').textContent    = matchText.bop;
+      document.getElementById('fiddleMatchText').textContent = matchText.fiddle;
+      document.getElementById('lilyMatchText').textContent   = matchText.lily;
+
+      ['monstera','bop','fiddle','lily'].forEach(k => {
+        const btn = document.getElementById(k + 'CatalogAddBtn');
+        if (btn) { btn.textContent = '+ Add'; btn.className = 'add-btn'; }
+      });
+
+      const container = document.getElementById('catalogContainer');
+      const cardEls = {
+        monstera: document.getElementById('monsteraCatalog'),
+        bop:      document.getElementById('bopCatalog'),
+        fiddle:   document.getElementById('fiddleCatalog'),
+        lily:     document.getElementById('lilyCatalog'),
+      };
+
+      container.querySelectorAll('.top-pick-badge').forEach(b => b.remove());
+
+      const order = isSunny ? ['bop','fiddle','lily'] : isCloudy ? ['lily','fiddle','bop'] : ['fiddle','bop','lily'];
+      order.forEach((key, i) => {
+        container.appendChild(cardEls[key]);
+        if (i === 0) {
+          const badge = document.createElement('div');
+          badge.className = 'top-pick-badge';
+          badge.textContent = '✦ Top pick';
+          cardEls[key].appendChild(badge);
+        }
+      });
+
+      container.prepend(cardEls.monstera);
+      cardEls.monstera.style.display = localStorage.getItem('plant-monstera-removed') === '1' ? '' : 'none';
+
+      Object.entries(catalogLsKeys).forEach(([key, lsKey]) => {
+        cardEls[key].style.display = localStorage.getItem(lsKey) === '1' ? 'none' : '';
+      });
+    }
+
+    function addPlantFromCatalog(type) {
+      const btn = document.getElementById(type + 'CatalogAddBtn');
+      if (!btn || btn.classList.contains('added')) return;
+      if (type === 'monstera') localStorage.removeItem('plant-monstera-removed');
+      else localStorage.setItem(catalogLsKeys[type], '1');
+      btn.textContent = '✓ Added'; btn.className = 'add-btn added';
+      document.getElementById('confirmSub').textContent = `${catalogNames[type]} is in your collection.`;
+      document.getElementById('confirmOverlay').classList.add('show');
+      setTimeout(() => {
+        document.getElementById('confirmOverlay').classList.remove('show');
+        closeAddPlant();
+      }, 1800);
+    }
+
+    function updatePlantCardVisibility() {
+      document.getElementById('monsteraCard').style.display = localStorage.getItem('plant-monstera-removed') === '1' ? 'none' : '';
+      document.getElementById('bopCard').style.display    = localStorage.getItem('plant-bop-added')    === '1' ? '' : 'none';
+      document.getElementById('fiddleCard').style.display = localStorage.getItem('plant-fiddle-added') === '1' ? '' : 'none';
+      document.getElementById('lilyCard').style.display   = localStorage.getItem('plant-lily-added')   === '1' ? '' : 'none';
+    }
+
+    // ── Profile screen ──
+    let profileReturnPlantId = null;
+    const climateCache = {};
+
+    function showProfile() {
+      profileReturnPlantId = currentPlantId;
+      if (currentPlantId) {
+        document.getElementById('screenDetail').style.display = 'none';
+        document.getElementById('navDetail').style.display = 'none';
+        document.getElementById('settingsMenuD').style.display = 'none';
+      } else {
+        document.getElementById('screenList').style.display = 'none';
+        document.getElementById('navList').style.display = 'none';
+        document.getElementById('settingsMenu').style.display = 'none';
+        document.getElementById('screenAddPlant').style.display = 'none';
+        document.getElementById('navAddPlant').style.display = 'none';
+      }
+      loadProfileForm();
+      document.getElementById('screenProfile').style.display = '';
+      document.getElementById('navProfile').style.display = '';
+      document.getElementById('screenProfile').scrollTop = 0;
+    }
+
+    function closeProfile() {
+      document.getElementById('screenProfile').style.display = 'none';
+      document.getElementById('navProfile').style.display = 'none';
+      if (profileReturnPlantId) {
+        openPlant(profileReturnPlantId);
+      } else {
+        document.getElementById('screenList').style.display = '';
+        document.getElementById('navList').style.display = '';
+        const name = localStorage.getItem('plant-user-name');
+        if (name && name !== 'Plant parent') {
+          const hour = new Date().getHours();
+          const period = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
+          document.getElementById('greeting').textContent = `Good ${period}, ${name}.`;
+        }
+      }
+    }
+
+    function loadProfileForm() {
+      const savedName = localStorage.getItem('plant-user-name');
+      const savedLove = localStorage.getItem('plant-love');
+      const savedCity = localStorage.getItem('plant-city');
+      const nameEl = document.getElementById('profileName');
+      const loveEl = document.getElementById('profileLove');
+      const cityEl = document.getElementById('profileCity');
+      nameEl.value = (savedName && savedName !== 'Plant parent') ? savedName : '';
+      if (savedLove) loveEl.value = savedLove;
+      cityEl.value = savedCity || 'Toronto';
+      updateCityClimate();
+    }
+
+    function saveProfile() {
+      const name = document.getElementById('profileName').value.trim() || 'Plant parent';
+      const city = document.getElementById('profileCity').value || 'Toronto';
+      const love = document.getElementById('profileLove').value;
+      localStorage.setItem('plant-user-name', name);
+      localStorage.setItem('plant-city', city);
+      if (love) localStorage.setItem('plant-love', love);
+      closeProfile();
+    }
+
+    async function updateCityClimate() {
+      const cityEl = document.getElementById('profileCity');
+      if (!cityEl) return;
+      const city = cityEl.value;
+      const el = document.getElementById('cityClimateText');
+      const cityData = cities[city];
+      if (!cityData) { el.textContent = ''; return; }
+      if (climateCache[city]) { el.textContent = climateCache[city]; return; }
+      el.textContent = 'Loading climate data…';
+      const end = new Date(); end.setDate(end.getDate() - 1);
+      const start = new Date(end); start.setFullYear(start.getFullYear() - 1);
+      const fmt = d => d.toISOString().slice(0, 10);
+      try {
+        const res = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${cityData.lat}&longitude=${cityData.lon}&start_date=${fmt(start)}&end_date=${fmt(end)}&daily=temperature_2m_mean,precipitation_sum&timezone=auto`);
+        const data = await res.json();
+        const temps   = data.daily.temperature_2m_mean.filter(v => v !== null);
+        const precips = data.daily.precipitation_sum.filter(v => v !== null);
+        const avgTemp = temps.reduce((a, b) => a + b, 0) / temps.length;
+        const totalP  = precips.reduce((a, b) => a + b, 0);
+        const t = avgTemp.toFixed(1);
+        const p = Math.round(totalP);
+        const tempLine   = avgTemp < 3 ? 'very cold annual average' : avgTemp < 7 ? 'cold annual average' : avgTemp < 11 ? 'cool annual average' : avgTemp < 15 ? 'mild annual average' : 'warm annual average';
+        const precipLine = totalP < 350 ? 'very dry — indoor humidity will need active support year-round' : totalP < 550 ? 'on the dry side — a humidifier helps tropical plants in winter' : totalP < 750 ? 'moderate rainfall — most houseplants do well with minimal intervention' : totalP < 950 ? 'fairly wet — natural outdoor humidity is a plus for indoor plants' : 'very wet — indoor conditions tend to stay comfortable for tropicals';
+        const blurb = `${t}°C avg · ${p}mm annual precipitation. ${city} has a ${tempLine} and is ${precipLine}.`;
+        climateCache[city] = blurb;
+        el.textContent = blurb;
+      } catch {
+        el.textContent = 'Climate data unavailable.';
+      }
     }
   </script>
 </body>
