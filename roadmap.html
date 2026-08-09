@@ -69,8 +69,10 @@
 
     /* ── Column ── */
     .column { display: flex; flex-direction: column; }
-    .col-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 8px 8px 0 0; }
+    .col-header { display: flex; flex-direction: column; gap: 3px; padding: 10px 12px; border-radius: 8px 8px 0 0; }
+    .col-header-top { display: flex; align-items: center; gap: 8px; }
     .col-name { font-size: 0.7rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+    .col-subtitle { font-size: 0.6rem; color: inherit; opacity: 0.6; font-weight: 500; letter-spacing: 0.2px; }
     .col-count { font-size: 0.65rem; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin-left: auto; transition: background 0.2s; }
     .col-body { flex: 1; border-radius: 0 0 8px 8px; padding: 10px; display: flex; flex-direction: column; gap: 10px; min-height: 200px; border: 2px dashed transparent; transition: background 0.15s, border-color 0.15s; background: rgba(0,0,0,0.02); }
     .col-body.drag-over { background: rgba(22,163,74,0.06); border-color: #86efac; }
@@ -591,8 +593,11 @@
 
       <div class="column col-now">
         <div class="col-header">
-          <span class="col-name">Now</span>
-          <span class="col-count" id="count-now">0</span>
+          <div class="col-header-top">
+            <span class="col-name">Now</span>
+            <span class="col-count" id="count-now">0</span>
+          </div>
+          <span class="col-subtitle">Resourced and ready</span>
         </div>
         <div class="col-body" id="col-now"
           ondragover="handleDragOver(event)"
@@ -603,8 +608,11 @@
 
       <div class="column col-next">
         <div class="col-header">
-          <span class="col-name">Next</span>
-          <span class="col-count" id="count-next">0</span>
+          <div class="col-header-top">
+            <span class="col-name">Next</span>
+            <span class="col-count" id="count-next">0</span>
+          </div>
+          <span class="col-subtitle">Resourcing in progress</span>
         </div>
         <div class="col-body" id="col-next"
           ondragover="handleDragOver(event)"
@@ -615,8 +623,11 @@
 
       <div class="column col-later">
         <div class="col-header">
-          <span class="col-name">Later</span>
-          <span class="col-count" id="count-later">0</span>
+          <div class="col-header-top">
+            <span class="col-name">Later</span>
+            <span class="col-count" id="count-later">0</span>
+          </div>
+          <span class="col-subtitle">Not yet resourced</span>
         </div>
         <div class="col-body" id="col-later"
           ondragover="handleDragOver(event)"
