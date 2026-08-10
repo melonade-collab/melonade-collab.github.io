@@ -120,13 +120,13 @@
     .priority-medium { background: #FEF9C3; color: #854D0E; }
     .priority-low { background: #F3F4F6; color: #6B7280; }
     .card-value-badge { font-size: 0.62rem; font-weight: 800; padding: 2px 6px; border-radius: 5px; letter-spacing: 0; }
-    .val-3 { background: #FEF9C3; color: #92400E; }
-    .val-2 { background: #F3F4F6; color: #6B7280; }
-    .val-1 { background: #F9FAFB; color: #D1D5DB; }
+    .val-3 { background: #DCFCE7; color: #15803D; }
+    .val-2 { background: #FEF9C3; color: #854D0E; }
+    .val-1 { background: #FEE2E2; color: #991B1B; }
     .rice-value-badge { font-size: 0.75rem; font-weight: 800; margin-top: 4px; min-height: 1.1em; letter-spacing: 0; }
-    .rice-value-badge.val-3 { color: #92400E; }
-    .rice-value-badge.val-2 { color: #9CA3AF; }
-    .rice-value-badge.val-1 { color: #D1D5DB; }
+    .rice-value-badge.val-3 { color: #15803D; }
+    .rice-value-badge.val-2 { color: #854D0E; }
+    .rice-value-badge.val-1 { color: #991B1B; }
 
     .card-team { font-size: 0.6rem; color: #9CA3AF; font-weight: 500; margin-left: auto; }
 
@@ -314,6 +314,7 @@
         <li>Priority badges auto-assigned from RICE ranking: top third = High → Now, middle = Medium → Next, bottom = Low → Later</li>
         <li>Board allows free re-drag to override any RICE-generated placement</li>
         <li>Annual roadmap is effort-aware: quadrant placement determines effort level, and high-effort items (Big Bets, Time Sinks) automatically span two consecutive quarters with a continuation card rendered in the second</li>
+        <li>Value indicator ($$$ / $$ / $) derived from Reach × Impact — a separate signal from RICE score that surfaces how much user value a feature delivers, independent of effort and confidence</li>
         <li>Long-press touch drag with haptic feedback works across matrix and board</li>
         <li>Back navigation at each step restores the previous state; full reset returns to Step 1 with all cards and scores cleared</li>
       </ul>
@@ -328,9 +329,9 @@
     <div class="acc-body">
       <ul>
         <li>Step 1 — Score: Drag features from the backlog tray onto the 2×2 matrix (Quick Wins, Big Bets, Fill-ins, Time Sinks)</li>
-        <li>Step 2 — Rate: For each placed feature, select Reach (Niche / Some / Many / Most) and Confidence (Low / Med / High); RICE score calculates live from these inputs combined with the matrix-derived Impact and Effort</li>
-        <li>Step 3 — Prioritize: Now/Next/Later board auto-populates sorted by RICE score with priority badges set; cards can be freely re-dragged to override before committing</li>
-        <li>Step 4 — Roadmap: Annual view distributes items across four quarters; high-effort items (Big Bets, Time Sinks) automatically span two quarters with a continuation card in the following quarter</li>
+        <li>Step 2 — Rate: For each placed feature, select Reach (Niche / Some / Many / Most) and Confidence (Low / Med / High); RICE score and value indicator ($$$ / $$ / $) calculate live — RICE reflects the full scoring model, value reflects reach × impact only</li>
+        <li>Step 3 — Prioritize: Now/Next/Later board auto-populates sorted by RICE score; each card shows its priority badge, value indicator, and outcome — cards can be freely re-dragged to override before committing</li>
+        <li>Step 4 — Roadmap: Annual view distributes items across four quarters with effort-aware spanning; value indicators carry through so high-value vs. low-value items remain visible at the delivery planning stage</li>
         <li>"← Back" navigation at each step restores the previous state with all inputs and placements intact</li>
       </ul>
     </div>
@@ -342,7 +343,8 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>The four steps map directly to how prioritization actually works: the matrix surfaces the qualitative call (is this high-impact, low-effort?), RICE adds the quantitative layer that differentiates features that look similar on the matrix, the Now/Next/Later board is where you apply judgment and override what the numbers got wrong, and the annual roadmap is where delivery planning happens. Keeping these in sequence — rather than as separate artifacts — means the roadmap always reflects current scoring, and any override is a deliberate decision made in context rather than a manual edit made days later. The roadmap is also effort-aware: because effort is already encoded in the matrix quadrant, Big Bets and Time Sinks automatically span two quarters — a more honest representation of what delivery actually looks like than placing every item in a single quarter regardless of size.</p>
+      <p>The four steps map directly to how prioritization actually works: the matrix surfaces the qualitative call (is this high-impact, low-effort?), RICE adds the quantitative layer that differentiates features that look similar on the matrix, the Now/Next/Later board is where you apply judgment and override what the numbers got wrong, and the annual roadmap is where delivery planning happens. Keeping these in sequence — rather than as separate artifacts — means the roadmap always reflects current scoring, and any override is a deliberate decision made in context rather than a manual edit made days later.</p>
+      <p>Two signals run through the board and roadmap that RICE alone doesn't surface: effort-aware spanning (Big Bets and Time Sinks occupy two quarters, not one) and a value indicator — $$$ green for high reach × impact, $$ amber for mid-range, $ red for low. The value signal matters because a feature can score well on RICE but deliver little user value if it's low-reach, or score poorly but be strategically important. Separating value from the composite score lets both signals inform the override decision at Step 3.</p>
     </div>
   </div>
 
