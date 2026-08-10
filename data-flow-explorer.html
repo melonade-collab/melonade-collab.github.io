@@ -30,80 +30,107 @@
     .acc-body ul { font-size: 0.875rem; color: #555; line-height: 1.7; padding-left: 18px; }
     .acc-body li { margin-bottom: 5px; }
 
-    .proto-section { background: #f7f7f5; padding: 0 40px 80px; }
-    .proto-inner { max-width: 980px; margin: 0 auto; }
+    .proto-section { background: #f7f7f5; padding: 0 24px 80px; }
+    .proto-inner { max-width: 1120px; margin: 0 auto; }
     .proto-section-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 16px; }
-    .proto-wrap { background: #FEF3C7; border-radius: 16px; padding: 28px 24px 36px; }
+    .proto-wrap { background: #FEF3C7; border-radius: 16px; padding: 28px 20px 36px; }
     .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 24px; }
 
-    .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; min-width: 0; }
-    .demo-grid > * { min-width: 0; overflow: hidden; }
+    /* 3-column grid with arrow connectors between panels */
+    .demo-grid { display: grid; grid-template-columns: 1fr 20px 1fr 20px 1.1fr; gap: 0; align-items: start; }
+    .demo-grid > * { min-width: 0; }
 
-    .demo-panel { background: #fff; border-radius: 12px; padding: 22px; border: 1px solid #E8E2D8; }
-    .panel-step { font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 5px; }
-    .panel-title { font-size: 0.9rem; font-weight: 800; color: #1a1a1a; margin-bottom: 18px; }
+    .demo-panel { background: #fff; border-radius: 12px; padding: 18px; border: 1px solid #E8E2D8; overflow: hidden; }
+    .panel-step { font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 4px; }
+    .panel-title { font-size: 0.85rem; font-weight: 800; color: #1a1a1a; margin-bottom: 15px; }
 
-    .form-row { margin-bottom: 13px; }
-    .form-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #aaa; margin-bottom: 5px; display: block; }
-    .form-input { width: 100%; border: 1.5px solid #E5E7EB; border-radius: 8px; padding: 9px 11px; font-size: 0.85rem; color: #1a1a1a; font-family: inherit; outline: none; transition: border-color 0.15s; background: #fff; }
+    /* Arrow connectors */
+    .step-arrow { display: flex; align-items: flex-start; justify-content: center; padding-top: 62px; color: #D97706; font-size: 1rem; font-weight: 900; }
+
+    /* Form */
+    .form-row { margin-bottom: 11px; }
+    .form-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #bbb; margin-bottom: 4px; display: block; }
+    .form-input { width: 100%; border: 1.5px solid #E5E7EB; border-radius: 7px; padding: 8px 10px; font-size: 0.8rem; color: #1a1a1a; font-family: inherit; outline: none; transition: border-color 0.15s; background: #fff; }
     .form-input:focus { border-color: #D97706; }
-    .form-textarea { resize: vertical; min-height: 88px; }
-    .form-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-textarea { resize: vertical; min-height: 80px; }
+    .form-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-    .form-actions { display: flex; gap: 9px; margin-top: 18px; }
-    .btn-sample { background: transparent; border: 1.5px solid #D97706; color: #92400E; font-size: 0.75rem; font-weight: 700; padding: 8px 13px; border-radius: 8px; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+    .form-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+    .btn-sample { background: transparent; border: 1.5px solid #D97706; color: #92400E; font-size: 0.7rem; font-weight: 700; padding: 7px 11px; border-radius: 7px; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
     .btn-sample:hover { background: #FFFBEB; }
-    .btn-submit { flex: 1; background: #D97706; border: none; color: #fff; font-size: 0.78rem; font-weight: 700; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+    .btn-submit { flex: 1; background: #D97706; border: none; color: #fff; font-size: 0.72rem; font-weight: 700; padding: 7px 12px; border-radius: 7px; cursor: pointer; font-family: inherit; transition: background 0.15s; }
     .btn-submit:hover { background: #B45309; }
 
-    .flow-connector { display: flex; align-items: flex-start; justify-content: center; padding-top: 68px; color: #D97706; font-size: 1.2rem; font-weight: 900; }
+    /* Normalized record panel */
+    .norm-waiting { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px; gap: 8px; opacity: 0.4; }
+    .norm-waiting-icon { font-size: 1.4rem; }
+    .norm-waiting-text { font-size: 0.75rem; color: #92400E; text-align: center; line-height: 1.5; }
 
-    .adapter-bar { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
-    .adapter-tab { display: flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 7px; font-size: 0.72rem; font-weight: 700; cursor: pointer; border: 1.5px solid #D97706; background: transparent; color: #92400E; transition: all 0.15s; font-family: inherit; opacity: 0.35; pointer-events: none; }
+    .proc-wrap { padding: 4px 0 12px; }
+    .proc-step { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: #555; opacity: 0; transition: opacity 0.3s ease; margin-bottom: 9px; }
+    .proc-step.visible { opacity: 1; }
+    .proc-icon { width: 16px; text-align: center; flex-shrink: 0; font-size: 0.8rem; }
+
+    .norm-section { margin-bottom: 14px; }
+    .norm-section-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #B45309; margin-bottom: 7px; padding-bottom: 5px; border-bottom: 1px solid #F3ECD8; }
+    .norm-row { display: flex; align-items: baseline; gap: 8px; padding: 4px 0; border-bottom: 1px solid #F9F5EE; }
+    .norm-row:last-child { border-bottom: none; }
+    .norm-key { font-size: 0.65rem; color: #bbb; font-weight: 600; width: 72px; flex-shrink: 0; font-family: "SF Mono", monospace; }
+    .norm-val { font-size: 0.78rem; color: #1a1a1a; line-height: 1.4; word-break: break-all; }
+    .norm-val.mono { font-family: "SF Mono", "Fira Code", monospace; font-size: 0.72rem; }
+
+    .badge { display: inline-block; font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; vertical-align: middle; }
+    .badge-billing  { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+    .badge-shipping { background: #DBEAFE; color: #1D4ED8; border: 1px solid #BFDBFE; }
+    .badge-technical{ background: #EDE9FE; color: #6D28D9; border: 1px solid #DDD6FE; }
+    .badge-complaint{ background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
+    .badge-general  { background: #F3F4F6; color: #6B7280; border: 1px solid #E5E7EB; }
+    .badge-urgent   { background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
+    .badge-high     { background: #FFEDD5; color: #C2410C; border: 1px solid #FED7AA; }
+    .badge-medium   { background: #DBEAFE; color: #1D4ED8; border: 1px solid #BFDBFE; }
+
+    /* Adapter output panel */
+    .adapter-bar { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; }
+    .adapter-tab { padding: 5px 10px; border-radius: 6px; font-size: 0.68rem; font-weight: 700; cursor: pointer; border: 1.5px solid #D97706; background: transparent; color: #92400E; transition: all 0.15s; font-family: inherit; opacity: 0.35; pointer-events: none; }
+    .adapter-tab .adapter-sys { font-size: 0.58rem; font-weight: 400; opacity: 0.75; }
     .adapter-tab.ready { opacity: 1; pointer-events: auto; }
     .adapter-tab.active { background: #D97706; color: #fff; }
     .adapter-tab:hover:not(.active).ready { background: #FFFBEB; }
-    .adapter-sys { font-size: 0.6rem; font-weight: 400; opacity: 0.75; }
 
-    .connected-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; padding: 7px 11px; background: rgba(217,119,6,0.08); border-radius: 8px; border: 1px solid rgba(217,119,6,0.2); }
+    .connected-bar { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; padding: 6px 10px; background: rgba(217,119,6,0.08); border-radius: 7px; border: 1px solid rgba(217,119,6,0.2); }
     .connected-dot { width: 6px; height: 6px; border-radius: 50%; background: #16A34A; flex-shrink: 0; }
-    .connected-label { font-size: 0.65rem; font-weight: 700; color: #92400E; letter-spacing: 0.5px; text-transform: uppercase; }
-    .connected-system { font-size: 0.65rem; color: #B45309; margin-left: auto; font-weight: 600; }
+    .connected-label { font-size: 0.62rem; font-weight: 700; color: #92400E; letter-spacing: 0.5px; text-transform: uppercase; }
+    .connected-system { font-size: 0.62rem; color: #B45309; margin-left: auto; font-weight: 600; }
 
-    .output-display { min-height: 200px; }
-    .waiting-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; gap: 10px; opacity: 0.45; }
-    .waiting-icon { font-size: 1.6rem; }
-    .waiting-text { font-size: 0.8rem; color: #92400E; text-align: center; line-height: 1.5; }
-
-    .processing-wrap { padding: 8px 0 16px; }
-    .proc-step { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; color: #555; opacity: 0; transition: opacity 0.3s ease; margin-bottom: 10px; }
-    .proc-step.visible { opacity: 1; }
-    .proc-icon { width: 18px; text-align: center; flex-shrink: 0; }
-    .proc-icon.spinning { display: inline-block; animation: spin 0.7s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .adapter-waiting { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 160px; gap: 8px; opacity: 0.35; }
+    .adapter-waiting-icon { font-size: 1.3rem; }
+    .adapter-waiting-text { font-size: 0.72rem; color: #92400E; text-align: center; line-height: 1.5; }
 
     .json-block {
-      background: #0F172A; border-radius: 10px; padding: 15px 16px;
-      font-family: "SF Mono", "Fira Code", monospace; font-size: 0.7rem;
+      background: #0F172A; border-radius: 9px; padding: 13px 14px;
+      font-family: "SF Mono", "Fira Code", monospace; font-size: 0.66rem;
       line-height: 1.75; color: #E2E8F0; overflow-x: auto; white-space: pre;
-      max-height: 340px; overflow-y: auto;
+      max-height: 360px; overflow-y: auto;
     }
-    .json-key   { color: #7DD3FC; }
-    .json-str   { color: #86EFAC; }
-    .json-num   { color: #FCD34D; }
-    .json-bool  { color: #FCA5A5; }
-    .json-null  { color: #94A3B8; }
+    .json-key  { color: #7DD3FC; }
+    .json-str  { color: #86EFAC; }
+    .json-num  { color: #FCD34D; }
+    .json-bool { color: #FCA5A5; }
+    .json-null { color: #94A3B8; }
     .csv-header { color: #7DD3FC; }
 
     .output-fade { animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
 
-    @media (max-width: 700px) {
+    @media (max-width: 860px) {
       .cs-header { padding: 40px 20px 36px; }
       .cs-body { padding: 32px 20px 32px; }
-      .proto-section { padding: 0 20px 60px; }
+      .proto-section { padding: 0 16px 60px; }
       .demo-grid { grid-template-columns: 1fr; }
-      .flow-connector { display: none; }
+      .step-arrow { display: none; }
+      .form-grid2 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
       .form-grid2 { grid-template-columns: 1fr; }
     }
   </style>
@@ -114,7 +141,7 @@
   <div class="cs-header-inner">
     <p class="eyebrow">Data Workflow &middot; Fictional scenario</p>
     <h1 class="cs-h1">Integration Adapter Hub</h1>
-    <p class="cs-intro">Customer data arrives in one shape. Every downstream system expects a different one. This demo shows intake, transformation, and adapter routing — the three layers that make integrations actually work.</p>
+    <p class="cs-intro">Customer data arrives in one shape. Every downstream system expects a different one. This demo shows all three layers: intake, normalization, and adapter routing.</p>
   </div>
 </header>
 
@@ -140,8 +167,8 @@
       <ul>
         <li>Pure client-side JavaScript — no backend, no API calls, no framework</li>
         <li>Intent classifier reads the issue description and maps to one of five categories (billing, shipping, technical, complaint, general)</li>
-        <li>Four adapter formatters transform the same raw input into ServiceNow incident, Salesforce Case, JSON webhook, and CSV — each with system-appropriate field names and structure</li>
-        <li>A "sample data" button pre-fills a realistic fictional submission to demonstrate the flow without the user having to type</li>
+        <li>A normalization step produces a canonical internal record before any adapter sees the data — mirroring how a real integration hub works</li>
+        <li>Four adapter formatters transform that canonical record into ServiceNow incident, Salesforce Case, JSON webhook, and CSV — each with system-appropriate field names and structure</li>
         <li>Syntax highlighting applied client-side via regex replacements on serialized JSON</li>
       </ul>
     </div>
@@ -154,11 +181,11 @@
     </div>
     <div class="acc-body">
       <ul>
-        <li>Intake form collects name, email, account ID, and freeform issue description — the same inputs any real support form would capture</li>
-        <li>Brief processing animation makes the transformation step visible rather than instant, showing intake → format → route</li>
-        <li>Adapter tabs let you switch destinations: ServiceNow, Salesforce, JSON Webhook, CSV row — same data, four different shapes</li>
-        <li>A "Connected" indicator on each active adapter reinforces the plug-in metaphor</li>
-        <li>Intent detection dynamically changes the category field in each output format based on what the user actually wrote</li>
+        <li>Three visible layers: intake form → normalized canonical record → adapter-formatted output</li>
+        <li>The normalized record is system-agnostic — same shape regardless of which adapter is selected, making it clear what the adapter actually transforms</li>
+        <li>Adapter tabs let you switch destinations: ServiceNow, Salesforce, JSON Webhook, CSV — same canonical record, four different output shapes</li>
+        <li>Intent detection dynamically sets category, routing team, and SLA hours based on what the customer actually wrote</li>
+        <li>"Use sample data" pre-fills a realistic fictional submission for immediate demonstration</li>
       </ul>
     </div>
   </div>
@@ -179,11 +206,11 @@
   <div class="proto-inner">
     <p class="proto-section-label">Interactive prototype</p>
     <div class="proto-wrap">
-      <p class="proto-wrap-label">Submit customer data — then switch adapters to see it formatted for each system</p>
+      <p class="proto-wrap-label">Submit customer data to see all three layers: intake → normalized record → adapter output</p>
 
       <div class="demo-grid">
 
-        <!-- Intake form -->
+        <!-- Step 1: Intake form -->
         <div class="demo-panel">
           <p class="panel-step">Step 1</p>
           <p class="panel-title">Customer intake</p>
@@ -209,34 +236,42 @@
 
           <div class="form-actions">
             <button class="btn-sample" onclick="fillSample()">Use sample data</button>
-            <button class="btn-submit" onclick="handleSubmit()">Route through adapter →</button>
+            <button class="btn-submit" onclick="handleSubmit()">Submit →</button>
           </div>
         </div>
 
-        <!-- Output panel -->
-        <div class="demo-panel" id="output-panel">
+        <div class="step-arrow">→</div>
+
+        <!-- Step 2: Normalized record -->
+        <div class="demo-panel" id="norm-panel">
           <p class="panel-step">Step 2</p>
+          <p class="panel-title">Normalized record</p>
+          <div id="norm-display">
+            <div class="norm-waiting">
+              <div class="norm-waiting-icon">⬡</div>
+              <p class="norm-waiting-text">Waiting for input.<br>Submit the form to normalize.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-arrow">→</div>
+
+        <!-- Step 3: Adapter output -->
+        <div class="demo-panel" id="output-panel">
+          <p class="panel-step">Step 3</p>
           <p class="panel-title">Adapter output</p>
 
           <div class="adapter-bar" id="adapter-bar">
-            <button class="adapter-tab" id="tab-snow" onclick="switchAdapter('snow', this)">
-              ServiceNow <span class="adapter-sys">incident</span>
-            </button>
-            <button class="adapter-tab" id="tab-sf" onclick="switchAdapter('sf', this)">
-              Salesforce <span class="adapter-sys">case</span>
-            </button>
-            <button class="adapter-tab" id="tab-json" onclick="switchAdapter('json', this)">
-              JSON <span class="adapter-sys">webhook</span>
-            </button>
-            <button class="adapter-tab" id="tab-csv" onclick="switchAdapter('csv', this)">
-              CSV <span class="adapter-sys">row</span>
-            </button>
+            <button class="adapter-tab" id="tab-snow" onclick="switchAdapter('snow', this)">ServiceNow <span class="adapter-sys">incident</span></button>
+            <button class="adapter-tab" id="tab-sf"   onclick="switchAdapter('sf', this)">Salesforce <span class="adapter-sys">case</span></button>
+            <button class="adapter-tab" id="tab-json" onclick="switchAdapter('json', this)">JSON <span class="adapter-sys">webhook</span></button>
+            <button class="adapter-tab" id="tab-csv"  onclick="switchAdapter('csv', this)">CSV <span class="adapter-sys">row</span></button>
           </div>
 
-          <div class="output-display" id="output-display">
-            <div class="waiting-state">
-              <div class="waiting-icon">⬡</div>
-              <p class="waiting-text">No adapter connected yet.<br>Submit the form to route data.</p>
+          <div id="output-display">
+            <div class="adapter-waiting">
+              <div class="adapter-waiting-icon">⬡</div>
+              <p class="adapter-waiting-text">No adapter connected yet.</p>
             </div>
           </div>
         </div>
@@ -246,7 +281,7 @@
   </div>
 </div>
 
-<a href="index.html" class="portfolio-back-link" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+<a href="index.html" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
 
 <script>
   function toggleAcc(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
@@ -284,12 +319,11 @@
   function makeCaseId() {
     const d = new Date();
     const ds = d.toISOString().slice(0,10).replace(/-/g,'');
-    const r = String(Math.floor(Math.random() * 9000) + 1000);
-    return `CASE-${ds}-${r}`;
+    return `CASE-${ds}-${Math.floor(Math.random()*9000)+1000}`;
   }
 
   function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   function highlightJson(obj) {
@@ -302,35 +336,26 @@
       .replace(/: (-?\d+\.?\d*)/g, ': <span class="json-num">$1</span>');
   }
 
-  const SYSTEM_NAMES = {
-    snow: 'ServiceNow',
-    sf: 'Salesforce',
-    json: 'JSON Webhook',
-    csv: 'CSV'
-  };
-
-  let currentData = null;
-  let currentAdapter = null;
+  const SYSTEM_NAMES = { snow: 'ServiceNow', sf: 'Salesforce', json: 'JSON Webhook', csv: 'CSV' };
 
   const INTENT_LABELS = {
-    billing: { snow: 'billing', sf: 'Billing', json: 'billing', csv: 'billing' },
-    shipping: { snow: 'delivery', sf: 'Shipping', json: 'shipping', csv: 'shipping' },
+    billing:   { snow: 'billing',  sf: 'Billing',   json: 'billing',   csv: 'billing' },
+    shipping:  { snow: 'delivery', sf: 'Shipping',  json: 'shipping',  csv: 'shipping' },
     technical: { snow: 'software', sf: 'Technical', json: 'technical', csv: 'technical' },
-    complaint: { snow: 'inquiry', sf: 'Other', json: 'complaint', csv: 'complaint' },
-    general: { snow: 'inquiry', sf: 'Other', json: 'general', csv: 'general' }
+    complaint: { snow: 'inquiry',  sf: 'Other',     json: 'complaint', csv: 'complaint' },
+    general:   { snow: 'inquiry',  sf: 'Other',     json: 'general',   csv: 'general' }
   };
 
   const ROUTING = {
-    billing: 'billing-support',
-    shipping: 'fulfillment-support',
-    technical: 'technical-support',
-    complaint: 'customer-relations',
-    general: 'general-support'
+    billing: 'billing-support', shipping: 'fulfillment-support',
+    technical: 'technical-support', complaint: 'customer-relations', general: 'general-support'
   };
 
   const SLA = { urgent: 4, high: 8, medium: 24 };
   const SNOW_PRIORITY = { urgent: '1', high: '2', medium: '3' };
   const SF_PRIORITY = { urgent: 'Critical', high: 'High', medium: 'Medium' };
+
+  let currentData = null;
 
   function formatSnow(d) {
     return {
@@ -370,52 +395,48 @@
 
   function formatWebhook(d) {
     return {
-      event: 'case.intake',
-      version: '1.0',
-      timestamp: d.timestamp,
-      source: 'web-form',
-      customer: {
-        name: d.name,
-        email: d.email,
-        account_id: d.account
-      },
-      case: {
-        id: d.caseId,
-        intent: INTENT_LABELS[d.intent].json,
-        priority: d.priority,
-        description: d.issue
-      },
-      routing: {
-        team: ROUTING[d.intent],
-        sla_hours: SLA[d.priority]
-      }
+      event: 'case.intake', version: '1.0', timestamp: d.timestamp, source: 'web-form',
+      customer: { name: d.name, email: d.email, account_id: d.account },
+      case: { id: d.caseId, intent: INTENT_LABELS[d.intent].json, priority: d.priority, description: d.issue },
+      routing: { team: ROUTING[d.intent], sla_hours: SLA[d.priority] }
     };
   }
 
   function formatCsv(d) {
     const headers = ['case_id','submitted_at','customer_name','email','account_id','intent','priority','routing_team','sla_hours','description'];
-    const vals = [
-      d.caseId,
-      d.timestamp,
-      d.name,
-      d.email,
-      d.account,
-      INTENT_LABELS[d.intent].csv,
-      d.priority,
-      ROUTING[d.intent],
-      SLA[d.priority],
-      d.issue.replace(/,/g,';').replace(/\n/g,' ')
-    ];
+    const vals = [d.caseId, d.timestamp, d.name, d.email, d.account,
+      INTENT_LABELS[d.intent].csv, d.priority, ROUTING[d.intent], SLA[d.priority],
+      d.issue.replace(/,/g,';').replace(/\n/g,' ')];
     return { headers, vals };
+  }
+
+  function renderNormalized(d) {
+    const ts = new Date(d.timestamp).toLocaleString('en-US', { month:'short', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    document.getElementById('norm-display').innerHTML = `
+      <div class="norm-section output-fade">
+        <div class="norm-section-label">Customer</div>
+        <div class="norm-row"><span class="norm-key">name</span><span class="norm-val">${escHtml(d.name)}</span></div>
+        <div class="norm-row"><span class="norm-key">email</span><span class="norm-val mono">${escHtml(d.email)}</span></div>
+        <div class="norm-row"><span class="norm-key">account</span><span class="norm-val mono">${escHtml(d.account)}</span></div>
+      </div>
+      <div class="norm-section output-fade">
+        <div class="norm-section-label">Case</div>
+        <div class="norm-row"><span class="norm-key">intent</span><span class="norm-val"><span class="badge badge-${d.intent}">${d.intent}</span></span></div>
+        <div class="norm-row"><span class="norm-key">priority</span><span class="norm-val"><span class="badge badge-${d.priority}">${d.priority}</span></span></div>
+        <div class="norm-row"><span class="norm-key">case_id</span><span class="norm-val mono">${escHtml(d.caseId)}</span></div>
+        <div class="norm-row"><span class="norm-key">submitted</span><span class="norm-val" style="font-size:0.7rem;color:#888;">${ts}</span></div>
+      </div>
+      <div class="norm-section output-fade">
+        <div class="norm-section-label">Routing</div>
+        <div class="norm-row"><span class="norm-key">team</span><span class="norm-val mono">${escHtml(ROUTING[d.intent])}</span></div>
+        <div class="norm-row"><span class="norm-key">sla</span><span class="norm-val">${SLA[d.priority]} hours</span></div>
+      </div>`;
   }
 
   function renderAdapter(key) {
     if (!currentData) return;
-    currentAdapter = key;
-
     const display = document.getElementById('output-display');
-    let html = '';
-    html += `<div class="connected-bar output-fade">
+    let html = `<div class="connected-bar output-fade">
       <div class="connected-dot"></div>
       <span class="connected-label">Connected</span>
       <span class="connected-system">${SYSTEM_NAMES[key]}</span>
@@ -424,15 +445,12 @@
     if (key === 'csv') {
       const { headers, vals } = formatCsv(currentData);
       const hRow = headers.map(h => `<span class="csv-header">${escHtml(h)}</span>`).join(',');
-      const vRow = vals.map(v => escHtml(String(v))).join(',');
+      const vRow = vals.map(v => escHtml(v)).join(',');
       html += `<div class="json-block output-fade">${hRow}\n${vRow}</div>`;
     } else {
-      const obj = key === 'snow' ? formatSnow(currentData)
-                : key === 'sf'   ? formatSalesforce(currentData)
-                :                  formatWebhook(currentData);
+      const obj = key === 'snow' ? formatSnow(currentData) : key === 'sf' ? formatSalesforce(currentData) : formatWebhook(currentData);
       html += `<div class="json-block output-fade">${highlightJson(obj)}</div>`;
     }
-
     display.innerHTML = html;
   }
 
@@ -449,51 +467,48 @@
     const issue   = document.getElementById('f-issue').value.trim();
 
     if (!name || !email || !issue) {
-      document.getElementById('f-name').style.borderColor = name ? '#E5E7EB' : '#EF4444';
+      document.getElementById('f-name').style.borderColor  = name  ? '#E5E7EB' : '#EF4444';
       document.getElementById('f-email').style.borderColor = email ? '#E5E7EB' : '#EF4444';
       document.getElementById('f-issue').style.borderColor = issue ? '#E5E7EB' : '#EF4444';
       return;
     }
-    ['f-name','f-email','f-account','f-issue'].forEach(id => {
-      document.getElementById(id).style.borderColor = '#E5E7EB';
-    });
+    ['f-name','f-email','f-account','f-issue'].forEach(id => document.getElementById(id).style.borderColor = '#E5E7EB');
 
-    const intent   = detectIntent(issue);
-    const priority = detectPriority(issue);
-    const caseId   = makeCaseId();
+    const intent    = detectIntent(issue);
+    const priority  = detectPriority(issue);
+    const caseId    = makeCaseId();
     const timestamp = new Date().toISOString();
-    const words    = issue.split(/\s+/).slice(0,6).join(' ');
-    const shortDesc = words + (issue.split(/\s+/).length > 6 ? '…' : '');
+    const words     = issue.split(/\s+/);
+    const shortDesc = words.slice(0,6).join(' ') + (words.length > 6 ? '…' : '');
 
     currentData = { name, email, account: account || 'ACC-0000', issue, intent, priority, caseId, timestamp, shortDesc };
 
-    const display = document.getElementById('output-display');
-    const steps = [
-      { icon: '◎', text: 'Reading intake data…' },
-      { icon: '⬡', text: `Detected intent: <strong>${intent}</strong> · priority: <strong>${priority}</strong>` },
-      { icon: '→', text: 'Formatting for adapter…' }
-    ];
+    // Reset Step 3
+    document.querySelectorAll('.adapter-tab').forEach(t => { t.classList.remove('ready','active'); });
+    document.getElementById('output-display').innerHTML = `<div class="adapter-waiting"><div class="adapter-waiting-icon">⬡</div><p class="adapter-waiting-text">Waiting for normalized record…</p></div>`;
 
-    display.innerHTML = `<div class="processing-wrap">${steps.map((s, i) => `
-      <div class="proc-step" id="ps${i}">
-        <span class="proc-icon">${s.icon}</span>
-        <span>${s.text}</span>
-      </div>`).join('')}</div>`;
+    // Step 2 processing animation
+    const steps = [
+      { icon: '◎', text: 'Reading raw input…' },
+      { icon: '⬡', text: `Detecting intent: <strong>${intent}</strong> · priority: <strong>${priority}</strong>` },
+      { icon: '✓', text: 'Record normalized.' }
+    ];
+    document.getElementById('norm-display').innerHTML = `<div class="proc-wrap">${steps.map((s,i) =>
+      `<div class="proc-step" id="ps${i}"><span class="proc-icon">${s.icon}</span><span>${s.text}</span></div>`
+    ).join('')}</div>`;
 
     let delay = 0;
-    steps.forEach((_, i) => {
-      setTimeout(() => document.getElementById(`ps${i}`).classList.add('visible'), delay += 380);
-    });
+    steps.forEach((_,i) => setTimeout(() => document.getElementById(`ps${i}`).classList.add('visible'), delay += 360));
 
+    // Reveal normalized record, then unlock Step 3
     setTimeout(() => {
-      document.querySelectorAll('.adapter-tab').forEach(t => {
-        t.classList.add('ready');
-        t.classList.remove('active');
-      });
-      const firstTab = document.getElementById('tab-snow');
-      firstTab.classList.add('active');
-      renderAdapter('snow');
-    }, delay + 420);
+      renderNormalized(currentData);
+      setTimeout(() => {
+        document.querySelectorAll('.adapter-tab').forEach(t => t.classList.add('ready'));
+        document.getElementById('tab-snow').classList.add('active');
+        renderAdapter('snow');
+      }, 300);
+    }, delay + 300);
   }
 </script>
 
