@@ -119,6 +119,14 @@
     .priority-high { background: #FEE2E2; color: #991B1B; }
     .priority-medium { background: #FEF9C3; color: #854D0E; }
     .priority-low { background: #F3F4F6; color: #6B7280; }
+    .card-value-badge { font-size: 0.62rem; font-weight: 800; padding: 2px 6px; border-radius: 5px; letter-spacing: 0; }
+    .val-3 { background: #FEF9C3; color: #92400E; }
+    .val-2 { background: #F3F4F6; color: #6B7280; }
+    .val-1 { background: #F9FAFB; color: #D1D5DB; }
+    .rice-value-badge { font-size: 0.75rem; font-weight: 800; margin-top: 4px; min-height: 1.1em; letter-spacing: 0; }
+    .rice-value-badge.val-3 { color: #92400E; }
+    .rice-value-badge.val-2 { color: #9CA3AF; }
+    .rice-value-badge.val-1 { color: #D1D5DB; }
 
     .card-team { font-size: 0.6rem; color: #9CA3AF; font-weight: 500; margin-left: auto; }
 
@@ -821,6 +829,28 @@
     return Math.round((reachVals[d.reach] * impact * confVals[d.confidence] / 100) / effort);
   }
 
+  function calcValue(cardId) {
+    const d = riceData[cardId];
+    if (!d || !d.reach) return null;
+    const parent = lastMatrixPlacements[cardId];
+    const qKey = parent && parent.dataset && parent.dataset.quadrant;
+    if (!qKey || !quadMeta[qKey]) return null;
+    const v = reachVals[d.reach] * quadMeta[qKey].impact;
+    return v >= 15 ? 3 : v >= 7 ? 2 : 1;
+  }
+
+  function setValueBadge(card, id) {
+    const existing = card.querySelector('.card-value-badge');
+    if (existing) existing.remove();
+    const tier = calcValue(id);
+    if (!tier) return;
+    const badge = document.createElement('span');
+    badge.className = 'card-value-badge val-' + tier;
+    badge.textContent = '$'.repeat(tier);
+    const footer = card.querySelector('.card-footer');
+    if (footer) footer.appendChild(badge);
+  }
+
   // ── Show RICE rating step ──
   function showRiceStep() {
     const placed = [...document.querySelectorAll('.matrix-quadrant .roadmap-card')];
@@ -856,6 +886,7 @@
         '<div class="rice-score-wrap">' +
           '<div class="rice-score" id="rs-' + id + '">—</div>' +
           '<div class="rice-score-label">RICE score</div>' +
+          '<div class="rice-value-badge" id="rv-' + id + '"></div>' +
         '</div>';
       list.appendChild(row);
       refreshRiceScore(id);
@@ -939,6 +970,9 @@
     if (!el) return;
     el.textContent = score !== null ? score : '—';
     el.className = 'rice-score' + (score !== null ? ' live' : '');
+    const tier = calcValue(id);
+    const vel = document.getElementById('rv-' + id);
+    if (vel) { vel.textContent = tier ? '$'.repeat(tier) : ''; vel.className = 'rice-value-badge' + (tier ? ' val-' + tier : ''); }
   }
 
   function refreshRiceButton() {
@@ -989,6 +1023,7 @@
     scored.forEach((item, i) => {
       const priority = i < nowCut ? 'high' : i < nextCut ? 'medium' : 'low';
       setPriority(item.card, priority);
+      setValueBadge(item.card, item.id);
       if (i < nowCut) colNow.appendChild(item.card);
       else if (i < nextCut) colNext.appendChild(item.card);
       else colLater.appendChild(item.card);
@@ -1212,17 +1247,19 @@
     const badge = card.querySelector('.priority-badge').outerHTML;
     const team = card.querySelector('.card-team').textContent;
     const highEffort = getEffortLevel(id) === 3;
+    const tier = calcValue(id);
+    const valBadge = tier ? '<span class="card-value-badge val-' + tier + '">' + '$'.repeat(tier) + '</span>' : '';
     if (isContinuation) {
       return '<div class="annual-card annual-card-cont">'
         + '<div class="annual-cont-label">↳ continues</div>'
         + '<div class="card-title">' + title + '</div>'
-        + '<div class="card-footer">' + badge + '<span class="card-team">' + team + '</span></div>'
+        + '<div class="card-footer">' + badge + '<span class="card-team">' + team + '</span>' + valBadge + '</div>'
         + '</div>';
     }
     return '<div class="annual-card">'
       + '<div class="card-title">' + title + (highEffort ? '<span class="annual-effort-badge">2Q</span>' : '') + '</div>'
       + '<div class="card-desc">' + desc + '</div>'
-      + '<div class="card-footer">' + badge + '<span class="card-team">' + team + '</span></div>'
+      + '<div class="card-footer">' + badge + '<span class="card-team">' + team + '</span>' + valBadge + '</div>'
       + '</div>';
   }
 
