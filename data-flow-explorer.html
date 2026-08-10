@@ -31,21 +31,19 @@
     .acc-body li { margin-bottom: 5px; }
 
     .proto-section { background: #f7f7f5; padding: 0 24px 80px; }
-    .proto-inner { max-width: 1120px; margin: 0 auto; }
+    .proto-inner { max-width: 1160px; margin: 0 auto; }
     .proto-section-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 16px; }
     .proto-wrap { background: #FEF3C7; border-radius: 16px; padding: 28px 20px 36px; }
     .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 24px; }
 
-    /* 3-column grid with arrow connectors between panels */
-    .demo-grid { display: grid; grid-template-columns: 1fr 20px 1fr 20px 1.1fr; gap: 0; align-items: start; }
+    /* 3-column grid with arrow connectors */
+    .demo-grid { display: grid; grid-template-columns: 1fr 20px 1fr 20px 1.1fr; align-items: start; margin-bottom: 16px; }
     .demo-grid > * { min-width: 0; }
+    .step-arrow { display: flex; align-items: flex-start; justify-content: center; padding-top: 60px; color: #D97706; font-size: 1rem; font-weight: 900; }
 
     .demo-panel { background: #fff; border-radius: 12px; padding: 18px; border: 1px solid #E8E2D8; overflow: hidden; }
     .panel-step { font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 4px; }
     .panel-title { font-size: 0.85rem; font-weight: 800; color: #1a1a1a; margin-bottom: 15px; }
-
-    /* Arrow connectors */
-    .step-arrow { display: flex; align-items: flex-start; justify-content: center; padding-top: 62px; color: #D97706; font-size: 1rem; font-weight: 900; }
 
     /* Form */
     .form-row { margin-bottom: 11px; }
@@ -54,63 +52,58 @@
     .form-input:focus { border-color: #D97706; }
     .form-textarea { resize: vertical; min-height: 80px; }
     .form-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
     .form-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
     .btn-sample { background: transparent; border: 1.5px solid #D97706; color: #92400E; font-size: 0.7rem; font-weight: 700; padding: 7px 11px; border-radius: 7px; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
     .btn-sample:hover { background: #FFFBEB; }
     .btn-submit { flex: 1; background: #D97706; border: none; color: #fff; font-size: 0.72rem; font-weight: 700; padding: 7px 12px; border-radius: 7px; cursor: pointer; font-family: inherit; transition: background 0.15s; }
     .btn-submit:hover { background: #B45309; }
 
-    /* Normalized record panel */
+    /* Normalized record */
     .norm-waiting { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px; gap: 8px; opacity: 0.4; }
     .norm-waiting-icon { font-size: 1.4rem; }
     .norm-waiting-text { font-size: 0.75rem; color: #92400E; text-align: center; line-height: 1.5; }
-
     .proc-wrap { padding: 4px 0 12px; }
     .proc-step { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: #555; opacity: 0; transition: opacity 0.3s ease; margin-bottom: 9px; }
     .proc-step.visible { opacity: 1; }
     .proc-icon { width: 16px; text-align: center; flex-shrink: 0; font-size: 0.8rem; }
 
-    .norm-section { margin-bottom: 14px; }
-    .norm-section-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #B45309; margin-bottom: 7px; padding-bottom: 5px; border-bottom: 1px solid #F3ECD8; }
-    .norm-row { display: flex; align-items: baseline; gap: 8px; padding: 4px 0; border-bottom: 1px solid #F9F5EE; }
+    .norm-section { margin-bottom: 13px; }
+    .norm-section-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #B45309; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #F3ECD8; }
+    .norm-row { display: flex; align-items: baseline; gap: 8px; padding: 3px 0; border-bottom: 1px solid #F9F5EE; }
     .norm-row:last-child { border-bottom: none; }
-    .norm-key { font-size: 0.65rem; color: #bbb; font-weight: 600; width: 72px; flex-shrink: 0; font-family: "SF Mono", monospace; }
-    .norm-val { font-size: 0.78rem; color: #1a1a1a; line-height: 1.4; word-break: break-all; }
-    .norm-val.mono { font-family: "SF Mono", "Fira Code", monospace; font-size: 0.72rem; }
+    .norm-key { font-size: 0.62rem; color: #bbb; font-weight: 600; width: 68px; flex-shrink: 0; font-family: "SF Mono", monospace; }
+    .norm-val { font-size: 0.76rem; color: #1a1a1a; line-height: 1.4; word-break: break-all; }
+    .norm-val.mono { font-family: "SF Mono", "Fira Code", monospace; font-size: 0.7rem; }
 
     .badge { display: inline-block; font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; vertical-align: middle; }
-    .badge-billing  { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
-    .badge-shipping { background: #DBEAFE; color: #1D4ED8; border: 1px solid #BFDBFE; }
-    .badge-technical{ background: #EDE9FE; color: #6D28D9; border: 1px solid #DDD6FE; }
-    .badge-complaint{ background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
-    .badge-general  { background: #F3F4F6; color: #6B7280; border: 1px solid #E5E7EB; }
-    .badge-urgent   { background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
-    .badge-high     { background: #FFEDD5; color: #C2410C; border: 1px solid #FED7AA; }
-    .badge-medium   { background: #DBEAFE; color: #1D4ED8; border: 1px solid #BFDBFE; }
+    .badge-billing   { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+    .badge-shipping  { background: #DBEAFE; color: #1D4ED8; border: 1px solid #BFDBFE; }
+    .badge-technical { background: #EDE9FE; color: #6D28D9; border: 1px solid #DDD6FE; }
+    .badge-complaint { background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
+    .badge-general   { background: #F3F4F6; color: #6B7280; border: 1px solid #E5E7EB; }
+    .badge-urgent    { background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
+    .badge-high      { background: #FFEDD5; color: #C2410C; border: 1px solid #FED7AA; }
+    .badge-medium    { background: #DBEAFE; color: #1D4ED8; border: 1px solid #BFDBFE; }
 
-    /* Adapter output panel */
+    /* Adapter output */
     .adapter-bar { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; }
-    .adapter-tab { padding: 5px 10px; border-radius: 6px; font-size: 0.68rem; font-weight: 700; cursor: pointer; border: 1.5px solid #D97706; background: transparent; color: #92400E; transition: all 0.15s; font-family: inherit; opacity: 0.35; pointer-events: none; }
-    .adapter-tab .adapter-sys { font-size: 0.58rem; font-weight: 400; opacity: 0.75; }
+    .adapter-tab { padding: 5px 10px; border-radius: 6px; font-size: 0.67rem; font-weight: 700; cursor: pointer; border: 1.5px solid #D97706; background: transparent; color: #92400E; transition: all 0.15s; font-family: inherit; opacity: 0.35; pointer-events: none; white-space: nowrap; }
+    .adapter-tab .adapter-sys { font-size: 0.57rem; font-weight: 400; opacity: 0.75; }
     .adapter-tab.ready { opacity: 1; pointer-events: auto; }
     .adapter-tab.active { background: #D97706; color: #fff; }
     .adapter-tab:hover:not(.active).ready { background: #FFFBEB; }
-
     .connected-bar { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; padding: 6px 10px; background: rgba(217,119,6,0.08); border-radius: 7px; border: 1px solid rgba(217,119,6,0.2); }
     .connected-dot { width: 6px; height: 6px; border-radius: 50%; background: #16A34A; flex-shrink: 0; }
     .connected-label { font-size: 0.62rem; font-weight: 700; color: #92400E; letter-spacing: 0.5px; text-transform: uppercase; }
     .connected-system { font-size: 0.62rem; color: #B45309; margin-left: auto; font-weight: 600; }
-
-    .adapter-waiting { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 160px; gap: 8px; opacity: 0.35; }
-    .adapter-waiting-icon { font-size: 1.3rem; }
-    .adapter-waiting-text { font-size: 0.72rem; color: #92400E; text-align: center; line-height: 1.5; }
+    .adapter-waiting { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 140px; gap: 8px; opacity: 0.35; }
+    .adapter-waiting p { font-size: 0.72rem; color: #92400E; text-align: center; }
 
     .json-block {
       background: #0F172A; border-radius: 9px; padding: 13px 14px;
-      font-family: "SF Mono", "Fira Code", monospace; font-size: 0.66rem;
+      font-family: "SF Mono", "Fira Code", monospace; font-size: 0.65rem;
       line-height: 1.75; color: #E2E8F0; overflow-x: auto; white-space: pre;
-      max-height: 360px; overflow-y: auto;
+      max-height: 320px; overflow-y: auto;
     }
     .json-key  { color: #7DD3FC; }
     .json-str  { color: #86EFAC; }
@@ -119,16 +112,114 @@
     .json-null { color: #94A3B8; }
     .csv-header { color: #7DD3FC; }
 
+    /* Step 4 */
+    .step4-outer { margin-top: 14px; }
+    .step4-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+    .step4-label::after { content: ''; flex: 1; height: 1px; background: #E8E2D8; }
+    .step4-panel { background: #fff; border-radius: 12px; border: 1px solid #E8E2D8; overflow: hidden; min-height: 180px; }
+
+    .step4-waiting { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px; gap: 8px; opacity: 0.35; }
+    .step4-waiting p { font-size: 0.78rem; color: #92400E; }
+
+    /* ── ServiceNow mock ── */
+    .mock-snow { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .mock-snow-bar { background: #293E40; padding: 0 16px; display: flex; align-items: center; gap: 14px; height: 36px; }
+    .mock-snow-logo { font-size: 0.7rem; font-weight: 800; color: #81D4C8; letter-spacing: -0.5px; }
+    .mock-snow-crumb { font-size: 0.65rem; color: rgba(255,255,255,0.45); }
+    .mock-snow-crumb span { color: rgba(255,255,255,0.75); }
+    .mock-snow-toolbar { background: #F0F4F4; border-bottom: 1px solid #D3DCDC; padding: 8px 16px; display: flex; align-items: center; gap: 10px; }
+    .mock-snow-inc { font-size: 0.8rem; font-weight: 700; color: #293E40; }
+    .mock-snow-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pill { font-size: 0.62rem; font-weight: 700; padding: 2px 9px; border-radius: 10px; }
+    .pill-new      { background: #EBF5FB; color: #1A6E8E; border: 1px solid #C0DCE9; }
+    .pill-moderate { background: #FFF8E7; color: #9A6700; border: 1px solid #F5DFA0; }
+    .pill-billing  { background: #F0F4F4; color: #293E40; border: 1px solid #C5D0D0; }
+    .mock-snow-body { padding: 14px 16px; }
+    .mock-snow-subject { font-size: 0.88rem; font-weight: 700; color: #1a1a1a; margin-bottom: 14px; }
+    .mock-snow-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px 0; margin-bottom: 14px; }
+    .mf { padding: 5px 0; border-bottom: 1px solid #F0F0F0; }
+    .mf-key { font-size: 0.58rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+    .mf-val { font-size: 0.78rem; color: #1a1a1a; }
+    .mock-snow-desc-label { font-size: 0.58rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .mock-snow-desc { background: #F8FAFA; border: 1px solid #E0E8E8; border-radius: 6px; padding: 10px 12px; font-size: 0.78rem; color: #333; line-height: 1.6; }
+
+    /* ── Salesforce mock ── */
+    .mock-sf { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .mock-sf-bar { background: #0176D3; padding: 0 16px; height: 36px; display: flex; align-items: center; gap: 10px; }
+    .mock-sf-logo { font-size: 0.72rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .mock-sf-crumb { font-size: 0.62rem; color: rgba(255,255,255,0.6); }
+    .mock-sf-crumb span { color: rgba(255,255,255,0.9); }
+    .mock-sf-header { background: #F3F3F3; border-bottom: 1px solid #DDDBDA; padding: 10px 16px 0; }
+    .mock-sf-object { font-size: 0.62rem; font-weight: 700; color: #0176D3; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+    .mock-sf-title { font-size: 0.9rem; font-weight: 700; color: #181818; margin-bottom: 8px; }
+    .mock-sf-pills { display: flex; gap: 6px; padding-bottom: 10px; flex-wrap: wrap; }
+    .pill-sf-new      { background: #D4EDDA; color: #155724; border: 1px solid #C3E6CB; }
+    .pill-sf-medium   { background: #FFF3CD; color: #856404; border: 1px solid #FFEEBA; }
+    .pill-sf-web      { background: #E2E3E5; color: #383D41; border: 1px solid #D6D8DB; }
+    .pill-sf-billing  { background: #CCE5FF; color: #004085; border: 1px solid #B8DAFF; }
+    .mock-sf-body { padding: 14px 16px; }
+    .mock-sf-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; margin-bottom: 14px; }
+    .mock-sf-section { font-size: 0.62rem; font-weight: 700; color: #444; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 2px solid #0176D3; }
+    .mock-sf-desc-label { font-size: 0.62rem; font-weight: 700; color: #444; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .mock-sf-desc { background: #F8F8F8; border: 1px solid #E0E0E0; border-radius: 4px; padding: 10px 12px; font-size: 0.78rem; color: #333; line-height: 1.6; }
+
+    /* ── Email mock ── */
+    .mock-email { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .mock-email-bar { background: #404040; padding: 0 16px; height: 36px; display: flex; align-items: center; gap: 12px; }
+    .mock-email-logo { font-size: 0.7rem; color: rgba(255,255,255,0.85); font-weight: 600; }
+    .mock-email-actions { display: flex; gap: 8px; margin-left: auto; }
+    .mock-email-btn { font-size: 0.62rem; color: rgba(255,255,255,0.6); cursor: default; }
+    .mock-email-meta { background: #FAFAFA; border-bottom: 1px solid #E8E8E8; padding: 12px 16px; }
+    .mock-email-subject { font-size: 0.88rem; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+    .mock-email-row { display: flex; gap: 8px; font-size: 0.72rem; margin-bottom: 4px; }
+    .mock-email-row:last-child { margin-bottom: 0; }
+    .em-key { color: #888; font-weight: 600; width: 40px; flex-shrink: 0; }
+    .em-val { color: #333; }
+    .mock-email-body { padding: 16px; font-size: 0.78rem; color: #333; line-height: 1.7; }
+    .em-section { margin-bottom: 14px; }
+    .em-section-title { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 6px; border-bottom: 1px solid #EEE; padding-bottom: 4px; }
+    .em-row { display: flex; gap: 12px; margin-bottom: 3px; font-size: 0.76rem; }
+    .em-label { color: #888; width: 72px; flex-shrink: 0; }
+    .em-data { color: #1a1a1a; font-weight: 500; }
+    .em-message { background: #F8F8F8; border-left: 3px solid #D97706; padding: 10px 12px; border-radius: 0 6px 6px 0; font-size: 0.78rem; color: #333; line-height: 1.65; font-style: italic; }
+    .em-footer { font-size: 0.65rem; color: #bbb; margin-top: 16px; padding-top: 10px; border-top: 1px solid #EEE; }
+
+    /* ── JSON webhook mock ── */
+    .mock-json { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .mock-json-bar { background: #1E293B; padding: 0 16px; height: 36px; display: flex; align-items: center; gap: 10px; }
+    .mock-json-logo { font-size: 0.7rem; color: rgba(255,255,255,0.8); font-weight: 600; }
+    .mock-json-delivery { background: #0F172A; border-bottom: 1px solid #1E293B; padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+    .mock-json-method { font-family: monospace; font-size: 0.7rem; font-weight: 700; color: #7DD3FC; }
+    .mock-json-url { font-family: monospace; font-size: 0.7rem; color: #94A3B8; flex: 1; }
+    .mock-json-status { font-size: 0.7rem; font-weight: 700; color: #4ADE80; margin-left: auto; }
+    .mock-json-time { font-size: 0.65rem; color: #64748B; }
+    .mock-json-payload-label { font-size: 0.58rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 1px; padding: 8px 16px 6px; }
+    .mock-json-code { padding: 0 14px 14px; }
+
+    /* ── CSV mock ── */
+    .mock-csv { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .mock-csv-bar { background: #1A6B42; padding: 0 16px; height: 36px; display: flex; align-items: center; gap: 10px; }
+    .mock-csv-logo { font-size: 0.7rem; color: rgba(255,255,255,0.85); font-weight: 600; }
+    .mock-csv-filename { font-size: 0.65rem; color: rgba(255,255,255,0.55); margin-left: auto; font-family: monospace; }
+    .mock-csv-table-wrap { overflow-x: auto; padding: 14px 14px 14px; }
+    .mock-csv-table { border-collapse: collapse; font-size: 0.68rem; min-width: 100%; }
+    .mock-csv-table th { background: #E8F5EE; color: #1A6B42; font-weight: 700; padding: 6px 10px; text-align: left; border: 1px solid #C8E6D4; white-space: nowrap; font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .mock-csv-table td { padding: 6px 10px; border: 1px solid #E5E7EB; color: #333; white-space: nowrap; }
+    .mock-csv-table tr.highlight td { background: #FFFBEB; border-color: #FDE68A; }
+    .mock-csv-table tr.highlight td:first-child { border-left: 3px solid #D97706; }
+
     .output-fade { animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
 
-    @media (max-width: 860px) {
+    @media (max-width: 900px) {
       .cs-header { padding: 40px 20px 36px; }
       .cs-body { padding: 32px 20px 32px; }
       .proto-section { padding: 0 16px 60px; }
       .demo-grid { grid-template-columns: 1fr; }
       .step-arrow { display: none; }
       .form-grid2 { grid-template-columns: 1fr 1fr; }
+      .mock-snow-grid { grid-template-columns: 1fr 1fr; }
+      .mock-sf-cols { grid-template-columns: 1fr; }
     }
     @media (max-width: 480px) {
       .form-grid2 { grid-template-columns: 1fr; }
@@ -141,7 +232,7 @@
   <div class="cs-header-inner">
     <p class="eyebrow">Data Workflow &middot; Fictional scenario</p>
     <h1 class="cs-h1">Integration Adapter Hub</h1>
-    <p class="cs-intro">Customer data arrives in one shape. Every downstream system expects a different one. This demo shows all three layers: intake, normalization, and adapter routing.</p>
+    <p class="cs-intro">Customer data arrives in one shape. Every downstream system expects a different one. This demo shows all four layers: intake, normalization, adapter formatting, and what the agent sees on the other end.</p>
   </div>
 </header>
 
@@ -154,7 +245,7 @@
     </div>
     <div class="acc-body">
       <p>Every integration project hits the same wall: data collected from a customer comes in one shape, but ServiceNow expects an incident record, Salesforce wants a Case object, and the analytics pipeline wants flat JSON. Without an adapter layer, teams either write one-off transformations for each system or hand the data over unformatted and let the receiving team figure it out.</p>
-      <p>The deeper problem: this logic is invisible. It lives in custom scripts, tribal knowledge, and Slack threads. When someone asks "what does billing actually receive when a customer submits a complaint?" no one can easily answer. This demo makes the transformation layer explicit and explorable.</p>
+      <p>The deeper problem: this logic is invisible. It lives in custom scripts, tribal knowledge, and Slack threads. When someone asks "what does billing actually receive when a customer submits a complaint?" no one can easily answer. This demo makes the transformation layer explicit and explorable — all the way through to what an agent sees on the other end.</p>
     </div>
   </div>
 
@@ -168,8 +259,8 @@
         <li>Pure client-side JavaScript — no backend, no API calls, no framework</li>
         <li>Intent classifier reads the issue description and maps to one of five categories (billing, shipping, technical, complaint, general)</li>
         <li>A normalization step produces a canonical internal record before any adapter sees the data — mirroring how a real integration hub works</li>
-        <li>Four adapter formatters transform that canonical record into ServiceNow incident, Salesforce Case, JSON webhook, and CSV — each with system-appropriate field names and structure</li>
-        <li>Syntax highlighting applied client-side via regex replacements on serialized JSON</li>
+        <li>Five adapter formatters (ServiceNow, Salesforce, JSON webhook, CSV, Email) each produce system-appropriate output from the same canonical record</li>
+        <li>Step 4 renders a mock of the receiving system's UI — showing what a frontline agent actually sees after the data arrives</li>
       </ul>
     </div>
   </div>
@@ -181,11 +272,12 @@
     </div>
     <div class="acc-body">
       <ul>
-        <li>Three visible layers: intake form → normalized canonical record → adapter-formatted output</li>
-        <li>The normalized record is system-agnostic — same shape regardless of which adapter is selected, making it clear what the adapter actually transforms</li>
-        <li>Adapter tabs let you switch destinations: ServiceNow, Salesforce, JSON Webhook, CSV — same canonical record, four different output shapes</li>
+        <li>Four visible steps on screen: intake form → normalized canonical record → adapter output → agent-facing system view</li>
+        <li>Step 4 system mocks update live when you switch adapters — same data, different interface</li>
+        <li>ServiceNow and Salesforce mocks use system-appropriate field vocabulary and visual chrome</li>
+        <li>Email adapter shows a formatted notification as a support team inbox would receive it</li>
+        <li>CSV adapter shows a spreadsheet table with the data row highlighted</li>
         <li>Intent detection dynamically sets category, routing team, and SLA hours based on what the customer actually wrote</li>
-        <li>"Use sample data" pre-fills a realistic fictional submission for immediate demonstration</li>
       </ul>
     </div>
   </div>
@@ -196,7 +288,7 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>Integration work is hard to make legible to stakeholders — it's all plumbing. A PM who owns this space needs to show they understand not just that data needs to move, but that the same event looks completely different depending on where it's going and why. The adapter metaphor is the PM's mental model made visible: you plug in a destination, the system handles the shape. That's the product decision.</p>
+      <p>Integration work is hard to make legible to stakeholders — it's all plumbing. A PM who owns this space needs to show they understand not just that data needs to move, but that the same event looks completely different depending on where it's going and why. Step 4 is the closer: it shows the human at the end of the pipeline. That's who integrations are actually for.</p>
     </div>
   </div>
 
@@ -206,15 +298,14 @@
   <div class="proto-inner">
     <p class="proto-section-label">Interactive prototype</p>
     <div class="proto-wrap">
-      <p class="proto-wrap-label">Submit customer data to see all three layers: intake → normalized record → adapter output</p>
+      <p class="proto-wrap-label">Submit customer data — then switch adapters to follow the data all the way to the agent's screen</p>
 
       <div class="demo-grid">
 
-        <!-- Step 1: Intake form -->
+        <!-- Step 1 -->
         <div class="demo-panel">
           <p class="panel-step">Step 1</p>
           <p class="panel-title">Customer intake</p>
-
           <div class="form-grid2">
             <div class="form-row">
               <label class="form-label" for="f-name">Name</label>
@@ -233,7 +324,6 @@
             <label class="form-label" for="f-issue">Issue description</label>
             <textarea class="form-input form-textarea" id="f-issue" placeholder="Describe the issue in your own words…"></textarea>
           </div>
-
           <div class="form-actions">
             <button class="btn-sample" onclick="fillSample()">Use sample data</button>
             <button class="btn-submit" onclick="handleSubmit()">Submit →</button>
@@ -242,8 +332,8 @@
 
         <div class="step-arrow">→</div>
 
-        <!-- Step 2: Normalized record -->
-        <div class="demo-panel" id="norm-panel">
+        <!-- Step 2 -->
+        <div class="demo-panel">
           <p class="panel-step">Step 2</p>
           <p class="panel-title">Normalized record</p>
           <div id="norm-display">
@@ -256,27 +346,34 @@
 
         <div class="step-arrow">→</div>
 
-        <!-- Step 3: Adapter output -->
-        <div class="demo-panel" id="output-panel">
+        <!-- Step 3 -->
+        <div class="demo-panel">
           <p class="panel-step">Step 3</p>
           <p class="panel-title">Adapter output</p>
-
           <div class="adapter-bar" id="adapter-bar">
             <button class="adapter-tab" id="tab-snow" onclick="switchAdapter('snow', this)">ServiceNow <span class="adapter-sys">incident</span></button>
             <button class="adapter-tab" id="tab-sf"   onclick="switchAdapter('sf', this)">Salesforce <span class="adapter-sys">case</span></button>
             <button class="adapter-tab" id="tab-json" onclick="switchAdapter('json', this)">JSON <span class="adapter-sys">webhook</span></button>
             <button class="adapter-tab" id="tab-csv"  onclick="switchAdapter('csv', this)">CSV <span class="adapter-sys">row</span></button>
+            <button class="adapter-tab" id="tab-email" onclick="switchAdapter('email', this)">Email <span class="adapter-sys">notification</span></button>
           </div>
-
           <div id="output-display">
-            <div class="adapter-waiting">
-              <div class="adapter-waiting-icon">⬡</div>
-              <p class="adapter-waiting-text">No adapter connected yet.</p>
-            </div>
+            <div class="adapter-waiting"><p>No adapter connected yet.</p></div>
           </div>
         </div>
 
       </div>
+
+      <!-- Step 4 -->
+      <div class="step4-outer">
+        <div class="step4-label">Step 4 &middot; <span id="step4-system-label">Agent view</span></div>
+        <div class="step4-panel" id="step4-panel">
+          <div class="step4-waiting">
+            <p>Select an adapter above to see what the agent sees.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -287,9 +384,7 @@
   function toggleAcc(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
 
   const SAMPLE = {
-    name: 'Priya Mehta',
-    email: 'priya.mehta@fieldstone.co',
-    account: 'ACC-7821',
+    name: 'Priya Mehta', email: 'priya.mehta@fieldstone.co', account: 'ACC-7821',
     issue: "My last invoice shows a charge I don't recognize — $149 from three weeks ago. I've looked through my account history and I can't find what it's for. I need this resolved before my next billing cycle."
   };
 
@@ -329,89 +424,287 @@
   function highlightJson(obj) {
     return JSON.stringify(obj, null, 2)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
-      .replace(/: "([^"]*)"/g, ': <span class="json-str">"$1"</span>')
-      .replace(/: (true|false)/g, ': <span class="json-bool">$1</span>')
-      .replace(/: (null)/g, ': <span class="json-null">$1</span>')
-      .replace(/: (-?\d+\.?\d*)/g, ': <span class="json-num">$1</span>');
+      .replace(/"([^"]+)":/g,'<span class="json-key">"$1"</span>:')
+      .replace(/: "([^"]*)"/g,': <span class="json-str">"$1"</span>')
+      .replace(/: (true|false)/g,': <span class="json-bool">$1</span>')
+      .replace(/: (null)/g,': <span class="json-null">$1</span>')
+      .replace(/: (-?\d+\.?\d*)/g,': <span class="json-num">$1</span>');
   }
 
-  const SYSTEM_NAMES = { snow: 'ServiceNow', sf: 'Salesforce', json: 'JSON Webhook', csv: 'CSV' };
+  const SYSTEM_NAMES = { snow:'ServiceNow', sf:'Salesforce', json:'JSON Webhook', csv:'CSV', email:'Email' };
+  const STEP4_LABELS = { snow:'What a ServiceNow agent sees', sf:'What a Salesforce agent sees', json:'What the webhook delivery log shows', csv:'What the spreadsheet row looks like', email:'What lands in the support team inbox' };
 
   const INTENT_LABELS = {
-    billing:   { snow: 'billing',  sf: 'Billing',   json: 'billing',   csv: 'billing' },
-    shipping:  { snow: 'delivery', sf: 'Shipping',  json: 'shipping',  csv: 'shipping' },
-    technical: { snow: 'software', sf: 'Technical', json: 'technical', csv: 'technical' },
-    complaint: { snow: 'inquiry',  sf: 'Other',     json: 'complaint', csv: 'complaint' },
-    general:   { snow: 'inquiry',  sf: 'Other',     json: 'general',   csv: 'general' }
+    billing:   { snow:'billing',  sf:'Billing',   json:'billing',   csv:'billing',   email:'Billing inquiry' },
+    shipping:  { snow:'delivery', sf:'Shipping',  json:'shipping',  csv:'shipping',  email:'Shipping issue' },
+    technical: { snow:'software', sf:'Technical', json:'technical', csv:'technical', email:'Technical support' },
+    complaint: { snow:'inquiry',  sf:'Other',     json:'complaint', csv:'complaint', email:'Customer complaint' },
+    general:   { snow:'inquiry',  sf:'Other',     json:'general',   csv:'general',   email:'General inquiry' }
   };
 
   const ROUTING = {
-    billing: 'billing-support', shipping: 'fulfillment-support',
-    technical: 'technical-support', complaint: 'customer-relations', general: 'general-support'
+    billing:'billing-support', shipping:'fulfillment-support',
+    technical:'technical-support', complaint:'customer-relations', general:'general-support'
   };
 
-  const SLA = { urgent: 4, high: 8, medium: 24 };
-  const SNOW_PRIORITY = { urgent: '1', high: '2', medium: '3' };
-  const SF_PRIORITY = { urgent: 'Critical', high: 'High', medium: 'Medium' };
+  const SLA = { urgent:4, high:8, medium:24 };
+  const SNOW_PRIORITY = { urgent:'1 - Critical', high:'2 - High', medium:'3 - Moderate' };
+  const SF_PRIORITY   = { urgent:'Critical', high:'High', medium:'Medium' };
 
   let currentData = null;
 
+  /* ── Adapter formatters (Step 3) ── */
+
   function formatSnow(d) {
     return {
-      sys_class_name: 'incident',
-      caller_id: d.email,
-      short_description: d.shortDesc,
-      description: d.issue,
-      category: INTENT_LABELS[d.intent].snow,
-      priority: SNOW_PRIORITY[d.priority],
-      urgency: d.priority === 'urgent' ? '1' : d.priority === 'high' ? '2' : '3',
-      impact: d.priority === 'urgent' ? '1' : '2',
-      state: '1',
-      contact_type: 'self-service',
-      u_account_id: d.account,
-      u_customer_name: d.name,
-      u_submitted_at: d.timestamp,
-      assignment_group: ROUTING[d.intent]
+      sys_class_name:'incident', caller_id:d.email,
+      short_description:d.shortDesc, description:d.issue,
+      category:INTENT_LABELS[d.intent].snow,
+      priority:SNOW_PRIORITY[d.priority].split(' - ')[0],
+      urgency:d.priority==='urgent'?'1':d.priority==='high'?'2':'3',
+      impact:d.priority==='urgent'?'1':'2', state:'1',
+      contact_type:'self-service',
+      u_account_id:d.account, u_customer_name:d.name,
+      u_submitted_at:d.timestamp, assignment_group:ROUTING[d.intent]
     };
   }
 
   function formatSalesforce(d) {
     return {
-      sobjectType: 'Case',
-      Subject: d.shortDesc,
-      Description: d.issue,
-      Origin: 'Web',
-      Status: 'New',
-      Priority: SF_PRIORITY[d.priority],
-      Type: INTENT_LABELS[d.intent].sf,
-      AccountId: d.account,
-      SuppliedName: d.name,
-      SuppliedEmail: d.email,
-      OwnerId: ROUTING[d.intent],
-      CreatedDate: d.timestamp
+      sobjectType:'Case', Subject:d.shortDesc, Description:d.issue,
+      Origin:'Web', Status:'New', Priority:SF_PRIORITY[d.priority],
+      Type:INTENT_LABELS[d.intent].sf, AccountId:d.account,
+      SuppliedName:d.name, SuppliedEmail:d.email,
+      OwnerId:ROUTING[d.intent], CreatedDate:d.timestamp
     };
   }
 
   function formatWebhook(d) {
     return {
-      event: 'case.intake', version: '1.0', timestamp: d.timestamp, source: 'web-form',
-      customer: { name: d.name, email: d.email, account_id: d.account },
-      case: { id: d.caseId, intent: INTENT_LABELS[d.intent].json, priority: d.priority, description: d.issue },
-      routing: { team: ROUTING[d.intent], sla_hours: SLA[d.priority] }
+      event:'case.intake', version:'1.0', timestamp:d.timestamp, source:'web-form',
+      customer:{ name:d.name, email:d.email, account_id:d.account },
+      case:{ id:d.caseId, intent:INTENT_LABELS[d.intent].json, priority:d.priority, description:d.issue },
+      routing:{ team:ROUTING[d.intent], sla_hours:SLA[d.priority] }
     };
   }
 
   function formatCsv(d) {
     const headers = ['case_id','submitted_at','customer_name','email','account_id','intent','priority','routing_team','sla_hours','description'];
-    const vals = [d.caseId, d.timestamp, d.name, d.email, d.account,
+    const vals    = [d.caseId, d.timestamp, d.name, d.email, d.account,
       INTENT_LABELS[d.intent].csv, d.priority, ROUTING[d.intent], SLA[d.priority],
       d.issue.replace(/,/g,';').replace(/\n/g,' ')];
     return { headers, vals };
   }
 
+  function formatEmail(d) {
+    const ts = new Date(d.timestamp).toUTCString();
+    return `TO: ${ROUTING[d.intent]}@fieldstone.co\nFROM: noreply@fieldstone.co\nSUBJECT: [${d.caseId}] ${INTENT_LABELS[d.intent].email} — ${d.name} (${d.account})\nDATE: ${ts}\n\nA new support case has been submitted via web form.\n\nCASE SUMMARY\n  Case ID:    ${d.caseId}\n  Priority:   ${d.priority}\n  Intent:     ${INTENT_LABELS[d.intent].json}\n  Team:       ${ROUTING[d.intent]}\n  SLA:        Respond within ${SLA[d.priority]} hours\n\nCUSTOMER\n  Name:       ${d.name}\n  Email:      ${d.email}\n  Account:    ${d.account}\n\nCUSTOMER MESSAGE\n"${d.issue}"`;
+  }
+
+  /* ── Step 4 system mocks ── */
+
+  function incidentNum(caseId) { return 'INC' + caseId.replace(/\D/g,'').slice(-7).padStart(7,'0'); }
+  function sfCaseNum(caseId)   { return '00'  + caseId.replace(/\D/g,'').slice(-5).padStart(5,'0'); }
+
+  function renderMockSnow(d) {
+    const inc = incidentNum(d.caseId);
+    const priorityLabel = SNOW_PRIORITY[d.priority];
+    return `<div class="mock-snow output-fade">
+      <div class="mock-snow-bar">
+        <span class="mock-snow-logo">⬡ ServiceNow</span>
+        <span class="mock-snow-crumb">Incident › <span>${escHtml(inc)}</span></span>
+      </div>
+      <div class="mock-snow-toolbar">
+        <span class="mock-snow-inc">${escHtml(inc)}</span>
+        <div class="mock-snow-pills">
+          <span class="pill pill-new">New</span>
+          <span class="pill pill-moderate">${escHtml(priorityLabel)}</span>
+          <span class="pill pill-billing">${escHtml(INTENT_LABELS[d.intent].snow)}</span>
+        </div>
+      </div>
+      <div class="mock-snow-body">
+        <div class="mock-snow-subject">${escHtml(d.shortDesc)}</div>
+        <div class="mock-snow-grid">
+          <div class="mf"><div class="mf-key">Caller</div><div class="mf-val">${escHtml(d.email)}</div></div>
+          <div class="mf"><div class="mf-key">Contact type</div><div class="mf-val">Self-service</div></div>
+          <div class="mf"><div class="mf-key">Category</div><div class="mf-val">${escHtml(INTENT_LABELS[d.intent].snow)}</div></div>
+          <div class="mf"><div class="mf-key">Assignment group</div><div class="mf-val">${escHtml(ROUTING[d.intent])}</div></div>
+          <div class="mf"><div class="mf-key">Account ID</div><div class="mf-val">${escHtml(d.account)}</div></div>
+          <div class="mf"><div class="mf-key">Customer name</div><div class="mf-val">${escHtml(d.name)}</div></div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div class="mock-snow-desc-label">Short description</div>
+          <div class="mock-snow-desc">${escHtml(d.shortDesc)}</div>
+        </div>
+        <div>
+          <div class="mock-snow-desc-label">Description</div>
+          <div class="mock-snow-desc">${escHtml(d.issue)}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function renderMockSF(d) {
+    const cn = sfCaseNum(d.caseId);
+    return `<div class="mock-sf output-fade">
+      <div class="mock-sf-bar">
+        <span class="mock-sf-logo">⚡ Salesforce</span>
+        <span class="mock-sf-crumb">Cases › <span>Case ${escHtml(cn)}</span></span>
+      </div>
+      <div class="mock-sf-header">
+        <div class="mock-sf-object">Case</div>
+        <div class="mock-sf-title">${escHtml(d.shortDesc)}</div>
+        <div class="mock-sf-pills">
+          <span class="pill pill-sf-new">New</span>
+          <span class="pill pill-sf-medium">${escHtml(SF_PRIORITY[d.priority])}</span>
+          <span class="pill pill-sf-web">Web</span>
+          <span class="pill pill-sf-billing">${escHtml(INTENT_LABELS[d.intent].sf)}</span>
+        </div>
+      </div>
+      <div class="mock-sf-body">
+        <div class="mock-sf-cols">
+          <div>
+            <div class="mock-sf-section">Case information</div>
+            <div class="norm-row"><span class="norm-key">Case #</span><span class="norm-val">${escHtml(cn)}</span></div>
+            <div class="norm-row"><span class="norm-key">Status</span><span class="norm-val">New</span></div>
+            <div class="norm-row"><span class="norm-key">Priority</span><span class="norm-val">${escHtml(SF_PRIORITY[d.priority])}</span></div>
+            <div class="norm-row"><span class="norm-key">Origin</span><span class="norm-val">Web</span></div>
+            <div class="norm-row"><span class="norm-key">Type</span><span class="norm-val">${escHtml(INTENT_LABELS[d.intent].sf)}</span></div>
+            <div class="norm-row"><span class="norm-key">Owner</span><span class="norm-val">${escHtml(ROUTING[d.intent])}</span></div>
+          </div>
+          <div>
+            <div class="mock-sf-section">Contact information</div>
+            <div class="norm-row"><span class="norm-key">Name</span><span class="norm-val">${escHtml(d.name)}</span></div>
+            <div class="norm-row"><span class="norm-key">Email</span><span class="norm-val">${escHtml(d.email)}</span></div>
+            <div class="norm-row"><span class="norm-key">Account</span><span class="norm-val">${escHtml(d.account)}</span></div>
+          </div>
+        </div>
+        <div class="mock-sf-desc-label">Description</div>
+        <div class="mock-sf-desc">${escHtml(d.issue)}</div>
+      </div>
+    </div>`;
+  }
+
+  function renderMockEmail(d) {
+    const ts = new Date(d.timestamp).toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const intentLabel = INTENT_LABELS[d.intent].email;
+    return `<div class="mock-email output-fade">
+      <div class="mock-email-bar">
+        <span class="mock-email-logo">✉ Support inbox — ${escHtml(ROUTING[d.intent])}@fieldstone.co</span>
+        <div class="mock-email-actions">
+          <span class="mock-email-btn">Reply</span>
+          <span class="mock-email-btn">Forward</span>
+          <span class="mock-email-btn">Assign</span>
+        </div>
+      </div>
+      <div class="mock-email-meta">
+        <div class="mock-email-subject">[${escHtml(d.caseId)}] ${escHtml(intentLabel)} — ${escHtml(d.name)} (${escHtml(d.account)})</div>
+        <div class="mock-email-row"><span class="em-key">From</span><span class="em-val">noreply@fieldstone.co</span></div>
+        <div class="mock-email-row"><span class="em-key">To</span><span class="em-val">${escHtml(ROUTING[d.intent])}@fieldstone.co</span></div>
+        <div class="mock-email-row"><span class="em-key">Date</span><span class="em-val">${ts}</span></div>
+      </div>
+      <div class="mock-email-body">
+        <div class="em-section">
+          <p style="margin-bottom:10px;">A new support case has been submitted via web form.</p>
+        </div>
+        <div class="em-section">
+          <div class="em-section-title">Case summary</div>
+          <div class="em-row"><span class="em-label">Case ID</span><span class="em-data">${escHtml(d.caseId)}</span></div>
+          <div class="em-row"><span class="em-label">Priority</span><span class="em-data">${escHtml(d.priority)}</span></div>
+          <div class="em-row"><span class="em-label">Intent</span><span class="em-data">${escHtml(intentLabel)}</span></div>
+          <div class="em-row"><span class="em-label">SLA</span><span class="em-data">Respond within ${SLA[d.priority]} hours</span></div>
+        </div>
+        <div class="em-section">
+          <div class="em-section-title">Customer</div>
+          <div class="em-row"><span class="em-label">Name</span><span class="em-data">${escHtml(d.name)}</span></div>
+          <div class="em-row"><span class="em-label">Email</span><span class="em-data">${escHtml(d.email)}</span></div>
+          <div class="em-row"><span class="em-label">Account</span><span class="em-data">${escHtml(d.account)}</span></div>
+        </div>
+        <div class="em-section">
+          <div class="em-section-title">Customer message</div>
+          <div class="em-message">${escHtml(d.issue)}</div>
+        </div>
+        <div class="em-footer">Fieldstone Co. · Case Management System · Do not reply to this address</div>
+      </div>
+    </div>`;
+  }
+
+  function renderMockJson(d) {
+    const obj = formatWebhook(d);
+    const ts = new Date(d.timestamp);
+    const ms = 120 + Math.floor(Math.random()*80);
+    return `<div class="mock-json output-fade">
+      <div class="mock-json-bar">
+        <span class="mock-json-logo">◈ Webhook delivery log</span>
+      </div>
+      <div class="mock-json-delivery">
+        <span class="mock-json-method">POST</span>
+        <span class="mock-json-url">https://hooks.fieldstone.co/support</span>
+        <span class="mock-json-status">200 OK</span>
+        <span class="mock-json-time">${ms}ms</span>
+      </div>
+      <div class="mock-json-payload-label">Request payload</div>
+      <div class="mock-json-code"><div class="json-block">${highlightJson(obj)}</div></div>
+    </div>`;
+  }
+
+  function renderMockCsv(d) {
+    const { headers, vals } = formatCsv(d);
+    const thCells = headers.map(h => `<th>${escHtml(h)}</th>`).join('');
+    const tdCells = vals.map(v => `<td>${escHtml(String(v))}</td>`).join('');
+    return `<div class="mock-csv output-fade">
+      <div class="mock-csv-bar">
+        <span class="mock-csv-logo">▦ Spreadsheet</span>
+        <span class="mock-csv-filename">support_cases_export.csv</span>
+      </div>
+      <div class="mock-csv-table-wrap">
+        <table class="mock-csv-table">
+          <thead><tr>${thCells}</tr></thead>
+          <tbody>
+            <tr><td colspan="${headers.length}" style="color:#bbb;font-style:italic;padding:6px 10px;font-size:0.65rem;">… previous rows …</td></tr>
+            <tr class="highlight">${tdCells}</tr>
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+  }
+
+  /* ── Render helpers ── */
+
+  function renderStep3(key, d) {
+    let html = `<div class="connected-bar output-fade">
+      <div class="connected-dot"></div>
+      <span class="connected-label">Connected</span>
+      <span class="connected-system">${SYSTEM_NAMES[key]}</span>
+    </div>`;
+
+    if (key === 'csv') {
+      const { headers, vals } = formatCsv(d);
+      const hRow = headers.map(h=>`<span class="csv-header">${escHtml(h)}</span>`).join(',');
+      const vRow = vals.map(v=>escHtml(String(v))).join(',');
+      html += `<div class="json-block output-fade">${hRow}\n${vRow}</div>`;
+    } else if (key === 'email') {
+      html += `<div class="json-block output-fade">${escHtml(formatEmail(d))}</div>`;
+    } else {
+      const obj = key==='snow' ? formatSnow(d) : key==='sf' ? formatSalesforce(d) : formatWebhook(d);
+      html += `<div class="json-block output-fade">${highlightJson(obj)}</div>`;
+    }
+    document.getElementById('output-display').innerHTML = html;
+  }
+
+  function renderStep4(key, d) {
+    document.getElementById('step4-system-label').textContent = STEP4_LABELS[key];
+    let html = '';
+    if      (key === 'snow')  html = renderMockSnow(d);
+    else if (key === 'sf')    html = renderMockSF(d);
+    else if (key === 'email') html = renderMockEmail(d);
+    else if (key === 'json')  html = renderMockJson(d);
+    else if (key === 'csv')   html = renderMockCsv(d);
+    document.getElementById('step4-panel').innerHTML = html;
+  }
+
   function renderNormalized(d) {
-    const ts = new Date(d.timestamp).toLocaleString('en-US', { month:'short', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    const ts = new Date(d.timestamp).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
     document.getElementById('norm-display').innerHTML = `
       <div class="norm-section output-fade">
         <div class="norm-section-label">Customer</div>
@@ -424,7 +717,7 @@
         <div class="norm-row"><span class="norm-key">intent</span><span class="norm-val"><span class="badge badge-${d.intent}">${d.intent}</span></span></div>
         <div class="norm-row"><span class="norm-key">priority</span><span class="norm-val"><span class="badge badge-${d.priority}">${d.priority}</span></span></div>
         <div class="norm-row"><span class="norm-key">case_id</span><span class="norm-val mono">${escHtml(d.caseId)}</span></div>
-        <div class="norm-row"><span class="norm-key">submitted</span><span class="norm-val" style="font-size:0.7rem;color:#888;">${ts}</span></div>
+        <div class="norm-row"><span class="norm-key">submitted</span><span class="norm-val" style="font-size:0.68rem;color:#888;">${ts}</span></div>
       </div>
       <div class="norm-section output-fade">
         <div class="norm-section-label">Routing</div>
@@ -433,31 +726,11 @@
       </div>`;
   }
 
-  function renderAdapter(key) {
-    if (!currentData) return;
-    const display = document.getElementById('output-display');
-    let html = `<div class="connected-bar output-fade">
-      <div class="connected-dot"></div>
-      <span class="connected-label">Connected</span>
-      <span class="connected-system">${SYSTEM_NAMES[key]}</span>
-    </div>`;
-
-    if (key === 'csv') {
-      const { headers, vals } = formatCsv(currentData);
-      const hRow = headers.map(h => `<span class="csv-header">${escHtml(h)}</span>`).join(',');
-      const vRow = vals.map(v => escHtml(v)).join(',');
-      html += `<div class="json-block output-fade">${hRow}\n${vRow}</div>`;
-    } else {
-      const obj = key === 'snow' ? formatSnow(currentData) : key === 'sf' ? formatSalesforce(currentData) : formatWebhook(currentData);
-      html += `<div class="json-block output-fade">${highlightJson(obj)}</div>`;
-    }
-    display.innerHTML = html;
-  }
-
   function switchAdapter(key, btn) {
     document.querySelectorAll('.adapter-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
-    renderAdapter(key);
+    renderStep3(key, currentData);
+    renderStep4(key, currentData);
   }
 
   function handleSubmit() {
@@ -483,15 +756,15 @@
 
     currentData = { name, email, account: account || 'ACC-0000', issue, intent, priority, caseId, timestamp, shortDesc };
 
-    // Reset Step 3
-    document.querySelectorAll('.adapter-tab').forEach(t => { t.classList.remove('ready','active'); });
-    document.getElementById('output-display').innerHTML = `<div class="adapter-waiting"><div class="adapter-waiting-icon">⬡</div><p class="adapter-waiting-text">Waiting for normalized record…</p></div>`;
+    document.querySelectorAll('.adapter-tab').forEach(t => t.classList.remove('ready','active'));
+    document.getElementById('output-display').innerHTML = `<div class="adapter-waiting"><p>Waiting for normalized record…</p></div>`;
+    document.getElementById('step4-panel').innerHTML = `<div class="step4-waiting"><p>Select an adapter above to see what the agent sees.</p></div>`;
+    document.getElementById('step4-system-label').textContent = 'Agent view';
 
-    // Step 2 processing animation
     const steps = [
-      { icon: '◎', text: 'Reading raw input…' },
-      { icon: '⬡', text: `Detecting intent: <strong>${intent}</strong> · priority: <strong>${priority}</strong>` },
-      { icon: '✓', text: 'Record normalized.' }
+      { icon:'◎', text:'Reading raw input…' },
+      { icon:'⬡', text:`Detected intent: <strong>${intent}</strong> · priority: <strong>${priority}</strong>` },
+      { icon:'✓', text:'Record normalized.' }
     ];
     document.getElementById('norm-display').innerHTML = `<div class="proc-wrap">${steps.map((s,i) =>
       `<div class="proc-step" id="ps${i}"><span class="proc-icon">${s.icon}</span><span>${s.text}</span></div>`
@@ -500,13 +773,14 @@
     let delay = 0;
     steps.forEach((_,i) => setTimeout(() => document.getElementById(`ps${i}`).classList.add('visible'), delay += 360));
 
-    // Reveal normalized record, then unlock Step 3
     setTimeout(() => {
       renderNormalized(currentData);
       setTimeout(() => {
         document.querySelectorAll('.adapter-tab').forEach(t => t.classList.add('ready'));
-        document.getElementById('tab-snow').classList.add('active');
-        renderAdapter('snow');
+        const firstTab = document.getElementById('tab-snow');
+        firstTab.classList.add('active');
+        renderStep3('snow', currentData);
+        renderStep4('snow', currentData);
       }, 300);
     }, delay + 300);
   }
