@@ -36,7 +36,8 @@
     .proto-wrap { background: #FEF3C7; border-radius: 16px; padding: 28px 24px 36px; }
     .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 24px; }
 
-    .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+    .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; min-width: 0; }
+    .demo-grid > * { min-width: 0; overflow: hidden; }
 
     .demo-panel { background: #fff; border-radius: 12px; padding: 22px; border: 1px solid #E8E2D8; }
     .panel-step { font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 5px; }
