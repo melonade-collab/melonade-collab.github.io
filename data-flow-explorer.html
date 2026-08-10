@@ -3,29 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Data Routing Explorer — Fieldstone Co.</title>
+  <title>Integration Adapter Hub — Fieldstone Co.</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f5; color: #1a1a1a; min-height: 100vh; }
 
     .cs-header { background: #78350F; padding: 56px 40px 44px; }
-    .cs-header-inner { max-width: 860px; margin: 0 auto; }
+    .cs-header-inner { max-width: 980px; margin: 0 auto; }
     .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
     .cs-h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 14px; line-height: 1.1; }
-    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 580px; }
+    .cs-intro { font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 600px; }
 
-    .cs-body { max-width: 860px; margin: 0 auto; padding: 48px 40px 40px; }
+    .cs-body { max-width: 980px; margin: 0 auto; padding: 48px 40px 40px; }
     .mb16 { margin-bottom: 16px; }
     .mb40 { margin-bottom: 40px; }
-
-    .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; color: #B45309; text-decoration: none; margin-bottom: 28px; transition: color 0.15s; }
-    .back-link:hover { color: #78350F; }
 
     .acc-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; }
     .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; transition: background 0.15s; }
     .acc-header:hover { background: #fafafa; }
-    .acc-title { font-size: 0.9rem; font-weight: 700; color: #1a1a1a; }
-    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 2px; }
+    .card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; }
     .acc-chevron { color: #bbb; font-size: 0.75rem; transition: transform 0.2s; }
     .acc-header.open .acc-chevron { transform: rotate(180deg); }
     .acc-body { display: none; padding: 0 22px 20px; }
@@ -35,43 +31,79 @@
     .acc-body li { margin-bottom: 5px; }
 
     .proto-section { background: #f7f7f5; padding: 0 40px 80px; }
-    .proto-inner { max-width: 860px; margin: 0 auto; }
+    .proto-inner { max-width: 980px; margin: 0 auto; }
     .proto-section-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 16px; }
     .proto-wrap { background: #FEF3C7; border-radius: 16px; padding: 28px 24px 36px; }
-    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 20px; }
+    .proto-wrap-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 24px; }
 
-    .scenario-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
-    .scenario-tab { padding: 8px 18px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: 1.5px solid #D97706; background: transparent; color: #92400E; transition: all 0.15s; font-family: inherit; }
-    .scenario-tab.active { background: #D97706; color: #fff; }
-    .scenario-tab:hover:not(.active) { background: #FFFBEB; }
+    .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
 
-    .flow-wrap { display: grid; grid-template-columns: 185px 1fr; gap: 20px; align-items: start; }
+    .demo-panel { background: #fff; border-radius: 12px; padding: 22px; border: 1px solid #E8E2D8; }
+    .panel-step { font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #B45309; margin-bottom: 5px; }
+    .panel-title { font-size: 0.9rem; font-weight: 800; color: #1a1a1a; margin-bottom: 18px; }
 
-    .event-card { background: #92400E; border-radius: 12px; padding: 20px 16px; position: relative; }
-    .event-card::after { content: '→'; position: absolute; right: -16px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; color: #D97706; font-weight: 900; pointer-events: none; }
-    .event-card-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
-    .event-card-name { font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 14px; line-height: 1.25; }
-    .event-fields { display: flex; flex-wrap: wrap; gap: 4px; }
-    .event-field { font-size: 0.62rem; color: rgba(255,255,255,0.75); font-family: monospace; padding: 2px 7px; background: rgba(255,255,255,0.12); border-radius: 4px; }
+    .form-row { margin-bottom: 13px; }
+    .form-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #aaa; margin-bottom: 5px; display: block; }
+    .form-input { width: 100%; border: 1.5px solid #E5E7EB; border-radius: 8px; padding: 9px 11px; font-size: 0.85rem; color: #1a1a1a; font-family: inherit; outline: none; transition: border-color 0.15s; background: #fff; }
+    .form-input:focus { border-color: #D97706; }
+    .form-textarea { resize: vertical; min-height: 88px; }
+    .form-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-    .team-rows { display: flex; flex-direction: column; gap: 8px; }
-    .team-row { background: #fff; border-radius: 10px; padding: 14px 16px; display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; border: 1px solid #e8e8e4; }
-    .team-name { font-size: 0.85rem; font-weight: 800; color: #1a1a1a; margin-bottom: 3px; }
-    .team-why { font-size: 0.72rem; color: #888; line-height: 1.4; }
-    .format-badge { font-size: 0.62rem; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; white-space: nowrap; }
-    .system-badge { font-size: 0.72rem; font-weight: 700; color: #1a1a1a; background: #F3F4F6; border-radius: 6px; padding: 3px 10px; white-space: nowrap; }
+    .form-actions { display: flex; gap: 9px; margin-top: 18px; }
+    .btn-sample { background: transparent; border: 1.5px solid #D97706; color: #92400E; font-size: 0.75rem; font-weight: 700; padding: 8px 13px; border-radius: 8px; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+    .btn-sample:hover { background: #FFFBEB; }
+    .btn-submit { flex: 1; background: #D97706; border: none; color: #fff; font-size: 0.78rem; font-weight: 700; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+    .btn-submit:hover { background: #B45309; }
 
-    .legend { display: flex; gap: 20px; margin-top: 18px; flex-wrap: wrap; }
-    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 0.7rem; color: #888; }
-    .legend-swatch { width: 28px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+    .flow-connector { display: flex; align-items: flex-start; justify-content: center; padding-top: 68px; color: #D97706; font-size: 1.2rem; font-weight: 900; }
 
-    @media (max-width: 640px) {
+    .adapter-bar { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+    .adapter-tab { display: flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 7px; font-size: 0.72rem; font-weight: 700; cursor: pointer; border: 1.5px solid #D97706; background: transparent; color: #92400E; transition: all 0.15s; font-family: inherit; opacity: 0.35; pointer-events: none; }
+    .adapter-tab.ready { opacity: 1; pointer-events: auto; }
+    .adapter-tab.active { background: #D97706; color: #fff; }
+    .adapter-tab:hover:not(.active).ready { background: #FFFBEB; }
+    .adapter-sys { font-size: 0.6rem; font-weight: 400; opacity: 0.75; }
+
+    .connected-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; padding: 7px 11px; background: rgba(217,119,6,0.08); border-radius: 8px; border: 1px solid rgba(217,119,6,0.2); }
+    .connected-dot { width: 6px; height: 6px; border-radius: 50%; background: #16A34A; flex-shrink: 0; }
+    .connected-label { font-size: 0.65rem; font-weight: 700; color: #92400E; letter-spacing: 0.5px; text-transform: uppercase; }
+    .connected-system { font-size: 0.65rem; color: #B45309; margin-left: auto; font-weight: 600; }
+
+    .output-display { min-height: 200px; }
+    .waiting-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; gap: 10px; opacity: 0.45; }
+    .waiting-icon { font-size: 1.6rem; }
+    .waiting-text { font-size: 0.8rem; color: #92400E; text-align: center; line-height: 1.5; }
+
+    .processing-wrap { padding: 8px 0 16px; }
+    .proc-step { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; color: #555; opacity: 0; transition: opacity 0.3s ease; margin-bottom: 10px; }
+    .proc-step.visible { opacity: 1; }
+    .proc-icon { width: 18px; text-align: center; flex-shrink: 0; }
+    .proc-icon.spinning { display: inline-block; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .json-block {
+      background: #0F172A; border-radius: 10px; padding: 15px 16px;
+      font-family: "SF Mono", "Fira Code", monospace; font-size: 0.7rem;
+      line-height: 1.75; color: #E2E8F0; overflow-x: auto; white-space: pre;
+      max-height: 340px; overflow-y: auto;
+    }
+    .json-key   { color: #7DD3FC; }
+    .json-str   { color: #86EFAC; }
+    .json-num   { color: #FCD34D; }
+    .json-bool  { color: #FCA5A5; }
+    .json-null  { color: #94A3B8; }
+    .csv-header { color: #7DD3FC; }
+
+    .output-fade { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+    @media (max-width: 700px) {
       .cs-header { padding: 40px 20px 36px; }
       .cs-body { padding: 32px 20px 32px; }
       .proto-section { padding: 0 20px 60px; }
-      .flow-wrap { grid-template-columns: 1fr; }
-      .event-card::after { display: none; }
-      .team-row { grid-template-columns: 1fr; gap: 8px; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .flow-connector { display: none; }
+      .form-grid2 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -80,19 +112,21 @@
 <header class="cs-header">
   <div class="cs-header-inner">
     <p class="eyebrow">Data Workflow &middot; Fictional scenario</p>
-    <h1 class="cs-h1">Data Routing Explorer</h1>
-    <p class="cs-intro">A single business event can fan out to five different teams — each needing it in a different format, delivered to a different system, for a different reason. This explores that routing using a fictional retailer.</p>
+    <h1 class="cs-h1">Integration Adapter Hub</h1>
+    <p class="cs-intro">Customer data arrives in one shape. Every downstream system expects a different one. This demo shows intake, transformation, and adapter routing — the three layers that make integrations actually work.</p>
   </div>
 </header>
 
 <div class="cs-body">
+
   <div class="acc-card mb16">
     <div class="acc-header" onclick="toggleAcc(this)">
       <p class="card-label">Problem</p>
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>A data PM's routing knowledge is almost entirely invisible. It lives in their head, in email threads, in undocumented assumptions: which teams need which events, why they need them, what format their systems actually ingest, and where the data lands. When that person leaves, it goes with them. This prototype makes that knowledge concrete and legible.</p>
+      <p>Every integration project hits the same wall: data collected from a customer comes in one shape, but ServiceNow expects an incident record, Salesforce wants a Case object, and the analytics pipeline wants flat JSON. Without an adapter layer, teams either write one-off transformations for each system or hand the data over unformatted and let the receiving team figure it out.</p>
+      <p>The deeper problem: this logic is invisible. It lives in custom scripts, tribal knowledge, and Slack threads. When someone asks "what does billing actually receive when a customer submits a complaint?" no one can easily answer. This demo makes the transformation layer explicit and explorable.</p>
     </div>
   </div>
 
@@ -103,9 +137,11 @@
     </div>
     <div class="acc-body">
       <ul>
-        <li>Pure client-side JavaScript — no framework, no API dependencies</li>
-        <li>Three hardcoded scenarios (Order Placed, New Account Created, Out of Stock), each defining an event payload and a set of downstream consumers with routing metadata</li>
-        <li>Animated stagger on team rows when a new scenario loads</li>
+        <li>Pure client-side JavaScript — no backend, no API calls, no framework</li>
+        <li>Intent classifier reads the issue description and maps to one of five categories (billing, shipping, technical, complaint, general)</li>
+        <li>Four adapter formatters transform the same raw input into ServiceNow incident, Salesforce Case, JSON webhook, and CSV — each with system-appropriate field names and structure</li>
+        <li>A "sample data" button pre-fills a realistic fictional submission to demonstrate the flow without the user having to type</li>
+        <li>Syntax highlighting applied client-side via regex replacements on serialized JSON</li>
       </ul>
     </div>
   </div>
@@ -117,9 +153,11 @@
     </div>
     <div class="acc-body">
       <ul>
-        <li>Three scenario tabs — switch between data events to see how each one routes differently across the same organisation</li>
-        <li>Each scenario shows the event payload fields and every downstream consumer with the reason they need it, the format they receive it in, and the destination system it lands in</li>
-        <li>Built around Fieldstone Co., a fictional mid-size e-commerce retailer with a realistic mix of SaaS tools (NetSuite, Klaviyo, Snowflake, Zendesk, Salesforce, LoyaltyLion) and custom internal systems</li>
+        <li>Intake form collects name, email, account ID, and freeform issue description — the same inputs any real support form would capture</li>
+        <li>Brief processing animation makes the transformation step visible rather than instant, showing intake → format → route</li>
+        <li>Adapter tabs let you switch destinations: ServiceNow, Salesforce, JSON Webhook, CSV row — same data, four different shapes</li>
+        <li>A "Connected" indicator on each active adapter reinforces the plug-in metaphor</li>
+        <li>Intent detection dynamically changes the category field in each output format based on what the user actually wrote</li>
       </ul>
     </div>
   </div>
@@ -130,128 +168,333 @@
       <span class="acc-chevron">▼</span>
     </div>
     <div class="acc-body">
-      <p>This is what a data PM knows that most stakeholders don't see: not just that data needs to move, but who needs it, why, in what shape, and where. The gap between "we have this event" and "everyone who needs it is actually getting it in a usable form" is where data product management lives. This prototype shows that gap — and what closing it looks like.</p>
+      <p>Integration work is hard to make legible to stakeholders — it's all plumbing. A PM who owns this space needs to show they understand not just that data needs to move, but that the same event looks completely different depending on where it's going and why. The adapter metaphor is the PM's mental model made visible: you plug in a destination, the system handles the shape. That's the product decision.</p>
     </div>
   </div>
+
 </div>
 
 <div class="proto-section">
   <div class="proto-inner">
     <p class="proto-section-label">Interactive prototype</p>
     <div class="proto-wrap">
-      <p class="proto-wrap-label">Choose a data event to see how it routes</p>
+      <p class="proto-wrap-label">Submit customer data — then switch adapters to see it formatted for each system</p>
 
-      <div class="scenario-tabs">
-        <button class="scenario-tab active" onclick="showScenario('order', this)">Order Placed</button>
-        <button class="scenario-tab" onclick="showScenario('signup', this)">New Account</button>
-        <button class="scenario-tab" onclick="showScenario('stock', this)">Out of Stock</button>
-      </div>
+      <div class="demo-grid">
 
-      <div id="flow-container"></div>
+        <!-- Intake form -->
+        <div class="demo-panel">
+          <p class="panel-step">Step 1</p>
+          <p class="panel-title">Customer intake</p>
 
-      <div class="legend">
-        <div class="legend-item">
-          <div class="legend-swatch" style="background:#FEF3C7;border:1px solid #FDE68A;"></div>
-          Format (how data is delivered)
+          <div class="form-grid2">
+            <div class="form-row">
+              <label class="form-label" for="f-name">Name</label>
+              <input class="form-input" id="f-name" type="text" placeholder="Full name" autocomplete="off">
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="f-account">Account ID</label>
+              <input class="form-input" id="f-account" type="text" placeholder="ACC-0000" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="f-email">Email</label>
+            <input class="form-input" id="f-email" type="email" placeholder="email@example.com" autocomplete="off">
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="f-issue">Issue description</label>
+            <textarea class="form-input form-textarea" id="f-issue" placeholder="Describe the issue in your own words…"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-sample" onclick="fillSample()">Use sample data</button>
+            <button class="btn-submit" onclick="handleSubmit()">Route through adapter →</button>
+          </div>
         </div>
-        <div class="legend-item">
-          <div class="legend-swatch" style="background:#F3F4F6;border:1px solid #E5E7EB;"></div>
-          Destination system
+
+        <!-- Output panel -->
+        <div class="demo-panel" id="output-panel">
+          <p class="panel-step">Step 2</p>
+          <p class="panel-title">Adapter output</p>
+
+          <div class="adapter-bar" id="adapter-bar">
+            <button class="adapter-tab" id="tab-snow" onclick="switchAdapter('snow', this)">
+              ServiceNow <span class="adapter-sys">incident</span>
+            </button>
+            <button class="adapter-tab" id="tab-sf" onclick="switchAdapter('sf', this)">
+              Salesforce <span class="adapter-sys">case</span>
+            </button>
+            <button class="adapter-tab" id="tab-json" onclick="switchAdapter('json', this)">
+              JSON <span class="adapter-sys">webhook</span>
+            </button>
+            <button class="adapter-tab" id="tab-csv" onclick="switchAdapter('csv', this)">
+              CSV <span class="adapter-sys">row</span>
+            </button>
+          </div>
+
+          <div class="output-display" id="output-display">
+            <div class="waiting-state">
+              <div class="waiting-icon">⬡</div>
+              <p class="waiting-text">No adapter connected yet.<br>Submit the form to route data.</p>
+            </div>
+          </div>
         </div>
+
       </div>
     </div>
   </div>
 </div>
 
+<a href="index.html" class="portfolio-back-link" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
+
 <script>
-  const scenarios = {
-    order: {
-      event: {
-        name: 'Order Placed',
-        fields: ['order_id', 'customer_id', 'items[]', 'quantities[]', 'total', 'tax', 'payment_method', 'shipping_address', 'timestamp']
-      },
-      teams: [
-        { name: 'Fulfillment', why: 'Needs item SKUs and quantities to pick, pack, and ship immediately', format: 'JSON (webhook)', system: 'WMS' },
-        { name: 'Finance', why: 'Revenue recognition, tax reporting, and payment reconciliation', format: 'CSV (hourly batch)', system: 'NetSuite' },
-        { name: 'Marketing', why: 'Trigger post-purchase email flow, update customer lifetime value', format: 'Event stream', system: 'Klaviyo' },
-        { name: 'Analytics', why: 'Track conversion rate, average order value, and order trends', format: 'JSON → Parquet', system: 'Snowflake' },
-        { name: 'Customer Support', why: 'Agents need full order context when a customer contacts support', format: 'REST API', system: 'Zendesk' },
-      ]
-    },
-    signup: {
-      event: {
-        name: 'New Account Created',
-        fields: ['customer_id', 'email', 'name', 'signup_source', 'opted_in_marketing', 'timestamp']
-      },
-      teams: [
-        { name: 'CRM', why: 'Create contact record, assign lifecycle stage, enable sales visibility', format: 'REST API', system: 'Salesforce' },
-        { name: 'Marketing', why: 'Trigger welcome email flow; suppress entirely if opted_in_marketing is false', format: 'Event', system: 'Klaviyo' },
-        { name: 'Loyalty Program', why: 'Enroll customer, assign starting tier, issue welcome points', format: 'REST API', system: 'LoyaltyLion' },
-        { name: 'Analytics', why: 'Track signup volume, channel attribution, and funnel conversion', format: 'JSON → Parquet', system: 'Snowflake' },
-        { name: 'Personalization', why: 'Seed recommendation profile using signup channel as initial signal', format: 'Event', system: 'Recs Engine' },
-      ]
-    },
-    stock: {
-      event: {
-        name: 'Item Out of Stock',
-        fields: ['sku_id', 'product_name', 'category', 'current_inventory', 'reorder_threshold', 'supplier_id', 'timestamp']
-      },
-      teams: [
-        { name: 'Merchandising', why: 'Immediate visibility into stockouts; decide whether to reorder or discontinue', format: 'Webhook alert', system: 'Internal Dashboard' },
-        { name: 'Marketing', why: 'Suppress paid ads right away to stop spending on unavailable products', format: 'Event', system: 'Google Ads + Meta' },
-        { name: 'Procurement', why: 'Auto-generate a purchase order when inventory drops below reorder threshold', format: 'Webhook', system: 'Supplier Portal' },
-        { name: 'Personalization', why: 'Remove item from active recommendations so customers aren\'t shown out-of-stock products', format: 'Event', system: 'Recs Engine' },
-        { name: 'Analytics', why: 'Track stockout frequency, duration, and estimated revenue impact', format: 'JSON → Parquet', system: 'Snowflake' },
-      ]
-    }
+  function toggleAcc(h) { h.classList.toggle('open'); h.nextElementSibling.classList.toggle('open'); }
+
+  const SAMPLE = {
+    name: 'Priya Mehta',
+    email: 'priya.mehta@fieldstone.co',
+    account: 'ACC-7821',
+    issue: "My last invoice shows a charge I don't recognize — $149 from three weeks ago. I've looked through my account history and I can't find what it's for. I need this resolved before my next billing cycle."
   };
 
-  function showScenario(key, btn) {
-    document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+  function fillSample() {
+    document.getElementById('f-name').value = SAMPLE.name;
+    document.getElementById('f-email').value = SAMPLE.email;
+    document.getElementById('f-account').value = SAMPLE.account;
+    document.getElementById('f-issue').value = SAMPLE.issue;
+  }
+
+  function detectIntent(text) {
+    const t = text.toLowerCase();
+    if (/invoice|charge|payment|refund|billing|fee|cost|\$|amount|overcharged/.test(t)) return 'billing';
+    if (/order|delivery|tracking|shipped|arrive|package|parcel|ship|dispatch/.test(t)) return 'shipping';
+    if (/error|broken|bug|not working|can.t|unable|crash|slow|fail|login|access/.test(t)) return 'technical';
+    if (/terrible|unacceptable|disgust|awful|worst|horrible|furious|angry/.test(t)) return 'complaint';
+    return 'general';
+  }
+
+  function detectPriority(text) {
+    const t = text.toLowerCase();
+    if (/emergency|asap|urgent|critical|immediately|right now|right away/.test(t)) return 'urgent';
+    if (/important|serious|significant|major|cannot wait/.test(t)) return 'high';
+    return 'medium';
+  }
+
+  function makeCaseId() {
+    const d = new Date();
+    const ds = d.toISOString().slice(0,10).replace(/-/g,'');
+    const r = String(Math.floor(Math.random() * 9000) + 1000);
+    return `CASE-${ds}-${r}`;
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function highlightJson(obj) {
+    return JSON.stringify(obj, null, 2)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
+      .replace(/: "([^"]*)"/g, ': <span class="json-str">"$1"</span>')
+      .replace(/: (true|false)/g, ': <span class="json-bool">$1</span>')
+      .replace(/: (null)/g, ': <span class="json-null">$1</span>')
+      .replace(/: (-?\d+\.?\d*)/g, ': <span class="json-num">$1</span>');
+  }
+
+  const SYSTEM_NAMES = {
+    snow: 'ServiceNow',
+    sf: 'Salesforce',
+    json: 'JSON Webhook',
+    csv: 'CSV'
+  };
+
+  let currentData = null;
+  let currentAdapter = null;
+
+  const INTENT_LABELS = {
+    billing: { snow: 'billing', sf: 'Billing', json: 'billing', csv: 'billing' },
+    shipping: { snow: 'delivery', sf: 'Shipping', json: 'shipping', csv: 'shipping' },
+    technical: { snow: 'software', sf: 'Technical', json: 'technical', csv: 'technical' },
+    complaint: { snow: 'inquiry', sf: 'Other', json: 'complaint', csv: 'complaint' },
+    general: { snow: 'inquiry', sf: 'Other', json: 'general', csv: 'general' }
+  };
+
+  const ROUTING = {
+    billing: 'billing-support',
+    shipping: 'fulfillment-support',
+    technical: 'technical-support',
+    complaint: 'customer-relations',
+    general: 'general-support'
+  };
+
+  const SLA = { urgent: 4, high: 8, medium: 24 };
+  const SNOW_PRIORITY = { urgent: '1', high: '2', medium: '3' };
+  const SF_PRIORITY = { urgent: 'Critical', high: 'High', medium: 'Medium' };
+
+  function formatSnow(d) {
+    return {
+      sys_class_name: 'incident',
+      caller_id: d.email,
+      short_description: d.shortDesc,
+      description: d.issue,
+      category: INTENT_LABELS[d.intent].snow,
+      priority: SNOW_PRIORITY[d.priority],
+      urgency: d.priority === 'urgent' ? '1' : d.priority === 'high' ? '2' : '3',
+      impact: d.priority === 'urgent' ? '1' : '2',
+      state: '1',
+      contact_type: 'self-service',
+      u_account_id: d.account,
+      u_customer_name: d.name,
+      u_submitted_at: d.timestamp,
+      assignment_group: ROUTING[d.intent]
+    };
+  }
+
+  function formatSalesforce(d) {
+    return {
+      sobjectType: 'Case',
+      Subject: d.shortDesc,
+      Description: d.issue,
+      Origin: 'Web',
+      Status: 'New',
+      Priority: SF_PRIORITY[d.priority],
+      Type: INTENT_LABELS[d.intent].sf,
+      AccountId: d.account,
+      SuppliedName: d.name,
+      SuppliedEmail: d.email,
+      OwnerId: ROUTING[d.intent],
+      CreatedDate: d.timestamp
+    };
+  }
+
+  function formatWebhook(d) {
+    return {
+      event: 'case.intake',
+      version: '1.0',
+      timestamp: d.timestamp,
+      source: 'web-form',
+      customer: {
+        name: d.name,
+        email: d.email,
+        account_id: d.account
+      },
+      case: {
+        id: d.caseId,
+        intent: INTENT_LABELS[d.intent].json,
+        priority: d.priority,
+        description: d.issue
+      },
+      routing: {
+        team: ROUTING[d.intent],
+        sla_hours: SLA[d.priority]
+      }
+    };
+  }
+
+  function formatCsv(d) {
+    const headers = ['case_id','submitted_at','customer_name','email','account_id','intent','priority','routing_team','sla_hours','description'];
+    const vals = [
+      d.caseId,
+      d.timestamp,
+      d.name,
+      d.email,
+      d.account,
+      INTENT_LABELS[d.intent].csv,
+      d.priority,
+      ROUTING[d.intent],
+      SLA[d.priority],
+      d.issue.replace(/,/g,';').replace(/\n/g,' ')
+    ];
+    return { headers, vals };
+  }
+
+  function renderAdapter(key) {
+    if (!currentData) return;
+    currentAdapter = key;
+
+    const display = document.getElementById('output-display');
+    let html = '';
+    html += `<div class="connected-bar output-fade">
+      <div class="connected-dot"></div>
+      <span class="connected-label">Connected</span>
+      <span class="connected-system">${SYSTEM_NAMES[key]}</span>
+    </div>`;
+
+    if (key === 'csv') {
+      const { headers, vals } = formatCsv(currentData);
+      const hRow = headers.map(h => `<span class="csv-header">${escHtml(h)}</span>`).join(',');
+      const vRow = vals.map(v => escHtml(String(v))).join(',');
+      html += `<div class="json-block output-fade">${hRow}\n${vRow}</div>`;
+    } else {
+      const obj = key === 'snow' ? formatSnow(currentData)
+                : key === 'sf'   ? formatSalesforce(currentData)
+                :                  formatWebhook(currentData);
+      html += `<div class="json-block output-fade">${highlightJson(obj)}</div>`;
+    }
+
+    display.innerHTML = html;
+  }
+
+  function switchAdapter(key, btn) {
+    document.querySelectorAll('.adapter-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
+    renderAdapter(key);
+  }
 
-    const s = scenarios[key];
-    const fieldTags = s.event.fields.map(f => `<span class="event-field">${f}</span>`).join('');
-    const teamRows = s.teams.map(t => `
-      <div class="team-row" style="opacity:0;transform:translateY(4px)">
-        <div>
-          <div class="team-name">${t.name}</div>
-          <div class="team-why">${t.why}</div>
-        </div>
-        <span class="format-badge">${t.format}</span>
-        <span class="system-badge">${t.system}</span>
-      </div>
-    `).join('');
+  function handleSubmit() {
+    const name    = document.getElementById('f-name').value.trim();
+    const email   = document.getElementById('f-email').value.trim();
+    const account = document.getElementById('f-account').value.trim();
+    const issue   = document.getElementById('f-issue').value.trim();
 
-    document.getElementById('flow-container').innerHTML = `
-      <div class="flow-wrap">
-        <div class="event-card">
-          <div class="event-card-label">Data Event</div>
-          <div class="event-card-name">${s.event.name}</div>
-          <div class="event-fields">${fieldTags}</div>
-        </div>
-        <div class="team-rows">${teamRows}</div>
-      </div>
-    `;
-
-    document.querySelectorAll('.team-row').forEach((row, i) => {
-      setTimeout(() => {
-        row.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
-        row.style.opacity = '1';
-        row.style.transform = 'none';
-      }, i * 65);
+    if (!name || !email || !issue) {
+      document.getElementById('f-name').style.borderColor = name ? '#E5E7EB' : '#EF4444';
+      document.getElementById('f-email').style.borderColor = email ? '#E5E7EB' : '#EF4444';
+      document.getElementById('f-issue').style.borderColor = issue ? '#E5E7EB' : '#EF4444';
+      return;
+    }
+    ['f-name','f-email','f-account','f-issue'].forEach(id => {
+      document.getElementById(id).style.borderColor = '#E5E7EB';
     });
-  }
 
-  function toggleAcc(header) {
-    header.classList.toggle('open');
-    header.nextElementSibling.classList.toggle('open');
-  }
+    const intent   = detectIntent(issue);
+    const priority = detectPriority(issue);
+    const caseId   = makeCaseId();
+    const timestamp = new Date().toISOString();
+    const words    = issue.split(/\s+/).slice(0,6).join(' ');
+    const shortDesc = words + (issue.split(/\s+/).length > 6 ? '…' : '');
 
-  showScenario('order', document.querySelector('.scenario-tab.active'));
+    currentData = { name, email, account: account || 'ACC-0000', issue, intent, priority, caseId, timestamp, shortDesc };
+
+    const display = document.getElementById('output-display');
+    const steps = [
+      { icon: '◎', text: 'Reading intake data…' },
+      { icon: '⬡', text: `Detected intent: <strong>${intent}</strong> · priority: <strong>${priority}</strong>` },
+      { icon: '→', text: 'Formatting for adapter…' }
+    ];
+
+    display.innerHTML = `<div class="processing-wrap">${steps.map((s, i) => `
+      <div class="proc-step" id="ps${i}">
+        <span class="proc-icon">${s.icon}</span>
+        <span>${s.text}</span>
+      </div>`).join('')}</div>`;
+
+    let delay = 0;
+    steps.forEach((_, i) => {
+      setTimeout(() => document.getElementById(`ps${i}`).classList.add('visible'), delay += 380);
+    });
+
+    setTimeout(() => {
+      document.querySelectorAll('.adapter-tab').forEach(t => {
+        t.classList.add('ready');
+        t.classList.remove('active');
+      });
+      const firstTab = document.getElementById('tab-snow');
+      firstTab.classList.add('active');
+      renderAdapter('snow');
+    }, delay + 420);
+  }
 </script>
-
-<a href="index.html" class="portfolio-back-link" style="position:fixed;top:12px;left:14px;z-index:200;font-size:0.7rem;color:#aaa;text-decoration:none;background:rgba(0,0,0,0.65);border:1px solid #333;padding:4px 9px;">← Back to portfolio</a>
 
 </body>
 </html>
